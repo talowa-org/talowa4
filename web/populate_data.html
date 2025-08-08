@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Populate TALOWA Data</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>TALOWA Data Population</h1>
+    <button onclick="populateAllData()">Populate All Missing Data</button>
+    <div id="status"></div>
+
+    <script>
+        // Firebase configuration (from your firebase_options.dart)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvZzZqZqZqZqZqZqZqZqZqZqZqZqZqZqZ", // Replace with actual
+            authDomain: "talowa.firebaseapp.com",
+            projectId: "talowa",
+            storageBucket: "talowa.appspot.com",
+            messagingSenderId: "132354679195",
+            appId: "1:132354679195:web:bb87ce4dde748e8083013e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        async function populateDailyMotivation() {
+            updateStatus('Populating daily motivation...');
+            
+            const motivationData = {
+                messages: [
+                    "आज एक नया दिन है। अपनी भूमि के लिए लड़ते रहें। (Today is a new day. Keep fighting for your land.)",
+                    "एकजुट होकर हम अपने अधिकारों को पा सकते हैं। (United we can achieve our rights.)",
+                    "हर छोटा कदम बड़े बदलाव की शुरुआत है। (Every small step is the beginning of big change.)",
+                    "आपकी आवाज़ मायने रखती है। बोलते रहें। (Your voice matters. Keep speaking up.)",
+                    "न्याय की लड़ाई में हम साथ हैं। (We are together in the fight for justice.)",
+                    "भूमि हमारा अधिकार है, हम इसे पाकर रहेंगे। (Land is our right, we will get it.)",
+                    "संगठन में शक्ति है। एक साथ चलें। (There is strength in organization. Let's move together.)",
+                    "हमारे बच्चों के लिए एक बेहतर कल बनाएं। (Create a better tomorrow for our children.)",
+                    "कानूनी लड़ाई में धैर्य और दृढ़ता जरूरी है। (Patience and persistence are necessary in legal battles.)",
+                    "आपका संघर्ष व्यर्थ नहीं है। जारी रखें। (Your struggle is not in vain. Continue.)"
+                ],
+                success_stories: [
+                    {
+                        title: "करीमनगर में 500 एकड़ भूमि वापसी",
+                        description: "सामूहिक प्रयास से किसानों को अपनी भूमि वापस मिली।",
+                        location: "करीमनगर, तेलंगाना",
+                        date: "2024-01-15"
+                    },
+                    {
+                        title: "वारंगल में पट्टा वितरण", 
+                        description: "200 परिवारों को भूमि पट्टे मिले।",
+                        location: "वारंगल, तेलंगाना",
+                        date: "2024-02-20"
+                    },
+                    {
+                        title: "निज़ामाबाद में न्यायालयी जीत",
+                        description: "भूमि हड़पने के मामले में किसानों की जीत।",
+                        location: "निज़ामाबाद, तेलंगाना",
+                        date: "2024-03-10"
+                    }
+                ],
+                last_updated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('content').doc('daily_motivation').set(motivationData);
+                updateStatus('✅ Daily motivation populated successfully!');
+            } catch (error) {
+                updateStatus('❌ Error populating daily motivation: ' + error.message);
+            }
+        }
+
+        async function populateHashtags() {
+            updateStatus('Populating hashtags...');
+            
+            const hashtags = [
+                { tag: 'भूमिअधिकार', count: 0, category: 'land_rights' },
+                { tag: 'किसानन्याय', count: 0, category: 'farmer_justice' },
+                { tag: 'पट्टावितरण', count: 0, category: 'patta_distribution' },
+                { tag: 'तेलंगानाकिसान', count: 0, category: 'telangana_farmers' },
+                { tag: 'भूमिसंघर्ष', count: 0, category: 'land_struggle' },
+                { tag: 'न्यायालयीजीत', count: 0, category: 'court_victory' },
+                { tag: 'सामुदायिकशक्ति', count: 0, category: 'community_power' },
+                { tag: 'कृषिनीति', count: 0, category: 'agriculture_policy' },
+                { tag: 'ग्रामीणविकास', count: 0, category: 'rural_development' },
+                { tag: 'सामाजिकन्याय', count: 0, category: 'social_justice' }
+            ];
+
+            try {
+                const batch = db.batch();
+                hashtags.forEach((hashtag, index) => {
+                    const ref = db.collection('hashtags').doc(`hashtag_${index + 1}`);
+                    batch.set(ref, {
+                        ...hashtag,
+                        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+                        updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                await batch.commit();
+                updateStatus('✅ Hashtags populated successfully!');
+            } catch (error) {
+                updateStatus('❌ Error populating hashtags: ' + error.message);
+            }
+        }
+
+        async function populateAnalytics() {
+            updateStatus('Populating analytics...');
+            
+            const analyticsData = {
+                total_users: 0,
+                total_posts: 0,
+                total_stories: 0,
+                total_comments: 0,
+                total_likes: 0,
+                active_users_today: 0,
+                active_users_week: 0,
+                active_users_month: 0,
+                last_updated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('analytics').doc('global_stats').set(analyticsData);
+                updateStatus('✅ Analytics populated successfully!');
+            } catch (error) {
+                updateStatus('❌ Error populating analytics: ' + error.message);
+            }
+        }
+
+        async function populateAllData() {
+            updateStatus('Starting data population...');
+            
+            try {
+                await populateDailyMotivation();
+                await populateHashtags();
+                await populateAnalytics();
+                updateStatus('🎉 All data populated successfully!');
+            } catch (error) {
+                updateStatus('❌ Error during population: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+        (resource.data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership']);
+      allow read: if request.auth != null; // Allow authenticated users to read other user profiles for network features
+    }
+    
+    // User registry for quick lookups - MUST allow unauthenticated read for login check
+    match /user_registry/{phoneNumber} {
+      allow read: if true; // Allow unauthenticated read for login verification
+      allow write: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+    
+    // Land records - users can manage their own records
+    match /land_records/{recordId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow read: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    }
+    
+    // Legal cases - users can manage their own cases
+    match /legal_cases/{caseId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.clientId;
+      allow read: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    }
+    
+    // Emergency incidents - users can create and read relevant incidents
+    match /emergency_incidents/{incidentId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update: if request.auth != null && 
+        (request.auth.uid == resource.data.reporterId || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    }
+    
+    // Emergency broadcasts - only coordinators can create
+    match /emergency_broadcasts/{broadcastId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
+    }
+    
+    // Emergency contacts - read-only for users
+    match /emergency_contacts/{contactId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+    
+    // Lawyers directory - read-only for users
+    match /lawyers/{lawyerId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+    
+    // Feed posts - users can read all, coordinators can write
+    match /feed_posts/{postId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
+    }
+    
+    // Messages and conversations
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid in resource.data.participantIds;
+    }
+    
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Posts collection - social feed posts
+    match /posts/{postId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+    }
+    
+    // Post likes
+    match /post_likes/{likeId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Post comments
+    match /post_comments/{commentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+    }
+    
+    // Stories collection - 24-hour temporary content
+    match /stories/{storyId} {
+      allow read: if request.auth != null && 
+        resource.data.isActive == true && 
+        resource.data.expiresAt > request.time;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.authorId;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.authorId ||
+        // Allow any authenticated user to update view counts and reactions
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'reactions']))
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+    }
+    
+    // Story views
+    match /story_views/{viewId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // AI interactions - users can create their own
+    match /ai_interactions/{interactionId} {
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Content collection - daily motivation and other content
+    match /content/{contentId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+
+    // Drafts collection - users can manage their own drafts
+    match /drafts/{draftId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.authorId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+    }
+
+    // Analytics collection - users can read their own analytics
+    match /analytics/{analyticsId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if request.auth != null;
+    }
+
+    // User analytics collection
+    match /user_analytics/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null;
+    }
+
+    // Notifications collection - users can read their own notifications
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Hashtags collection - read access for all authenticated users
+    match /hashtags/{hashtagId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // Reports collection - for content moderation
+    match /reports/{reportId} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.reportedBy ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator']);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.reportedBy;
+      allow update: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
+    }
+
+    // Campaign collection - for movement campaigns
+    match /campaigns/{campaignId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
+    }
+
+    // Geographic hierarchy collections
+    match /states/{stateId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['state_coordinator', 'national_leadership'];
+    }
+
+    match /districts/{districtId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+
+    match /mandals/{mandalId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+
+    match /villages/{villageId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership'];
+    }
+  }
+}

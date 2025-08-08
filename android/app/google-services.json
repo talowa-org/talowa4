@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "132354679195",
+    "project_id": "talowa",
+    "storage_bucket": "talowa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132354679195:android:0d857b6e7f33760683013e",
+        "android_client_info": {
+          "package_name": "com.example.talowa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEZwrO7edBTlfbGtKyH9Z0M7DcXthDZ6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
