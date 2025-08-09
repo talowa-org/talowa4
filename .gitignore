@@ -51,3 +51,8 @@ functions/.env.*
 # Node modules (avoid pushing heavy deps)
 functions/node_modules/
 
+
+
+# Root env files (secrets)
+.env
+.env.*
