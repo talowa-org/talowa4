@@ -69,6 +69,35 @@ jobs:
           echo "HTTP status: $http_code"
           echo "http_status=$http_code" >> "$GITHUB_OUTPUT"
 
+
+          # Write a short GitHub Summary
+          {
+            echo "### Remote Config Publish"
+            echo
+            echo "- Project: $PROJECT_ID"
+            echo "- HTTP status: $http_code"
+            echo "- ETag used: $etag"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Fail early if the response body includes a Firebase/Google API error object
+          if grep -q '"error"' /tmp/body.json; then
+            echo "API error object detected in response body:" >&2
+            python3 - <<'PY'
+            import json, sys
+            try:
+                with open('/tmp/body.json', 'r', encoding='utf-8') as f:
+                    d = json.load(f)
+                e = d.get('error', {}) or {}
+                print(f"Error code: {e.get('code')}")
+                print(f"Status: {e.get('status')}")
+                print(f"Message: {e.get('message')}")
+            except Exception as ex:
+                print("Could not parse JSON error:", ex)
+            PY
+            echo "Remote Config publish failed due to API error; see details above." >&2
+            exit 1
+          fi
+
           # Consider any 2xx status a success, and warn if ETag is missing
           if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
             if grep -qi "etag:" /tmp/headers.txt || grep -qi '"etag"' /tmp/body.json; then
