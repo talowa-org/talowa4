@@ -49,11 +49,26 @@ jobs:
             etag=$(grep -o '"etag"[^"]*"[^"]*"' /tmp/get_body.json | sed 's/.*"etag"[^"]*"\([^"]*\)".*/\1/' || true)
           fi
           if [[ -z "${etag:-}" ]]; then
-            echo "Could not obtain ETag from GET; aborting to avoid overwriting concurrent changes." >&2
-            exit 1
+            echo "ETag not found in GET response; trying HEAD request for headers only..." >&2
+            curl -sS -I \
+              -H "Authorization: Bearer $ACCESS_TOKEN" \
+              "https://firebaseremoteconfig.googleapis.com/v1/projects/$PROJECT_ID/remoteConfig" \
+              -D /tmp/get_headers_head.txt -o /dev/null || true
+            echo "HEAD headers:" && head -n 25 /tmp/get_headers_head.txt || true
+            etag=$(grep -i '^etag:' /tmp/get_headers_head.txt | awk '{print $2}' | tr -d '\r')
           fi
+
+          if [[ -z "${etag:-}" ]]; then
+            echo "Warning: Could not obtain ETag via GET/HEAD; falling back to If-Match: * (unsafe overwrite)." >&2
+            etag="*"
+            fallback_etag="true"
+          else
+            fallback_etag="false"
+          fi
+
           echo "Using ETag: $etag"
           echo "etag=$etag" >> "$GITHUB_OUTPUT"
+          echo "fallback_etag=$fallback_etag" >> "$GITHUB_OUTPUT"
 
           # 2) PUT new template with If-Match: <etag>
           http_code=$(curl -sS -w "%{http_code}" -X PUT \
