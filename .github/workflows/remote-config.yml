@@ -32,22 +32,26 @@ jobs:
           set -euo pipefail
           echo "Publishing Remote Config to project: $PROJECT_ID"
           # Use If-Match: * to bypass ETag precondition
-          curl -sS -X PUT \
+          http_code=$(curl -sS -w "%{http_code}" -X PUT \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "Content-Type: application/json; UTF-8" \
+            -H "Content-Type: application/json; charset=UTF-8" \
             -H "If-Match: *" \
             --data-binary @remoteconfig/rc.template.json \
             "https://firebaseremoteconfig.googleapis.com/v1/projects/$PROJECT_ID/remoteConfig" \
-            -D /tmp/headers.txt -o /tmp/body.json
+            -D /tmp/headers.txt -o /tmp/body.json)
 
           echo "Response headers:" && cat /tmp/headers.txt || true
           echo "Response body:" && cat /tmp/body.json || true
+          echo "HTTP status: $http_code"
 
-          # Basic success check: look for ETag header
-          if grep -i "etag:" /tmp/headers.txt >/dev/null; then
-            echo "Remote Config publish completed."
+          # Consider any 2xx status a success, and warn if ETag is missing
+          if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
+            if grep -qi "etag:" /tmp/headers.txt || grep -qi '"etag"' /tmp/body.json; then
+              echo "Remote Config publish completed (ETag present)."
+            else
+              echo "Remote Config publish completed, but ETag not found in headers/body." >&2
+            fi
           else
-            echo "Remote Config publish may have failed; see logs above." >&2
+            echo "Remote Config publish failed with HTTP $http_code; see logs above." >&2
             exit 1
           fi
-
