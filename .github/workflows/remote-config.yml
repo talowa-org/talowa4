@@ -49,26 +49,11 @@ jobs:
             etag=$(grep -o '"etag"[^"]*"[^"]*"' /tmp/get_body.json | sed 's/.*"etag"[^"]*"\([^"]*\)".*/\1/' || true)
           fi
           if [[ -z "${etag:-}" ]]; then
-            echo "ETag not found in GET response; trying HEAD request for headers only..." >&2
-            curl -sS -I \
-              -H "Authorization: Bearer $ACCESS_TOKEN" \
-              "https://firebaseremoteconfig.googleapis.com/v1/projects/$PROJECT_ID/remoteConfig" \
-              -D /tmp/get_headers_head.txt -o /dev/null || true
-            echo "HEAD headers:" && head -n 25 /tmp/get_headers_head.txt || true
-            etag=$(grep -i '^etag:' /tmp/get_headers_head.txt | awk '{print $2}' | tr -d '\r')
+            echo "Could not obtain ETag from GET; aborting to avoid overwriting concurrent changes." >&2
+            exit 1
           fi
-
-          if [[ -z "${etag:-}" ]]; then
-            echo "Warning: Could not obtain ETag via GET/HEAD; falling back to If-Match: * (unsafe overwrite)." >&2
-            etag="*"
-            fallback_etag="true"
-          else
-            fallback_etag="false"
-          fi
-
           echo "Using ETag: $etag"
           echo "etag=$etag" >> "$GITHUB_OUTPUT"
-          echo "fallback_etag=$fallback_etag" >> "$GITHUB_OUTPUT"
 
           # 2) PUT new template with If-Match: <etag>
           http_code=$(curl -sS -w "%{http_code}" -X PUT \
@@ -84,35 +69,6 @@ jobs:
           echo "HTTP status: $http_code"
           echo "http_status=$http_code" >> "$GITHUB_OUTPUT"
 
-
-          # Write a short GitHub Summary
-          {
-            echo "### Remote Config Publish"
-            echo
-            echo "- Project: $PROJECT_ID"
-            echo "- HTTP status: $http_code"
-            echo "- ETag used: $etag"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          # Fail early if the response body includes a Firebase/Google API error object
-          if grep -q '"error"' /tmp/body.json; then
-            echo "API error object detected in response body:" >&2
-            python3 - <<'PY'
-            import json, sys
-            try:
-                with open('/tmp/body.json', 'r', encoding='utf-8') as f:
-                    d = json.load(f)
-                e = d.get('error', {}) or {}
-                print(f"Error code: {e.get('code')}")
-                print(f"Status: {e.get('status')}")
-                print(f"Message: {e.get('message')}")
-            except Exception as ex:
-                print("Could not parse JSON error:", ex)
-            PY
-            echo "Remote Config publish failed due to API error; see details above." >&2
-            exit 1
-          fi
-
           # Consider any 2xx status a success, and warn if ETag is missing
           if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
             if grep -qi "etag:" /tmp/headers.txt || grep -qi '"etag"' /tmp/body.json; then
@@ -124,6 +80,14 @@ jobs:
             echo "Remote Config publish failed with HTTP $http_code; see logs above." >&2
             exit 1
           fi
+
+          # Additional failure check: if response body contains a top-level error object, fail the job
+          if grep -q '"error"[[:space:]]*{' /tmp/body.json; then
+            echo "API returned an error object, failing the job." >&2
+            cat /tmp/body.json >&2 || true
+            exit 1
+          fi
+
 
           # 3) Save artifacts for troubleshooting
           echo "$etag" > /tmp/etag.txt
@@ -138,6 +102,16 @@ jobs:
             /tmp/get_headers.txt
             /tmp/get_body.json
             /tmp/etag.txt
+
+      - name: Job summary
+        run: |
+          {
+            echo "### Remote Config Publish"
+            echo
+            echo "- HTTP status: ${{ steps.publish.outputs.http_status }}"
+            echo "- ETag: ${{ steps.publish.outputs.etag }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
 
       - name: Comment summary on commit
         if: github.event_name == 'push'
