@@ -1,0 +1,53 @@
+name: Remote Config Publish
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'remoteconfig/rc.template.json'
+      - '.github/workflows/remote-config.yml'
+
+jobs:
+  publish-remote-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: 'access_token'
+
+      - name: Publish Remote Config via REST
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          PROJECT_ID: talowa
+        run: |
+          set -euo pipefail
+          echo "Publishing Remote Config to project: $PROJECT_ID"
+          # Use If-Match: * to bypass ETag precondition
+          curl -sS -X PUT \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Content-Type: application/json; UTF-8" \
+            -H "If-Match: *" \
+            --data-binary @remoteconfig/rc.template.json \
+            "https://firebaseremoteconfig.googleapis.com/v1/projects/$PROJECT_ID/remoteConfig" \
+            -D /tmp/headers.txt -o /tmp/body.json
+
+          echo "Response headers:" && cat /tmp/headers.txt || true
+          echo "Response body:" && cat /tmp/body.json || true
+
+          # Basic success check: look for ETag header
+          if grep -i "etag:" /tmp/headers.txt >/dev/null; then
+            echo "Remote Config publish completed."
+          else
+            echo "Remote Config publish may have failed; see logs above." >&2
+            exit 1
+          fi
+
