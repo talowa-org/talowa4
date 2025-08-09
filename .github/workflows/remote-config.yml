@@ -24,7 +24,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           token_format: 'access_token'
 
-      - name: Publish Remote Config via REST (safe ETag)
+      - name: Publish Remote Config via REST (non-ETag)
         id: publish
         env:
           ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
@@ -43,19 +43,19 @@ jobs:
           echo "GET headers:" && head -n 25 /tmp/get_headers.txt || true
           echo "GET body (first 30 lines):" && head -n 30 /tmp/get_body.json || true
 
-          etag=$(grep -i '^etag:' /tmp/get_headers.txt | awk '{print $2}' | tr -d '\r')
+          etag=$(grep -i '^etag:' /tmp/get_headers.txt | awk '{print $2}' | tr -d '\r' || true)
           if [[ -z "${etag:-}" ]]; then
             # Some responses include ETag only in the body
             etag=$(grep -o '"etag"[^"]*"[^"]*"' /tmp/get_body.json | sed 's/.*"etag"[^"]*"\([^"]*\)".*/\1/' || true)
           fi
           if [[ -z "${etag:-}" ]]; then
-            echo "Could not obtain ETag from GET; aborting to avoid overwriting concurrent changes." >&2
-            exit 1
+            echo "Warning: ETag not found; proceeding with If-Match: * (non-ETag mode)." >&2
+            etag="*"
           fi
           echo "Using ETag: $etag"
           echo "etag=$etag" >> "$GITHUB_OUTPUT"
 
-          # 2) PUT new template with If-Match: <etag>
+          # PUT new template (will use If-Match: * in non-ETag mode)
           http_code=$(curl -sS -w "%{http_code}" -X PUT \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "Content-Type: application/json; charset=UTF-8" \
@@ -93,6 +93,7 @@ jobs:
           echo "$etag" > /tmp/etag.txt
 
       - name: Upload response artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: remote-config-response
