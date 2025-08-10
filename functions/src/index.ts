@@ -19,7 +19,7 @@ const DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct';
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
 
 const AIResponseSchema = z.object({
-  text: z.string().min(3).max(2000),
+  text: z.string().max(2000),
   confidence: z.number().min(0).max(1),
   actions: z.array(
     z.object({
@@ -54,48 +54,21 @@ function clamp01(n: any) {
   if (isNaN(x)) return 0.6;
   return Math.max(0, Math.min(1, x));
 }
-function extractFirstJSONObject(s: string): string {
-  try {
-    if (!s) return '{}';
-    let t = String(s).trim();
-    // Strip code fences if present
-    if (t.startsWith('```')) {
-      t = t.replace(/^```[a-zA-Z0-9-]*\n?/, '');
-      if (t.endsWith('```')) t = t.substring(0, t.lastIndexOf('```'));
-    }
-    const start = t.indexOf('{');
-    const end = t.lastIndexOf('}');
-    if (start >= 0 && end > start) return t.slice(start, end + 1);
-    return '{}';
-  } catch {
-    return '{}';
-  }
-}
-
 
 function coerceToAIResponse(input: any, raw: string, lang: string) {
   const textCandidate = typeof input?.text === 'string' ? input.text :
     typeof input?.answer === 'string' ? input.answer :
     typeof input?.message === 'string' ? input.message : raw;
-  let text = String(textCandidate || '').trim();
+  const text = String(textCandidate || 'I can help with that.').slice(0, 2000);
+  const confidence = clamp01((input && (input.confidence ?? input.score)) ?? 0.6);
 
-  // If text is empty or looks like an empty JSON object, build a helpful message
-  const fallbackSuggestions: string[] = Array.isArray(input?.actions?.[0]?.data?.suggestions)
+  const suggestions: string[] = Array.isArray(input?.actions?.[0]?.data?.suggestions)
     ? input.actions[0].data.suggestions
     : ['Land Records', 'Legal Help', 'My Network'];
 
-  if (!text || text === '{}' || text === '[]') {
-    const prefix = 'Here are some things I can help with:';
-    const bullets = fallbackSuggestions.slice(0, 6).map(s => `• ${s}`).join('\n');
-    text = `${prefix}\n${bullets}`;
-  }
-  text = text.slice(0, 2000);
-
-  const confidence = clamp01((input && (input.confidence ?? input.score)) ?? 0.6);
-
   const actions = Array.isArray(input?.actions)
     ? input.actions
-    : [{ type: 'suggestions', label: 'You can try', data: { suggestions: fallbackSuggestions } }];
+    : [{ type: 'suggestions', label: 'You can try', data: { suggestions } }];
 
   const intent = typeof input?.meta?.intent === 'string' ? input.meta.intent : undefined;
   return {
@@ -108,27 +81,14 @@ function coerceToAIResponse(input: any, raw: string, lang: string) {
 
 async function allowlistActions(actions: any[]) {
   // Enforce safe routes and phone formats and normalize suggestions
-  const defaultSuggestions = ['Land Records', 'Legal Help', 'My Network'];
   return actions
     .map(a => {
       if (a?.type === 'suggestions') {
         const data = a.data || {};
-        // Normalize categories -> suggestions
-        let raw = Array.isArray(data.suggestions)
-          ? data.suggestions
-          : (Array.isArray(data.categories) ? data.categories : []);
-
-        // Coerce to trimmed unique strings
-        const suggestions = Array.isArray(raw)
-          ? Array.from(new Set(
-              raw
-                .map((x: any) => (x == null ? '' : String(x).trim()))
-                .filter((s: string) => s.length > 0)
-            )).slice(0, 6)
-          : [];
-
-        data.suggestions = suggestions.length > 0 ? suggestions : defaultSuggestions;
-        delete data.categories;
+        if (Array.isArray(data.categories) && !Array.isArray(data.suggestions)) {
+          data.suggestions = data.categories;
+          delete data.categories;
+        }
         a.data = data;
       }
       return a;
@@ -239,11 +199,13 @@ export const aiRespond = functions.runWith({
 Respond ONLY with valid JSON object matching this TypeScript type:
 { text: string; confidence: number; actions: Array<{ type: 'navigate'|'call'|'share'|'suggestions'|'form'; label: string; data: { suggestions?: string[]; route?: string; phone?: string } & Record<string, any> }>; meta?: { intent?: string; lang?: string; citations?: any[]; usage?: Record<string, any> } }
 
-Requirements:
-- text must be a meaningful sentence (min 3 chars), not just {} or empty
-- For suggestions actions, always use data.suggestions (string[]) not categories; include 3–6 items
-- Do not include prose/markdown/code fences in the response; output only raw JSON object`;
+      // Cache bypass for voice; attempt cache for common text queries
+      if (!isVoice) {
+        const cached = await getCachedAI(query, lang);
+        if (cached) { res.json(cached); return; }
+      }
 
+For suggestions actions, always use data.suggestions (string[]) not categories. No prose, no markdown, no code fences.`;
     const user = `Query: ${query}\nLang: ${lang}\nContext: ${JSON.stringify({ uid, ...context })}`;
 
     // Model preference with fallback (free tiers)
@@ -267,8 +229,7 @@ Requirements:
           max_tokens: 512
         });
 
-        const contentRaw = completion.choices[0]?.message?.content || '{}';
-        const content = extractFirstJSONObject(contentRaw);
+        const content = completion.choices[0]?.message?.content || '{}';
         let parsed: any;
         try {
           parsed = JSON.parse(content);

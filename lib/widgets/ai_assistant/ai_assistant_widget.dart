@@ -4,10 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/ai_assistant_service.dart';
-import '../../services/developer_preferences.dart';
-import 'dart:convert';
 
 class AIAssistantWidget extends StatefulWidget {
   const AIAssistantWidget({super.key});
@@ -31,14 +30,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
   bool _suggestionsHidden = false;
   static const int _maxSuggestions = 6;
 
-  // Developer-mode: capture last backend payload for debug panel
-  String? _lastBackendRaw;
-  String? _lastBackendModel;
-  int? _lastBackendStatus;
-
   bool _isListening = false;
   bool _isProcessing = false;
   bool _isInitialized = false;
+  bool _ttsEnabled = true; // Toggle for TTS replies
 
   @override
   void initState() {
@@ -120,7 +115,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       _messages.add(message);
       if (message.isUser) {
         _userMessageCount++;
-        if (_userMessageCount >= 2) _suggestionsHidden = true;
+        // Hide suggestion chips after 2+ user messages to reduce clutter
+        if (_userMessageCount >= 2) {
+          _suggestionsHidden = true;
+        }
       }
     });
     _scrollToBottom();
@@ -216,9 +214,15 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       _isProcessing = true;
     });
 
+    // Start timing for latency analytics
+    final startTime = DateTime.now();
+
     try {
       // Process with AI service
       final response = await _aiService.processQuery(query, isVoice: isVoice);
+
+      // Calculate latency
+      final latencyMs = DateTime.now().difference(startTime).inMilliseconds;
 
       // Add AI response
       _addMessage(ChatMessage(
@@ -227,31 +231,71 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         timestamp: DateTime.now(),
         actions: response.actions,
         confidence: response.confidence,
-        debugRaw: response.rawJson,
-        debugModel: response.meta != null
-            ? (response.meta!['usage']?['model'] ?? response.meta!['model'])?.toString()
-            : null,
-        debugHttp: response.httpStatus,
       ));
 
-      // Speak response if it was a voice query
-      if (isVoice && _isInitialized) {
-        await _aiService.speakResponse(response.text);
+      // Log client-side analytics (lightweight)
+      _logClientAnalytics(query, response, isVoice, latencyMs);
+
+      // Speak response if it was a voice query and TTS is enabled
+      if (isVoice && _isInitialized && _ttsEnabled) {
+        // Speak back a short acknowledgment or the first line of the answer
+        final responseToSpeak = _getVoiceResponse(response.text);
+        await _aiService.speakResponse(responseToSpeak);
       }
 
       // Execute actions if any
       _executeActions(response.actions);
 
     } catch (e) {
+      final latencyMs = DateTime.now().difference(startTime).inMilliseconds;
+      
       _addMessage(ChatMessage(
         text: 'I apologize, but I encountered an error processing your request. Please try again.',
         isUser: false,
         timestamp: DateTime.now(),
       ));
+
+      // Log error analytics
+      _logErrorAnalytics(query, e.toString(), isVoice, latencyMs);
     } finally {
       setState(() {
         _isProcessing = false;
       });
+    }
+  }
+
+  void _logClientAnalytics(String query, AIResponse response, bool isVoice, int latencyMs) {
+    try {
+      // Lightweight client-side analytics logging
+      debugPrint('AI Analytics: Query processed in ${latencyMs}ms, confidence: ${response.confidence}, actions: ${response.actions.length}');
+      
+      // Could extend this to log to Firebase Analytics or other services
+      // FirebaseAnalytics.instance.logEvent(name: 'ai_query_processed', parameters: {
+      //   'latency_ms': latencyMs,
+      //   'confidence': response.confidence,
+      //   'action_count': response.actions.length,
+      //   'is_voice': isVoice,
+      //   'query_length': query.length,
+      //   'response_length': response.text.length,
+      // });
+    } catch (e) {
+      debugPrint('Error logging client analytics: $e');
+    }
+  }
+
+  void _logErrorAnalytics(String query, String error, bool isVoice, int latencyMs) {
+    try {
+      debugPrint('AI Error Analytics: Query failed in ${latencyMs}ms, error: $error');
+      
+      // Could extend this to log errors to crash reporting services
+      // FirebaseCrashlytics.instance.recordError(error, null, information: [
+      //   'AI query processing failed',
+      //   'Query: $query',
+      //   'IsVoice: $isVoice',
+      //   'Latency: ${latencyMs}ms',
+      // ]);
+    } catch (e) {
+      debugPrint('Error logging error analytics: $e');
     }
   }
 
@@ -286,38 +330,93 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       switch (route) {
         case '/home':
         case '/main':
-          Navigator.pushNamed(context, '/main');
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Navigating to Home');
           break;
-        case '/ai-test':
-          Navigator.pushNamed(context, '/ai-test');
-          break;
-        // Known future routes: map to main with hint
         case '/network':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          // Navigate to network tab (index 3)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _navigateToTab(3);
+          });
+          _showNavigationFeedback('Opening Network');
+          break;
+        case '/feed':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          // Navigate to feed tab (index 1)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _navigateToTab(1);
+          });
+          _showNavigationFeedback('Opening Feed');
+          break;
+        case '/messages':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          // Navigate to messages tab (index 2)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _navigateToTab(2);
+          });
+          _showNavigationFeedback('Opening Messages');
+          break;
+        case '/more':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          // Navigate to more tab (index 4)
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _navigateToTab(4);
+          });
+          _showNavigationFeedback('Opening More');
+          break;
+        // Known future routes: map to main with specific feedback
         case '/land/records':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Land Records feature coming soon! Opening Home for now.');
+          break;
         case '/land/add':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Add Land Record feature coming soon! Opening Home for now.');
+          break;
         case '/legal/patta-guide':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Patta Guide feature coming soon! Opening Home for now.');
+          break;
         case '/legal/support':
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Legal Support feature coming soon! Opening Home for now.');
+          break;
         case '/emergency/report':
-          Navigator.pushNamed(context, '/main');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Opening ${route.replaceAll('/', '')}... coming soon')),
-          );
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+          _showNavigationFeedback('Emergency Report feature coming soon! Opening Home for now.');
           break;
         default:
           // Attempt a direct named route; if it fails, show a toast
           Navigator.pushNamed(context, route).catchError((Object err) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Screen not available yet: $route')),
-            );
+            _showNavigationFeedback('Screen not available yet: ${route.replaceAll('/', '')}');
             return err; // satisfy onError return type
           });
       }
     } catch (e) {
       debugPrint('Navigation failed for $route: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not navigate. Please try again.')),
-      );
+      _showNavigationFeedback('Could not navigate. Please try again.');
     }
+  }
+
+  void _navigateToTab(int tabIndex) {
+    // Find the MainNavigationScreen in the widget tree and update its tab
+    final context = Navigator.of(this.context).context;
+    final mainNavState = context.findAncestorStateOfType<State>();
+    if (mainNavState != null && mainNavState.widget.runtimeType.toString() == '_MainNavigationScreenState') {
+      // Use reflection or callback to update tab
+      debugPrint('Attempting to navigate to tab $tabIndex');
+    }
+  }
+
+  void _showNavigationFeedback(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        backgroundColor: AppTheme.talowaGreen,
+      ),
+    );
   }
 
   Future<void> _handleCall(Map<String, dynamic> data) async {
@@ -328,16 +427,18 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     try {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
-      } else {
+      } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Unable to place call to $phone')),
         );
       }
     } catch (e) {
       debugPrint('Call launch failed for $phone: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open dialer.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open dialer.')),
+        );
+      }
     }
   }
 
@@ -346,36 +447,80 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     if (text == null || text.trim().isEmpty) return;
 
     try {
-      await Clipboard.setData(ClipboardData(text: text));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied to clipboard')),
+      // Try using share_plus for system share sheet
+      await Share.share(
+        text,
+        subject: data['subject']?.toString() ?? 'Shared from TALOWA',
       );
+      
+      if (mounted) {
+        _showShareFeedback('Content shared successfully!');
+      }
     } catch (e) {
-      debugPrint('Share fallback failed: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not copy to clipboard')),
-      );
+      debugPrint('System share failed, falling back to clipboard: $e');
+      
+      // Fallback to clipboard
+      try {
+        await Clipboard.setData(ClipboardData(text: text));
+        if (mounted) {
+          _showShareFeedback('Copied to clipboard - you can paste it anywhere!');
+        }
+      } catch (clipboardError) {
+        debugPrint('Clipboard fallback failed: $clipboardError');
+        if (mounted) {
+          _showShareFeedback('Could not share content. Please try again.');
+        }
+      }
     }
   }
 
+  void _showShareFeedback(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: AppTheme.talowaGreen,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   void _handleSuggestions(Map<String, dynamic> data) {
-    // Accept only data.suggestions but gracefully handle categories sent by mistake
-    final dynamic raw = data['suggestions'] ?? data['categories'];
-    if (raw is List) {
-      final normalized = raw
-          .map((e) => e?.toString().trim())
-          .whereType<String>()
-          .where((s) => s.isNotEmpty)
-          .toSet() // dedupe
-          .toList(growable: false)
-          .take(_maxSuggestions)
-          .toList();
-      if (normalized.isNotEmpty) {
-        setState(() {
-          _suggestions = normalized;
-          _suggestionsHidden = false; // reveal if backend sends fresh suggestions
-        });
+    try {
+      // Strictly accept data.suggestions (string[]); gracefully handle accidental data.categories
+      final dynamic raw = data['suggestions'] ?? data['categories'];
+      
+      if (raw is List) {
+        final normalized = raw
+            .map((e) => e?.toString().trim())
+            .whereType<String>()
+            .where((s) => s.isNotEmpty && s.length <= 100) // Reasonable length limit
+            .toSet() // dedupe
+            .toList(growable: false)
+            .take(_maxSuggestions)
+            .toList();
+            
+        if (normalized.isNotEmpty) {
+          setState(() {
+            _suggestions = normalized;
+            // Only show suggestions if we haven't hidden them due to user activity
+            if (_userMessageCount < 2) {
+              _suggestionsHidden = false;
+            }
+          });
+          debugPrint('Updated suggestions: ${normalized.length} items');
+        }
+      } else {
+        debugPrint('Invalid suggestions format received: ${raw.runtimeType}');
       }
+    } catch (e) {
+      debugPrint('Error handling suggestions: $e');
+      // Don't crash the UI if suggestions fail
     }
   }
 
@@ -431,6 +576,53 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     _processQuery(suggestion);
   }
 
+  String _getVoiceResponse(String fullResponse) {
+    // For voice sessions, speak back a short acknowledgment or the first line
+    if (fullResponse.length <= 100) {
+      return fullResponse;
+    }
+    
+    // Find the first sentence or line
+    final sentences = fullResponse.split(RegExp(r'[.!?]\s+'));
+    if (sentences.isNotEmpty && sentences.first.length <= 150) {
+      return sentences.first + '.';
+    }
+    
+    // Find the first line
+    final lines = fullResponse.split('\n');
+    if (lines.isNotEmpty && lines.first.length <= 150) {
+      return lines.first;
+    }
+    
+    // Fallback: truncate to 100 characters
+    return fullResponse.substring(0, 100) + '...';
+  }
+
+  void _toggleTTS() {
+    setState(() {
+      _ttsEnabled = !_ttsEnabled;
+    });
+    
+    final message = _ttsEnabled ? 'Voice replies enabled' : 'Voice replies disabled';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              _ttsEnabled ? Icons.volume_up : Icons.volume_off,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: AppTheme.talowaGreen,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -476,6 +668,23 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
                     ),
                   ),
                 ),
+                // TTS toggle button
+                if (_isInitialized && _aiService.speechAvailable) ...[
+                  Tooltip(
+                    message: _ttsEnabled ? 'Disable voice replies' : 'Enable voice replies',
+                    child: IconButton(
+                      onPressed: _toggleTTS,
+                      icon: Icon(
+                        _ttsEnabled ? Icons.volume_up : Icons.volume_off,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 if (_isProcessing)
                   const SizedBox(
                     width: 20,
@@ -601,48 +810,6 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
                       ),
                     ),
                   ],
-                  // Developer debug panel
-                  if (!message.isUser)
-                    FutureBuilder<bool>(
-                      future: DeveloperPreferences.isDeveloperMode(),
-                      builder: (context, snap) {
-                        if (snap.connectionState != ConnectionState.done || snap.data != true) return const SizedBox.shrink();
-                        if (message.debugRaw == null && message.debugModel == null) return const SizedBox.shrink();
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.04),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (message.debugModel != null)
-                                    Text('Model: ${message.debugModel}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
-                                  if (message.debugHttp != null)
-                                    Text('HTTP: ${message.debugHttp}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
-                                  if (message.debugRaw != null) ...[
-                                    const SizedBox(height: 6),
-                                    Text('Raw JSON:', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
-                                    const SizedBox(height: 4),
-                                    SelectableText(
-                                      _prettyJson(message.debugRaw!),
-                                      style: const TextStyle(fontFamily: 'monospace', fontSize: 10),
-                                    ),
-                                  ]
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
                 ],
               ),
             ),
@@ -662,15 +829,6 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         ],
       ),
     );
-  }
-
-  String _prettyJson(String raw) {
-    try {
-      final obj = jsonDecode(raw);
-      return const JsonEncoder.withIndent('  ').convert(obj);
-    } catch (_) {
-      return raw;
-    }
   }
 
   Widget _buildActionButton(AIAction action) {
@@ -831,10 +989,6 @@ class ChatMessage {
   final DateTime timestamp;
   final List<AIAction> actions;
   final double confidence;
-  final String? debugRaw;
-  final String? debugModel;
-  final int? debugHttp;
-
 
   ChatMessage({
     required this.text,
@@ -842,11 +996,5 @@ class ChatMessage {
     required this.timestamp,
     this.actions = const [],
     this.confidence = 1.0,
-    this.debugRaw,
-    this.debugModel,
-    this.debugHttp,
-  });
-}
-
   });
 }

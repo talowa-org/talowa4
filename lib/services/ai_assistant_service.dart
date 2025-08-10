@@ -53,17 +53,11 @@ class AIResponse {
   final String text;
   final List<AIAction> actions;
   final double confidence;
-  final Map<String, dynamic>? meta; // optional backend metadata
-  final String? rawJson; // raw backend payload (for developer mode)
-  final int? httpStatus; // backend HTTP status (for developer mode)
 
   AIResponse({
     required this.text,
     required this.actions,
     required this.confidence,
-    this.meta,
-    this.rawJson,
-    this.httpStatus,
   });
 }
 
@@ -282,9 +276,6 @@ class AIAssistantService {
       text: json['text'] ?? '',
       actions: actions,
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,
-      meta: (json['meta'] as Map<String, dynamic>?),
-      rawJson: jsonEncode(json),
-      httpStatus: 200,
     );
   }
 
@@ -766,6 +757,13 @@ class AIAssistantService {
 
   Future<void> _logInteraction(String query, AIResponse response, bool isVoice) async {
     try {
+      // Extract action types from response for analytics
+      final actionTypes = response.actions.map((action) => action.type.toString()).toList();
+      final actionCounts = <String, int>{};
+      for (final actionType in actionTypes) {
+        actionCounts[actionType] = (actionCounts[actionType] ?? 0) + 1;
+      }
+
       await _firestore.collection('ai_interactions').add({
         'userId': _currentUser?.id ?? 'anonymous',
         'query': query,
@@ -773,6 +771,14 @@ class AIAssistantService {
         'confidence': response.confidence,
         'isVoice': isVoice,
         'timestamp': FieldValue.serverTimestamp(),
+        // New analytics fields
+        'actionTypes': actionTypes,
+        'actionCounts': actionCounts,
+        'responseLength': response.text.length,
+        'queryLength': query.length,
+        'hasActions': response.actions.isNotEmpty,
+        'userRole': _currentUser?.role ?? 'unknown',
+        'userLocation': _currentUser?.address.state ?? 'unknown',
       });
     } catch (e) {
       debugPrint('Error logging interaction: $e');
