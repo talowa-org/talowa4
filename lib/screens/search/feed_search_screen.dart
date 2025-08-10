@@ -7,7 +7,6 @@ import '../../models/social_feed/index.dart';
 import '../../services/social_feed/index.dart';
 import '../../widgets/feed/post_widget.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class FeedSearchScreen extends StatefulWidget {
   final String? initialQuery;

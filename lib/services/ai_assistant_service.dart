@@ -13,7 +13,6 @@ import 'dart:convert';
 import 'remote_config_service.dart';
 import '../models/user_model.dart';
 import '../core/constants/app_constants.dart';
-import 'remote_config_service.dart';
 import 'universal_voice_service.dart';
 
 // Data models for AI Assistant
@@ -54,11 +53,17 @@ class AIResponse {
   final String text;
   final List<AIAction> actions;
   final double confidence;
+  final Map<String, dynamic>? meta; // optional backend metadata
+  final String? rawJson; // raw backend payload (for developer mode)
+  final int? httpStatus; // backend HTTP status (for developer mode)
 
   AIResponse({
     required this.text,
     required this.actions,
     required this.confidence,
+    this.meta,
+    this.rawJson,
+    this.httpStatus,
   });
 }
 
@@ -277,6 +282,9 @@ class AIAssistantService {
       text: json['text'] ?? '',
       actions: actions,
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,
+      meta: (json['meta'] as Map<String, dynamic>?),
+      rawJson: jsonEncode(json),
+      httpStatus: 200,
     );
   }
 

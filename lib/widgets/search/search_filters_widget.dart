@@ -9,10 +9,10 @@ class SearchFiltersWidget extends StatefulWidget {
   final Function(SearchFilters) onFiltersChanged;
 
   const SearchFiltersWidget({
-    Key? key,
+    super.key,
     required this.filters,
     required this.onFiltersChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchFiltersWidget> createState() => _SearchFiltersWidgetState();
@@ -364,10 +364,10 @@ class AdvancedSearchFiltersDialog extends StatefulWidget {
   final Function(SearchFilters) onFiltersApplied;
 
   const AdvancedSearchFiltersDialog({
-    Key? key,
+    super.key,
     required this.initialFilters,
     required this.onFiltersApplied,
-  }) : super(key: key);
+  });
 
   @override
   State<AdvancedSearchFiltersDialog> createState() => _AdvancedSearchFiltersDialogState();

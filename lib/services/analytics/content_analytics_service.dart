@@ -71,7 +71,7 @@ class ContentAnalyticsService {
         reachMetrics: results[1] as ReachMetrics,
         impressionMetrics: results[2] as ImpressionMetrics,
         demographics: results[3] as DemographicsData,
-        performanceScore: results[4] as double,
+        performanceScore: results[4],
         dateRange: dateRange,
         generatedAt: DateTime.now(),
       );
@@ -99,10 +99,10 @@ class ContentAnalyticsService {
       ]);
 
       return ContentEffectivenessInsights(
-        topPerformingContent: results[0] as List<PostPerformance>,
-        contentTrends: results[1] as List<ContentTrend>,
-        optimalPostingTimes: results[2] as List<OptimalTime>,
-        recommendations: results[3] as List<ContentRecommendation>,
+        topPerformingContent: results[0],
+        contentTrends: results[1],
+        optimalPostingTimes: results[2],
+        recommendations: results[3],
         dateRange: dateRange,
         generatedAt: DateTime.now(),
       );
@@ -202,7 +202,7 @@ class ContentAnalyticsService {
         engagement: results[0] as RealTimeEngagement,
         userActivity: results[1] as RealTimeUserActivity,
         contentMetrics: results[2] as RealTimeContentMetrics,
-        trendingTopics: results[3] as List<TrendingTopic>,
+        trendingTopics: results[3],
         lastUpdated: now,
       );
     } catch (e) {

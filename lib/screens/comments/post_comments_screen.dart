@@ -10,8 +10,6 @@ import '../../widgets/comments/comment_widget.dart';
 import '../../widgets/comments/comment_input_widget.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
-import '../../widgets/comments/comment_widget.dart';
-import '../../widgets/comments/comment_input_widget.dart';
 
 class PostCommentsScreen extends StatefulWidget {
   final PostModel post;

@@ -26,7 +26,7 @@ class PostWidget extends StatefulWidget {
   final bool enableInteractions;
   
   const PostWidget({
-    Key? key,
+    super.key,
     required this.post,
     this.onPostUpdated,
     this.onHashtagTapped,
@@ -34,7 +34,7 @@ class PostWidget extends StatefulWidget {
     this.onPostTapped,
     this.showFullContent = true,
     this.enableInteractions = true,
-  }) : super(key: key);
+  });
   
   @override
   State<PostWidget> createState() => _PostWidgetState();

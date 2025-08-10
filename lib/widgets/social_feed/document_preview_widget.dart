@@ -13,12 +13,12 @@ class DocumentPreviewWidget extends StatelessWidget {
   final int maxDocuments;
   
   const DocumentPreviewWidget({
-    Key? key,
+    super.key,
     required this.documentUrls,
     required this.postId,
     this.showDownloadButton = true,
     this.maxDocuments = 3,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class DocumentPreviewWidget extends StatelessWidget {
               padding: EdgeInsets.only(bottom: index < displayDocuments.length - 1 ? 8 : 0),
               child: _buildDocumentItem(context, documentUrl),
             );
-          }).toList(),
+          }),
           
           // Show more button
           if (hasMore)
@@ -408,11 +408,11 @@ class DocumentUploadPreview extends StatelessWidget {
   final bool showRemoveButton;
   
   const DocumentUploadPreview({
-    Key? key,
+    super.key,
     required this.documentPaths,
     this.onRemoveDocument,
     this.showRemoveButton = true,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -434,7 +434,7 @@ class DocumentUploadPreview extends StatelessWidget {
         ...documentPaths.map((documentPath) => Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: _buildDocumentUploadItem(context, documentPath),
-        )).toList(),
+        )),
       ],
     );
   }

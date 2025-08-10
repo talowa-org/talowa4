@@ -8,7 +8,7 @@ import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 
 class SyncSettingsScreen extends StatefulWidget {
-  const SyncSettingsScreen({Key? key}) : super(key: key);
+  const SyncSettingsScreen({super.key});
 
   @override
   State<SyncSettingsScreen> createState() => _SyncSettingsScreenState();

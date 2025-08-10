@@ -9,7 +9,7 @@ import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 
 class SafetyEducationScreen extends StatefulWidget {
-  const SafetyEducationScreen({Key? key}) : super(key: key);
+  const SafetyEducationScreen({super.key});
 
   @override
   State<SafetyEducationScreen> createState() => _SafetyEducationScreenState();

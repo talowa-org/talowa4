@@ -11,11 +11,11 @@ class GeographicScopeWidget extends StatelessWidget {
   final bool isCompact;
   
   const GeographicScopeWidget({
-    Key? key,
+    super.key,
     required this.targeting,
     this.showIcon = true,
     this.isCompact = true,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -104,10 +104,10 @@ class DetailedGeographicWidget extends StatelessWidget {
   final bool showHierarchy;
   
   const DetailedGeographicWidget({
-    Key? key,
+    super.key,
     required this.targeting,
     this.showHierarchy = true,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -170,7 +170,7 @@ class DetailedGeographicWidget extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ] else ...[
               // Simple list display
               Wrap(
@@ -283,11 +283,11 @@ class GeographicTargetingSelector extends StatefulWidget {
   final bool allowRadius;
   
   const GeographicTargetingSelector({
-    Key? key,
+    super.key,
     this.initialTargeting,
     required this.onTargetingChanged,
     this.allowRadius = false,
-  }) : super(key: key);
+  });
   
   @override
   State<GeographicTargetingSelector> createState() => _GeographicTargetingSelectorState();

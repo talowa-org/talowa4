@@ -164,17 +164,15 @@ class SyncConflictResolver {
       // For engagement conflicts, we typically merge the data
       final resolvedEngagement = await _mergeEngagementConflict(conflict);
       
-      if (resolvedEngagement != null) {
-        await _applyEngagementResolution(resolvedEngagement, conflict);
-        
-        return ConflictResolution(
-          isResolved: true,
-          resolvedData: resolvedEngagement,
-          conflict: conflict,
-          requiresUserInput: false,
-        );
-      }
-
+      await _applyEngagementResolution(resolvedEngagement, conflict);
+      
+      return ConflictResolution(
+        isResolved: true,
+        resolvedData: resolvedEngagement,
+        conflict: conflict,
+        requiresUserInput: false,
+      );
+    
       return ConflictResolution(
         isResolved: false,
         resolvedData: null,
@@ -534,9 +532,9 @@ class PostConflict extends SyncConflict {
   PostConflict({
     required this.localPost,
     required this.remotePost,
-    required ConflictType conflictType,
-    required DateTime detectedAt,
-  }) : super(conflictType: conflictType, detectedAt: detectedAt);
+    required super.conflictType,
+    required super.detectedAt,
+  });
 }
 
 class CommentConflict extends SyncConflict {
@@ -546,9 +544,9 @@ class CommentConflict extends SyncConflict {
   CommentConflict({
     required this.localComment,
     required this.remoteComment,
-    required ConflictType conflictType,
-    required DateTime detectedAt,
-  }) : super(conflictType: conflictType, detectedAt: detectedAt);
+    required super.conflictType,
+    required super.detectedAt,
+  });
 }
 
 class EngagementConflict extends SyncConflict {
@@ -560,9 +558,9 @@ class EngagementConflict extends SyncConflict {
     required this.localEngagement,
     required this.remoteEngagement,
     required this.engagementType,
-    required ConflictType conflictType,
-    required DateTime detectedAt,
-  }) : super(conflictType: conflictType, detectedAt: detectedAt);
+    required super.conflictType,
+    required super.detectedAt,
+  });
 }
 
 class ConflictResolution {

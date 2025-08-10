@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../services/messaging/simple_messaging_service.dart';
 import '../../services/auth_service.dart';

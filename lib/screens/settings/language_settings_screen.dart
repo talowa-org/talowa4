@@ -63,7 +63,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
                   },
                 ),
               );
-            }).toList(),
+            }),
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,

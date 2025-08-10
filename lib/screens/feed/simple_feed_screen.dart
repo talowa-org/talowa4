@@ -619,7 +619,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
                   // Filter implementation would go here
                 },
               );
-            }).toList(),
+            }),
           ],
         ),
         actions: [

@@ -12,7 +12,7 @@ import '../../widgets/social_feed/post_widget.dart';
 
 /// Screen for managing user's posts, drafts, and scheduled posts
 class PostManagementScreen extends StatefulWidget {
-  const PostManagementScreen({Key? key}) : super(key: key);
+  const PostManagementScreen({super.key});
   
   @override
   State<PostManagementScreen> createState() => _PostManagementScreenState();
@@ -661,7 +661,7 @@ class _PostManagementScreenState extends State<PostManagementScreen>
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

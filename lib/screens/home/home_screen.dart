@@ -270,8 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _testDataPopulation,
         backgroundColor: Colors.green,
-        child: const Icon(Icons.refresh, color: Colors.white),
         tooltip: 'Populate Missing Data',
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
   }

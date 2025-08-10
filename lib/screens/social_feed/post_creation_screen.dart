@@ -21,11 +21,11 @@ class PostCreationScreen extends StatefulWidget {
   final GeographicTargeting? initialTargeting;
   
   const PostCreationScreen({
-    Key? key,
+    super.key,
     this.editingPost,
     this.initialCategory,
     this.initialTargeting,
-  }) : super(key: key);
+  });
   
   @override
   State<PostCreationScreen> createState() => _PostCreationScreenState();
@@ -43,11 +43,11 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
   PostVisibility _selectedVisibility = PostVisibility.public;
   GeographicTargeting? _geographicTargeting;
   List<String> _hashtags = [];
-  List<MediaUploadResult> _uploadedMedia = [];
+  final List<MediaUploadResult> _uploadedMedia = [];
   
   // UI state
   bool _isLoading = false;
-  bool _isDraft = false;
+  final bool _isDraft = false;
   bool _showPreview = false;
   int _characterCount = 0;
   

@@ -226,7 +226,7 @@ class AppTheme {
         seedColor: emergencyRed,
         brightness: Brightness.light,
       ),
-      appBarTheme: lightTheme.appBarTheme?.copyWith(
+      appBarTheme: lightTheme.appBarTheme.copyWith(
         backgroundColor: emergencyRed,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -245,7 +245,7 @@ class AppTheme {
         seedColor: legalBlue,
         brightness: Brightness.light,
       ),
-      appBarTheme: lightTheme.appBarTheme?.copyWith(
+      appBarTheme: lightTheme.appBarTheme.copyWith(
         backgroundColor: legalBlue,
       ),
     );

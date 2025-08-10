@@ -8,10 +8,10 @@ import 'screens/auth/welcome_screen.dart';
 import 'screens/auth/new_login_screen.dart';
 import 'screens/auth/real_user_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
+import 'screens/dev/ai_test_screen.dart';
 import 'services/performance_monitor.dart';
 import 'services/localization_service.dart';
 import 'services/data_population_service.dart';
-import 'services/user_role_fix_service.dart';
 import 'services/remote_config_service.dart';
 import 'generated/l10n/app_localizations.dart';
 
@@ -67,6 +67,7 @@ class TalowaApp extends StatelessWidget {
         '/login': (context) => const NewLoginScreen(),
         '/register': (context) => const RealUserRegistrationScreen(),
         '/main': (context) => const MainNavigationScreen(),
+        '/ai-test': (context) => const AITestScreen(),
       },
     );
   }

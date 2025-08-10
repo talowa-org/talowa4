@@ -15,12 +15,12 @@ class PostCreationFAB extends StatelessWidget {
   final bool showQuickActions;
   
   const PostCreationFAB({
-    Key? key,
+    super.key,
     this.initialCategory,
     this.initialTargeting,
     this.onPostCreated,
     this.showQuickActions = true,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -225,11 +225,11 @@ class PostCreationSpeedDial extends StatefulWidget {
   final Function(PostModel)? onPostCreated;
   
   const PostCreationSpeedDial({
-    Key? key,
+    super.key,
     this.initialCategory,
     this.initialTargeting,
     this.onPostCreated,
-  }) : super(key: key);
+  });
   
   @override
   State<PostCreationSpeedDial> createState() => _PostCreationSpeedDialState();

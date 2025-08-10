@@ -12,7 +12,7 @@ class RemoteConfigService {
         minimumFetchInterval: const Duration(minutes: 5),
       ));
       await _rc!.setDefaults({
-        'aiBackendEnabled': false,
+        'aiBackendEnabled': true,
         'aiBackendBaseUrl': AppConfig.aiBackendBaseUrl,
         'aiTimeoutMs': AppConfig.aiTimeoutMs,
       });
@@ -22,7 +22,7 @@ class RemoteConfigService {
     }
   }
 
-  static bool get aiEnabled => _getBool('aiBackendEnabled', false);
+  static bool get aiEnabled => _getBool('aiBackendEnabled', true);
   static String get aiUrl => _getString('aiBackendBaseUrl', AppConfig.aiBackendBaseUrl);
   static int get aiTimeoutMs => _getInt('aiTimeoutMs', AppConfig.aiTimeoutMs);
 

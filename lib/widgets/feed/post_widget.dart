@@ -3,11 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
-import '../../widgets/media/image_gallery_widget.dart';
 import '../../screens/media/document_viewer_screen.dart';
 import '../../screens/hashtag/hashtag_screen.dart';
 

@@ -17,7 +17,7 @@ class PostEngagementWidget extends StatelessWidget {
   final bool isCompact;
   
   const PostEngagementWidget({
-    Key? key,
+    super.key,
     required this.post,
     this.onLikePressed,
     this.onCommentPressed,
@@ -27,7 +27,7 @@ class PostEngagementWidget extends StatelessWidget {
     this.likeAnimation,
     this.showCounts = true,
     this.isCompact = false,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -246,10 +246,10 @@ class EngagementStatsWidget extends StatelessWidget {
   final bool showDetailed;
   
   const EngagementStatsWidget({
-    Key? key,
+    super.key,
     required this.post,
     this.showDetailed = false,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -440,11 +440,11 @@ class PostLikersWidget extends StatelessWidget {
   final bool isLikedByCurrentUser;
   
   const PostLikersWidget({
-    Key? key,
+    super.key,
     required this.postId,
     required this.likesCount,
     required this.isLikedByCurrentUser,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {

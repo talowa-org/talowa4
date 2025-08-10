@@ -9,8 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/constants/app_constants.dart';
-import '../models/user_model.dart';
 
 class EmergencyService {
   static final EmergencyService _instance = EmergencyService._internal();

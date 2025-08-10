@@ -14,12 +14,12 @@ class ReportContentDialog extends StatefulWidget {
   final String? contentPreview;
 
   const ReportContentDialog({
-    Key? key,
+    super.key,
     required this.contentId,
     this.contentType,
     this.authorId,
     this.contentPreview,
-  }) : super(key: key);
+  });
 
   @override
   State<ReportContentDialog> createState() => _ReportContentDialogState();

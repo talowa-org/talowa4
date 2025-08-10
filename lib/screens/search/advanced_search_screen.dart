@@ -15,9 +15,9 @@ class AdvancedSearchScreen extends StatefulWidget {
   final String? initialQuery;
 
   const AdvancedSearchScreen({
-    Key? key,
+    super.key,
     this.initialQuery,
-  }) : super(key: key);
+  });
 
   @override
   State<AdvancedSearchScreen> createState() => _AdvancedSearchScreenState();

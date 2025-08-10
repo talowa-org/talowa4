@@ -17,14 +17,14 @@ class MediaPreviewWidget extends StatelessWidget {
   final double maxHeight;
   
   const MediaPreviewWidget({
-    Key? key,
+    super.key,
     required this.files,
     this.onRemoveFile,
     this.onEditFile,
     this.showEditButton = true,
     this.showRemoveButton = true,
     this.maxHeight = 200,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -267,13 +267,13 @@ class MediaUploadProgressWidget extends StatelessWidget {
   final String? errorMessage;
   
   const MediaUploadProgressWidget({
-    Key? key,
+    super.key,
     required this.fileNames,
     required this.progress,
     this.currentFileName,
     this.isCompleted = false,
     this.errorMessage,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -407,7 +407,7 @@ class MediaUploadProgressWidget extends StatelessWidget {
                   ),
                 ],
               ),
-            )).toList(),
+            )),
           ],
         ],
       ),
@@ -424,13 +424,13 @@ class MediaSelectionWidget extends StatelessWidget {
   final String? helpText;
   
   const MediaSelectionWidget({
-    Key? key,
+    super.key,
     required this.onFilesSelected,
     this.maxFiles = 5,
     this.allowImages = true,
     this.allowDocuments = true,
     this.helpText,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {

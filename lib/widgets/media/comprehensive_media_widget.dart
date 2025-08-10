@@ -22,7 +22,7 @@ class ComprehensiveMediaWidget extends StatefulWidget {
   final bool generateThumbnails;
   
   const ComprehensiveMediaWidget({
-    Key? key,
+    super.key,
     required this.onMediaUploaded,
     required this.userId,
     required this.postId,
@@ -31,7 +31,7 @@ class ComprehensiveMediaWidget extends StatefulWidget {
     this.allowDocuments = true,
     this.compressionSettings = CompressionSettings.fullSize,
     this.generateThumbnails = true,
-  }) : super(key: key);
+  });
   
   @override
   State<ComprehensiveMediaWidget> createState() => _ComprehensiveMediaWidgetState();

@@ -1,7 +1,6 @@
 // Instagram-like Stories Screen for TALOWA
 // Complete stories viewing experience with gestures and interactions
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';

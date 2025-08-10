@@ -40,13 +40,13 @@ class _FeedScreenState extends State<FeedScreen>
   bool _hasError = false;
   String? _errorMessage;
   bool _hasMorePosts = true;
-  bool _showFab = true;
+  final bool _showFab = true;
   
   // Filtering and search
   PostCategory? _selectedCategory;
   String? _searchQuery;
-  FeedSortOption _sortOption = FeedSortOption.newest;
-  bool _showOnlyFollowing = false;
+  final FeedSortOption _sortOption = FeedSortOption.newest;
+  final bool _showOnlyFollowing = false;
 
   // Pagination
   static const int _postsPerPage = 10;

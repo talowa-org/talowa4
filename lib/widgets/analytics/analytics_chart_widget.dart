@@ -27,14 +27,14 @@ class AnalyticsChartWidget extends StatelessWidget {
   final bool showLabels;
 
   const AnalyticsChartWidget({
-    Key? key,
+    super.key,
     required this.data,
     required this.chartType,
     this.title,
     this.primaryColor,
     this.showGrid = true,
     this.showLabels = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -257,10 +257,10 @@ class EngagementTrendChart extends StatelessWidget {
   final String title;
 
   const EngagementTrendChart({
-    Key? key,
+    super.key,
     required this.data,
     this.title = 'Engagement Trend',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -295,10 +295,10 @@ class HourlyActivityChart extends StatelessWidget {
   final String title;
 
   const HourlyActivityChart({
-    Key? key,
+    super.key,
     required this.data,
     this.title = 'Hourly Activity',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -333,10 +333,10 @@ class DemographicsChart extends StatelessWidget {
   final String title;
 
   const DemographicsChart({
-    Key? key,
+    super.key,
     required this.demographics,
     this.title = 'Demographics',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -382,12 +382,12 @@ class RealTimeChart extends StatefulWidget {
   final Color? color;
 
   const RealTimeChart({
-    Key? key,
+    super.key,
     required this.dataStream,
     required this.title,
     this.chartType = ChartType.line,
     this.color,
-  }) : super(key: key);
+  });
 
   @override
   State<RealTimeChart> createState() => _RealTimeChartState();

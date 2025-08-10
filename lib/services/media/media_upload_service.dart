@@ -238,7 +238,7 @@ class MediaUploadService {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final randomSuffix = DateTime.now().microsecond;
     
-    return '${userId}_${timestamp}_${randomSuffix}$extension';
+    return '${userId}_${timestamp}_$randomSuffix$extension';
   }
   
   /// Get content type for document

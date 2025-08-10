@@ -9,7 +9,6 @@ import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/comment_model.dart';
 import '../../models/social_feed/geographic_targeting.dart';
 import '../auth/auth_service.dart';
-import 'feed_service.dart';
 
 /// Service for managing real-time feed updates
 class RealTimeFeedService {

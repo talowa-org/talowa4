@@ -15,7 +15,7 @@ class HashtagTextWidget extends StatelessWidget {
   final TextOverflow? overflow;
   
   const HashtagTextWidget({
-    Key? key,
+    super.key,
     required this.text,
     this.style,
     this.onHashtagTapped,
@@ -23,7 +23,7 @@ class HashtagTextWidget extends StatelessWidget {
     this.onUrlTapped,
     this.maxLines,
     this.overflow,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -138,12 +138,12 @@ class HashtagChipsWidget extends StatelessWidget {
   final int? maxChips;
   
   const HashtagChipsWidget({
-    Key? key,
+    super.key,
     required this.hashtags,
     this.onHashtagTapped,
     this.showHashSymbol = true,
     this.maxChips,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -213,11 +213,11 @@ class TrendingHashtagsWidget extends StatelessWidget {
   final String title;
   
   const TrendingHashtagsWidget({
-    Key? key,
+    super.key,
     required this.trendingHashtags,
     this.onHashtagTapped,
     this.title = 'Trending',
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -270,12 +270,12 @@ class HashtagInputWidget extends StatefulWidget {
   final int maxHashtags;
   
   const HashtagInputWidget({
-    Key? key,
+    super.key,
     required this.onHashtagsChanged,
     this.initialHashtags = const [],
     this.suggestions = const [],
     this.maxHashtags = 10,
-  }) : super(key: key);
+  });
   
   @override
   State<HashtagInputWidget> createState() => _HashtagInputWidgetState();

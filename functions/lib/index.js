@@ -41,11 +41,16 @@ const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const openai_1 = __importDefault(require("openai"));
 const zod_1 = require("zod");
+const params_1 = require("firebase-functions/params");
 admin.initializeApp();
 const db = admin.firestore();
-const openaiApiKey = process.env.OPENAI_API_KEY || functions.params.defineString('OPENAI_API_KEY').value();
-const model = process.env.OPENAI_MODEL || 'gpt-5';
-const openai = new openai_1.default({ apiKey: openaiApiKey });
+// Secrets and params
+const OPENROUTER_API_KEY = (0, params_1.defineSecret)('OPENROUTER_API_KEY');
+const OPENROUTER_MODEL = functions.params.defineString('OPENROUTER_MODEL');
+const OPENROUTER_BASE_URL = functions.params.defineString('OPENROUTER_BASE_URL');
+const OPENROUTER_FALLBACK_MODEL = functions.params.defineString('OPENROUTER_FALLBACK_MODEL');
+const DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct';
+const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
 const AIResponseSchema = zod_1.z.object({
     text: zod_1.z.string().max(2000),
     confidence: zod_1.z.number().min(0).max(1),
@@ -74,6 +79,32 @@ function fastIntent(query) {
         return 'navigation';
     return 'other';
 }
+function clamp01(n) {
+    const x = Number(n);
+    if (isNaN(x))
+        return 0.6;
+    return Math.max(0, Math.min(1, x));
+}
+function coerceToAIResponse(input, raw, query, lang) {
+    const textCandidate = typeof input?.text === 'string' ? input.text :
+        typeof input?.answer === 'string' ? input.answer :
+            typeof input?.message === 'string' ? input.message : raw;
+    const text = String(textCandidate || 'I can help with that.').slice(0, 2000);
+    const confidence = clamp01((input && (input.confidence ?? input.score)) ?? 0.6);
+    const suggestions = Array.isArray(input?.actions?.[0]?.data?.suggestions)
+        ? input.actions[0].data.suggestions
+        : ['Land Records', 'Legal Help', 'My Network'];
+    const actions = Array.isArray(input?.actions)
+        ? input.actions
+        : [{ type: 'suggestions', label: 'You can try', data: { suggestions } }];
+    const intent = typeof input?.meta?.intent === 'string' ? input.meta.intent : undefined;
+    return {
+        text,
+        confidence,
+        actions,
+        meta: { intent, lang }
+    };
+}
 async function allowlistActions(actions) {
     // Enforce safe routes and phone formats
     return actions.filter(a => {
@@ -86,7 +117,9 @@ async function allowlistActions(actions) {
         return true;
     });
 }
-exports.aiRespond = functions.region('asia-south1').https.onRequest(async (req, res) => {
+exports.aiRespond = functions.runWith({
+    secrets: [OPENROUTER_API_KEY],
+}).region('asia-south1').https.onRequest(async (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Headers', 'authorization, content-type');
     if (req.method === 'OPTIONS') {
@@ -102,6 +135,11 @@ exports.aiRespond = functions.region('asia-south1').https.onRequest(async (req, 
         }
         const decoded = await admin.auth().verifyIdToken(idToken);
         const uid = decoded.uid;
+        // Resolve config at runtime
+        const baseURL = process.env.OPENROUTER_BASE_URL || OPENROUTER_BASE_URL.value() || DEFAULT_BASE_URL;
+        const model = process.env.OPENROUTER_MODEL || process.env.OPENAI_MODEL || OPENROUTER_MODEL.value() || DEFAULT_MODEL;
+        const apiKey = OPENROUTER_API_KEY.value();
+        const openai = new openai_1.default({ apiKey, baseURL });
         const { query, lang = 'en', isVoice = false, context = {}, client = {} } = req.body || {};
         if (!query || typeof query !== 'string') {
             res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'query is required' } });
@@ -131,52 +169,70 @@ exports.aiRespond = functions.region('asia-south1').https.onRequest(async (req, 
             return;
         }
         // Build prompt
-        const system = `You are the TALOWA land-rights assistant for Indian users. Provide concise, practical help. If unsure, say so and suggest human/legal support. Output STRICT JSON matching AIResponse schema.`;
+        const system = `You are the TALOWA land-rights assistant for Indian users. Provide concise, practical help.
+Respond ONLY with valid JSON object matching this TypeScript type:
+{ text: string; confidence: number; actions: Array<{ type: 'navigate'|'call'|'share'|'suggestions'|'form'; label: string; data: Record<string, any> }>; meta?: { intent?: string; lang?: string; citations?: any[]; usage?: Record<string, any> } }
+No prose, no markdown, no code fences.`;
         const user = `Query: ${query}\nLang: ${lang}\nContext: ${JSON.stringify({ uid, ...context })}`;
-        // Call GPT-5
-        const completion = await openai.chat.completions.create({
-            model,
-            temperature: 0.3,
-            response_format: { type: 'json_object' },
-            messages: [
-                { role: 'system', content: system },
-                { role: 'user', content: user }
-            ],
-            max_tokens: 512
-        });
-        const content = completion.choices[0]?.message?.content || '{}';
-        let parsed;
-        try {
-            parsed = JSON.parse(content);
+        // Model preference with fallback (free tiers)
+        const primaryModel = model || 'meta-llama/llama-3.1-8b-instruct';
+        const envFallback = process.env.OPENROUTER_FALLBACK_MODEL || OPENROUTER_FALLBACK_MODEL.value() || '';
+        const builtInFallbacks = ['openai/gpt-oss-20b', 'mistralai/mistral-7b-instruct'];
+        const modelsToTry = [primaryModel, envFallback, ...builtInFallbacks]
+            .filter((m, i, arr) => m && arr.indexOf(m) === i);
+        let lastError = null;
+        for (const mdl of modelsToTry) {
+            try {
+                const completion = await openai.chat.completions.create({
+                    model: mdl,
+                    temperature: 0.3,
+                    response_format: { type: 'json_object' },
+                    messages: [
+                        { role: 'system', content: system },
+                        { role: 'user', content: user }
+                    ],
+                    max_tokens: 512
+                });
+                const content = completion.choices[0]?.message?.content || '{}';
+                let parsed;
+                try {
+                    parsed = JSON.parse(content);
+                }
+                catch (e) {
+                    parsed = {};
+                }
+                // Validate and enforce safety (with coercion fallback)
+                const safe = AIResponseSchema.safeParse(parsed);
+                const candidate = safe.success ? safe.data : coerceToAIResponse(parsed, content, query, lang);
+                const sanitized = candidate;
+                sanitized.actions = await allowlistActions(sanitized.actions);
+                sanitized.meta = { ...(sanitized.meta || {}), lang, usage: { model: mdl } };
+                // Log interaction (redacted)
+                try {
+                    await db.collection('ai_interactions').add({
+                        userId: uid,
+                        query,
+                        response: sanitized.text,
+                        confidence: sanitized.confidence,
+                        isVoice,
+                        meta: { intent: sanitized.meta?.intent, lang, model: mdl },
+                        timestamp: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                catch (e) {
+                    // Non-fatal
+                }
+                res.json(sanitized);
+                return;
+            }
+            catch (err) {
+                lastError = err;
+                // Try next model
+                continue;
+            }
         }
-        catch {
-            res.status(502).json({ error: { code: 'UPSTREAM_UNAVAILABLE', message: 'Invalid JSON from model' } });
-            return;
-        }
-        // Validate and enforce safety
-        const safe = AIResponseSchema.safeParse(parsed);
-        if (!safe.success) {
-            res.status(502).json({ error: { code: 'UPSTREAM_UNAVAILABLE', message: 'Schema validation failed', details: safe.error.flatten() } });
-            return;
-        }
-        const sanitized = safe.data;
-        sanitized.actions = await allowlistActions(sanitized.actions);
-        // Log interaction (redacted)
-        try {
-            await db.collection('ai_interactions').add({
-                userId: uid,
-                query,
-                response: sanitized.text,
-                confidence: sanitized.confidence,
-                isVoice,
-                meta: { intent: sanitized.meta?.intent, lang },
-                timestamp: admin.firestore.FieldValue.serverTimestamp()
-            });
-        }
-        catch (e) {
-            // Non-fatal
-        }
-        res.json(sanitized);
+        // Both attempts failed
+        res.status(503).json({ error: { code: 'UPSTREAM_UNAVAILABLE', message: lastError?.message || 'Upstream model unavailable' } });
         return;
     }
     catch (e) {

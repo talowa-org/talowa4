@@ -13,11 +13,11 @@ class PostSchedulingWidget extends StatefulWidget {
   final bool enabled;
   
   const PostSchedulingWidget({
-    Key? key,
+    super.key,
     required this.onScheduled,
     this.initialDateTime,
     this.enabled = true,
-  }) : super(key: key);
+  });
   
   @override
   State<PostSchedulingWidget> createState() => _PostSchedulingWidgetState();
@@ -385,10 +385,10 @@ class ScheduledPostsListWidget extends StatefulWidget {
   final Function(Map<String, dynamic>)? onPostSelected;
   
   const ScheduledPostsListWidget({
-    Key? key,
+    super.key,
     required this.userId,
     this.onPostSelected,
-  }) : super(key: key);
+  });
   
   @override
   State<ScheduledPostsListWidget> createState() => _ScheduledPostsListWidgetState();

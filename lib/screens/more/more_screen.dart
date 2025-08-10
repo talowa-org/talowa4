@@ -8,6 +8,7 @@ import '../../widgets/more/profile_summary_card.dart';
 import '../../widgets/more/feature_section_card.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../settings/language_settings_screen.dart';
+import '../../services/developer_preferences.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -57,6 +58,11 @@ class _MoreScreenState extends State<MoreScreen> {
             onPressed: _openHelp,
             tooltip: 'Help & Support',
           ),
+          IconButton(
+            icon: const Icon(Icons.smart_toy, color: Colors.white),
+            onPressed: _openDeveloperTools,
+            tooltip: 'Developer',
+          ),
         ],
       ),
       body: _isLoading
@@ -72,9 +78,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       userProfile: _userProfile!,
                       onTap: _openFullProfile,
                     ),
-                  
+
                   const SizedBox(height: AppTheme.spacingLarge),
-                  
+
                   // Cases & Land Records Section
                   FeatureSectionCard(
                     title: 'Cases & Land Records',
@@ -107,9 +113,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppTheme.spacingLarge),
-                  
+
                   // Analytics & Reports Section
                   FeatureSectionCard(
                     title: 'Analytics & Reports',
@@ -142,9 +148,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppTheme.spacingLarge),
-                  
+
                   // App Settings Section
                   FeatureSectionCard(
                     title: 'App Settings',
@@ -177,9 +183,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppTheme.spacingLarge),
-                  
+
                   // Support & Help Section
                   FeatureSectionCard(
                     title: 'Support & Help',
@@ -212,9 +218,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppTheme.spacingLarge),
-                  
+
                   // Achievements & Sharing Section
                   FeatureSectionCard(
                     title: 'Achievements & Sharing',
@@ -247,9 +253,9 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppTheme.spacingXLarge),
-                  
+
                   // App Version and Legal
                   _buildAppInfoSection(),
                 ],
@@ -333,7 +339,7 @@ class _MoreScreenState extends State<MoreScreen> {
     try {
       // TODO: Implement actual API call
       await Future.delayed(const Duration(seconds: 1));
-      
+
       _userProfile = UserProfile(
         name: 'Ravi Kumar',
         role: AppConstants.roleVillageCoordinator,
@@ -348,7 +354,7 @@ class _MoreScreenState extends State<MoreScreen> {
         engagementScore: 8.2,
         achievements: 5,
       );
-      
+
       setState(() {
         _isLoading = false;
       });
@@ -402,6 +408,52 @@ class _MoreScreenState extends State<MoreScreen> {
           ),
         ],
       ),
+    );
+
+  void _openDeveloperTools() async {
+    final enabled = await DeveloperPreferences.isDeveloperMode();
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool dev = enabled;
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Developer Tools'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SwitchListTile(
+                  title: const Text('Developer Mode'),
+                  subtitle: const Text('Show debug info in AI chat'),
+                  value: dev,
+                  onChanged: (v) async {
+                    await DeveloperPreferences.setDeveloperMode(v);
+                    setState(() => dev = v);
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Developer mode ${v ? 'enabled' : 'disabled'}')),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 8),
+                ListTile(
+                  leading: const Icon(Icons.smart_toy_outlined),
+                  title: const Text('Open AI Assistant Test'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/ai-test');
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -934,6 +986,63 @@ class UserProfile {
 
 class FeatureItem {
   final String title;
+
+class _DeveloperToolsDialog extends StatefulWidget {
+  @override
+  State<_DeveloperToolsDialog> createState() => _DeveloperToolsDialogState();
+}
+
+class _DeveloperToolsDialogState extends State<_DeveloperToolsDialog> {
+  bool _devMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final enabled = await DeveloperPreferences.isDeveloperMode();
+    if (mounted) setState(() => _devMode = enabled);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Developer Tools'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SwitchListTile(
+            title: const Text('Developer Mode'),
+            subtitle: const Text('Show debug info in AI chat'),
+            value: _devMode,
+            onChanged: (v) async {
+              await DeveloperPreferences.setDeveloperMode(v);
+              if (mounted) setState(() => _devMode = v);
+            },
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.smart_toy_outlined),
+            title: const Text('Open AI Assistant Test'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/ai-test');
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
+}
+
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;

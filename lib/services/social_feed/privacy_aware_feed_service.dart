@@ -171,10 +171,6 @@ class PrivacyAwareFeedService {
 
       final user = UserModel.fromFirestore(userDoc);
       final userLocation = user.address;
-      
-      if (userLocation == null) {
-        return [];
-      }
 
       // Build geographic query
       Query query = _firestore

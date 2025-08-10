@@ -11,12 +11,12 @@ class TrendingTopicsWidget extends StatelessWidget {
   final int maxTopics;
 
   const TrendingTopicsWidget({
-    Key? key,
+    super.key,
     required this.topics,
     required this.onTopicTap,
     this.showGrowthIndicator = true,
     this.maxTopics = 10,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -299,10 +299,10 @@ class TrendingTopicsCarousel extends StatelessWidget {
   final Function(TrendingTopic) onTopicTap;
 
   const TrendingTopicsCarousel({
-    Key? key,
+    super.key,
     required this.topics,
     required this.onTopicTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -420,10 +420,10 @@ class TrendingHashtagsWidget extends StatelessWidget {
   final Function(String) onHashtagTap;
 
   const TrendingHashtagsWidget({
-    Key? key,
+    super.key,
     required this.hashtags,
     required this.onHashtagTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -483,11 +483,11 @@ class TrendingTopicsGrid extends StatelessWidget {
   final int crossAxisCount;
 
   const TrendingTopicsGrid({
-    Key? key,
+    super.key,
     required this.topics,
     required this.onTopicTap,
     this.crossAxisCount = 2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

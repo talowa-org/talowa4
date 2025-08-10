@@ -12,7 +12,7 @@ import '../../widgets/analytics/analytics_chart_widget.dart';
 import '../../widgets/analytics/metrics_card_widget.dart';
 
 class AnalyticsDashboardScreen extends StatefulWidget {
-  const AnalyticsDashboardScreen({Key? key}) : super(key: key);
+  const AnalyticsDashboardScreen({super.key});
 
   @override
   State<AnalyticsDashboardScreen> createState() => _AnalyticsDashboardScreenState();
@@ -843,7 +843,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           Expanded(child: Text(region)),
           Text('$users users'),
           const SizedBox(width: 8),
-          Container(
+          SizedBox(
             width: 40,
             child: Text('$percentage%', textAlign: TextAlign.right),
           ),

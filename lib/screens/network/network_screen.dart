@@ -486,7 +486,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
           ),
           const SizedBox(height: 16),
           
-          ...activities.map((activity) => _buildActivityTile(activity)).toList(),
+          ...activities.map((activity) => _buildActivityTile(activity)),
         ],
       ),
     );

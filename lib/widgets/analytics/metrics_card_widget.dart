@@ -13,7 +13,7 @@ class MetricsCardWidget extends StatelessWidget {
   final VoidCallback? onTap;
 
   const MetricsCardWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.change,
@@ -21,7 +21,7 @@ class MetricsCardWidget extends StatelessWidget {
     required this.icon,
     required this.color,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -89,12 +89,12 @@ class CompactMetricsCard extends StatelessWidget {
   final Color color;
 
   const CompactMetricsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -146,14 +146,14 @@ class TrendMetricsCard extends StatelessWidget {
   final Color color;
 
   const TrendMetricsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.currentValue,
     required this.previousValue,
     required this.period,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -234,14 +234,14 @@ class ProgressMetricsCard extends StatelessWidget {
   final Color color;
 
   const ProgressMetricsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.progress,
     required this.target,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,13 +312,13 @@ class RealTimeMetricsCard extends StatefulWidget {
   final String? unit;
 
   const RealTimeMetricsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.valueStream,
     required this.icon,
     required this.color,
     this.unit,
-  }) : super(key: key);
+  });
 
   @override
   State<RealTimeMetricsCard> createState() => _RealTimeMetricsCardState();
@@ -438,10 +438,10 @@ class MetricsGrid extends StatelessWidget {
   final int crossAxisCount;
 
   const MetricsGrid({
-    Key? key,
+    super.key,
     required this.metrics,
     this.crossAxisCount = 2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -464,9 +464,9 @@ class MetricsRow extends StatelessWidget {
   final List<Widget> metrics;
 
   const MetricsRow({
-    Key? key,
+    super.key,
     required this.metrics,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

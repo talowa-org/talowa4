@@ -27,9 +27,9 @@ class _EngagementDetailsScreenState extends State<EngagementDetailsScreen>
   late TabController _tabController;
   
   // Data
-  Map<EngagementType, List<EngagementUser>> _engagementData = {};
-  Map<EngagementType, bool> _loadingStates = {};
-  Map<EngagementType, bool> _errorStates = {};
+  final Map<EngagementType, List<EngagementUser>> _engagementData = {};
+  final Map<EngagementType, bool> _loadingStates = {};
+  final Map<EngagementType, bool> _errorStates = {};
 
   @override
   void initState() {

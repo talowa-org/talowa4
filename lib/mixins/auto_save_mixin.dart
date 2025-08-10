@@ -297,12 +297,12 @@ class AutoSaveStatusWidget extends StatefulWidget {
   final VoidCallback? onManualSave;
   
   const AutoSaveStatusWidget({
-    Key? key,
+    super.key,
     required this.hasUnsavedChanges,
     this.lastSaveTime,
     this.isAutoSaveEnabled = true,
     this.onManualSave,
-  }) : super(key: key);
+  });
   
   @override
   State<AutoSaveStatusWidget> createState() => _AutoSaveStatusWidgetState();

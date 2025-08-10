@@ -17,8 +17,8 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
   
-  String _selectedType = EmergencyBroadcastService.typeUrgentAlert;
-  String _selectedPriority = EmergencyBroadcastService.priorityHigh;
+  final String _selectedType = EmergencyBroadcastService.typeUrgentAlert;
+  final String _selectedPriority = EmergencyBroadcastService.priorityHigh;
   bool _isLoading = false;
 
   @override

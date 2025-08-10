@@ -31,9 +31,9 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
   List<String> _hashtags = [];
   
   // Media handling
-  List<String> _selectedImages = [];
-  List<String> _selectedVideos = [];
-  List<String> _selectedDocuments = [];
+  final List<String> _selectedImages = [];
+  final List<String> _selectedVideos = [];
+  final List<String> _selectedDocuments = [];
   final ImagePicker _imagePicker = ImagePicker();
   
   // Post type selection

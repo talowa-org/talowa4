@@ -13,14 +13,14 @@ class ContentWarningWidget extends StatefulWidget {
   final VoidCallback? onHide;
 
   const ContentWarningWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.warningType,
     required this.reason,
     this.showByDefault = false,
     this.onShow,
     this.onHide,
-  }) : super(key: key);
+  });
 
   @override
   State<ContentWarningWidget> createState() => _ContentWarningWidgetState();
@@ -251,13 +251,13 @@ class SafePostWidget extends StatelessWidget {
   final bool showWarningByDefault;
 
   const SafePostWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.hasContentWarning,
     this.warningType,
     this.warningReason,
     this.showWarningByDefault = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

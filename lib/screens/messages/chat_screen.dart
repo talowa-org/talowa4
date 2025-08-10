@@ -1,6 +1,5 @@
 // Chat Screen for TALOWA Messaging
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/messaging/message_model.dart';

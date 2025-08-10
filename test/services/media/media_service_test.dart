@@ -2,7 +2,6 @@
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:firebase_storage/firebase_storage.dart';

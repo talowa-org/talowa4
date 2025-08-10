@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
-import '../../widgets/feed/post_widget.dart';
 
 class RecommendedContentWidget extends StatefulWidget {
   final List<PostModel> posts;

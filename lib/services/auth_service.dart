@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import 'database_service.dart';
-import 'performance_monitor.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;

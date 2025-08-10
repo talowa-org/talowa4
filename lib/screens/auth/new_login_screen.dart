@@ -1,14 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 import 'real_user_registration_screen.dart';
 import '../../services/performance_monitor.dart';
-import '../../models/user_model.dart';
 import '../../config/app_config.dart';
-import '../../generated/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 
 class NewLoginScreen extends StatefulWidget {

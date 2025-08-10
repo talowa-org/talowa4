@@ -550,7 +550,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             _selectedTypeFilter = selected ? type : null;
                           });
                         },
-                      )).toList(),
+                      )),
                     ],
                   ),
                   

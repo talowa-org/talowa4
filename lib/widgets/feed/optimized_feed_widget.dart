@@ -2,7 +2,6 @@
 // Implements Task 21: Performance optimization - Lazy Loading & Efficient Rendering
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:async';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';

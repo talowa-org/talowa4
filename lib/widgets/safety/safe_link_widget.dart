@@ -12,13 +12,13 @@ class SafeLinkWidget extends StatefulWidget {
   final VoidCallback? onTap;
 
   const SafeLinkWidget({
-    Key? key,
+    super.key,
     required this.url,
     this.displayText,
     this.style,
     this.showWarningDialog = true,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<SafeLinkWidget> createState() => _SafeLinkWidgetState();
@@ -323,7 +323,7 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
 class ReportLinkDialog extends StatefulWidget {
   final String url;
 
-  const ReportLinkDialog({Key? key, required this.url}) : super(key: key);
+  const ReportLinkDialog({super.key, required this.url});
 
   @override
   State<ReportLinkDialog> createState() => _ReportLinkDialogState();
@@ -464,11 +464,11 @@ class SafeTextWidget extends StatelessWidget {
   final bool enableSafeLinks;
 
   const SafeTextWidget({
-    Key? key,
+    super.key,
     required this.text,
     this.style,
     this.enableSafeLinks = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

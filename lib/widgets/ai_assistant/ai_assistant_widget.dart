@@ -3,8 +3,11 @@
 // Voice + Text interface in local languages
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/ai_assistant_service.dart';
+import '../../services/developer_preferences.dart';
+import 'dart:convert';
 
 class AIAssistantWidget extends StatefulWidget {
   const AIAssistantWidget({super.key});
@@ -18,12 +21,21 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final AIAssistantService _aiService = AIAssistantService();
-  
+
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
-  
-  List<ChatMessage> _messages = [];
+
+  final List<ChatMessage> _messages = [];
   List<String> _suggestions = [];
+  int _userMessageCount = 0;
+  bool _suggestionsHidden = false;
+  static const int _maxSuggestions = 6;
+
+  // Developer-mode: capture last backend payload for debug panel
+  String? _lastBackendRaw;
+  String? _lastBackendModel;
+  int? _lastBackendStatus;
+
   bool _isListening = false;
   bool _isProcessing = false;
   bool _isInitialized = false;
@@ -63,10 +75,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     setState(() {
       _isInitialized = success;
     });
-    
+
     if (success) {
       String welcomeMessage = 'Hello! I\'m your TALOWA assistant. I can help you with land records, legal support, and navigating the app.';
-      
+
       // Add voice status information
       if (_aiService.speechAvailable) {
         welcomeMessage += '\n\n🎤 Voice input is ready! You can:';
@@ -77,9 +89,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         welcomeMessage += '\n\n⌨️ Voice input is not available on this device.';
         welcomeMessage += '\nPlease type your questions in the text box below.';
       }
-      
+
       welcomeMessage += '\n\nHow can I assist you today?';
-      
+
       _addMessage(ChatMessage(
         text: welcomeMessage,
         isUser: false,
@@ -106,6 +118,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
   void _addMessage(ChatMessage message) {
     setState(() {
       _messages.add(message);
+      if (message.isUser) {
+        _userMessageCount++;
+        if (_userMessageCount >= 2) _suggestionsHidden = true;
+      }
     });
     _scrollToBottom();
   }
@@ -143,7 +159,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     setState(() {
       _isListening = true;
     });
-    
+
     _pulseController.repeat(reverse: true);
     HapticFeedback.lightImpact();
 
@@ -153,7 +169,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           _isListening = false;
         });
         _pulseController.stop();
-        
+
         if (result.trim().isNotEmpty) {
           // Add what the user said
           _addMessage(ChatMessage(
@@ -161,7 +177,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             isUser: true,
             timestamp: DateTime.now(),
           ));
-          
+
           // Process the query
           _processQuery(result, isVoice: true);
         }
@@ -203,7 +219,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     try {
       // Process with AI service
       final response = await _aiService.processQuery(query, isVoice: isVoice);
-      
+
       // Add AI response
       _addMessage(ChatMessage(
         text: response.text,
@@ -211,6 +227,11 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         timestamp: DateTime.now(),
         actions: response.actions,
         confidence: response.confidence,
+        debugRaw: response.rawJson,
+        debugModel: response.meta != null
+            ? (response.meta!['usage']?['model'] ?? response.meta!['model'])?.toString()
+            : null,
+        debugHttp: response.httpStatus,
       ));
 
       // Speak response if it was a voice query
@@ -257,43 +278,104 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
 
   void _handleNavigation(Map<String, dynamic> data) {
     final route = data['route'] as String?;
-    if (route != null) {
-      // TODO: Implement navigation based on route
-      debugPrint('Navigate to: $route');
+    if (route == null || route.trim().isEmpty) return;
+
+    try {
+      debugPrint('AI navigation request: $route');
+
+      switch (route) {
+        case '/home':
+        case '/main':
+          Navigator.pushNamed(context, '/main');
+          break;
+        case '/ai-test':
+          Navigator.pushNamed(context, '/ai-test');
+          break;
+        // Known future routes: map to main with hint
+        case '/network':
+        case '/land/records':
+        case '/land/add':
+        case '/legal/patta-guide':
+        case '/legal/support':
+        case '/emergency/report':
+          Navigator.pushNamed(context, '/main');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Opening ${route.replaceAll('/', '')}... coming soon')),
+          );
+          break;
+        default:
+          // Attempt a direct named route; if it fails, show a toast
+          Navigator.pushNamed(context, route).catchError((Object err) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Screen not available yet: $route')),
+            );
+            return err; // satisfy onError return type
+          });
+      }
+    } catch (e) {
+      debugPrint('Navigation failed for $route: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Navigating to $route')),
+        const SnackBar(content: Text('Could not navigate. Please try again.')),
       );
     }
   }
 
-  void _handleCall(Map<String, dynamic> data) {
+  Future<void> _handleCall(Map<String, dynamic> data) async {
     final phone = data['phone'] as String?;
-    if (phone != null) {
-      // TODO: Implement phone call functionality
-      debugPrint('Call: $phone');
+    if (phone == null || phone.trim().isEmpty) return;
+
+    final uri = Uri(scheme: 'tel', path: phone);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to place call to $phone')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Call launch failed for $phone: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Calling $phone')),
+        const SnackBar(content: Text('Could not open dialer.')),
       );
     }
   }
 
-  void _handleShare(Map<String, dynamic> data) {
-    final code = data['code'] as String?;
-    if (code != null) {
-      // TODO: Implement sharing functionality
-      debugPrint('Share code: $code');
+  Future<void> _handleShare(Map<String, dynamic> data) async {
+    final text = (data['text'] ?? data['message'] ?? data['code'])?.toString();
+    if (text == null || text.trim().isEmpty) return;
+
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sharing referral code: $code')),
+        const SnackBar(content: Text('Copied to clipboard')),
+      );
+    } catch (e) {
+      debugPrint('Share fallback failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not copy to clipboard')),
       );
     }
   }
 
   void _handleSuggestions(Map<String, dynamic> data) {
-    final suggestions = data['suggestions'] as List<String>?;
-    if (suggestions != null) {
-      setState(() {
-        _suggestions = suggestions;
-      });
+    // Accept only data.suggestions but gracefully handle categories sent by mistake
+    final dynamic raw = data['suggestions'] ?? data['categories'];
+    if (raw is List) {
+      final normalized = raw
+          .map((e) => e?.toString().trim())
+          .whereType<String>()
+          .where((s) => s.isNotEmpty)
+          .toSet() // dedupe
+          .toList(growable: false)
+          .take(_maxSuggestions)
+          .toList();
+      if (normalized.isNotEmpty) {
+        setState(() {
+          _suggestions = normalized;
+          _suggestionsHidden = false; // reveal if backend sends fresh suggestions
+        });
+      }
     }
   }
 
@@ -316,9 +398,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
 
   void _showError(String message) {
     // Show voice-related errors as chat messages for better UX
-    if (message.contains('🎤') || message.contains('🌐') || message.contains('🔇') || 
+    if (message.contains('🎤') || message.contains('🌐') || message.contains('🔇') ||
         message.contains('⏱️') || message.contains('🔄') || message.contains('voice') ||
-        message.contains('microphone') || message.contains('speech') || 
+        message.contains('microphone') || message.contains('speech') ||
         message.contains('permission') || message.contains('recognition')) {
       _addMessage(ChatMessage(
         text: message,
@@ -422,7 +504,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           ),
 
           // Suggestions
-          if (_suggestions.isNotEmpty && _messages.length <= 1)
+          if (_suggestions.isNotEmpty && !_suggestionsHidden)
             _buildSuggestions(),
 
           // Input area
@@ -519,6 +601,48 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
                       ),
                     ),
                   ],
+                  // Developer debug panel
+                  if (!message.isUser)
+                    FutureBuilder<bool>(
+                      future: DeveloperPreferences.isDeveloperMode(),
+                      builder: (context, snap) {
+                        if (snap.connectionState != ConnectionState.done || snap.data != true) return const SizedBox.shrink();
+                        if (message.debugRaw == null && message.debugModel == null) return const SizedBox.shrink();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.04),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.black12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (message.debugModel != null)
+                                    Text('Model: ${message.debugModel}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
+                                  if (message.debugHttp != null)
+                                    Text('HTTP: ${message.debugHttp}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
+                                  if (message.debugRaw != null) ...[
+                                    const SizedBox(height: 6),
+                                    Text('Raw JSON:', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 4),
+                                    SelectableText(
+                                      _prettyJson(message.debugRaw!),
+                                      style: const TextStyle(fontFamily: 'monospace', fontSize: 10),
+                                    ),
+                                  ]
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
@@ -538,6 +662,15 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         ],
       ),
     );
+  }
+
+  String _prettyJson(String raw) {
+    try {
+      final obj = jsonDecode(raw);
+      return const JsonEncoder.withIndent('  ').convert(obj);
+    } catch (_) {
+      return raw;
+    }
   }
 
   Widget _buildActionButton(AIAction action) {
@@ -605,8 +738,8 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
                 return Transform.scale(
                   scale: _isListening ? _pulseAnimation.value : 1.0,
                   child: Tooltip(
-                    message: _isListening 
-                        ? 'Listening... Tap to stop' 
+                    message: _isListening
+                        ? 'Listening... Tap to stop'
                         : 'Tap and speak clearly',
                     child: GestureDetector(
                       onTap: _isListening ? _stopListening : _startListening,
@@ -643,7 +776,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             ),
             const SizedBox(width: 12),
           ],
-          
+
           // Text input
           Expanded(
             child: TextField(
@@ -665,9 +798,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
               textInputAction: TextInputAction.send,
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Send button
           GestureDetector(
             onTap: _sendTextMessage,
@@ -698,6 +831,10 @@ class ChatMessage {
   final DateTime timestamp;
   final List<AIAction> actions;
   final double confidence;
+  final String? debugRaw;
+  final String? debugModel;
+  final int? debugHttp;
+
 
   ChatMessage({
     required this.text,
@@ -705,5 +842,11 @@ class ChatMessage {
     required this.timestamp,
     this.actions = const [],
     this.confidence = 1.0,
+    this.debugRaw,
+    this.debugModel,
+    this.debugHttp,
+  });
+}
+
   });
 }

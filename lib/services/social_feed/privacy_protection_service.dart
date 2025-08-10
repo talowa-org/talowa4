@@ -206,9 +206,6 @@ class PrivacyProtectionService {
       }
 
       final viewerLocation = viewer.address;
-      if (viewerLocation == null) {
-        return false;
-      }
 
       // Check state-level access
       if (contentGeographicScope.stateCode != null &&
@@ -331,7 +328,7 @@ class PrivacyProtectionService {
       final viewerLocation = viewer.address;
       final targetLocation = target.address;
 
-      if (viewerLocation == null || targetLocation == null) {
+      if (targetLocation == null) {
         return false;
       }
 

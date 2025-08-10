@@ -250,7 +250,7 @@ class ModerationStatsWidget extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

@@ -10,7 +10,7 @@ import '../../widgets/common/error_widget.dart';
 import '../../widgets/common/user_avatar.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
-  const BlockedUsersScreen({Key? key}) : super(key: key);
+  const BlockedUsersScreen({super.key});
 
   @override
   State<BlockedUsersScreen> createState() => _BlockedUsersScreenState();

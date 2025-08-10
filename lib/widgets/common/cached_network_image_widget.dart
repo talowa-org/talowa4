@@ -165,7 +165,7 @@ class LazyLoadImageWidget extends StatefulWidget {
 
 class _LazyLoadImageWidgetState extends State<LazyLoadImageWidget> {
   bool _isVisible = false;
-  bool _hasError = false;
+  final bool _hasError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +210,7 @@ class _LazyLoadImageWidgetState extends State<LazyLoadImageWidget> {
 
 // Visibility detector for lazy loading
 class VisibilityDetector extends StatefulWidget {
+  @override
   final Key key;
   final Widget child;
   final Function(VisibilityInfo) onVisibilityChanged;

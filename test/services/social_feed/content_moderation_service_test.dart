@@ -326,7 +326,7 @@ void main() {
         });
 
         // Act
-        final pendingReports = await ContentModerationService.getPendingReports();
+        final pendingReports = ContentModerationService.getPendingReports();
 
         // Assert
         expect(pendingReports.length, equals(1));

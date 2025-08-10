@@ -15,14 +15,14 @@ class AuthorInfoWidget extends StatelessWidget {
   final Function(String)? onUserTapped;
   
   const AuthorInfoWidget({
-    Key? key,
+    super.key,
     required this.authorId,
     required this.authorName,
     this.authorRole,
     this.authorAvatarUrl,
     required this.createdAt,
     this.onUserTapped,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {

@@ -10,10 +10,10 @@ class SyncStatusWidget extends StatefulWidget {
   final VoidCallback? onTap;
 
   const SyncStatusWidget({
-    Key? key,
+    super.key,
     this.showDetails = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<SyncStatusWidget> createState() => _SyncStatusWidgetState();
@@ -333,7 +333,7 @@ class _SyncStatusWidgetState extends State<SyncStatusWidget>
 }
 
 class SyncDetailsDialog extends StatefulWidget {
-  const SyncDetailsDialog({Key? key}) : super(key: key);
+  const SyncDetailsDialog({super.key});
 
   @override
   State<SyncDetailsDialog> createState() => _SyncDetailsDialogState();
@@ -461,7 +461,7 @@ class _SyncDetailsDialogState extends State<SyncDetailsDialog> {
 
 // Floating sync status indicator
 class FloatingSyncStatus extends StatelessWidget {
-  const FloatingSyncStatus({Key? key}) : super(key: key);
+  const FloatingSyncStatus({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -479,10 +479,10 @@ class SyncStatusAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
 
   const SyncStatusAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.actions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -15,12 +15,12 @@ class ReportUserDialog extends StatefulWidget {
   final List<String>? recentMessages;
 
   const ReportUserDialog({
-    Key? key,
+    super.key,
     required this.reportedUserId,
     this.reportedUserName,
     this.reportedUserAvatar,
     this.recentMessages,
-  }) : super(key: key);
+  });
 
   @override
   State<ReportUserDialog> createState() => _ReportUserDialogState();

@@ -11,11 +11,11 @@ class SearchResultWidget extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SearchResultWidget({
-    Key? key,
+    super.key,
     required this.result,
     required this.query,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -403,13 +403,13 @@ class SearchResultsListView extends StatelessWidget {
   final bool isLoadingMore;
 
   const SearchResultsListView({
-    Key? key,
+    super.key,
     required this.results,
     required this.query,
     required this.onResultTap,
     this.onLoadMore,
     this.isLoadingMore = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -441,11 +441,11 @@ class EmptySearchResults extends StatelessWidget {
   final Function(String) onSuggestionTap;
 
   const EmptySearchResults({
-    Key? key,
+    super.key,
     required this.query,
     required this.suggestions,
     required this.onSuggestionTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -501,7 +501,7 @@ class EmptySearchResults extends StatelessWidget {
 }
 
 class SearchResultSkeleton extends StatelessWidget {
-  const SearchResultSkeleton({Key? key}) : super(key: key);
+  const SearchResultSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

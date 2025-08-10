@@ -1,7 +1,6 @@
 // Security Service for TALOWA
 // Reference: privacy-contact-visibility-system.md - Security Features
 
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 

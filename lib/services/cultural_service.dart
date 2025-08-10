@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 // import 'package:speech_to_text/speech_to_text.dart';  // Temporarily disabled
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math';
 
 class CulturalService {
   static final FlutterTts _tts = FlutterTts();

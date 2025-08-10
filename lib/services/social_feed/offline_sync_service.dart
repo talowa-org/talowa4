@@ -536,10 +536,7 @@ class OfflineSyncService {
     try {
       // Get posts updated since last sync
       DateTime? since = _lastSyncTime;
-      if (since == null) {
-        // First sync - get recent posts
-        since = DateTime.now().subtract(const Duration(days: 7));
-      }
+      since ??= DateTime.now().subtract(const Duration(days: 7));
 
       final query = _firestore
           .collection('posts')
