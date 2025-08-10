@@ -22,16 +22,26 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          token_format: 'access_token'
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: talowa
+          install_components: beta
+
 
       - name: Publish Remote Config via REST (non-ETag)
         id: publish
         env:
-          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           PROJECT_ID: talowa
         run: |
           set -euo pipefail
           echo "Publishing Remote Config to project: $PROJECT_ID"
+
+          # Get an access token via gcloud (no Token Creator role required)
+          ACCESS_TOKEN=$(gcloud auth print-access-token)
 
           # 1) GET current template to read its ETag
           curl -sS -X GET \
