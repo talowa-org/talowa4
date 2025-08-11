@@ -1,0 +1,46 @@
+name: Dependency Linker
+
+on:
+  schedule:
+    - cron: '30 1 * * *'  # 01:30 UTC nightly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  run-linker:
+    name: Run dependency linker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub CLI
+        uses: crazy-max/ghaction-gh-release@v2
+        if: false # placeholder to ensure gh is available via runner preinstall; Ubuntu runners include gh
+
+      - name: Verify gh
+        run: gh --version
+
+      - name: Run dependency linker (CommentsOnly, not DryRun)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          pwsh -NoProfile -Command "./scripts/gh_link_dependencies.ps1 -Repo 'talowa-org/talowa' -LinksMode CommentsOnly"
+
+      - name: Failure notification (create GH issue)
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo talowa-org/talowa \
+            --title "Dependency linker failed ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))" \
+            --body "Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --label "type: bug" \
+            --label "priority: high"
+
