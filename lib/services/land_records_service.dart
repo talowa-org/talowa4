@@ -18,11 +18,21 @@ typedef LandRecord = LandRecordModel;
 class LandRecordsService {
   static final LandRecordsService _instance = LandRecordsService._internal();
   factory LandRecordsService() => _instance;
-  LandRecordsService._internal();
+  LandRecordsService._internal({FirebaseFirestore? firestore, FirebaseStorage? storage, FirebaseAuth? auth}) {
+    _firestore = firestore ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+    _auth = auth ?? FirebaseAuth.instance;
+  }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final FirebaseFirestore _firestore;
+  late final FirebaseStorage _storage;
+  late final FirebaseAuth _auth;
+
+
+  // Public factory for tests to inject fakes without touching the singleton
+  factory LandRecordsService.forTest({FirebaseFirestore? firestore, FirebaseStorage? storage, FirebaseAuth? auth}) {
+    return LandRecordsService._internal(firestore: firestore, storage: storage, auth: auth);
+  }
 
   /// Get all land records for current user
   Stream<List<LandRecord>> getUserLandRecords() {
@@ -397,7 +407,7 @@ class LandRecordsService {
     try {
       // This would integrate with government databases in production
       // For now, return mock data based on record analysis
-      
+
       final record = await getLandRecord(recordId);
       if (record == null) return [];
 

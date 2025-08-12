@@ -13,11 +13,21 @@ import 'package:url_launcher/url_launcher.dart';
 class EmergencyService {
   static final EmergencyService _instance = EmergencyService._internal();
   factory EmergencyService() => _instance;
-  EmergencyService._internal();
+  EmergencyService._internal({FirebaseFirestore? firestore, FirebaseAuth? auth, FirebaseMessaging? messaging}) {
+    _firestore = firestore ?? FirebaseFirestore.instance;
+    _auth = auth ?? FirebaseAuth.instance;
+    _messaging = messaging ?? FirebaseMessaging.instance;
+  }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  late final FirebaseFirestore _firestore;
+  late final FirebaseAuth _auth;
+  late final FirebaseMessaging _messaging;
+
+
+  // Public factory for tests
+  factory EmergencyService.forTest({FirebaseFirestore? firestore, FirebaseAuth? auth, FirebaseMessaging? messaging}) {
+    return EmergencyService._internal(firestore: firestore, auth: auth, messaging: messaging);
+  }
 
   // Emergency contact numbers
   static const Map<String, String> emergencyContacts = {
@@ -44,7 +54,7 @@ class EmergencyService {
 
       // Get current location
       final position = await _getCurrentLocation();
-      
+
       // Create emergency incident
       final incident = EmergencyIncident(
         id: '', // Will be set by Firestore
@@ -178,7 +188,7 @@ class EmergencyService {
 
       // Get location-specific contacts
       final contacts = await _getLocationSpecificContacts(district, mandal);
-      
+
       // Add default contacts
       contacts.addAll(_getDefaultEmergencyContacts());
 
@@ -220,7 +230,7 @@ class EmergencyService {
 
     return query.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => EmergencyIncident.fromFirestore(doc))
-        .where((incident) => 
+        .where((incident) =>
           // Filter active incidents locally
           (incident.status == IncidentStatus.active ||
            incident.status == IncidentStatus.reported ||
@@ -250,7 +260,7 @@ class EmergencyService {
 
       final userData = userDoc.data()!;
       final role = userData['role'] as String?;
-      
+
       if (!_isCoordinator(role)) {
         throw Exception('Only coordinators can update incident status');
       }
@@ -294,14 +304,14 @@ class EmergencyService {
       final uri = Uri.parse('tel:$phoneNumber');
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
-        
+
         // Log emergency call
         await _logEmergencyActivity(
           incidentId: null,
           action: 'emergency_call',
           details: 'Emergency call made to $contactType ($phoneNumber)',
         );
-        
+
         return true;
       }
       return false;
@@ -334,7 +344,7 @@ class EmergencyService {
 
       final userData = userDoc.data()!;
       final role = userData['role'] as String?;
-      
+
       if (!_isCoordinator(role)) {
         throw Exception('Only coordinators can send emergency broadcasts');
       }
@@ -407,7 +417,7 @@ class EmergencyService {
     try {
       // Get emergency contacts for the area
       final contacts = await getEmergencyContacts();
-      
+
       // Send notifications to relevant contacts
       for (final contact in contacts) {
         if (contact.type == ContactType.coordinator ||
@@ -510,11 +520,11 @@ class EmergencyService {
   ) async {
     try {
       Query query = _firestore.collection('emergency_contacts');
-      
+
       if (district != null) {
         query = query.where('district', isEqualTo: district);
       }
-      
+
       if (mandal != null) {
         query = query.where('mandal', isEqualTo: mandal);
       }
