@@ -367,12 +367,12 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           break;
         // Known future routes: map to main with specific feedback
         case '/land/records':
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-          _showNavigationFeedback('Land Records feature coming soon! Opening Home for now.');
+          Navigator.pushNamed(context, '/land/records');
+          _showNavigationFeedback('Opening Land Records');
           break;
         case '/land/add':
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-          _showNavigationFeedback('Add Land Record feature coming soon! Opening Home for now.');
+          Navigator.pushNamed(context, '/land/add');
+          _showNavigationFeedback('Add Land Record');
           break;
         case '/legal/patta-guide':
           Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
@@ -383,8 +383,8 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           _showNavigationFeedback('Legal Support feature coming soon! Opening Home for now.');
           break;
         case '/emergency/report':
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-          _showNavigationFeedback('Emergency Report feature coming soon! Opening Home for now.');
+          Navigator.pushNamed(context, '/emergency/report');
+          _showNavigationFeedback('Report an Incident');
           break;
         default:
           // Attempt a direct named route; if it fails, show a toast

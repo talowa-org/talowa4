@@ -162,20 +162,20 @@ class LandRecordsService {
       };
 
       if (surveyNumber != null) updates['surveyNumber'] = surveyNumber;
-      if (village != null) updates['village'] = village;
-      if (mandal != null) updates['mandal'] = mandal;
-      if (district != null) updates['district'] = district;
+      if (village != null) updates['location.village'] = village;
+      if (mandal != null) updates['location.mandal'] = mandal;
+      if (district != null) updates['location.district'] = district;
       if (area != null) updates['area'] = area;
-      if (areaUnit != null) updates['areaUnit'] = areaUnit;
-      if (landType != null) updates['landType'] = landType.toString();
-      if (pattaStatus != null) updates['pattaStatus'] = pattaStatus.toString();
-      if (description != null) updates['description'] = description;
-      if (documentUrls != null) updates['documentUrls'] = documentUrls;
+      if (areaUnit != null) updates['unit'] = areaUnit;
+      if (landType != null) updates['landType'] = landType.toString().split('.').last;
+      if (pattaStatus != null) updates['legalStatus'] = pattaStatus.toString().split('.').last;
+      if (description != null) updates['issues.description'] = description;
+      if (documentUrls != null) updates['documents.photos'] = documentUrls;
       if (gpsLocation != null) {
-        updates['gpsCoordinates'] = GeoPoint(
-          gpsLocation.latitude,
-          gpsLocation.longitude,
-        );
+        updates['location.coordinates'] = {
+          'latitude': gpsLocation.latitude,
+          'longitude': gpsLocation.longitude,
+        };
       }
 
       await _firestore
@@ -265,7 +265,7 @@ class LandRecordsService {
           .collection(AppConstants.collectionLandRecords)
           .doc(recordId)
           .update({
-        'documentUrls': FieldValue.arrayUnion([downloadUrl]),
+        'documents.photos': FieldValue.arrayUnion([downloadUrl]),
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
@@ -322,7 +322,6 @@ class LandRecordsService {
           .collection(AppConstants.collectionLandRecords)
           .where('ownerId', isEqualTo: user.uid)
           .where('surveyNumber', isEqualTo: surveyNumber)
-          .where('isActive', isEqualTo: true)
           .get();
 
       return snapshot.docs
@@ -349,15 +348,14 @@ class LandRecordsService {
       Query query = _firestore
           .collection(AppConstants.collectionLandRecords)
           .where('ownerId', isEqualTo: user.uid)
-          .where('village', isEqualTo: village)
-          .where('isActive', isEqualTo: true);
+          .where('location.village', isEqualTo: village);
 
       if (mandal != null) {
-        query = query.where('mandal', isEqualTo: mandal);
+        query = query.where('location.mandal', isEqualTo: mandal);
       }
 
       if (district != null) {
-        query = query.where('district', isEqualTo: district);
+        query = query.where('location.district', isEqualTo: district);
       }
 
       final snapshot = await query.get();
@@ -381,7 +379,6 @@ class LandRecordsService {
       final snapshot = await _firestore
           .collection(AppConstants.collectionLandRecords)
           .where('ownerId', isEqualTo: user.uid)
-          .where('isActive', isEqualTo: true)
           .get();
 
       final records = snapshot.docs
@@ -445,8 +442,7 @@ class LandRecordsService {
 
       Query query = _firestore
           .collection(AppConstants.collectionLandRecords)
-          .where('ownerId', isEqualTo: user.uid)
-          .where('isActive', isEqualTo: true);
+          .where('ownerId', isEqualTo: user.uid);
 
       if (startDate != null) {
         query = query.where('createdAt', isGreaterThanOrEqualTo: startDate);

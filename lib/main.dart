@@ -9,6 +9,10 @@ import 'screens/auth/new_login_screen.dart';
 import 'screens/auth/real_user_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
 import 'screens/dev/ai_test_screen.dart';
+import 'screens/land_records/land_records_list_screen.dart';
+import 'screens/land_records/land_record_detail_screen.dart';
+import 'screens/land_records/land_record_form_screen.dart';
+import 'screens/emergency/emergency_report_screen.dart';
 import 'services/performance_monitor.dart';
 import 'services/localization_service.dart';
 import 'services/data_population_service.dart';
@@ -68,6 +72,23 @@ class TalowaApp extends StatelessWidget {
         '/register': (context) => const RealUserRegistrationScreen(),
         '/main': (context) => const MainNavigationScreen(),
         '/ai-test': (context) => const AITestScreen(),
+        // Land records
+        '/land/records': (context) => const LandRecordsListScreen(),
+        '/land/add': (context) => const LandRecordFormScreen(),
+        // Emergency
+        '/emergency/report': (context) => const EmergencyReportScreen(),
+      },
+      // onGenerateRoute for dynamic detail/edit routes
+      onGenerateRoute: (settings) {
+        if (settings.name == '/land/detail') {
+          final id = settings.arguments as String;
+          return MaterialPageRoute(builder: (_) => LandRecordDetailScreen(recordId: id));
+        }
+        if (settings.name == '/land/edit') {
+          final initial = settings.arguments as dynamic;
+          return MaterialPageRoute(builder: (_) => LandRecordFormScreen(initial: initial));
+        }
+        return null;
       },
     );
   }
