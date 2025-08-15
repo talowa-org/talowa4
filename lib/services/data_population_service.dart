@@ -16,11 +16,47 @@ class DataPopulationService {
       await populateHashtags();
       await populateAnalytics();
       await populateNotifications();
+      await populateActiveStories();
       
       debugPrint('✅ All missing data populated successfully!');
     } catch (e) {
       debugPrint('❌ Error populating data: $e');
-      rethrow;
+      // Don't rethrow to prevent app crashes
+      debugPrint('⚠️ Continuing app startup despite data population errors...');
+    }
+  }
+  
+  /// Populate active stories collection
+  static Future<void> populateActiveStories() async {
+    try {
+      debugPrint('📖 Populating active stories...');
+      
+      // Check if active stories already exist
+      final existingStories = await _firestore
+          .collection('active_stories')
+          .limit(1)
+          .get();
+      
+      if (existingStories.docs.isNotEmpty) {
+        debugPrint('✅ Active stories already exist, skipping...');
+        return;
+      }
+      
+      final storiesData = {
+        'id': 'active_stories_${DateTime.now().millisecondsSinceEpoch}',
+        'stories': [],
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      
+      await _firestore
+          .collection('active_stories')
+          .doc('current')
+          .set(storiesData);
+      
+      debugPrint('✅ Active stories populated successfully!');
+    } catch (e) {
+      debugPrint('❌ Error populating active stories: $e');
     }
   }
 
@@ -29,7 +65,19 @@ class DataPopulationService {
     try {
       debugPrint('📝 Populating daily motivation...');
       
+      // Check if daily motivation already exists
+      final existingMotivation = await _firestore
+          .collection('daily_motivation')
+          .limit(1)
+          .get();
+      
+      if (existingMotivation.docs.isNotEmpty) {
+        debugPrint('✅ Daily motivation already exists, skipping...');
+        return;
+      }
+      
       final motivationData = {
+        'id': 'daily_motivation_${DateTime.now().millisecondsSinceEpoch}',
         'messages': [
           "आज एक नया दिन है। अपनी भूमि के लिए लड़ते रहें। (Today is a new day. Keep fighting for your land.)",
           "एकजुट होकर हम अपने अधिकारों को पा सकते हैं। (United we can achieve our rights.)",

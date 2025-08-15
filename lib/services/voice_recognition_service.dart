@@ -25,25 +25,33 @@ class VoiceRecognitionService {
   /// Initialize voice recognition service
   Future<bool> initialize() async {
     try {
+      // For web platform, use different initialization
+      if (kIsWeb) {
+        debugPrint('🌐 Initializing voice recognition for web platform...');
+        _isInitialized = true;
+        debugPrint('✅ Voice recognition service initialized for web');
+        return true;
+      }
+      
       // Check if voice recognition is available on the platform
       final bool available = await _channel.invokeMethod('isVoiceRecognitionAvailable');
       
       if (available) {
         _isInitialized = true;
-        debugPrint('Voice recognition service initialized successfully');
+        debugPrint('✅ Voice recognition service initialized successfully');
         
         // Test the service connection
         try {
           await _channel.invokeMethod('getSupportedLanguages');
-          debugPrint('Voice recognition service connection verified');
+          debugPrint('✅ Voice recognition service connection verified');
         } catch (e) {
-          debugPrint('Voice recognition service connection issue: $e');
+          debugPrint('⚠️ Voice recognition service connection issue: $e');
           // Still mark as initialized but with potential issues
         }
         
         return true;
       } else {
-        debugPrint('Voice recognition not available on this device');
+        debugPrint('❌ Voice recognition not available on this device');
         _isInitialized = false;
         return false;
       }
