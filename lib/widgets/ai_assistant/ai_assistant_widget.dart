@@ -938,6 +938,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           // Text input
           Expanded(
             child: TextField(
+              key: const Key('ai_input_field'),
               controller: _textController,
               decoration: InputDecoration(
                 hintText: 'Ask me about land records, legal help, or anything else...',
@@ -961,6 +962,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
 
           // Send button
           GestureDetector(
+            key: const Key('ai_send_btn'),
             onTap: _sendTextMessage,
             child: Container(
               width: 40,

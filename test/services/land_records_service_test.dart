@@ -1,14 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:talowa/services/land_records_service.dart';
+
+class _FakeStorage implements FirebaseStorage {
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   test('Create/Update/Delete land record with nested mapping', () async {
     final fs = FakeFirebaseFirestore();
-    final auth = MockFirebaseAuth(mockUser: MockUser(uid: 'u1', phoneNumber: '9999999999'));
-    final service = LandRecordsService.forTest(firestore: fs, auth: auth);
+    final auth = MockFirebaseAuth(signedIn: true, mockUser: MockUser(uid: 'u1', phoneNumber: '9999999999'));
+    final service = LandRecordsService.forTest(firestore: fs, auth: auth, storage: _FakeStorage());
 
     final id = await service.createLandRecord(
       surveyNumber: '123', village: 'V', mandal: 'M', district: 'D',

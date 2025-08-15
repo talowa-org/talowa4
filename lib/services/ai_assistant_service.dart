@@ -64,11 +64,29 @@ class AIResponse {
 class AIAssistantService {
   static final AIAssistantService _instance = AIAssistantService._internal();
   factory AIAssistantService() => _instance;
-  AIAssistantService._internal();
+  AIAssistantService._internal({FirebaseFirestore? firestore, FirebaseAuth? auth, UniversalVoiceService? voiceService, FlutterTts? tts}) {
+    _firestore = firestore ?? FirebaseFirestore.instance;
+    _auth = auth ?? FirebaseAuth.instance;
+    _voiceService = voiceService ?? UniversalVoiceService();
+    _tts = tts ?? FlutterTts();
+  }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final UniversalVoiceService _voiceService = UniversalVoiceService();
-  final FlutterTts _tts = FlutterTts();
+  bool _testMode = false;
+
+  // Public factory for tests to inject fakes and bypass platform dependencies
+  factory AIAssistantService.forTest({FirebaseFirestore? firestore, FirebaseAuth? auth}) {
+    final svc = AIAssistantService._internal(
+      firestore: firestore,
+      auth: auth,
+    );
+    svc._testMode = true;
+    return svc;
+  }
+
+  late final FirebaseFirestore _firestore;
+  late final FirebaseAuth _auth;
+  late final UniversalVoiceService _voiceService;
+  late final FlutterTts _tts;
 
   bool _isListening = false;
   bool _isInitialized = false;
@@ -81,9 +99,18 @@ class AIAssistantService {
   bool get isInitialized => _isInitialized;
   bool get speechAvailable => _speechAvailable;
 
+
   /// Initialize AI Assistant with user context
   Future<bool> initialize() async {
     try {
+      if (_testMode) {
+        _speechAvailable = false;
+        await _loadUserContext();
+        _isInitialized = true;
+        debugPrint('AI Assistant initialized in test mode');
+        return true;
+      }
+
       // Initialize voice recognition service
       _speechAvailable = await _voiceService.initialize();
 
@@ -210,7 +237,7 @@ class AIAssistantService {
 
   Future<AIResponse?> _callBackend({required String query, required bool isVoice}) async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _auth.currentUser;
       final idToken = await user?.getIdToken();
       if (idToken == null) return null;
 
@@ -343,7 +370,7 @@ class AIAssistantService {
 
   Future<void> _loadUserContext() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _auth.currentUser;
       if (user != null) {
         final doc = await _firestore.collection('users').doc(user.uid).get();
         if (doc.exists) {
@@ -464,7 +491,7 @@ class AIAssistantService {
   }
 
   Future<AIResponse> _generateLandRecordsResponse() async {
-    if (_currentUser == null) {
+    if (_currentUser == null && !_testMode) {
       return AIResponse(
         text: 'Please log in to view your land records.',
         actions: [],

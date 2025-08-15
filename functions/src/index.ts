@@ -141,7 +141,7 @@ async function setCachedAI(query: string, lang: string, payload: any, ttlMs = 6 
 
 export const aiRespond = functions.runWith({
   secrets: [OPENROUTER_API_KEY],
-}).region('asia-south1').https.onRequest(async (req, res): Promise<void> => {
+}).region('asia-south1').https.onRequest(async (req: any, res: any): Promise<void> => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Headers', 'authorization, content-type');
 

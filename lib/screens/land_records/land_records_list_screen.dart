@@ -5,11 +5,13 @@ import '../../models/land_record_model.dart';
 import '../../core/theme/app_theme.dart';
 
 class LandRecordsListScreen extends StatelessWidget {
-  const LandRecordsListScreen({super.key});
+  final LandRecordsService? serviceOverride;
+  final Stream<List<LandRecordModel>>? recordsStream;
+  const LandRecordsListScreen({super.key, this.serviceOverride, this.recordsStream});
 
   @override
   Widget build(BuildContext context) {
-    final service = LandRecordsService();
+    final service = serviceOverride ?? LandRecordsService();
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +25,7 @@ class LandRecordsListScreen extends StatelessWidget {
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: StreamBuilder<List<LandRecordModel>>(
-        stream: service.getUserLandRecords(),
+        stream: recordsStream ?? service.getUserLandRecords(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

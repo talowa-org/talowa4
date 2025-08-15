@@ -42,6 +42,7 @@ const admin = __importStar(require("firebase-admin"));
 const openai_1 = __importDefault(require("openai"));
 const zod_1 = require("zod");
 const params_1 = require("firebase-functions/params");
+const crypto = __importStar(require("crypto"));
 admin.initializeApp();
 const db = admin.firestore();
 // Secrets and params
@@ -85,7 +86,7 @@ function clamp01(n) {
         return 0.6;
     return Math.max(0, Math.min(1, x));
 }
-function coerceToAIResponse(input, raw, query, lang) {
+function coerceToAIResponse(input, raw, lang) {
     const textCandidate = typeof input?.text === 'string' ? input.text :
         typeof input?.answer === 'string' ? input.answer :
             typeof input?.message === 'string' ? input.message : raw;
@@ -106,8 +107,20 @@ function coerceToAIResponse(input, raw, query, lang) {
     };
 }
 async function allowlistActions(actions) {
-    // Enforce safe routes and phone formats
-    return actions.filter(a => {
+    // Enforce safe routes and phone formats and normalize suggestions
+    return actions
+        .map(a => {
+        if (a?.type === 'suggestions') {
+            const data = a.data || {};
+            if (Array.isArray(data.categories) && !Array.isArray(data.suggestions)) {
+                data.suggestions = data.categories;
+                delete data.categories;
+            }
+            a.data = data;
+        }
+        return a;
+    })
+        .filter(a => {
         if (a.type === 'navigate') {
             return typeof a.data?.route === 'string' && a.data.route.startsWith('/');
         }
@@ -116,6 +129,38 @@ async function allowlistActions(actions) {
         }
         return true;
     });
+}
+// --- Simple Firestore response cache (best-effort) ---
+async function getCachedAI(query, lang) {
+    try {
+        const key = crypto.createHash('sha256').update(`${normalizeQuery(query)}|${lang}`).digest('hex').slice(0, 32);
+        const ref = db.collection('ai_cache').doc(key);
+        const snap = await ref.get();
+        if (snap.exists) {
+            const d = snap.data();
+            const expiresAt = d?.expiresAt?.toMillis ? d.expiresAt.toMillis() : d?.expiresAt;
+            if (expiresAt && Date.now() < Number(expiresAt)) {
+                return d.payload;
+            }
+        }
+        function cacheKey(query, lang) {
+            return crypto.createHash('sha256').update(`${normalizeQuery(query)}|${lang}`).digest('hex').slice(0, 32);
+        }
+    }
+    catch (_) { }
+    return null;
+}
+async function setCachedAI(query, lang, payload, ttlMs = 6 * 60 * 60 * 1000) {
+    try {
+        const key = crypto.createHash('sha256').update(`${normalizeQuery(query)}|${lang}`).digest('hex').slice(0, 32);
+        const ref = db.collection('ai_cache').doc(key);
+        await ref.set({
+            payload,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            expiresAt: new Date(Date.now() + ttlMs)
+        }, { merge: true });
+    }
+    catch (_) { }
 }
 exports.aiRespond = functions.runWith({
     secrets: [OPENROUTER_API_KEY],
@@ -140,7 +185,7 @@ exports.aiRespond = functions.runWith({
         const model = process.env.OPENROUTER_MODEL || process.env.OPENAI_MODEL || OPENROUTER_MODEL.value() || DEFAULT_MODEL;
         const apiKey = OPENROUTER_API_KEY.value();
         const openai = new openai_1.default({ apiKey, baseURL });
-        const { query, lang = 'en', isVoice = false, context = {}, client = {} } = req.body || {};
+        const { query, lang = 'en', isVoice = false, context = {} } = req.body || {};
         if (!query || typeof query !== 'string') {
             res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'query is required' } });
             return;
@@ -171,8 +216,15 @@ exports.aiRespond = functions.runWith({
         // Build prompt
         const system = `You are the TALOWA land-rights assistant for Indian users. Provide concise, practical help.
 Respond ONLY with valid JSON object matching this TypeScript type:
-{ text: string; confidence: number; actions: Array<{ type: 'navigate'|'call'|'share'|'suggestions'|'form'; label: string; data: Record<string, any> }>; meta?: { intent?: string; lang?: string; citations?: any[]; usage?: Record<string, any> } }
-No prose, no markdown, no code fences.`;
+{ text: string; confidence: number; actions: Array<{ type: 'navigate'|'call'|'share'|'suggestions'|'form'; label: string; data: { suggestions?: string[]; route?: string; phone?: string } & Record<string, any> }>; meta?: { intent?: string; lang?: string; citations?: any[]; usage?: Record<string, any> } }
+
+      // Cache bypass for voice; attempt cache for common text queries
+      if (!isVoice) {
+        const cached = await getCachedAI(query, lang);
+        if (cached) { res.json(cached); return; }
+      }
+
+For suggestions actions, always use data.suggestions (string[]) not categories. No prose, no markdown, no code fences.`;
         const user = `Query: ${query}\nLang: ${lang}\nContext: ${JSON.stringify({ uid, ...context })}`;
         // Model preference with fallback (free tiers)
         const primaryModel = model || 'meta-llama/llama-3.1-8b-instruct';
@@ -203,7 +255,7 @@ No prose, no markdown, no code fences.`;
                 }
                 // Validate and enforce safety (with coercion fallback)
                 const safe = AIResponseSchema.safeParse(parsed);
-                const candidate = safe.success ? safe.data : coerceToAIResponse(parsed, content, query, lang);
+                const candidate = safe.success ? safe.data : coerceToAIResponse(parsed, content, lang);
                 const sanitized = candidate;
                 sanitized.actions = await allowlistActions(sanitized.actions);
                 sanitized.meta = { ...(sanitized.meta || {}), lang, usage: { model: mdl } };
