@@ -85,8 +85,8 @@ TALOWA is a comprehensive Flutter-based platform designed to help land rights ac
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/talowa.git
-   cd talowa
+   git clone https://github.com/talowa-org/talowa1.git
+   cd talowa1
    ```
 
 2. **Install Flutter dependencies**
@@ -208,8 +208,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 **Support**
 
 - **Documentation**: [docs/README.md](docs/README.md)
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/talowa/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/talowa/discussions)
+- **Issues**: [GitHub Issues](https://github.com/talowa-org/talowa1/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/talowa-org/talowa1/discussions)
 
 ---
 
