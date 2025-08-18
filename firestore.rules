@@ -1,12 +1,85 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection - users can read/write their own data
+    // Helper function to check if user owns the document
+    function isOwn(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Fields that clients must NEVER write
+    function hasServerOnlyChanges(newData, oldData) {
+      return newData.diff(oldData).changedKeys().hasAny([
+        'referralCode','referredBy','referralChain',
+        'directReferralCount','totalTeamSize',
+        'status','membershipPaid','paidAt','paymentRef',
+        'provisionalRef','assignedBySystem','role'
+      ]);
+    }
+
+    // Allowed keys the app updates at login/registration
+    function allowedClientKeys(newData, oldData) {
+      return newData.diff(oldData).changedKeys().hasOnly([
+        'fullName','email','emailAlias','phone',
+        'language','locale','bio','address',
+        'profileCompleted','phoneVerified',
+        'lastLoginAt','device'
+      ]);
+    }
+
+    // Validate lastLoginAt and device payloads
+    function isLoginPatchValid(newData) {
+      return
+        (!newData.keys().hasAny(['lastLoginAt']) || request.time == newData.lastLoginAt) &&
+        (!newData.keys().hasAny(['device']) ||
+          (newData.device is map &&
+           newData.device.keys().hasOnly(['platform','appVersion']) &&
+           newData.device.platform is string &&
+           newData.device.appVersion is string));
+    }
+
+    // Validate registration data structure
+    function isValidRegistrationData(data) {
+      return data.keys().hasOnly([
+        'fullName','email','emailAlias','phone',
+        'language','locale','address',
+        'profileCompleted','phoneVerified',
+        'lastLoginAt','device'
+      ]) &&
+      data.profileCompleted == true &&
+      data.phoneVerified == true;
+    }
+
+    // Users collection - strict security rules for referral system
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && 
-        (resource.data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership']);
-      allow read: if request.auth != null; // Allow authenticated users to read other user profiles for network features
+      // Allow read access to own profile and basic info of others
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        isPublicUserData()
+      );
+
+      // Allow create only for own profile during registration with tight constraints
+      allow create: if isOwn(userId) &&
+                    !hasServerOnlyChanges(request.resource.data, {}) &&
+                    isValidRegistrationData(request.resource.data) &&
+                    isLoginPatchValid(request.resource.data);
+
+      // Allow update only for specific safe fields and own profile
+      allow update: if isOwn(userId) &&
+                    !hasServerOnlyChanges(request.resource.data, resource.data) &&
+                    allowedClientKeys(request.resource.data, resource.data) &&
+                    isLoginPatchValid(request.resource.data);
+
+      // No delete allowed for users
+      allow delete: if false;
+
+      // Helper functions for user validation
+      function isPublicUserData() {
+        return request.query.limit <= 100 && (
+          'fullName' in resource.data ||
+          'role' in resource.data ||
+          'referralCode' in resource.data
+        );
+      }
     }
     
     // User registry for quick lookups - MUST allow unauthenticated read for login check
@@ -215,5 +288,90 @@ service cloud.firestore {
       allow write: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership'];
     }
+
+    // Referral system collections - strict server-only access
+
+    // Referral codes collection - read-only for clients
+    match /referralCodes/{codeId} {
+      // Allow read for validation purposes
+      allow read: if request.auth != null;
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+    // Referrals collection - read-only for clients
+    match /referrals/{referralId} {
+      // Allow read for own referrals only
+      allow read: if request.auth != null && (
+        resource.data.referrerId == request.auth.uid ||
+        resource.data.referredUserId == request.auth.uid
+      );
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+    // Payments collection - read-only for own payments
+    match /payments/{paymentId} {
+      // Allow read for own payments only
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+    // Commissions collection - read-only for own commissions
+    match /commissions/{commissionId} {
+      // Allow read for own commissions only
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+    // Performance metrics - no client access
+    match /performance_metrics/{metricId} {
+      allow read, write: if false;
+    }
+
+    // Error events - no client access
+    match /error_events/{errorId} {
+      allow read, write: if false;
+    }
+
+    // Critical alerts - no client access
+    match /critical_alerts/{alertId} {
+      allow read, write: if false;
+    }
+
+    // Analytics events - no client access
+    match /analytics_events/{eventId} {
+      allow read, write: if false;
+    }
+
+    // Achievements collection - read-only for own achievements
+    match /achievements/{achievementId} {
+      // Allow read for own achievements
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+    // Certificates collection - read-only for own certificates
+    match /certificates/{certificateId} {
+      // Allow read for own certificates
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+
+      // No write access for clients - server only
+      allow write: if false;
+    }
+
+
   }
 }

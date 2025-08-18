@@ -1,11 +1,16 @@
 // Authentication Service for TALOWA
 // Reference: REGISTRATION_SYSTEM.md - Auth Flows
 
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import 'database_service.dart';
+import 'referral_code_cache_service.dart';
+import 'server_profile_ensure_service.dart';
+
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -60,10 +65,15 @@ class AuthService {
       }
 
       final user = userCredential.user!;
-      
-      // Generate member ID and referral code
-      final memberId = _generateMemberId();
-      final userReferralCode = _generateReferralCode(normalizedPhone);
+
+      // Create client-safe user profile with only allowed fields
+      await _createClientUserProfile(
+        uid: user.uid,
+        fullName: fullName,
+        email: email,
+        phone: normalizedPhone,
+        address: address,
+      );
 
       // Create user registry entry
       await DatabaseService.createUserRegistry(
@@ -77,42 +87,24 @@ class AuthService {
         village: address.villageCity,
       );
 
-      // Create full user profile
-      final userModel = UserModel(
-        id: user.uid,
-        phoneNumber: normalizedPhone,
-        email: email,
-        fullName: fullName,
-        role: AppConstants.roleMember,
-        memberId: memberId,
-        referralCode: userReferralCode,
-        referredBy: referralCode,
-        address: address,
-        directReferrals: 0,
-        teamSize: 0,
-        membershipPaid: false,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        preferences: UserPreferences(
-          language: AppConstants.languageEnglish,
-          notifications: NotificationPreferences(
-            push: true,
-            sms: true,
-            email: false,
-          ),
-          privacy: PrivacyPreferences(
-            showLocation: false,
-            allowDirectContact: true,
-          ),
-        ),
-      );
-
-      await DatabaseService.createUserProfile(userModel);
-
-      // Handle referral if provided
-      if (referralCode != null && referralCode.isNotEmpty) {
-        await _processReferral(referralCode, user.uid);
+      // Get the created user profile
+      final userProfile = await DatabaseService.getUserProfile(user.uid);
+      if (userProfile == null) {
+        throw Exception('Failed to retrieve created user profile');
       }
+
+      // Ensure server-side profile fields are populated BEFORE cache initialization
+      String referralCode = 'TAL---';
+      try {
+        final ensureResult = await ServerProfileEnsureService.ensureUserProfile(user.uid);
+        referralCode = ensureResult['referralCode'] ?? 'TAL---';
+        debugPrint('Server-side profile ensure completed, referralCode: $referralCode');
+      } catch (e) {
+        debugPrint('Server-side profile ensure failed (non-blocking): $e');
+      }
+
+      // Initialize referral code cache with the generated code
+      await ReferralCodeCacheService.initializeWithCode(user.uid, referralCode);
 
       // Log performance
       final duration = DateTime.now().difference(startTime).inMilliseconds;
@@ -123,7 +115,7 @@ class AuthService {
       return AuthResult(
         success: true,
         message: 'Registration successful',
-        user: userModel,
+        user: userProfile,
       );
 
     } catch (e) {
@@ -201,12 +193,11 @@ class AuthService {
         );
       }
 
-      // Update last login time
-      final updatedUser = userProfile.copyWith(
-        lastLoginAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-      await DatabaseService.updateUserProfile(updatedUser);
+      // Update last login time with only allowed fields
+      await _updateLoginTimestamp(userCredential.user!.uid);
+
+      // Initialize referral code cache for immediate availability
+      ReferralCodeCacheService.initialize(userCredential.user!.uid);
 
       // Clear rate limiting on successful login
       _clearLoginAttempts(normalizedPhone);
@@ -220,7 +211,7 @@ class AuthService {
       return AuthResult(
         success: true,
         message: 'Login successful',
-        user: updatedUser,
+        user: userProfile,
       );
 
     } catch (e) {
@@ -345,18 +336,7 @@ class AuthService {
     return 'talowa_${pin}_secure';
   }
 
-  static String _generateMemberId() {
-    final now = DateTime.now();
-    final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-    final randomStr = (now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
-    return 'MBR-$dateStr-$randomStr';
-  }
 
-  static String _generateReferralCode(String phoneNumber) {
-    final lastFour = phoneNumber.substring(phoneNumber.length - 4);
-    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    return 'REF$lastFour${timestamp.substring(timestamp.length - 4)}';
-  }
 
   static bool _canAttemptLogin(String phoneNumber) {
     final attempts = _loginAttempts[phoneNumber] ?? [];
@@ -377,26 +357,66 @@ class AuthService {
     _loginAttempts.remove(phoneNumber);
   }
 
-  static Future<void> _processReferral(String referralCode, String newUserId) async {
+  /// Create client-safe user profile with only allowed fields
+  static Future<void> _createClientUserProfile({
+    required String uid,
+    required String fullName,
+    required String email,
+    required String phone,
+    required Address address,
+  }) async {
     try {
-      // Find the referrer by referral code
-      final users = await DatabaseService.searchUsers(query: referralCode);
-      final referrer = users.firstWhere(
-        (user) => user.referralCode == referralCode,
-        orElse: () => throw Exception('Invalid referral code'),
-      );
+      final firestore = FirebaseFirestore.instance;
 
-      // Add referral relationship
-      await DatabaseService.addReferral(
-        referrerId: referrer.id,
-        referredUserId: newUserId,
-        referralCode: referralCode,
-      );
+      // Only send allowed fields to avoid permission errors
+      final userData = {
+        'fullName': fullName,
+        'email': email,
+        'emailAlias': email,
+        'phone': phone,
+        'address': address.toMap(),
+        'profileCompleted': true,
+        'phoneVerified': true,
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'language': 'en',
+        'locale': 'en_US',
+        'device': {
+          'platform': kIsWeb ? 'web' : Platform.operatingSystem,
+          'appVersion': '1.0.0', // TODO: Get from package_info
+        },
+      };
 
-      debugPrint('Referral processed: ${referrer.id} -> $newUserId');
+      debugPrint('Creating user profile with payload: ${userData.keys.toList()}');
+
+      await firestore.collection('users').doc(uid).set(userData);
+      debugPrint('User profile created successfully');
     } catch (e) {
-      debugPrint('Error processing referral: $e');
-      // Don't fail registration if referral processing fails
+      debugPrint('Failed to create user profile: $e');
+      throw Exception('Failed to create user profile: $e');
+    }
+  }
+
+  /// Update login timestamp with only allowed fields (non-blocking)
+  static Future<void> _updateLoginTimestamp(String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Only send allowed fields to avoid permission errors
+      final updateData = {
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'device': {
+          'platform': kIsWeb ? 'web' : 'mobile',
+          'appVersion': '1.0.0', // TODO: Get from package info
+        },
+      };
+
+      debugPrint('Updating login timestamp with payload: ${updateData.keys.toList()}');
+
+      await firestore.collection('users').doc(uid).update(updateData);
+      debugPrint('Login timestamp updated successfully');
+    } catch (e) {
+      // Non-blocking: log error but don't fail login
+      debugPrint('Failed to update login timestamp (non-blocking): $e');
     }
   }
 }

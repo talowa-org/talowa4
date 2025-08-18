@@ -3,8 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
+import '../../services/referral/universal_link_service.dart';
+import '../../services/referral_code_cache_service.dart';
+import 'dart:async';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});
@@ -15,6 +19,8 @@ class NetworkScreen extends StatefulWidget {
 
 class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateMixin {
   late TabController _tabController;
+  StreamSubscription<DocumentSnapshot>? _userSubscription;
+  StreamSubscription<QuerySnapshot>? _directReferralsSubscription;
   Map<String, dynamic>? userData;
   List<Map<String, dynamic>> _directReferrals = [];
   List<Map<String, dynamic>> _teamMembers = [];
@@ -24,46 +30,153 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadNetworkData();
+    _initializeReferralCodeCache();
+    _setupRealtimeStreams();
+  }
+
+  void _initializeReferralCodeCache() {
+    final user = AuthService.currentUser;
+    if (user != null) {
+      ReferralCodeCacheService.initialize(user.uid);
+    }
   }
 
   @override
   void dispose() {
+    _userSubscription?.cancel();
+    _directReferralsSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadNetworkData() async {
-    setState(() {
-      _isLoading = true;
+  void _setupRealtimeStreams() {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // Stream user data for real-time updates
+    _userSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .snapshots()
+        .listen((userDoc) {
+      if (userDoc.exists) {
+        setState(() {
+          userData = userDoc.data();
+          _isLoading = false;
+        });
+
+        // Set up direct referrals stream now that we have user data
+        _setupDirectReferralsStream();
+      }
+    }, onError: (error) {
+      debugPrint('Error streaming user data: $error');
+      setState(() {
+        _isLoading = false;
+      });
     });
 
-    try {
-      final user = AuthService.currentUser;
-      if (user != null) {
-        // Load user data
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        
-        if (userDoc.exists) {
-          userData = userDoc.data();
-        }
+  }
 
-        // Load direct referrals (mock data for now)
-        _directReferrals = _generateMockReferrals();
-        _teamMembers = _generateMockTeamMembers();
+  void _setupDirectReferralsStream() {
+    final userReferralCode = userData?['referralCode'];
+    if (userReferralCode == null) return;
+
+    // Stream direct referrals for real-time updates
+    _directReferralsSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .where('referredBy', isEqualTo: userReferralCode)
+        .snapshots()
+        .listen((querySnapshot) {
+      final referrals = <Map<String, dynamic>>[];
+
+      for (final doc in querySnapshot.docs) {
+        final data = doc.data();
+        referrals.add({
+          'id': doc.id,
+          'name': data['fullName'] ?? 'Unknown',
+          'joinDate': _formatDate(data['createdAt']),
+          'status': data['status'] ?? 'pending',
+          'referrals': data['directReferralCount'] ?? 0,
+          'isActive': data['status'] == 'active',
+          'membershipPaid': data['membershipPaid'] ?? false,
+        });
       }
 
       setState(() {
-        _isLoading = false;
+        _directReferrals = referrals;
+      });
+
+      // Load team members (indirect referrals)
+      _loadTeamMembers();
+    }, onError: (error) {
+      debugPrint('Error streaming direct referrals: $error');
+    });
+  }
+
+  String _formatDate(dynamic timestamp) {
+    if (timestamp == null) return 'Unknown';
+
+    try {
+      DateTime date;
+      if (timestamp is Timestamp) {
+        date = timestamp.toDate();
+      } else if (timestamp is DateTime) {
+        date = timestamp;
+      } else {
+        return 'Unknown';
+      }
+
+      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
+  }
+
+  Future<void> _loadTeamMembers() async {
+    try {
+      final teamMembers = <Map<String, dynamic>>[];
+
+      // Get all users in the referral chain
+      for (final referral in _directReferrals) {
+        final referralId = referral['id'];
+
+        // Get indirect referrals (level 2)
+        final indirectQuery = await FirebaseFirestore.instance
+            .collection('users')
+            .where('referredBy', isEqualTo: referralId)
+            .get();
+
+        for (final doc in indirectQuery.docs) {
+          final data = doc.data();
+          teamMembers.add({
+            'id': doc.id,
+            'name': data['fullName'] ?? 'Unknown',
+            'level': 'Level 2',
+            'referrer': referral['name'],
+            'isActive': data['status'] == 'active',
+            'joinDate': _formatDate(data['createdAt']),
+          });
+        }
+      }
+
+      setState(() {
+        _teamMembers = teamMembers;
       });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      debugPrint('Error loading network data: $e');
+      debugPrint('Error loading team members: $e');
     }
   }
 
@@ -81,6 +194,13 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
         ),
         backgroundColor: AppTheme.talowaGreen,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Navigate back within app, don't logout
+            Navigator.of(context).maybePop();
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add),
@@ -231,12 +351,17 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
   }
 
   Widget _buildNetworkStats() {
+    final directReferralCount = userData?['directReferralCount'] ?? 0;
+    final totalTeamSize = userData?['totalTeamSize'] ?? 0;
+    final activeMembers = _directReferrals.where((r) => r['isActive'] == true).length +
+                         _teamMembers.where((m) => m['isActive'] == true).length;
+
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
             'Direct Referrals',
-            '${userData?['directReferrals'] ?? 0}',
+            '$directReferralCount',
             Icons.person_add,
             Colors.blue,
           ),
@@ -245,7 +370,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
         Expanded(
           child: _buildStatCard(
             'Team Size',
-            '${userData?['teamSize'] ?? 0}',
+            '$totalTeamSize',
             Icons.groups,
             Colors.green,
           ),
@@ -254,7 +379,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
         Expanded(
           child: _buildStatCard(
             'Active Members',
-            '${_teamMembers.where((m) => m['isActive'] == true).length}',
+            '$activeMembers',
             Icons.trending_up,
             Colors.orange,
           ),
@@ -303,9 +428,13 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
   }
 
   Widget _buildReferralCodeCard() {
-    final referralCode = userData?['referralCode'] ?? 'Loading...';
-    
-    return Container(
+    return StreamBuilder<String?>(
+      stream: ReferralCodeCacheService.codeStream,
+      initialData: ReferralCodeCacheService.currentCode,
+      builder: (context, snapshot) {
+        final referralCode = snapshot.data ?? ReferralCodeCacheService.currentCode;
+
+        return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -367,6 +496,8 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
           ),
         ],
       ),
+    );
+      },
     );
   }
 
@@ -686,55 +817,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
     );
   }
 
-  // Mock data generators
-  List<Map<String, dynamic>> _generateMockReferrals() {
-    return [
-      {
-        'name': 'Priya Sharma',
-        'joinDate': '15 Mar 2024',
-        'status': 'Active',
-        'referrals': 3,
-        'isActive': true,
-      },
-      {
-        'name': 'Rajesh Kumar',
-        'joinDate': '10 Mar 2024',
-        'status': 'Active',
-        'referrals': 5,
-        'isActive': true,
-      },
-      {
-        'name': 'Sunita Devi',
-        'joinDate': '5 Mar 2024',
-        'status': 'Active',
-        'referrals': 2,
-        'isActive': true,
-      },
-    ];
-  }
 
-  List<Map<String, dynamic>> _generateMockTeamMembers() {
-    return [
-      {
-        'name': 'Amit Singh',
-        'level': 'Level 2',
-        'referrer': 'Priya Sharma',
-        'isActive': true,
-      },
-      {
-        'name': 'Kavita Patel',
-        'level': 'Level 2',
-        'referrer': 'Rajesh Kumar',
-        'isActive': true,
-      },
-      {
-        'name': 'Ravi Gupta',
-        'level': 'Level 3',
-        'referrer': 'Amit Singh',
-        'isActive': false,
-      },
-    ];
-  }
 
   // Action methods
   void _showInviteDialog() {
@@ -754,7 +837,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                userData?['referralCode'] ?? 'Loading...',
+                ReferralCodeCacheService.currentCode,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -783,8 +866,8 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
   }
 
   void _shareReferralCode() {
-    final referralCode = userData?['referralCode'] ?? 'Loading...';
-    
+    final referralCode = ReferralCodeCacheService.currentCode;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

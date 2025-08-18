@@ -7,7 +7,10 @@ import '../../core/theme/app_theme.dart';
 import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
+
+import '../../services/referral/universal_link_service.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/referral/deep_link_handler.dart';
 
 class RealUserRegistrationScreen extends StatefulWidget {
   const RealUserRegistrationScreen({super.key});
@@ -16,7 +19,8 @@ class RealUserRegistrationScreen extends StatefulWidget {
   State<RealUserRegistrationScreen> createState() => _RealUserRegistrationScreenState();
 }
 
-class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen> {
+class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
+    with ReferralCodeHandler {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _pinController = TextEditingController();
@@ -55,6 +59,48 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
     'Rangareddy',
     'Other',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Check for pending referral code from deep link
+    final pendingCode = UniversalLinkService.getPendingReferralCode();
+    if (pendingCode != null) {
+      _setReferralCode(pendingCode);
+    }
+  }
+
+  @override
+  void onReferralCodeReceived(String referralCode) {
+    // Handle referral code from deep link
+    _setReferralCode(referralCode);
+
+    // Show a snackbar to inform user
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.link, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('Referral code auto-filled: $referralCode'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _setReferralCode(String referralCode) {
+    setState(() {
+      _referralCodeController.text = referralCode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -519,7 +565,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
 
     try {
       final phoneNumber = '+91${_phoneController.text.trim()}';
-      
+
       // Check if phone number is already registered
       final isRegistered = await DatabaseService.isPhoneRegistered(phoneNumber);
       if (isRegistered) {
@@ -527,37 +573,47 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         return;
       }
 
-      final address = Address(
-        villageCity: _villageController.text.trim(),
-        mandal: _mandalController.text.trim(),
-        district: _districtController.text.trim(),
-        state: _selectedState,
-      );
+      // Step 1: Create Firebase Auth user (OTP verification would happen before this)
+      final pin = _pinController.text.trim();
 
-      final result = await AuthService.registerUser(
+      final authResult = await AuthService.registerUser(
         phoneNumber: phoneNumber,
-        pin: _pinController.text.trim(),
+        pin: pin,
         fullName: _nameController.text.trim(),
-        address: address,
-        referralCode: _referralCodeController.text.trim().isEmpty 
-            ? null 
+        address: Address(
+          villageCity: _villageController.text.trim(),
+          mandal: _mandalController.text.trim(),
+          district: _districtController.text.trim(),
+          state: _selectedState,
+        ),
+        referralCode: _referralCodeController.text.trim().isEmpty
+            ? null
             : _referralCodeController.text.trim(),
       );
 
-      if (result.success) {
-        _showSuccessMessage('Registration successful! Welcome to TALOWA!');
-        
-        // Navigate to main app after a short delay
-        await Future.delayed(const Duration(seconds: 2));
-        if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/main',
-            (route) => false,
-          );
-        }
-      } else {
-        _showErrorMessage(result.message);
+      if (!authResult.success) {
+        _showErrorMessage(authResult.message);
+        return;
+      }
+
+      // AuthService now handles user profile creation internally with TAL referral codes
+      final userProfile = authResult.user;
+      if (userProfile == null) {
+        _showErrorMessage('Failed to create user profile');
+        return;
+      }
+
+      final referralCode = userProfile.referralCode;
+      _showSuccessMessage('Registration successful! Your referral code: $referralCode');
+
+      // Navigate to main app after a short delay
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/main',
+          (route) => false,
+        );
       }
     } catch (e) {
       _showErrorMessage('Registration failed: $e');

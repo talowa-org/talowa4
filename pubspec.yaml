@@ -58,6 +58,17 @@ dependencies:
   firebase_remote_config: ^5.5.0
   share_plus: ^11.0.0
 
+  # QR Code & Referral
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
+
+  # Deep Linking & Universal Links
+  app_links: ^6.3.2
+  uni_links: ^0.5.1
+
+  # Device Information & Security
+  device_info_plus: ^10.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

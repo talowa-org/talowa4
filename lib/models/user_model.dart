@@ -199,6 +199,14 @@ class UserPreferences {
     );
   }
 
+  factory UserPreferences.defaultPreferences() {
+    return UserPreferences(
+      language: AppConstants.languageEnglish,
+      notifications: NotificationPreferences.defaultPreferences(),
+      privacy: PrivacyPreferences.defaultPreferences(),
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'language': language,
@@ -227,6 +235,14 @@ class NotificationPreferences {
     );
   }
 
+  factory NotificationPreferences.defaultPreferences() {
+    return NotificationPreferences(
+      push: true,
+      sms: true,
+      email: false,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'push': push,
@@ -249,6 +265,13 @@ class PrivacyPreferences {
     return PrivacyPreferences(
       showLocation: map['showLocation'] ?? false,
       allowDirectContact: map['allowDirectContact'] ?? true,
+    );
+  }
+
+  factory PrivacyPreferences.defaultPreferences() {
+    return PrivacyPreferences(
+      showLocation: false,
+      allowDirectContact: true,
     );
   }
 

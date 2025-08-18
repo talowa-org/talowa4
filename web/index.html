@@ -29,6 +29,11 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://talowa.web.app" />
     <meta property="og:site_name" content="TALOWA" />
+    <meta property="og:image" content="https://talowa.web.app/favicon.png" />
+
+    <!-- Referral Link Support -->
+    <meta name="referral-system" content="enabled" />
+    <meta name="auto-fill-support" content="true" />
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -38,9 +43,62 @@
     <title>TALOWA - Land Rights Activism Platform</title>
   </head>
   <body>
+    <!-- Loading indicator -->
+    <div id="loading" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #2E7D32;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    ">
+      <div style="text-align: center; color: white;">
+        <div style="
+          width: 50px;
+          height: 50px;
+          border: 3px solid rgba(255,255,255,0.3);
+          border-radius: 50%;
+          border-top: 3px solid white;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 20px;
+        "></div>
+        <h2 style="margin: 0; font-family: Arial, sans-serif;">TALOWA</h2>
+        <p style="margin: 10px 0 0; font-family: Arial, sans-serif;">Loading...</p>
+      </div>
+    </div>
+
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore-compat.js"></script>
-    <script src="main.dart.js" type="application/javascript"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-messaging-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-remote-config-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Flutter Web -->
+    <script>
+      window.addEventListener('flutter-first-frame', function () {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.remove();
+        }
+      });
+    </script>
+
+    <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>

@@ -16,6 +16,7 @@ import 'services/performance_monitor.dart';
 import 'services/localization_service.dart';
 import 'services/data_population_service.dart';
 import 'services/remote_config_service.dart';
+import 'services/bootstrap_service.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
@@ -36,6 +37,9 @@ void main() async {
   // Fix user roles and populate missing data collections (runs in background)
   // Note: This will run after user authentication in the app
   DataPopulationService.populateIfNeeded();
+
+  // Bootstrap admin user and migrate legacy data
+  BootstrapService.bootstrap();
 
   runApp(const TalowaApp());
 }
