@@ -5,11 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
-import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_hi.dart';
 import 'app_localizations_te.dart';
-import 'app_localizations_ur.dart';
 
 // ignore_for_file: type=lint
 
@@ -100,45 +98,37 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('hi'),
     Locale('te'),
-    Locale('ur'),
-    Locale('ar'),
   ];
 
-  /// The name of the application
+  /// The title of the application
   ///
   /// In en, this message translates to:
   /// **'TALOWA'**
-  String get appName;
+  String get appTitle;
 
-  /// Welcome message on login screen
+  /// The subtitle of the application
   ///
   /// In en, this message translates to:
-  /// **'Welcome Back!'**
-  String get welcomeBack;
+  /// **'Land Rights Movement'**
+  String get appSubtitle;
 
-  /// Subtitle on login screen
+  /// Welcome message on the welcome screen
   ///
   /// In en, this message translates to:
-  /// **'Sign in to your account'**
-  String get signInToYourAccount;
+  /// **'Welcome to TALOWA'**
+  String get welcome;
 
-  /// Label for mobile number input field
+  /// Welcome message description
   ///
   /// In en, this message translates to:
-  /// **'Mobile Number'**
-  String get mobileNumber;
+  /// **'Join the movement for land rights and social justice'**
+  String get welcomeMessage;
 
-  /// Label for PIN input field
+  /// Login button text
   ///
   /// In en, this message translates to:
-  /// **'6-Digit PIN'**
-  String get sixDigitPin;
-
-  /// Sign in button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign In'**
-  String get signIn;
+  /// **'Login'**
+  String get login;
 
   /// Register button text
   ///
@@ -146,29 +136,83 @@ abstract class AppLocalizations {
   /// **'Register'**
   String get register;
 
-  /// Text before register link
+  /// Phone number field label
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account? '**
-  String get dontHaveAccount;
+  /// **'Phone Number'**
+  String get phoneNumber;
 
-  /// Success message after login
+  /// Phone number field placeholder
   ///
   /// In en, this message translates to:
-  /// **'Login successful!'**
-  String get loginSuccessful;
+  /// **'Enter your phone number'**
+  String get enterPhoneNumber;
 
-  /// Error message when login fails
+  /// PIN field label
   ///
   /// In en, this message translates to:
-  /// **'Login failed. Please try again.'**
-  String get loginFailed;
+  /// **'PIN'**
+  String get pin;
 
-  /// Error message for invalid credentials
+  /// PIN field placeholder
   ///
   /// In en, this message translates to:
-  /// **'The supplied auth credential is incorrect, malformed or has expired.'**
-  String get invalidCredentials;
+  /// **'Enter your 4-digit PIN'**
+  String get enterPin;
+
+  /// Full name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// Full name field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get enterFullName;
+
+  /// Address section label
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// State field label
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get state;
+
+  /// District field label
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get district;
+
+  /// Mandal field label
+  ///
+  /// In en, this message translates to:
+  /// **'Mandal/Tehsil'**
+  String get mandal;
+
+  /// Village field label
+  ///
+  /// In en, this message translates to:
+  /// **'Village/City'**
+  String get village;
+
+  /// Referral code field label
+  ///
+  /// In en, this message translates to:
+  /// **'Referral Code'**
+  String get referralCode;
+
+  /// Referral code field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Enter referral code (optional)'**
+  String get enterReferralCode;
 
   /// Home tab label
   ///
@@ -200,401 +244,47 @@ abstract class AppLocalizations {
   /// **'More'**
   String get more;
 
-  /// Morning greeting message
-  ///
-  /// In en, this message translates to:
-  /// **'Good morning! How is your day?'**
-  String get goodMorning;
-
-  /// Welcome message for new users
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to TALOWA'**
-  String get welcomeToTalowa;
-
-  /// Member badge text
-  ///
-  /// In en, this message translates to:
-  /// **'Member'**
-  String get member;
-
-  /// Placeholder text for input field
-  ///
-  /// In en, this message translates to:
-  /// **'Ask anything...'**
-  String get askAnything;
-
-  /// Land issues button text
-  ///
-  /// In en, this message translates to:
-  /// **'Land Issues'**
-  String get landIssues;
-
-  /// My network button text
-  ///
-  /// In en, this message translates to:
-  /// **'My Network'**
-  String get myNetwork;
-
-  /// Legal help button text
-  ///
-  /// In en, this message translates to:
-  /// **'Legal Help'**
-  String get legalHelp;
-
-  /// Support button text
-  ///
-  /// In en, this message translates to:
-  /// **'Support'**
-  String get support;
-
-  /// Header for daily inspiration section
-  ///
-  /// In en, this message translates to:
-  /// **'Today\'s Inspiration Message'**
-  String get todaysInspirationMessage;
-
-  /// Inspiration message text
-  ///
-  /// In en, this message translates to:
-  /// **'United we stand, let\'s protect our land together.'**
-  String get unitedWeStandProtectOurLand;
-
-  /// Victory story title
-  ///
-  /// In en, this message translates to:
-  /// **'Sambuddha\'s Victory'**
-  String get sambuddhaVictory;
-
-  /// Victory story description
-  ///
-  /// In en, this message translates to:
-  /// **'After 15 years, Telangana\'s Sambuddha finally got his land back.'**
-  String get telanganaSambuddhaLandVictoryStory;
-
-  /// Debug tools section header
-  ///
-  /// In en, this message translates to:
-  /// **'Debug Tools'**
-  String get debugTools;
-
-  /// Create test user button
-  ///
-  /// In en, this message translates to:
-  /// **'Create Test User'**
-  String get createTestUser;
-
-  /// Check user button
-  ///
-  /// In en, this message translates to:
-  /// **'Check User'**
-  String get checkUser;
-
-  /// Test Firebase button
-  ///
-  /// In en, this message translates to:
-  /// **'Test Firebase'**
-  String get testFirebase;
-
-  /// Fill test data button
-  ///
-  /// In en, this message translates to:
-  /// **'Fill Test Data'**
-  String get fillTestData;
-
-  /// Main services section header
-  ///
-  /// In en, this message translates to:
-  /// **'Main Services'**
-  String get mainServices;
-
-  /// My land service button
-  ///
-  /// In en, this message translates to:
-  /// **'My Land'**
-  String get myLand;
-
-  /// My land service description
-  ///
-  /// In en, this message translates to:
-  /// **'View land details'**
-  String get viewLandDetails;
-
-  /// Payments service button
-  ///
-  /// In en, this message translates to:
-  /// **'Payments'**
-  String get payments;
-
-  /// Payments service description
-  ///
-  /// In en, this message translates to:
-  /// **'View transactions'**
-  String get viewTransactions;
-
-  /// Community service button
-  ///
-  /// In en, this message translates to:
-  /// **'Community'**
-  String get community;
-
-  /// Community service description
-  ///
-  /// In en, this message translates to:
-  /// **'Connect with people'**
-  String get connectWithPeople;
-
-  /// Profile service button
+  /// Profile screen title
   ///
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
 
-  /// Profile service description
+  /// Settings screen title
   ///
   /// In en, this message translates to:
-  /// **'Account management'**
-  String get accountManagement;
+  /// **'Settings'**
+  String get settings;
 
-  /// My referrals stats label
+  /// Language setting label
   ///
   /// In en, this message translates to:
-  /// **'My Referrals'**
-  String get myReferrals;
+  /// **'Language'**
+  String get language;
 
-  /// Team size stats label
+  /// Language selection screen title
   ///
   /// In en, this message translates to:
-  /// **'Team Size'**
-  String get teamSize;
+  /// **'Select Language'**
+  String get selectLanguage;
 
-  /// Land status stats label
+  /// English language option
   ///
   /// In en, this message translates to:
-  /// **'Land Status'**
-  String get landStatus;
+  /// **'English'**
+  String get english;
 
-  /// Active status text
+  /// Hindi language option
   ///
   /// In en, this message translates to:
-  /// **'Active'**
-  String get active;
+  /// **'हिन्दी'**
+  String get hindi;
 
-  /// Emergency services section header
+  /// Telugu language option
   ///
   /// In en, this message translates to:
-  /// **'Emergency Services'**
-  String get emergencyServices;
-
-  /// Report land grabbing button
-  ///
-  /// In en, this message translates to:
-  /// **'Report Land Grabbing'**
-  String get reportLandGrabbing;
-
-  /// Language settings screen title
-  ///
-  /// In en, this message translates to:
-  /// **'Language Settings'**
-  String get languageSettings;
-
-  /// Language selection instruction
-  ///
-  /// In en, this message translates to:
-  /// **'Select your preferred language:'**
-  String get selectPreferredLanguage;
-
-  /// Apply changes button
-  ///
-  /// In en, this message translates to:
-  /// **'Apply Changes'**
-  String get applyChanges;
-
-  /// Language preview section header
-  ///
-  /// In en, this message translates to:
-  /// **'Language Preview'**
-  String get languagePreview;
-
-  /// Preview text for language selection
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to TALOWA! Your land rights are protected.'**
-  String get welcomeToTalowaPreview;
-
-  /// Language change success message
-  ///
-  /// In en, this message translates to:
-  /// **'Language changed to {language}'**
-  String languageChangedTo(String language);
-
-  /// Language change error message
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to change language: {error}'**
-  String failedToChangeLanguage(String error);
-
-  /// Afternoon greeting message
-  ///
-  /// In en, this message translates to:
-  /// **'Good afternoon! Hope you\'re having a great day.'**
-  String get goodAfternoon;
-
-  /// Evening greeting message
-  ///
-  /// In en, this message translates to:
-  /// **'Good evening! How was your day?'**
-  String get goodEvening;
-
-  /// Inspiration message about hard work
-  ///
-  /// In en, this message translates to:
-  /// **'Your hard work will pay off. Together we stand strong!'**
-  String get hardWorkWillPayOff;
-
-  /// Inspiration message about unity
-  ///
-  /// In en, this message translates to:
-  /// **'Together we will protect our land.'**
-  String get togetherWeProtectLand;
-
-  /// Inspiration message about rights
-  ///
-  /// In en, this message translates to:
-  /// **'Your right, your land, your dignity.'**
-  String get yourRightYourLand;
-
-  /// Success story title
-  ///
-  /// In en, this message translates to:
-  /// **'Rameshwar\'s Victory'**
-  String get rameshwarVictory;
-
-  /// Success story content
-  ///
-  /// In en, this message translates to:
-  /// **'After 15 years, Telangana\'s Rameshwar finally got his land title.'**
-  String get rameshwarVictoryStory;
-
-  /// Success story title
-  ///
-  /// In en, this message translates to:
-  /// **'Sunita\'s Land Rights'**
-  String get sunitaLandRights;
-
-  /// Success story content
-  ///
-  /// In en, this message translates to:
-  /// **'Sunita from Karnataka successfully defended her 3-acre farm from illegal occupation.'**
-  String get sunitaLandRightsStory;
-
-  /// Full name input label
-  ///
-  /// In en, this message translates to:
-  /// **'Full Name'**
-  String get fullName;
-
-  /// Village input label
-  ///
-  /// In en, this message translates to:
-  /// **'Village/City'**
-  String get village;
-
-  /// Mandal input label
-  ///
-  /// In en, this message translates to:
-  /// **'Mandal/Tehsil'**
-  String get mandal;
-
-  /// District input label
-  ///
-  /// In en, this message translates to:
-  /// **'District'**
-  String get district;
-
-  /// State input label
-  ///
-  /// In en, this message translates to:
-  /// **'State'**
-  String get state;
-
-  /// Referral code input label
-  ///
-  /// In en, this message translates to:
-  /// **'Referral Code (Optional)'**
-  String get referralCode;
-
-  /// Complete registration button
-  ///
-  /// In en, this message translates to:
-  /// **'Complete Registration'**
-  String get completeRegistration;
-
-  /// Registration success message
-  ///
-  /// In en, this message translates to:
-  /// **'Registration successful!'**
-  String get registrationSuccessful;
-
-  /// Registration error message
-  ///
-  /// In en, this message translates to:
-  /// **'Registration failed. Please try again.'**
-  String get registrationFailed;
-
-  /// Phone already registered error
-  ///
-  /// In en, this message translates to:
-  /// **'Phone number already registered'**
-  String get phoneNumberAlreadyRegistered;
-
-  /// Invalid phone number error
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid phone number format'**
-  String get invalidPhoneNumber;
-
-  /// PIN validation error
-  ///
-  /// In en, this message translates to:
-  /// **'PIN must be at least 6 digits'**
-  String get pinTooShort;
-
-  /// Required field validation error
-  ///
-  /// In en, this message translates to:
-  /// **'This field is required'**
-  String get fieldRequired;
-
-  /// Network error message
-  ///
-  /// In en, this message translates to:
-  /// **'Network error. Please check your connection.'**
-  String get networkError;
-
-  /// Generic error message
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong. Please try again.'**
-  String get somethingWentWrong;
-
-  /// Loading indicator text
-  ///
-  /// In en, this message translates to:
-  /// **'Loading...'**
-  String get loading;
-
-  /// Retry button text
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
-
-  /// Cancel button text
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
+  /// **'తెలుగు'**
+  String get telugu;
 
   /// Save button text
   ///
@@ -602,23 +292,17 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
-  /// Edit button text
+  /// Cancel button text
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
-  String get edit;
+  /// **'Cancel'**
+  String get cancel;
 
-  /// Delete button text
+  /// OK button text
   ///
   /// In en, this message translates to:
-  /// **'Delete'**
-  String get delete;
-
-  /// Confirm button text
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm'**
-  String get confirm;
+  /// **'OK'**
+  String get ok;
 
   /// Yes button text
   ///
@@ -632,11 +316,41 @@ abstract class AppLocalizations {
   /// **'No'**
   String get no;
 
-  /// OK button text
+  /// Loading indicator text
   ///
   /// In en, this message translates to:
-  /// **'OK'**
-  String get ok;
+  /// **'Loading...'**
+  String get loading;
+
+  /// Error message title
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// Success message title
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// Warning message title
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// Information message title
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get info;
+
+  /// Retry button text
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 
   /// Close button text
   ///
@@ -644,7 +358,49 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
-  /// Search placeholder text
+  /// Back button text
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// Next button text
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// Previous button text
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// Done button text
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Skip button text
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// Continue button text
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continue_;
+
+  /// Submit button text
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// Search field placeholder
   ///
   /// In en, this message translates to:
   /// **'Search'**
@@ -654,73 +410,43 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'No results found'**
-  String get noResultsFound;
+  String get noResults;
 
-  /// Pull to refresh instruction
+  /// Network error message
   ///
   /// In en, this message translates to:
-  /// **'Pull to refresh'**
-  String get pullToRefresh;
+  /// **'Network error. Please check your connection.'**
+  String get networkError;
 
-  /// Refreshing indicator text
+  /// Server error message
   ///
   /// In en, this message translates to:
-  /// **'Refreshing...'**
-  String get refreshing;
+  /// **'Server error. Please try again later.'**
+  String get serverError;
 
-  /// Offline status indicator
+  /// Invalid input error message
   ///
   /// In en, this message translates to:
-  /// **'Offline'**
-  String get offline;
+  /// **'Invalid input. Please check your data.'**
+  String get invalidInput;
 
-  /// Online status indicator
+  /// Required field validation message
   ///
   /// In en, this message translates to:
-  /// **'Online'**
-  String get online;
+  /// **'This field is required'**
+  String get requiredField;
 
-  /// Settings screen title
+  /// Invalid phone number validation message
   ///
   /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
+  /// **'Please enter a valid phone number'**
+  String get invalidPhoneNumber;
 
-  /// Notifications section title
+  /// Invalid PIN validation message
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
-
-  /// Privacy section title
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy'**
-  String get privacy;
-
-  /// Security section title
-  ///
-  /// In en, this message translates to:
-  /// **'Security'**
-  String get security;
-
-  /// About section title
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get about;
-
-  /// Help section title
-  ///
-  /// In en, this message translates to:
-  /// **'Help'**
-  String get help;
-
-  /// Contact support option
-  ///
-  /// In en, this message translates to:
-  /// **'Contact Support'**
-  String get contactSupport;
+  /// **'PIN must be 4 digits'**
+  String get invalidPin;
 
   /// Logout button text
   ///
@@ -734,83 +460,179 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to logout?'**
   String get logoutConfirmation;
 
+  /// My referral code section title
+  ///
+  /// In en, this message translates to:
+  /// **'My Referral Code'**
+  String get myReferralCode;
+
+  /// Share referral code button text
+  ///
+  /// In en, this message translates to:
+  /// **'Share Referral Code'**
+  String get shareReferralCode;
+
+  /// Copy referral code button text
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Referral Code'**
+  String get copyReferralCode;
+
+  /// Referral code copied success message
+  ///
+  /// In en, this message translates to:
+  /// **'Referral code copied to clipboard'**
+  String get referralCodeCopied;
+
+  /// Direct referrals count label
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Referrals'**
+  String get directReferrals;
+
+  /// Total team size count label
+  ///
+  /// In en, this message translates to:
+  /// **'Total Team Size'**
+  String get totalTeamSize;
+
+  /// User role label
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get role;
+
+  /// Member role
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get member;
+
+  /// Coordinator role
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinator'**
+  String get coordinator;
+
+  /// AI Assistant feature title
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get aiAssistant;
+
+  /// Ask AI Assistant button text
+  ///
+  /// In en, this message translates to:
+  /// **'Ask AI Assistant'**
+  String get askAIAssistant;
+
+  /// AI Assistant input placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Type your question...'**
+  String get typeYourQuestion;
+
+  /// Emergency actions section title
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Actions'**
+  String get emergencyActions;
+
+  /// Report land grabbing button text
+  ///
+  /// In en, this message translates to:
+  /// **'Report Land Grabbing'**
+  String get reportLandGrabbing;
+
+  /// Call for help button text
+  ///
+  /// In en, this message translates to:
+  /// **'Call for Help'**
+  String get callForHelp;
+
+  /// Land records section title
+  ///
+  /// In en, this message translates to:
+  /// **'Land Records'**
+  String get landRecords;
+
+  /// Legal cases section title
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Cases'**
+  String get legalCases;
+
+  /// Campaigns section title
+  ///
+  /// In en, this message translates to:
+  /// **'Campaigns'**
+  String get campaigns;
+
+  /// Notifications screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No notifications message
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get noNotifications;
+
+  /// Mark all notifications as read button text
+  ///
+  /// In en, this message translates to:
+  /// **'Mark All as Read'**
+  String get markAllAsRead;
+
+  /// About screen title
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
   /// App version label
   ///
   /// In en, this message translates to:
   /// **'Version'**
   String get version;
 
-  /// App build number label
-  ///
-  /// In en, this message translates to:
-  /// **'Build'**
-  String get buildNumber;
-
-  /// Terms of service link
-  ///
-  /// In en, this message translates to:
-  /// **'Terms of Service'**
-  String get termsOfService;
-
-  /// Privacy policy link
+  /// Privacy policy link text
   ///
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get privacyPolicy;
 
-  /// Share app option
+  /// Terms of service link text
   ///
   /// In en, this message translates to:
-  /// **'Share App'**
-  String get shareApp;
+  /// **'Terms of Service'**
+  String get termsOfService;
 
-  /// Rate app option
+  /// Contact support link text
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupport;
+
+  /// Help center link text
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center'**
+  String get helpCenter;
+
+  /// Feedback link text
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedback;
+
+  /// Rate app link text
   ///
   /// In en, this message translates to:
   /// **'Rate App'**
   String get rateApp;
-
-  /// Send feedback option
-  ///
-  /// In en, this message translates to:
-  /// **'Send Feedback'**
-  String get sendFeedback;
-
-  /// Report bug option
-  ///
-  /// In en, this message translates to:
-  /// **'Report Bug'**
-  String get reportBug;
-
-  /// Check for updates option
-  ///
-  /// In en, this message translates to:
-  /// **'Check for Updates'**
-  String get checkForUpdates;
-
-  /// App up to date message
-  ///
-  /// In en, this message translates to:
-  /// **'App is up to date'**
-  String get appUpToDate;
-
-  /// Update available message
-  ///
-  /// In en, this message translates to:
-  /// **'Update available'**
-  String get updateAvailable;
-
-  /// Update now button
-  ///
-  /// In en, this message translates to:
-  /// **'Update Now'**
-  String get updateNow;
-
-  /// Update later button
-  ///
-  /// In en, this message translates to:
-  /// **'Update Later'**
-  String get updateLater;
 }
 
 class _AppLocalizationsDelegate
@@ -824,7 +646,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'en', 'hi', 'te', 'ur'].contains(locale.languageCode);
+      <String>['en', 'hi', 'te'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -833,16 +655,12 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'ar':
-      return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
     case 'hi':
       return AppLocalizationsHi();
     case 'te':
       return AppLocalizationsTe();
-    case 'ur':
-      return AppLocalizationsUr();
   }
 
   throw FlutterError(

@@ -23,8 +23,9 @@ class LocalizationProvider extends ChangeNotifier {
     try {
       await _localizationService.initialize();
       _isInitialized = true;
+      debugPrint('✅ Localization initialized successfully');
     } catch (e) {
-      debugPrint('Error initializing localization: $e');
+      debugPrint('⚠️ Error initializing localization: $e');
       // Continue with default locale on error
       _isInitialized = true;
     } finally {

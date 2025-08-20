@@ -5,6 +5,8 @@ import '../../models/referral/referral_models.dart';
 import 'referral_code_generator.dart';
 import 'referral_lookup_service.dart';
 import 'referral_tracking_service.dart';
+import 'referral_statistics_service.dart';
+import 'role_progression_service.dart';
 
 /// Exception thrown when registration fails
 class RegistrationException implements Exception {
@@ -108,13 +110,13 @@ class ReferralRegistrationService {
         'referralCode': newUserReferralCode,
         'referredBy': referralCode,
         'referralChain': referralChain,
-        'referralStatus': referralCode != null ? 'pending_payment' : 'active',
+        'referralStatus': 'active', // Always active in simplified system
         'address': address.toMap(),
         'directReferrals': [],
-        'pendingReferrals': [],
-        'directReferralCount': 0,
+        'activeDirectReferrals': 0,
         'totalTeamSize': 0,
-        'membershipPaid': false,
+        'activeTeamSize': 0,
+        'membershipPaid': true, // Always true in simplified system
         'paymentTransactionId': null,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
@@ -143,13 +145,16 @@ class ReferralRegistrationService {
         );
       }
       
-      // Step 6: Record referral relationship if applicable
+      // Step 6: Record referral relationship and update statistics immediately
       if (referralCode != null && referrerUserId != null) {
         try {
           await ReferralTrackingService.recordReferralRelationship(
             newUserId: userId,
             referralCode: referralCode,
           );
+          
+          // Immediately update referral statistics and check role progression
+          await _updateReferralStatisticsAndRoles(referrerUserId, userId);
         } catch (e) {
           // Don't fail registration for referral tracking errors
           // Log error but continue
@@ -215,6 +220,79 @@ class ReferralRegistrationService {
   static Future<UserModel> _getUserModel(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
     return UserModel.fromFirestore(doc);
+  }
+  
+  /// Update referral statistics and check role progression for referrer
+  static Future<void> _updateReferralStatisticsAndRoles(String referrerUserId, String newUserId) async {
+    try {
+      // Update referrer's statistics
+      await ReferralStatisticsService.updateUserStatistics(referrerUserId);
+      
+      // Check and update role progression
+      await RoleProgressionService.checkAndUpdateRole(referrerUserId);
+      
+      // Update the entire referral chain statistics
+      await _updateReferralChainStatistics(referrerUserId);
+      
+    } catch (e) {
+      print('Warning: Failed to update referral statistics and roles: $e');
+    }
+  }
+  
+  /// Update statistics for the entire referral chain
+  static Future<void> _updateReferralChainStatistics(String userId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) return;
+      
+      final userData = userDoc.data()!;
+      final referralChain = List<String>.from(userData['referralChain'] ?? []);
+      
+      // Update statistics for each user in the chain
+      for (final chainUserId in referralChain) {
+        try {
+          // Update team size and other statistics
+          await _updateUserTeamStatistics(chainUserId);
+        } catch (e) {
+          print('Warning: Failed to update statistics for user $chainUserId: $e');
+        }
+      }
+    } catch (e) {
+      print('Warning: Failed to update referral chain statistics: $e');
+    }
+  }
+  
+  /// Update team statistics for a specific user
+  static Future<void> _updateUserTeamStatistics(String userId) async {
+    try {
+      // Get all users in this user's downline
+      final downlineQuery = await _firestore
+          .collection('users')
+          .where('referralChain', arrayContains: userId)
+          .where('isActive', isEqualTo: true)
+          .get();
+      
+      final activeTeamSize = downlineQuery.docs.length;
+      
+      // Get direct referrals count
+      final directReferralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: userId)
+          .where('isActive', isEqualTo: true)
+          .get();
+      
+      final activeDirectReferrals = directReferralsQuery.docs.length;
+      
+      // Update user document
+      await _firestore.collection('users').doc(userId).update({
+        'activeTeamSize': activeTeamSize,
+        'activeDirectReferrals': activeDirectReferrals,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      
+    } catch (e) {
+      print('Warning: Failed to update team statistics for user $userId: $e');
+    }
   }
   
   /// Validates registration data

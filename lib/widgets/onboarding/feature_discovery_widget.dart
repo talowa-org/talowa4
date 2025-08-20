@@ -250,21 +250,21 @@ class _FeatureDiscoveryWidgetState extends State<FeatureDiscoveryWidget>
 }
 
 // Contextual Tips Widget
-class ContextualTipsWidget extends StatefulWidget {
+class FeatureContextualTipsWidget extends StatefulWidget {
   final String screenName;
   final Widget child;
 
-  const ContextualTipsWidget({
+  const FeatureContextualTipsWidget({
     super.key,
     required this.screenName,
     required this.child,
   });
 
   @override
-  State<ContextualTipsWidget> createState() => _ContextualTipsWidgetState();
+  State<FeatureContextualTipsWidget> createState() => _FeatureContextualTipsWidgetState();
 }
 
-class _ContextualTipsWidgetState extends State<ContextualTipsWidget> {
+class _FeatureContextualTipsWidgetState extends State<FeatureContextualTipsWidget> {
   List<String> _tips = [];
   int _currentTipIndex = 0;
   bool _showTips = false;

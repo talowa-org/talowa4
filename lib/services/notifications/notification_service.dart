@@ -5,8 +5,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
+
+// Conditional import for local notifications (not supported on web)
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    if (dart.library.html) 'web_notification_stub.dart';
 import '../../models/notification_model.dart';
 import '../auth/auth_service.dart';
 import 'notification_batching_service.dart';
@@ -49,19 +52,22 @@ class NotificationService {
       // Initialize batching service
       await NotificationBatchingService().initialize();
       
-      // Request permissions
-      await _requestPermissions();
+      // Skip platform-specific features on web
+      if (!kIsWeb) {
+        // Request permissions
+        await _requestPermissions();
+        
+        // Initialize local notifications
+        await _initializeLocalNotifications();
+        
+        // Set up message handlers
+        _setupMessageHandlers();
+      }
       
-      // Initialize local notifications
-      await _initializeLocalNotifications();
-      
-      // Get FCM token
+      // Get FCM token (works on web)
       await _getFCMToken();
       
-      // Set up message handlers
-      _setupMessageHandlers();
-      
-      // Subscribe to topics
+      // Subscribe to topics (works on web)
       await _subscribeToTopics();
       
       _isInitialized = true;
@@ -69,7 +75,8 @@ class NotificationService {
       
     } catch (e) {
       debugPrint('NotificationService: Initialization failed: $e');
-      rethrow;
+      // Don't rethrow on web to prevent app crashes
+      if (!kIsWeb) rethrow;
     }
   }
   

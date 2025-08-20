@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import '../../models/messaging/message_model.dart';
 import '../../models/messaging/group_model.dart';
 import '../../models/campaign_model.dart';
+import 'cdn_integration_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../auth_service.dart';
 import 'performance_integration_service.dart';

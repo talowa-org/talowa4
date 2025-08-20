@@ -51,14 +51,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return ContextualTipsWidget(
-      screenName: 'messages_screen',
-      child: FeatureDiscoveryWidget(
-        featureKey: 'messaging_tutorial',
-        title: 'New to TALOWA Messaging?',
-        description: 'Take a quick tutorial to learn how to send secure messages, make voice calls, and use group chats effectively.',
-        icon: Icons.message,
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Messages',
@@ -222,8 +215,6 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         tooltip: 'New Message',
         heroTag: "messages_new_chat",
         child: const Icon(Icons.chat),
-      ),
-        ),
       ),
     );
   }

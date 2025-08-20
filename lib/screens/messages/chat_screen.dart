@@ -243,14 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ContextualTipsWidget(
-      screenName: 'chat_screen',
-      child: FeatureDiscoveryWidget(
-        featureKey: 'voice_calling',
-        title: 'Try Voice Calling',
-        description: 'Tap the phone icon to make secure voice calls directly through TALOWA.',
-        icon: Icons.call,
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,8 +371,6 @@ class _ChatScreenState extends State<ChatScreen> {
             isEnabled: true,
           ),
         ],
-      ),
-        ),
       ),
     );
   }

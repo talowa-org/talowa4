@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? userData;
   Map<String, dynamic>? dailyMotivation;
   bool isLoading = true;
-  String get currentLanguage => LocalizationService.currentLanguage;
+  String get currentLanguage => 'en';
 
   @override
   void initState() {
@@ -32,12 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadDailyMotivation();
     
     // Listen for language changes
-    LocalizationService.addListener(_onLanguageChanged);
+    // LocalizationService.addListener(_onLanguageChanged);
   }
   
   @override
   void dispose() {
-    LocalizationService.removeListener(_onLanguageChanged);
+    // LocalizationService.removeListener(_onLanguageChanged);
     super.dispose();
   }
   
@@ -299,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${LocalizationService.getGreeting()} $userName',
+            'Welcome $userName',
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            localizations.welcomeToTalowa,
+            'Welcome to TALOWA',
             style: TextStyle(
               fontSize: 16,
               color: Colors.white.withOpacity(0.9),
@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(Icons.celebration, color: Colors.orange.shade600),
               const SizedBox(width: 8),
               Text(
-                AppLocalizations.of(context).todaysInspirationMessage,
+                "Today's Inspiration",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -362,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            LocalizationService.getInspirationMessage(),
+            'United we stand, let us protect our land together.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.orange.shade700,
@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  LocalizationService.getSuccessStory()['title']!,
+                  'Success Story',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  LocalizationService.getSuccessStory()['content']!,
+                  'After 15 years, Rameshwar from Telangana finally got his land patta.',
                   style: const TextStyle(fontSize: 12),
                 ),
               ],

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+// import 'package:qr_code_scanner/qr_code_scanner.dart';  // Not supported on web
 import 'universal_link_service.dart';
 import 'referral_lookup_service.dart';
 
@@ -19,8 +19,8 @@ class QRScanException implements Exception {
 
 /// Service for scanning QR codes and handling referral links
 class QRScannerService {
-  static QRViewController? _controller;
-  static StreamSubscription<Barcode>? _scanSubscription;
+  // static QRViewController? _controller;  // Not supported on web
+  // static StreamSubscription<Barcode>? _scanSubscription;  // Not supported on web
   static bool _isScanning = false;
   
   /// Callback functions
@@ -39,37 +39,32 @@ class QRScannerService {
     _onPermissionDenied = onPermissionDenied;
   }
   
-  /// Set QR controller when scanner widget is ready
-  static void setController(QRViewController controller) {
-    _controller = controller;
-    _startListening();
-  }
-  
-  /// Start listening for QR codes
-  static void _startListening() {
-    if (_controller == null || _isScanning) return;
-    
-    _isScanning = true;
-    _scanSubscription = _controller!.scannedDataStream.listen(
-      _handleScannedData,
-      onError: (error) {
-        _onScanError?.call('Scanner error: $error');
-      },
-    );
-  }
-  
-  /// Handle scanned QR code data
-  static void _handleScannedData(Barcode scanData) async {
-    if (scanData.code == null || scanData.code!.isEmpty) {
-      _onScanError?.call('Empty QR code scanned');
+  /// Set QR controller when scanner widget is ready (not supported on web)
+  static void setController(dynamic controller) {
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
       return;
     }
-    
-    try {
-      await _processScannedCode(scanData.code!);
-    } catch (e) {
-      _onScanError?.call('Failed to process scanned code: $e');
+    // _controller = controller;
+    // _startListening();
+  }
+  
+  /// Start listening for QR codes (not supported on web)
+  static void _startListening() {
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
+    // Implementation would go here for mobile platforms
+  }
+  
+  /// Handle scanned QR code data (not supported on web)
+  static void _handleScannedData(dynamic scanData) async {
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
+    }
+    // Implementation would go here for mobile platforms
   }
   
   /// Process scanned QR code
@@ -135,90 +130,79 @@ class QRScannerService {
     }
   }
   
-  /// Pause QR scanning
+  /// Pause QR scanning (not supported on web)
   static Future<void> pauseScanning() async {
-    try {
-      await _controller?.pauseCamera();
-      _isScanning = false;
-    } catch (e) {
-      // Handle gracefully
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
+    _isScanning = false;
   }
   
-  /// Resume QR scanning
+  /// Resume QR scanning (not supported on web)
   static Future<void> resumeScanning() async {
-    try {
-      await _controller?.resumeCamera();
-      _isScanning = true;
-    } catch (e) {
-      // Handle gracefully
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
+    _isScanning = true;
   }
   
-  /// Stop QR scanning
+  /// Stop QR scanning (not supported on web)
   static Future<void> stopScanning() async {
-    try {
-      _isScanning = false;
-      await _scanSubscription?.cancel();
-      _scanSubscription = null;
-      await _controller?.pauseCamera();
-    } catch (e) {
-      // Handle gracefully
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
+    _isScanning = false;
   }
   
-  /// Dispose QR scanner resources
+  /// Dispose QR scanner resources (not supported on web)
   static Future<void> dispose() async {
-    try {
-      await stopScanning();
-      _controller?.dispose();
-      _controller = null;
-    } catch (e) {
-      // Handle gracefully
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
+    await stopScanning();
   }
   
-  /// Toggle flashlight
+  /// Toggle flashlight (not supported on web)
   static Future<void> toggleFlash() async {
-    try {
-      await _controller?.toggleFlash();
-    } catch (e) {
-      _onScanError?.call('Failed to toggle flash: $e');
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
   }
   
-  /// Flip camera (front/back)
+  /// Flip camera (front/back) (not supported on web)
   static Future<void> flipCamera() async {
-    try {
-      await _controller?.flipCamera();
-    } catch (e) {
-      _onScanError?.call('Failed to flip camera: $e');
+    if (kIsWeb) {
+      debugPrint('QR scanner not supported on web platform');
+      return;
     }
   }
   
-  /// Get camera flash status
+  /// Get camera flash status (not supported on web)
   static Future<bool?> getFlashStatus() async {
-    try {
-      return await _controller?.getFlashStatus();
-    } catch (e) {
+    if (kIsWeb) {
       return null;
     }
+    return null;
   }
   
-  /// Get camera info
-  static Future<CameraFacing?> getCameraInfo() async {
-    try {
-      return await _controller?.getCameraInfo();
-    } catch (e) {
+  /// Get camera info (not supported on web)
+  static Future<dynamic> getCameraInfo() async {
+    if (kIsWeb) {
       return null;
     }
+    return null;
   }
   
   /// Check if scanning is active
   static bool get isScanning => _isScanning;
   
-  /// Check if controller is available
-  static bool get hasController => _controller != null;
+  /// Check if controller is available (not supported on web)
+  static bool get hasController => !kIsWeb;
   
   /// Manually process a code (for testing)
   static Future<void> processCode(String code) async {
@@ -262,13 +246,12 @@ class QRScannerService {
     }
   }
   
-  /// Get supported QR code formats
-  static List<BarcodeFormat> getSupportedFormats() {
-    return [
-      BarcodeFormat.qrcode,
-      BarcodeFormat.dataMatrix,
-      BarcodeFormat.aztec,
-    ];
+  /// Get supported QR code formats (not supported on web)
+  static List<String> getSupportedFormats() {
+    if (kIsWeb) {
+      return ['qrcode']; // Return string format for web compatibility
+    }
+    return ['qrcode', 'dataMatrix', 'aztec'];
   }
   
   /// Validate QR scanner permissions
@@ -299,15 +282,16 @@ class QRScannerService {
     return {
       'isScanning': _isScanning,
       'hasController': hasController,
-      'hasSubscription': _scanSubscription != null,
+      'hasSubscription': false, // Always false on web
+      'platform': kIsWeb ? 'web' : 'mobile',
     };
   }
   
   /// Reset scanner state
   static void reset() {
     _isScanning = false;
-    _scanSubscription?.cancel();
-    _scanSubscription = null;
-    _controller = null;
+    // _scanSubscription?.cancel();
+    // _scanSubscription = null;
+    // _controller = null;
   }
 }

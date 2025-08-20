@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
+// import 'package:sqflite/sqflite.dart'; // Not supported on web
 import '../../models/social_feed/index.dart';
 import '../../services/social_feed/offline_sync_service.dart';
 

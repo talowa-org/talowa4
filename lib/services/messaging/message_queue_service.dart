@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:sqflite/sqflite.dart';
+// import 'package:sqflite/sqflite.dart'; // Not supported on web
 import '../../models/message_model.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../auth_service.dart';

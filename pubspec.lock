@@ -41,38 +41,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.13.2"
-  app_links:
-    dependency: "direct main"
-    description:
-      name: app_links
-      sha256: "5f88447519add627fe1cbcab4fd1da3d4fed15b9baf29f28b22535c95ecee3e8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.1"
-  app_links_linux:
-    dependency: transitive
-    description:
-      name: app_links_linux
-      sha256: f5f7173a78609f3dfd4c2ff2c95bd559ab43c80a87dc6a095921d96c05688c81
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
-  app_links_platform_interface:
-    dependency: transitive
-    description:
-      name: app_links_platform_interface
-      sha256: "05f5379577c513b534a29ddea68176a4d4802c46180ee8e2e966257158772a3f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
-  app_links_web:
-    dependency: transitive
-    description:
-      name: app_links_web
-      sha256: af060ed76183f9e2b87510a9480e56a5352b6c249778d07bd2c95fc35632a555
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   archive:
     dependency: transitive
     description:
@@ -353,14 +321,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-  dart_webrtc:
-    dependency: transitive
-    description:
-      name: dart_webrtc
-      sha256: "3bfa069a8b14a53ba506f6dd529e9b88c878ba0cc238f311051a39bf1e53d075"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.3+hotfix.5"
   dbus:
     dependency: transitive
     description:
@@ -757,14 +717,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_webrtc:
-    dependency: "direct main"
-    description:
-      name: flutter_webrtc
-      sha256: f6800cc2af79018c12e955ddf8ad007891fdfbb8199b0ce3dccd0977ed2add9c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.7"
   frontend_server_client:
     dependency: transitive
     description:
@@ -869,30 +821,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
-  gtk:
-    dependency: transitive
-    description:
-      name: gtk
-      sha256: e8ce9ca4b1df106e4d72dad201d345ea1a036cc12c360f1a7d5a758f78ffa42c
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
-  hive:
-    dependency: "direct main"
-    description:
-      name: hive
-      sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.3"
-  hive_flutter:
-    dependency: "direct main"
-    description:
-      name: hive_flutter
-      sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   http:
     dependency: "direct main"
     description:
@@ -1389,14 +1317,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  qr_code_scanner:
-    dependency: "direct main"
-    description:
-      name: qr_code_scanner
-      sha256: f23b68d893505a424f0bd2e324ebea71ed88465d572d26bb8d2e78a4749591fd
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   qr_flutter:
     dependency: "direct main"
     description:
@@ -1563,7 +1483,7 @@ packages:
     source: hosted
     version: "7.0.0"
   sqflite:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqflite
       sha256: e2297b1da52f127bc7a3da11439985d9b536f75070f3325e62ada69a5c585d03
@@ -1690,30 +1610,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  uni_links:
-    dependency: "direct main"
-    description:
-      name: uni_links
-      sha256: "051098acfc9e26a9fde03b487bef5d3d228ca8f67693480c6f33fd4fbb8e2b6e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.1"
-  uni_links_platform_interface:
-    dependency: transitive
-    description:
-      name: uni_links_platform_interface
-      sha256: "929cf1a71b59e3b7c2d8a2605a9cf7e0b125b13bc858e55083d88c62722d4507"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  uni_links_web:
-    dependency: transitive
-    description:
-      name: uni_links_web
-      sha256: "7539db908e25f67de2438e33cc1020b30ab94e66720b5677ba6763b25f6394df"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   url_launcher:
     dependency: "direct main"
     description:
@@ -1834,14 +1730,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  webrtc_interface:
-    dependency: transitive
-    description:
-      name: webrtc_interface
-      sha256: "86fe3afc81a08481dfb25cf14a5a94e27062ecef25544783f352c914e0bbc1ca"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.2+hotfix.2"
   win32:
     dependency: transitive
     description:

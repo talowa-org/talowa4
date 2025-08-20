@@ -2,24 +2,24 @@
 
 ## Introduction
 
-The TALOWA Referral System is a production-ready, two-step referral mechanism designed to drive organic growth for India's largest land rights activism platform. The system follows a clear two-step model: immediate registration with referral code generation, followed by payment-triggered reward activation.
+The TALOWA Referral System is a production-ready, simplified one-step referral mechanism designed to drive organic growth for India's largest land rights activism platform. The system follows a streamlined model: immediate registration with instant referral activation and role progression.
 
 This system is designed to scale to 5+ million users while maintaining data integrity, preventing fraud, and ensuring fair reward distribution across the referral network.
 
 ## Requirements
 
-### Requirement 1: Two-Step Referral Model
+### Requirement 1: Simplified One-Step Referral Model
 
-**User Story:** As a TALOWA platform administrator, I want a two-step referral system that separates registration from payment, so that we can track user acquisition while ensuring role progressions are only activated after payment confirmation.
+**User Story:** As a TALOWA platform administrator, I want a simplified one-step referral system that works seamlessly for all users regardless of payment status, so that we can drive organic growth and engagement from day one.
 
 #### Acceptance Criteria
 
-1. WHEN a user completes registration THEN the system SHALL create their account immediately
+1. WHEN a user completes registration THEN the system SHALL create their account immediately and activate all referral features
 2. WHEN a user account is created THEN the system SHALL generate a unique referral code in format "TAL" + 6-digit alphanumeric
-3. WHEN a user registers with a referral code THEN the system SHALL record the referral relationship but NOT update counters
-4. WHEN a user completes payment THEN the system SHALL activate all referral statistics and check role progressions
-5. IF a user has not completed payment THEN their referrals SHALL NOT count toward referrer role progression
-6. WHEN payment is successful THEN the system SHALL update the entire referral chain statistics within 30 seconds
+3. WHEN a user registers with a referral code THEN the system SHALL record the referral relationship and immediately update counters
+4. WHEN a referral is recorded THEN the system SHALL update all referral statistics and check role progressions within 30 seconds
+5. WHEN a user refers someone THEN their referral statistics SHALL count toward role progression immediately
+6. WHEN referral statistics are updated THEN the system SHALL update the entire referral chain statistics automatically
 
 ### Requirement 2: Referral Code Generation and Management
 
@@ -144,18 +144,18 @@ This system is designed to scale to 5+ million users while maintaining data inte
 5. WHEN viewing achievements THEN the system SHALL display earned badges, milestones, and role progression history
 6. WHEN using mobile interface THEN all referral features SHALL be fully accessible and responsive
 
-### Requirement 11: Integration with Payment System
+### Requirement 11: Simplified User Activation
 
-**User Story:** As a TALOWA platform administrator, I want seamless integration between the referral system and payment processing, so that role progressions are automatically activated upon successful payment.
+**User Story:** As a TALOWA platform administrator, I want all users to have immediate access to referral features upon registration, so that we can maximize organic growth and user engagement.
 
 #### Acceptance Criteria
 
-1. WHEN payment is initiated THEN the system SHALL identify any pending referral relationships
-2. WHEN payment succeeds THEN the system SHALL trigger referral statistics activation and role progression checks within 30 seconds
-3. WHEN payment fails THEN the system SHALL maintain referral relationships in pending state
-4. WHEN payment is refunded THEN the system SHALL reverse any activated referral statistics and role progressions
-5. WHEN payment webhook is received THEN the system SHALL validate authenticity before processing
-6. WHEN payment integration fails THEN the system SHALL queue referral updates for manual processing
+1. WHEN a user completes registration THEN the system SHALL immediately activate all referral features
+2. WHEN a user is registered THEN the system SHALL trigger referral statistics updates and role progression checks within 30 seconds
+3. WHEN a user joins THEN all referral relationships SHALL be active and count toward statistics
+4. WHEN referral statistics are updated THEN the system SHALL process all changes in real-time
+5. WHEN role progression occurs THEN the system SHALL update user permissions and access immediately
+6. WHEN referral updates fail THEN the system SHALL retry automatically without blocking user experience
 
 ### Requirement 12: Enhanced Zero Orphan Users with Geo-Assignment
 

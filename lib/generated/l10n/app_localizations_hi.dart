@@ -9,38 +9,62 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get appName => 'तलावा';
+  String get appTitle => 'तलोवा';
 
   @override
-  String get welcomeBack => 'वापसी पर स्वागत!';
+  String get appSubtitle => 'भूमि अधिकार आंदोलन';
 
   @override
-  String get signInToYourAccount => 'अपने खाते में साइन इन करें';
+  String get welcome => 'तलोवा में आपका स्वागत है';
 
   @override
-  String get mobileNumber => 'मोबाइल नंबर';
+  String get welcomeMessage =>
+      'भूमि अधिकार और सामाजिक न्याय के आंदोलन में शामिल हों';
 
   @override
-  String get sixDigitPin => '6-अंकीय पिन';
-
-  @override
-  String get signIn => 'साइन इन';
+  String get login => 'लॉगिन';
 
   @override
   String get register => 'पंजीकरण';
 
   @override
-  String get dontHaveAccount => 'खाता नहीं है? ';
+  String get phoneNumber => 'फोन नंबर';
 
   @override
-  String get loginSuccessful => 'लॉगिन सफल!';
+  String get enterPhoneNumber => 'अपना फोन नंबर दर्ज करें';
 
   @override
-  String get loginFailed => 'लॉगिन असफल। कृपया पुनः प्रयास करें।';
+  String get pin => 'पिन';
 
   @override
-  String get invalidCredentials =>
-      'प्रदान की गई प्रमाणीकरण जानकारी गलत, विकृत या समाप्त हो गई है।';
+  String get enterPin => 'अपना 4-अंकीय पिन दर्ज करें';
+
+  @override
+  String get fullName => 'पूरा नाम';
+
+  @override
+  String get enterFullName => 'अपना पूरा नाम दर्ज करें';
+
+  @override
+  String get address => 'पता';
+
+  @override
+  String get state => 'राज्य';
+
+  @override
+  String get district => 'जिला';
+
+  @override
+  String get mandal => 'मंडल/तहसील';
+
+  @override
+  String get village => 'गांव/शहर';
+
+  @override
+  String get referralCode => 'रेफरल कोड';
+
+  @override
+  String get enterReferralCode => 'रेफरल कोड दर्ज करें (वैकल्पिक)';
 
   @override
   String get home => 'होम';
@@ -58,224 +82,34 @@ class AppLocalizationsHi extends AppLocalizations {
   String get more => 'और';
 
   @override
-  String get goodMorning => 'सुप्रभात! आज कैसा दिन है?';
-
-  @override
-  String get welcomeToTalowa => 'तलावा में आपका स्वागत है';
-
-  @override
-  String get member => 'सदस्य';
-
-  @override
-  String get askAnything => 'कुछ भी पूछें...';
-
-  @override
-  String get landIssues => 'जमीन की समस्या';
-
-  @override
-  String get myNetwork => 'मेरा नेटवर्क';
-
-  @override
-  String get legalHelp => 'कानूनी मदद';
-
-  @override
-  String get support => 'समन्वयक';
-
-  @override
-  String get todaysInspirationMessage => 'आज का प्रेरणा संदेश';
-
-  @override
-  String get unitedWeStandProtectOurLand =>
-      'एकजुट होकर हम अपनी जमीन की रक्षा करेंगे।';
-
-  @override
-  String get sambuddhaVictory => 'सामुद्र की जीत';
-
-  @override
-  String get telanganaSambuddhaLandVictoryStory =>
-      '15 साल बाद, तेलंगाना के सामुद्र को अंततः अपनी जमीन वापस मिल गई।';
-
-  @override
-  String get debugTools => 'डिबग टूल्स';
-
-  @override
-  String get createTestUser => 'टेस्ट यूजर बनाएं';
-
-  @override
-  String get checkUser => 'यूजर चेक करें';
-
-  @override
-  String get testFirebase => 'फायरबेस टेस्ट';
-
-  @override
-  String get fillTestData => 'टेस्ट डेटा भरें';
-
-  @override
-  String get mainServices => 'मुख्य सेवाएं';
-
-  @override
-  String get myLand => 'मेरी जमीन';
-
-  @override
-  String get viewLandDetails => 'भूमि विवरण देखें';
-
-  @override
-  String get payments => 'भुगतान';
-
-  @override
-  String get viewTransactions => 'लेन-देन देखें';
-
-  @override
-  String get community => 'समुदाय';
-
-  @override
-  String get connectWithPeople => 'लोगों से जुड़ें';
-
-  @override
   String get profile => 'प्रोफाइल';
 
   @override
-  String get accountManagement => 'खाता प्रबंधन';
+  String get settings => 'सेटिंग्स';
 
   @override
-  String get myReferrals => 'मेरे रेफरल';
+  String get language => 'भाषा';
 
   @override
-  String get teamSize => 'टीम साइज';
+  String get selectLanguage => 'भाषा चुनें';
 
   @override
-  String get landStatus => 'भूमि स्थिति';
+  String get english => 'English';
 
   @override
-  String get active => 'सक्रिय';
+  String get hindi => 'हिन्दी';
 
   @override
-  String get emergencyServices => 'आपातकालीन सेवाएं';
-
-  @override
-  String get reportLandGrabbing => 'जमीन हड़पना रिपोर्ट करें';
-
-  @override
-  String get languageSettings => 'भाषा सेटिंग्स';
-
-  @override
-  String get selectPreferredLanguage => 'अपनी पसंदीदा भाषा चुनें:';
-
-  @override
-  String get applyChanges => 'परिवर्तन लागू करें';
-
-  @override
-  String get languagePreview => 'भाषा पूर्वावलोकन';
-
-  @override
-  String get welcomeToTalowaPreview =>
-      'तलावा में आपका स्वागत है! आपके भूमि अधिकार सुरक्षित हैं।';
-
-  @override
-  String languageChangedTo(String language) {
-    return 'भाषा बदलकर $language कर दी गई';
-  }
-
-  @override
-  String failedToChangeLanguage(String error) {
-    return 'भाषा बदलने में असफल: $error';
-  }
-
-  @override
-  String get goodAfternoon => 'नमस्कार! दोपहर की शुभकामनाएं।';
-
-  @override
-  String get goodEvening => 'शुभ संध्या! आपका दिन कैसा रहा?';
-
-  @override
-  String get hardWorkWillPayOff => 'आपकी मेहनत रंग लाएगी। जय किसान!';
-
-  @override
-  String get togetherWeProtectLand =>
-      'एकजुट होकर हम अपनी जमीन की रक्षा करेंगे।';
-
-  @override
-  String get yourRightYourLand => 'आपका हक, आपकी जमीन, आपका सम्मान।';
-
-  @override
-  String get rameshwarVictory => 'रामेश्वर की जीत';
-
-  @override
-  String get rameshwarVictoryStory =>
-      'तेलंगाना के रामेश्वर ने 15 साल बाद अपनी जमीन का पट्टा पाया।';
-
-  @override
-  String get sunitaLandRights => 'सुनीता के भूमि अधिकार';
-
-  @override
-  String get sunitaLandRightsStory =>
-      'कर्नाटक की सुनीता ने अपनी 3 एकड़ जमीन को अवैध कब्जे से बचाया।';
-
-  @override
-  String get fullName => 'पूरा नाम';
-
-  @override
-  String get village => 'गांव/शहर';
-
-  @override
-  String get mandal => 'मंडल/तहसील';
-
-  @override
-  String get district => 'जिला';
-
-  @override
-  String get state => 'राज्य';
-
-  @override
-  String get referralCode => 'रेफरल कोड (वैकल्पिक)';
-
-  @override
-  String get completeRegistration => 'पंजीकरण पूरा करें';
-
-  @override
-  String get registrationSuccessful => 'पंजीकरण सफल!';
-
-  @override
-  String get registrationFailed => 'पंजीकरण असफल। कृपया पुनः प्रयास करें।';
-
-  @override
-  String get phoneNumberAlreadyRegistered => 'फोन नंबर पहले से पंजीकृत है';
-
-  @override
-  String get invalidPhoneNumber => 'अमान्य फोन नंबर प्रारूप';
-
-  @override
-  String get pinTooShort => 'पिन कम से कम 6 अंकों का होना चाहिए';
-
-  @override
-  String get fieldRequired => 'यह फील्ड आवश्यक है';
-
-  @override
-  String get networkError => 'नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।';
-
-  @override
-  String get somethingWentWrong => 'कुछ गलत हुआ। कृपया पुनः प्रयास करें।';
-
-  @override
-  String get loading => 'लोड हो रहा है...';
-
-  @override
-  String get retry => 'पुनः प्रयास करें';
-
-  @override
-  String get cancel => 'रद्द करें';
+  String get telugu => 'తెలుగు';
 
   @override
   String get save => 'सेव करें';
 
   @override
-  String get edit => 'संपादित करें';
+  String get cancel => 'रद्द करें';
 
   @override
-  String get delete => 'हटाएं';
-
-  @override
-  String get confirm => 'पुष्टि करें';
+  String get ok => 'ठीक है';
 
   @override
   String get yes => 'हां';
@@ -284,49 +118,70 @@ class AppLocalizationsHi extends AppLocalizations {
   String get no => 'नहीं';
 
   @override
-  String get ok => 'ठीक है';
+  String get loading => 'लोड हो रहा है...';
+
+  @override
+  String get error => 'त्रुटि';
+
+  @override
+  String get success => 'सफलता';
+
+  @override
+  String get warning => 'चेतावनी';
+
+  @override
+  String get info => 'जानकारी';
+
+  @override
+  String get retry => 'पुनः प्रयास';
 
   @override
   String get close => 'बंद करें';
 
   @override
+  String get back => 'वापस';
+
+  @override
+  String get next => 'अगला';
+
+  @override
+  String get previous => 'पिछला';
+
+  @override
+  String get done => 'पूर्ण';
+
+  @override
+  String get skip => 'छोड़ें';
+
+  @override
+  String get continue_ => 'जारी रखें';
+
+  @override
+  String get submit => 'जमा करें';
+
+  @override
   String get search => 'खोजें';
 
   @override
-  String get noResultsFound => 'कोई परिणाम नहीं मिला';
+  String get noResults => 'कोई परिणाम नहीं मिला';
 
   @override
-  String get pullToRefresh => 'रिफ्रेश करने के लिए खींचें';
+  String get networkError => 'नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।';
 
   @override
-  String get refreshing => 'रिफ्रेश हो रहा है...';
+  String get serverError => 'सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।';
 
   @override
-  String get offline => 'ऑफलाइन';
+  String get invalidInput => 'अमान्य इनपुट। कृपया अपना डेटा जांचें।';
 
   @override
-  String get online => 'ऑनलाइन';
+  String get requiredField => 'यह फील्ड आवश्यक है';
 
   @override
-  String get settings => 'सेटिंग्स';
+  String get invalidPhoneNumber => 'कृपया एक वैध फोन नंबर दर्ज करें';
 
   @override
-  String get notifications => 'सूचनाएं';
-
-  @override
-  String get privacy => 'गोपनीयता';
-
-  @override
-  String get security => 'सुरक्षा';
-
-  @override
-  String get about => 'के बारे में';
-
-  @override
-  String get help => 'सहायता';
-
-  @override
-  String get contactSupport => 'सहायता से संपर्क करें';
+  String get invalidPin => 'पिन 4 अंकों का होना चाहिए';
 
   @override
   String get logout => 'लॉगआउट';
@@ -335,41 +190,89 @@ class AppLocalizationsHi extends AppLocalizations {
   String get logoutConfirmation => 'क्या आप वाकई लॉगआउट करना चाहते हैं?';
 
   @override
+  String get myReferralCode => 'मेरा रेफरल कोड';
+
+  @override
+  String get shareReferralCode => 'रेफरल कोड साझा करें';
+
+  @override
+  String get copyReferralCode => 'रेफरल कोड कॉपी करें';
+
+  @override
+  String get referralCodeCopied => 'रेफरल कोड क्लिपबोर्ड में कॉपी किया गया';
+
+  @override
+  String get directReferrals => 'प्रत्यक्ष रेफरल';
+
+  @override
+  String get totalTeamSize => 'कुल टीम का आकार';
+
+  @override
+  String get role => 'भूमिका';
+
+  @override
+  String get member => 'सदस्य';
+
+  @override
+  String get coordinator => 'समन्वयक';
+
+  @override
+  String get aiAssistant => 'एआई सहायक';
+
+  @override
+  String get askAIAssistant => 'एआई सहायक से पूछें';
+
+  @override
+  String get typeYourQuestion => 'अपना प्रश्न टाइप करें...';
+
+  @override
+  String get emergencyActions => 'आपातकालीन कार्य';
+
+  @override
+  String get reportLandGrabbing => 'भूमि हड़पने की रिपोर्ट करें';
+
+  @override
+  String get callForHelp => 'मदद के लिए कॉल करें';
+
+  @override
+  String get landRecords => 'भूमि रिकॉर्ड';
+
+  @override
+  String get legalCases => 'कानूनी मामले';
+
+  @override
+  String get campaigns => 'अभियान';
+
+  @override
+  String get notifications => 'सूचनाएं';
+
+  @override
+  String get noNotifications => 'कोई सूचना नहीं';
+
+  @override
+  String get markAllAsRead => 'सभी को पढ़ा हुआ चिह्नित करें';
+
+  @override
+  String get about => 'के बारे में';
+
+  @override
   String get version => 'संस्करण';
-
-  @override
-  String get buildNumber => 'बिल्ड';
-
-  @override
-  String get termsOfService => 'सेवा की शर्तें';
 
   @override
   String get privacyPolicy => 'गोपनीयता नीति';
 
   @override
-  String get shareApp => 'ऐप साझा करें';
+  String get termsOfService => 'सेवा की शर्तें';
+
+  @override
+  String get contactSupport => 'सहायता से संपर्क करें';
+
+  @override
+  String get helpCenter => 'सहायता केंद्र';
+
+  @override
+  String get feedback => 'प्रतिक्रिया';
 
   @override
   String get rateApp => 'ऐप को रेट करें';
-
-  @override
-  String get sendFeedback => 'फीडबैक भेजें';
-
-  @override
-  String get reportBug => 'बग रिपोर्ट करें';
-
-  @override
-  String get checkForUpdates => 'अपडेट के लिए जांचें';
-
-  @override
-  String get appUpToDate => 'ऐप अप टू डेट है';
-
-  @override
-  String get updateAvailable => 'अपडेट उपलब्ध है';
-
-  @override
-  String get updateNow => 'अभी अपडेट करें';
-
-  @override
-  String get updateLater => 'बाद में अपडेट करें';
 }

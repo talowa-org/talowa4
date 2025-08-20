@@ -16,7 +16,7 @@ class InvalidReferralCodeException implements Exception {
 /// Service for fast referral code lookup and validation
 class ReferralLookupService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  
   /// For testing purposes - allows injection of fake firestore
   static void setFirestoreInstance(FirebaseFirestore firestore) {
     _firestore = firestore;

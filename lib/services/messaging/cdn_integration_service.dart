@@ -167,7 +167,7 @@ class CDNIntegrationService {
           final url = _getCachedUrl(filePath);
           if (url != null) {
             await CachedNetworkImage.evictFromCache(url);
-            CachedNetworkImageProvider(url).resolve(ImageConfiguration.empty);
+            CachedNetworkImageProvider(url);
           }
         } catch (e) {
           debugPrint('Error preloading media file $filePath: $e');

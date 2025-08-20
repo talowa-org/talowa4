@@ -23,7 +23,7 @@ class ReferralTrackingService {
     _firestore = firestore;
   }
   
-  /// Records referral relationship (pending state)
+  /// Records referral relationship and immediately activates it
   static Future<void> recordReferralRelationship({
     required String newUserId,
     required String referralCode,
@@ -41,29 +41,37 @@ class ReferralTrackingService {
         );
       }
       
+      final referralChain = await _buildReferralChain(referrerData['uid']);
+      
       // Update new user with referral info
       final userRef = _firestore.collection('users').doc(newUserId);
       batch.update(userRef, {
         'referredBy': referralCode,
-        'referralChain': await _buildReferralChain(referrerData['uid']),
-        'referralStatus': 'pending_payment',
+        'referralChain': referralChain,
+        'referralStatus': 'active', // Immediately active in simplified system
         'referralRecordedAt': FieldValue.serverTimestamp(),
       });
       
-      // Add to referrer's pending referrals
-      final referrerRef = _firestore.collection('users').doc(referrerData['uid']);
-      batch.update(referrerRef, {
-        'pendingReferrals': FieldValue.arrayUnion([newUserId]),
-      });
+      // Immediately update referral chain statistics
+      await _updateReferralChainStatistics(batch, referralChain, newUserId);
+      
+      // Check for role progressions
+      await _checkRoleProgressions(batch, referralChain);
       
       await batch.commit();
       
       // Track referral event
-      await _trackReferralEvent('referral_recorded', {
+      await _trackReferralEvent('referral_activated', {
         'referrer_id': referrerData['uid'],
         'referee_id': newUserId,
         'referral_code': referralCode,
       });
+      
+      // Send notifications
+      await _sendReferralActivationNotifications(referralChain, newUserId);
+      
+      // Award achievements for milestones
+      await _checkAndAwardAchievements(referralChain);
       
     } catch (e) {
       await _logReferralError('record_referral_relationship', e, {
@@ -74,45 +82,12 @@ class ReferralTrackingService {
     }
   }
   
-  /// Activates referral chain after payment success
+  /// Legacy method - no longer needed in simplified system
+  @deprecated
   static Future<void> activateReferralChain(String userId) async {
-    final batch = _firestore.batch();
-    
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      final userData = userDoc.data();
-      
-      if (userData == null || userData['referralStatus'] != 'pending_payment') {
-        return; // No pending referral to activate
-      }
-      
-      final referralCode = userData['referredBy'] as String?;
-      if (referralCode == null) return;
-      
-      // Update user status
-      batch.update(userDoc.reference, {
-        'referralStatus': 'active',
-        'paymentCompletedAt': FieldValue.serverTimestamp(),
-      });
-      
-      // Update referral chain statistics
-      await _updateReferralChainStatistics(batch, userData['referralChain'], userId);
-      
-      // Check for role progressions
-      await _checkRoleProgressions(batch, userData['referralChain']);
-      
-      await batch.commit();
-      
-      // Send notifications
-      await _sendReferralActivationNotifications(userData['referralChain'], userId);
-      
-      // Award achievements for milestones
-      await _checkAndAwardAchievements(userData['referralChain']);
-      
-    } catch (e) {
-      await _logReferralError('activate_referral_chain', e, {'user_id': userId});
-      rethrow;
-    }
+    // In simplified system, referrals are activated immediately upon registration
+    // This method is kept for backward compatibility but does nothing
+    print('activateReferralChain called but not needed in simplified system');
   }
   
   /// Validates referral code and returns referrer data
@@ -156,14 +131,14 @@ class ReferralTrackingService {
       // Update direct referral count for immediate referrer
       if (userId == referralChain.last) {
         batch.update(userRef, {
-          'directReferralCount': FieldValue.increment(1),
+          'activeDirectReferrals': FieldValue.increment(1),
           'directReferrals': FieldValue.arrayUnion([newUserId]),
-          'pendingReferrals': FieldValue.arrayRemove([newUserId]),
         });
       }
       
       // Update team size for all in chain
       batch.update(userRef, {
+        'activeTeamSize': FieldValue.increment(1),
         'totalTeamSize': FieldValue.increment(1),
         'lastTeamUpdate': FieldValue.serverTimestamp(),
       });
@@ -177,8 +152,8 @@ class ReferralTrackingService {
       final userData = userDoc.data();
       if (userData == null) continue;
       
-      final directReferrals = userData['directReferralCount'] as int? ?? 0;
-      final teamSize = userData['totalTeamSize'] as int? ?? 0;
+      final directReferrals = userData['activeDirectReferrals'] as int? ?? 0;
+      final teamSize = userData['activeTeamSize'] as int? ?? 0;
       final currentRole = userData['currentRole'] as String? ?? 'member';
       final location = userData['address'] as Map<String, dynamic>?;
       final isUrban = location?['type'] == 'urban';
@@ -291,13 +266,12 @@ class ReferralTrackingService {
       
       final userData = userDoc.data()!;
       return {
-        'directReferrals': userData['directReferralCount'] ?? 0,
-        'totalTeamSize': userData['totalTeamSize'] ?? 0,
+        'directReferrals': userData['activeDirectReferrals'] ?? 0,
+        'totalTeamSize': userData['activeTeamSize'] ?? 0,
         'currentRole': userData['currentRole'] ?? 'member',
         'referralCode': userData['referralCode'],
         'referralChain': userData['referralChain'] ?? [],
-        'pendingReferrals': userData['pendingReferrals'] ?? [],
-        'membershipPaid': userData['membershipPaid'] ?? false,
+        'membershipPaid': true, // Always true in simplified system
       };
     } catch (e) {
       throw ReferralTrackingException(

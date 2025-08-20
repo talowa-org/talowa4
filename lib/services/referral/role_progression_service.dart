@@ -146,14 +146,7 @@ class RoleProgressionService {
       final userData = userDoc.data()!;
       final currentRole = userData['currentRole'] as String? ?? 'member';
       
-      // Only check progression for paid members
-      if (userData['membershipPaid'] != true) {
-        return {
-          'promoted': false,
-          'currentRole': currentRole,
-          'reason': 'Membership payment required for role progression',
-        };
-      }
+      // In simplified system, all registered users are eligible for role progression
       
       // Get current statistics
       final directReferrals = userData['activeDirectReferrals'] as int? ?? 0;
@@ -402,7 +395,7 @@ class RoleProgressionService {
         'teamSize': teamSize,
         'nextRole': nextRoleRequirements,
         'progress': progress,
-        'membershipPaid': userData['membershipPaid'] ?? false,
+        'membershipPaid': true, // Always true in simplified system
         'rolePromotionHistory': userData['rolePromotionHistory'] ?? [],
       };
     } catch (e) {
@@ -450,7 +443,7 @@ class RoleProgressionService {
       final query = await _firestore
           .collection('users')
           .where('currentRole', isEqualTo: role)
-          .where('membershipPaid', isEqualTo: true)
+          .where('isActive', isEqualTo: true)
           .limit(limit)
           .get();
       
@@ -485,7 +478,7 @@ class RoleProgressionService {
         final query = await _firestore
             .collection('users')
             .where('currentRole', isEqualTo: role)
-            .where('membershipPaid', isEqualTo: true)
+            .where('isActive', isEqualTo: true)
             .get();
         
         distribution[role] = query.docs.length;

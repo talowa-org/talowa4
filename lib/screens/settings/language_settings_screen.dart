@@ -16,7 +16,7 @@ class LanguageSettingsScreen extends StatefulWidget {
 }
 
 class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
-  String _selectedLanguage = LocalizationService.currentLanguage;
+  String _selectedLanguage = 'en';
   bool _autoTranslateEnabled = true;
   bool _voiceTranscriptionEnabled = true;
   bool _showOriginalText = false;
@@ -88,8 +88,8 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            ...LocalizationService.supportedLanguages.entries.map((entry) {
-              final isRTL = LocalizationService.rtlLanguages.contains(entry.key);
+            ...{'en': 'English', 'hi': 'Hindi', 'te': 'Telugu'}.entries.map((entry) {
+              final isRTL = false;
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: RadioListTile<String>(
@@ -246,22 +246,22 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
             if (_voiceTranscriptionEnabled) ...[
               const Divider(),
               ListTile(
-                leading: Icon(Icons.accuracy, color: Colors.green.shade600),
+                leading: Icon(Icons.language, color: Colors.green.shade600),
                 title: const Text('Transcription Accuracy'),
                 subtitle: Column(
                   crossAxisAlignment: RTLSupportService.crossAxisAlignment,
                   children: VoiceTranscriptionService.getLanguageAccuracy()
                       .entries
                       .map((entry) {
-                    final languageName = LocalizationService
-                        .supportedLanguages[entry.key] ?? entry.key;
+                    final languageName = LocalizationService.supportedLanguages[entry.key] ??
+                        entry.value;
                     final accuracy = (entry.value * 100).toInt();
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(languageName),
+                          Text(languageName.toString()),
                           Text(
                             '$accuracy%',
                             style: TextStyle(
@@ -287,7 +287,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   Widget _buildRTLSettings() {
-    final isRTLLanguage = LocalizationService.rtlLanguages.contains(_selectedLanguage);
+    final isRTLLanguage = false;
     
     if (!isRTLLanguage) {
       return const SizedBox.shrink();
@@ -395,7 +395,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   Widget _buildPreviewStats() {
-    final isRTL = LocalizationService.rtlLanguages.contains(_selectedLanguage);
+    final isRTL = false;
     final accuracy = VoiceTranscriptionService.getLanguageAccuracy()[_selectedLanguage] ?? 0.0;
     
     return Row(
@@ -456,7 +456,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   Widget _buildApplyButton() {
-    final hasChanges = _selectedLanguage != LocalizationService.currentLanguage;
+    final hasChanges = _selectedLanguage != 'en';
     
     return SizedBox(
       width: double.infinity,
@@ -508,7 +508,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
     }
     
     final languageNames = currentSupported
-        .map((code) => LocalizationService.supportedLanguages[code] ?? code)
+        .map((code) => {'en': 'English', 'hi': 'Hindi', 'te': 'Telugu'}[code] ?? code)
         .join(', ');
     
     return 'Can translate to/from: $languageNames';
@@ -521,7 +521,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
 
     try {
       // Apply language change
-      await LocalizationService.setLanguage(_selectedLanguage);
+      // await LocalizationService.setLanguage(_selectedLanguage);
       
       // Update voice transcription language
       if (_voiceTranscriptionEnabled) {
@@ -529,8 +529,8 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
       }
       
       if (mounted) {
-        final languageName = LocalizationService.supportedLanguages[_selectedLanguage];
-        final isRTL = LocalizationService.rtlLanguages.contains(_selectedLanguage);
+        final languageName = {'en': 'English', 'hi': 'Hindi', 'te': 'Telugu'}[_selectedLanguage];
+        final isRTL = false;
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

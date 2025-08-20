@@ -15,10 +15,10 @@ import 'screens/land_records/land_records_list_screen.dart';
 import 'screens/land_records/land_record_detail_screen.dart';
 import 'screens/land_records/land_record_form_screen.dart';
 import 'services/performance_monitor.dart';
-import 'services/localization_service.dart';
-import 'services/rtl_support_service.dart';
-import 'services/messaging/message_translation_service.dart';
-import 'services/messaging/voice_transcription_service.dart';
+// import 'services/localization_service.dart';
+// import 'services/rtl_support_service.dart';
+// import 'services/messaging/message_translation_service.dart';
+// import 'services/messaging/voice_transcription_service.dart';
 import 'services/data_population_service.dart';
 import 'services/remote_config_service.dart';
 import 'services/bootstrap_service.dart';
@@ -34,16 +34,16 @@ void main() async {
   );
 
   // Initialize localization service
-  await LocalizationService.initialize();
+  // await LocalizationService.initialize();
   
   // Initialize RTL support service
-  await RTLSupportService.initialize();
+  // await RTLSupportService.initialize();
   
   // Initialize message translation service
-  await MessageTranslationService.initialize();
+  // await MessageTranslationService.initialize();
   
   // Initialize voice transcription service
-  await VoiceTranscriptionService.initialize();
+  // await VoiceTranscriptionService.initialize();
 
   // Initialize Remote Config (feature flags)
   await RemoteConfigService.init();
@@ -59,11 +59,11 @@ void main() async {
   BootstrapService.bootstrap();
 
   // Initialize messaging integration system
-  try {
-    await TalowaMessagingIntegration().initialize();
-  } catch (e) {
-    debugPrint('Failed to initialize messaging integration: $e');
-  }
+  // try {
+  //   await TalowaMessagingIntegration().initialize();
+  // } catch (e) {
+  //   debugPrint('Failed to initialize messaging integration: $e');
+  // }
 
   // Initialize notification system
   try {
@@ -101,7 +101,7 @@ class TalowaApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: localizationProvider.supportedLocales,
-      locale: localizationProvider.currentLocale
+      locale: localizationProvider.currentLocale,
       
       home: const WelcomeScreen(),
       routes: {

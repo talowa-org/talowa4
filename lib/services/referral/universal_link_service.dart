@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' if (dart.library.html) 'dart:html' as html;
 import 'package:flutter/foundation.dart';
-import 'package:app_links/app_links.dart';
-import 'package:uni_links/uni_links.dart';
+// import 'package:app_links/app_links.dart';  // Not supported on web
+// import 'package:uni_links/uni_links.dart';  // Not supported on web
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'referral_lookup_service.dart';
 
@@ -25,7 +25,7 @@ class UniversalLinkService {
   static const String REFERRAL_PARAM = 'ref';
   
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static AppLinks? _appLinks;
+  // static AppLinks? _appLinks;  // Not supported on web
   static StreamSubscription<Uri>? _linkSubscription;
   static String? _pendingReferralCode;
   
@@ -48,21 +48,12 @@ class UniversalLinkService {
     
     try {
       if (!kIsWeb) {
-        _appLinks = AppLinks();
-        
-        // Handle initial link when app is launched from a link
-        final initialLink = await _getInitialLink();
-        if (initialLink != null) {
-          await _handleIncomingLink(initialLink);
-        }
-        
-        // Listen for incoming links when app is already running
-        _linkSubscription = _appLinks!.uriLinkStream.listen(
-          _handleIncomingLink,
-          onError: (err) {
-            _onDeepLinkError?.call('Link stream error: $err');
-          },
-        );
+        // Mobile platform initialization would go here
+        // For now, we'll handle web-specific initialization
+        debugPrint('Universal links not supported on web platform');
+      } else {
+        // Web platform - check URL parameters
+        await _handleWebInitialLink();
       }
     } catch (e) {
       _onDeepLinkError?.call('Failed to initialize universal links: $e');
@@ -75,18 +66,21 @@ class UniversalLinkService {
     _linkSubscription = null;
   }
   
-  /// Get initial link when app is launched
-  static Future<Uri?> _getInitialLink() async {
-    try {
-      if (Platform.isAndroid || Platform.isIOS) {
-        final initialLink = await getInitialLink();
-        return initialLink != null ? Uri.parse(initialLink) : null;
+  /// Handle web initial link from URL parameters
+  static Future<void> _handleWebInitialLink() async {
+    if (kIsWeb) {
+      try {
+        // Get current URL and check for referral parameters
+        final currentUrl = Uri.base;
+        final referralCode = _extractReferralCode(currentUrl);
+        
+        if (referralCode != null) {
+          await _handleReferralLink(referralCode);
+        }
+      } catch (e) {
+        debugPrint('Failed to handle web initial link: $e');
       }
-    } catch (e) {
-      // Handle platform exceptions gracefully
-      return null;
     }
-    return null;
   }
   
   /// Handle incoming universal link
@@ -202,12 +196,7 @@ class UniversalLinkService {
   /// Get platform name
   static String _getPlatformName() {
     if (kIsWeb) return 'web';
-    if (Platform.isAndroid) return 'android';
-    if (Platform.isIOS) return 'ios';
-    if (Platform.isWindows) return 'windows';
-    if (Platform.isMacOS) return 'macos';
-    if (Platform.isLinux) return 'linux';
-    return 'unknown';
+    return 'mobile'; // Simplified for web compatibility
   }
   
   /// Get app version (placeholder - would need package_info_plus)

@@ -137,9 +137,17 @@ class _FeedScreenState extends State<FeedScreen>
     }
 
     if (_hasError && _posts.isEmpty) {
-      return CustomErrorWidget(
-        message: _errorMessage ?? 'Failed to load feed',
-        onRetry: _loadFeed,
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: ${_errorMessage ?? 'Failed to load feed'}'),
+            ElevatedButton(
+              onPressed: _loadFeed,
+              child: Text('Retry'),
+            ),
+          ],
+        ),
       );
     }
 
