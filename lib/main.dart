@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
@@ -14,9 +16,15 @@ import 'screens/land_records/land_record_detail_screen.dart';
 import 'screens/land_records/land_record_form_screen.dart';
 import 'services/performance_monitor.dart';
 import 'services/localization_service.dart';
+import 'services/rtl_support_service.dart';
+import 'services/messaging/message_translation_service.dart';
+import 'services/messaging/voice_transcription_service.dart';
 import 'services/data_population_service.dart';
 import 'services/remote_config_service.dart';
 import 'services/bootstrap_service.dart';
+import 'services/messaging/talowa_messaging_integration.dart';
+import 'services/notifications/notification_service.dart';
+import 'providers/localization_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
@@ -27,6 +35,15 @@ void main() async {
 
   // Initialize localization service
   await LocalizationService.initialize();
+  
+  // Initialize RTL support service
+  await RTLSupportService.initialize();
+  
+  // Initialize message translation service
+  await MessageTranslationService.initialize();
+  
+  // Initialize voice transcription service
+  await VoiceTranscriptionService.initialize();
 
   // Initialize Remote Config (feature flags)
   await RemoteConfigService.init();
@@ -41,6 +58,20 @@ void main() async {
   // Bootstrap admin user and migrate legacy data
   BootstrapService.bootstrap();
 
+  // Initialize messaging integration system
+  try {
+    await TalowaMessagingIntegration().initialize();
+  } catch (e) {
+    debugPrint('Failed to initialize messaging integration: $e');
+  }
+
+  // Initialize notification system
+  try {
+    await NotificationService.initialize();
+  } catch (e) {
+    debugPrint('Failed to initialize notification system: $e');
+  }
+
   runApp(const TalowaApp());
 }
 
@@ -49,7 +80,15 @@ class TalowaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => LocalizationProvider()..initialize(),
+        ),
+      ],
+      child: Consumer<LocalizationProvider>(
+        builder: (context, localizationProvider, child) {
+          return MaterialApp(
       title: AppConstants.appName,
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
@@ -61,12 +100,8 @@ class TalowaApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'), // English (default)
-        Locale('hi'), // Hindi
-        Locale('te'), // Telugu
-      ],
-      locale: const Locale('en'), // Force English for now
+      supportedLocales: localizationProvider.supportedLocales,
+      locale: localizationProvider.currentLocale
       
       home: const WelcomeScreen(),
       routes: {
@@ -91,6 +126,9 @@ class TalowaApp extends StatelessWidget {
         }
         return null;
       },
+          );
+        },
+      ),
     );
   }
 }

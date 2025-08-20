@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
 import '../../models/social_feed/index.dart';
@@ -641,11 +642,15 @@ class PerformanceOptimizationService {
         authorId: 'user_${postIndex % 10}',
         authorName: 'User ${postIndex % 10}',
         content: 'This is mock post content for post $postIndex',
+        mediaUrls: [], // Required parameter
+        hashtags: [], // Required parameter
         category: PostCategory.values[postIndex % PostCategory.values.length],
+        location: 'Test Location', // Required parameter
         createdAt: DateTime.now().subtract(Duration(hours: postIndex)),
         likesCount: postIndex % 50,
         commentsCount: postIndex % 20,
         sharesCount: postIndex % 10,
+        isLikedByCurrentUser: false, // Required parameter
       ));
     }
     

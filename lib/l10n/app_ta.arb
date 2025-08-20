@@ -1,0 +1,370 @@
+{
+  "@@locale": "ta",
+  "@@context": "Tamil translations for TALOWA app",
+  
+  "appTitle": "தலோவா",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "welcome": "வரவேற்கிறோம்",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  
+  "login": "உள்நுழைவு",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "register": "பதிவு செய்யுங்கள்",
+  "@register": {
+    "description": "Register button text"
+  },
+  
+  "phoneNumber": "தொலைபேசி எண்",
+  "@phoneNumber": {
+    "description": "Phone number field label"
+  },
+  
+  "enterPhoneNumber": "உங்கள் தொலைபேசி எண்ணை உள்ளிடுங்கள்",
+  "@enterPhoneNumber": {
+    "description": "Phone number field hint"
+  },
+  
+  "pin": "பின்",
+  "@pin": {
+    "description": "PIN field label"
+  },
+  
+  "enterPin": "உங்கள் பின்னை உள்ளிடுங்கள்",
+  "@enterPin": {
+    "description": "PIN field hint"
+  },
+  
+  "confirmPin": "பின்னை உறுதிப்படுத்துங்கள்",
+  "@confirmPin": {
+    "description": "Confirm PIN field label"
+  },
+  
+  "fullName": "முழு பெயர்",
+  "@fullName": {
+    "description": "Full name field label"
+  },
+  
+  "enterFullName": "உங்கள் முழு பெயரை உள்ளிடுங்கள்",
+  "@enterFullName": {
+    "description": "Full name field hint"
+  },
+  
+  "village": "கிராமம்",
+  "@village": {
+    "description": "Village field label"
+  },
+  
+  "selectVillage": "உங்கள் கிராமத்தைத் தேர்ந்தெடுக்கவும்",
+  "@selectVillage": {
+    "description": "Village selection hint"
+  },
+  
+  "mandal": "மண்டலம்",
+  "@mandal": {
+    "description": "Mandal field label"
+  },
+  
+  "district": "மாவட்டம்",
+  "@district": {
+    "description": "District field label"
+  },
+  
+  "state": "மாநிலம்",
+  "@state": {
+    "description": "State field label"
+  },
+  
+  "referralCode": "பரிந்துரை குறியீடு",
+  "@referralCode": {
+    "description": "Referral code field label"
+  },
+  
+  "enterReferralCode": "பரிந்துரை குறியீட்டை உள்ளிடுங்கள் (விருப்பம்)",
+  "@enterReferralCode": {
+    "description": "Referral code field hint"
+  },
+  
+  "home": "முகப்பு",
+  "@home": {
+    "description": "Home tab label"
+  },
+  
+  "feed": "ஊட்டம்",
+  "@feed": {
+    "description": "Feed tab label"
+  },
+  
+  "messages": "செய்திகள்",
+  "@messages": {
+    "description": "Messages tab label"
+  },
+  
+  "network": "வலையமைப்பு",
+  "@network": {
+    "description": "Network tab label"
+  },
+  
+  "more": "மேலும்",
+  "@more": {
+    "description": "More tab label"
+  },
+  
+  "profile": "சுயவிவரம்",
+  "@profile": {
+    "description": "Profile menu item"
+  },
+  
+  "settings": "அமைப்புகள்",
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  
+  "language": "மொழி",
+  "@language": {
+    "description": "Language setting"
+  },
+  
+  "selectLanguage": "மொழியைத் தேர்ந்தெடுக்கவும்",
+  "@selectLanguage": {
+    "description": "Language selection title"
+  },
+  
+  "notifications": "அறிவிப்புகள்",
+  "@notifications": {
+    "description": "Notifications setting"
+  },
+  
+  "privacy": "தனியுரிமை",
+  "@privacy": {
+    "description": "Privacy setting"
+  },
+  
+  "security": "பாதுகாப்பு",
+  "@security": {
+    "description": "Security setting"
+  },
+  
+  "help": "உதவி",
+  "@help": {
+    "description": "Help menu item"
+  },
+  
+  "about": "பற்றி",
+  "@about": {
+    "description": "About menu item"
+  },
+  
+  "logout": "வெளியேறு",
+  "@logout": {
+    "description": "Logout menu item"
+  },
+  
+  "save": "சேமி",
+  "@save": {
+    "description": "Save button text"
+  },
+  
+  "cancel": "ரத்து செய்",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "ok": "சரி",
+  "@ok": {
+    "description": "OK button text"
+  },
+  
+  "yes": "ஆம்",
+  "@yes": {
+    "description": "Yes button text"
+  },
+  
+  "no": "இல்லை",
+  "@no": {
+    "description": "No button text"
+  },
+  
+  "error": "பிழை",
+  "@error": {
+    "description": "Error message title"
+  },
+  
+  "success": "வெற்றி",
+  "@success": {
+    "description": "Success message title"
+  },
+  
+  "loading": "ஏற்றுகிறது...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  
+  "retry": "மீண்டும் முயற்சிக்கவும்",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "invalidPhoneNumber": "தவறான தொலைபேசி எண்",
+  "@invalidPhoneNumber": {
+    "description": "Invalid phone number error"
+  },
+  
+  "invalidPin": "தவறான பின்",
+  "@invalidPin": {
+    "description": "Invalid PIN error"
+  },
+  
+  "pinMismatch": "பின் பொருந்தவில்லை",
+  "@pinMismatch": {
+    "description": "PIN mismatch error"
+  },
+  
+  "fieldRequired": "இந்த புலம் தேவை",
+  "@fieldRequired": {
+    "description": "Required field error"
+  },
+  
+  "networkError": "வலையமைப்பு பிழை",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  
+  "serverError": "சேவையக பிழை",
+  "@serverError": {
+    "description": "Server error message"
+  },
+  
+  "unknownError": "அறியப்படாத பிழை",
+  "@unknownError": {
+    "description": "Unknown error message"
+  },
+  
+  "landRights": "நில உரிமைகள்",
+  "@landRights": {
+    "description": "Land rights section"
+  },
+  
+  "legalCases": "சட்ட வழக்குகள்",
+  "@legalCases": {
+    "description": "Legal cases section"
+  },
+  
+  "campaigns": "பிரச்சாரங்கள்",
+  "@campaigns": {
+    "description": "Campaigns section"
+  },
+  
+  "reports": "அறிக்கைகள்",
+  "@reports": {
+    "description": "Reports section"
+  },
+  
+  "aiAssistant": "AI உதவியாளர்",
+  "@aiAssistant": {
+    "description": "AI Assistant feature"
+  },
+  
+  "emergencyHelp": "அவசர உதவி",
+  "@emergencyHelp": {
+    "description": "Emergency help button"
+  },
+  
+  "reportLandGrabbing": "நில அபகரிப்பை புகாரளிக்கவும்",
+  "@reportLandGrabbing": {
+    "description": "Report land grabbing button"
+  },
+  
+  "myTeam": "என் குழு",
+  "@myTeam": {
+    "description": "My team section"
+  },
+  
+  "teamSize": "குழு அளவு: {count}",
+  "@teamSize": {
+    "description": "Team size display",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  
+  "directReferrals": "நேரடி பரிந்துரைகள்: {count}",
+  "@directReferrals": {
+    "description": "Direct referrals count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  
+  "totalNetwork": "மொத்த வலையமைப்பு: {count}",
+  "@totalNetwork": {
+    "description": "Total network size",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "150"
+      }
+    }
+  },
+  
+  "activeCases": "செயலில் உள்ள வழக்குகள்: {count}",
+  "@activeCases": {
+    "description": "Active cases count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  
+  "landRecords": "நில பதிவுகள்: {count}",
+  "@landRecords": {
+    "description": "Land records count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  
+  "onlineStatus": "ஆன்லைன்",
+  "@onlineStatus": {
+    "description": "Online status indicator"
+  },
+  
+  "offlineStatus": "ஆஃப்லைன்",
+  "@offlineStatus": {
+    "description": "Offline status indicator"
+  },
+  
+  "syncInProgress": "ஒத்திசைவு நடந்து கொண்டிருக்கிறது...",
+  "@syncInProgress": {
+    "description": "Sync in progress message"
+  },
+  
+  "lastSyncTime": "கடைசி ஒத்திசைவு: {time}",
+  "@lastSyncTime": {
+    "description": "Last sync time display",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2 minutes ago"
+      }
+    }
+  }
+}

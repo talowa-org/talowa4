@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/referral/referral_models.dart';
 
 /// Exception thrown when referral chain operations fail
 class ReferralChainException implements Exception {

@@ -13,14 +13,14 @@ class ReferralCodeDisplayWidget extends StatefulWidget {
   final bool showCopyButton;
   
   const ReferralCodeDisplayWidget({
-    Key? key,
+    super.key,
     required this.referralCode,
     this.userName,
     this.onShare,
     this.showQRCode = true,
     this.showShareButton = true,
     this.showCopyButton = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ReferralCodeDisplayWidget> createState() => _ReferralCodeDisplayWidgetState();

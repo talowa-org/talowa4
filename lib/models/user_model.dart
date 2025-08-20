@@ -94,6 +94,57 @@ class UserModel {
     };
   }
 
+  // Convert to Map for caching
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'fullName': fullName,
+      'role': role,
+      'memberId': memberId,
+      'referralCode': referralCode,
+      'referredBy': referredBy,
+      'address': address.toMap(),
+      'directReferrals': directReferrals,
+      'teamSize': teamSize,
+      'membershipPaid': membershipPaid,
+      'paymentTransactionId': paymentTransactionId,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'lastLoginAt': lastLoginAt?.toIso8601String(),
+      'preferences': preferences.toMap(),
+      'isActive': isActive,
+    };
+  }
+
+  // Convert from Map for caching
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
+      email: map['email'] ?? '',
+      fullName: map['fullName'] ?? '',
+      role: map['role'] ?? AppConstants.roleMember,
+      memberId: map['memberId'] ?? '',
+      referralCode: map['referralCode'] ?? '',
+      referredBy: map['referredBy'],
+      address: Address.fromMap(Map<String, dynamic>.from(map['address'] ?? {})),
+      directReferrals: map['directReferrals'] ?? 0,
+      teamSize: map['teamSize'] ?? 0,
+      membershipPaid: map['membershipPaid'] ?? false,
+      paymentTransactionId: map['paymentTransactionId'],
+      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
+      lastLoginAt: map['lastLoginAt'] != null ? DateTime.parse(map['lastLoginAt']) : null,
+      preferences: UserPreferences.fromMap(Map<String, dynamic>.from(map['preferences'] ?? {})),
+      isActive: map['isActive'] ?? true,
+    );
+  }
+
+  // Add profileImageUrl getter for compatibility
+  String? get profileImageUrl => null; // Can be added later if needed
+
   // Create copy with updated fields
   UserModel copyWith({
     String? phoneNumber,

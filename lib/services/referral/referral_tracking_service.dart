@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import '../../models/referral/referral_models.dart';
 import 'referral_lookup_service.dart';
-import 'orphan_assignment_service.dart';
 
 /// Exception thrown when referral tracking fails
 class ReferralTrackingException implements Exception {

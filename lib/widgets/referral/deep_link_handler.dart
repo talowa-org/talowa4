@@ -8,11 +8,11 @@ class DeepLinkHandler extends StatefulWidget {
   final Function(String)? onDeepLinkError;
   
   const DeepLinkHandler({
-    Key? key,
+    super.key,
     required this.child,
     this.onReferralCodeReceived,
     this.onDeepLinkError,
-  }) : super(key: key);
+  });
 
   @override
   State<DeepLinkHandler> createState() => _DeepLinkHandlerState();
@@ -169,11 +169,11 @@ class ReferralLinkSharingWidget extends StatelessWidget {
   final VoidCallback? onShare;
   
   const ReferralLinkSharingWidget({
-    Key? key,
+    super.key,
     required this.referralCode,
     this.userName,
     this.onShare,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +311,7 @@ Together we can secure land rights for all! 🏡
 
 /// Widget for testing deep links in development
 class DeepLinkTester extends StatefulWidget {
-  const DeepLinkTester({Key? key}) : super(key: key);
+  const DeepLinkTester({super.key});
 
   @override
   State<DeepLinkTester> createState() => _DeepLinkTesterState();

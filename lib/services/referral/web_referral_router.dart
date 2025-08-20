@@ -1,6 +1,5 @@
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
-import 'universal_link_service.dart';
 
 /// Service for handling referral links on web platform
 class WebReferralRouter {

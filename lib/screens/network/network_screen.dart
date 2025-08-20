@@ -1,12 +1,9 @@
 // Network Screen for TALOWA
 // Shows user's referral network and team management
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
-import '../../services/referral/universal_link_service.dart';
 import '../../services/referral_code_cache_service.dart';
 import 'dart:async';
 

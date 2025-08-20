@@ -13,11 +13,11 @@ class RegistrationFormWidget extends StatefulWidget {
   final Function(String)? onRegistrationError;
   
   const RegistrationFormWidget({
-    Key? key,
+    super.key,
     this.initialReferralCode,
     this.onRegistrationSuccess,
     this.onRegistrationError,
-  }) : super(key: key);
+  });
 
   @override
   State<RegistrationFormWidget> createState() => _RegistrationFormWidgetState();

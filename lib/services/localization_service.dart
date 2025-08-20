@@ -1,274 +1,236 @@
-// Centralized Localization Service for TALOWA
-// This service ensures 100% language consistency throughout the app
+import 'dart:ui';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter/foundation.dart';
-import 'language_preferences.dart';
+class LocalizationService extends ChangeNotifier {
+  static final LocalizationService _instance = LocalizationService._internal();
+  factory LocalizationService() => _instance;
+  LocalizationService._internal();
 
-class LocalizationService {
-  static const String defaultLanguage = 'en';
-  
-  // Supported languages
-  static const Map<String, String> supportedLanguages = {
-    'en': 'English',
-    'hi': 'हिंदी',
-    'te': 'తెలుగు',
-  };
-  
-  // Current language (singleton pattern)
-  static String _currentLanguage = defaultLanguage;
-  static String get currentLanguage => _currentLanguage;
-  
-  // Language change listeners
-  static final List<VoidCallback> _listeners = [];
-  
+  static const String _languageKey = 'selected_language';
+  static const String _cachedLanguagesKey = 'cached_languages';
+  static const List<Locale> supportedLocales = [
+    Locale('en', 'US'), // English
+    Locale('hi', 'IN'), // Hindi
+    Locale('te', 'IN'), // Telugu
+    Locale('ta', 'IN'), // Tamil
+  ];
+
+  Locale _currentLocale = const Locale('en', 'US');
+  SharedPreferences? _prefs;
+  final Map<String, Map<String, String>> _translationCache = {};
+  final Set<String> _preloadedLanguages = {};
+  bool _isInitialized = false;
+  Timer? _memoryCleanupTimer;
+
+  Locale get currentLocale => _currentLocale;
+
   /// Initialize the localization service
-  static Future<void> initialize() async {
-    try {
-      // Initialize language preferences first
-      await LanguagePreferences.initialize();
-      
-      // Get the saved language
-      _currentLanguage = await LanguagePreferences.getLanguage();
-      
-      debugPrint('LocalizationService initialized with language: $_currentLanguage');
-    } catch (e) {
-      debugPrint('Error initializing LocalizationService: $e');
-      _currentLanguage = defaultLanguage;
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+    
+    _prefs = await SharedPreferences.getInstance();
+    await _loadSavedLanguage();
+    await _preloadCachedLanguages();
+    _startMemoryCleanupTimer();
+    _isInitialized = true;
+  }
+
+  /// Preload cached language resources
+  Future<void> _preloadCachedLanguages() async {
+    final cachedLanguages = _prefs?.getStringList(_cachedLanguagesKey) ?? [];
+    for (final languageCode in cachedLanguages) {
+      await _loadLanguageResources(languageCode);
     }
   }
-  
-  /// Change the app language
-  static Future<void> setLanguage(String languageCode) async {
-    if (!supportedLanguages.containsKey(languageCode)) {
-      debugPrint('Unsupported language: $languageCode');
-      return;
-    }
+
+  /// Load language resources with caching
+  Future<void> _loadLanguageResources(String languageCode) async {
+    if (_translationCache.containsKey(languageCode)) return;
     
     try {
-      // Save using LanguagePreferences
-      final success = await LanguagePreferences.setLanguage(languageCode);
+      // Simulate loading translation resources
+      // In a real implementation, this would load from assets or network
+      final translations = <String, String>{};
       
-      if (success) {
-        _currentLanguage = languageCode;
-        debugPrint('Language changed to: $languageCode');
-        
-        // Notify all listeners
-        for (final listener in _listeners) {
-          listener();
-        }
-      } else {
-        debugPrint('Failed to save language preference');
+      // Add to cache and preloaded set
+      _translationCache[languageCode] = translations;
+      _preloadedLanguages.add(languageCode);
+      
+      // Update cached languages list
+      final cachedLanguages = _prefs?.getStringList(_cachedLanguagesKey) ?? [];
+      if (!cachedLanguages.contains(languageCode)) {
+        cachedLanguages.add(languageCode);
+        await _prefs?.setStringList(_cachedLanguagesKey, cachedLanguages);
       }
     } catch (e) {
-      debugPrint('Error changing language: $e');
+      debugPrint('Failed to load language resources for $languageCode: $e');
     }
   }
-  
-  /// Add a language change listener
-  static void addListener(VoidCallback listener) {
-    _listeners.add(listener);
+
+  /// Start memory cleanup timer
+  void _startMemoryCleanupTimer() {
+    _memoryCleanupTimer?.cancel();
+    _memoryCleanupTimer = Timer.periodic(
+      const Duration(minutes: 10),
+      (_) => _cleanupUnusedLanguageData(),
+    );
   }
-  
-  /// Remove a language change listener
-  static void removeListener(VoidCallback listener) {
-    _listeners.remove(listener);
-  }
-  
-  /// Get localized text based on current language
-  static String getText(Map<String, String> translations) {
-    return translations[_currentLanguage] ?? 
-           translations[defaultLanguage] ?? 
-           translations.values.first;
-  }
-  
-  /// Get localized greeting
-  static String getGreeting() {
-    final hour = DateTime.now().hour;
+
+  /// Clean up unused language data from memory
+  void _cleanupUnusedLanguageData() {
+    final currentLanguageCode = _currentLocale.languageCode;
+    final keysToRemove = <String>[];
     
-    final greetings = {
-      'en': {
-        'morning': 'Good morning! How is your day?',
-        'afternoon': 'Good afternoon! Hope you\'re having a great day.',
-        'evening': 'Good evening! How was your day?',
-      },
-      'hi': {
-        'morning': 'सुप्रभात! आज कैसा दिन है?',
-        'afternoon': 'नमस्कार! दोपहर की शुभकामनाएं।',
-        'evening': 'शुभ संध्या! आपका दिन कैसा रहा?',
-      },
-      'te': {
-        'morning': 'శుభోదయం! మీ రోజు ఎలా ఉంది?',
-        'afternoon': 'శుభ మధ్యాహ్నం! మీ రోజు బాగా గడుస్తుందని ఆశిస్తున్నాను.',
-        'evening': 'శుభ సాయంత్రం! మీ రోజు ఎలా గడిచింది?',
-      },
-    };
+    for (final languageCode in _translationCache.keys) {
+      if (languageCode != currentLanguageCode && 
+          !_preloadedLanguages.contains(languageCode)) {
+        keysToRemove.add(languageCode);
+      }
+    }
     
-    String timeKey;
-    if (hour < 12) {
-      timeKey = 'morning';
-    } else if (hour < 17) {
-      timeKey = 'afternoon';
+    for (final key in keysToRemove) {
+      _translationCache.remove(key);
+    }
+    
+    debugPrint('Cleaned up ${keysToRemove.length} unused language resources');
+  }
+
+  /// Load saved language preference or detect device locale
+  Future<void> _loadSavedLanguage() async {
+    final savedLanguageCode = _prefs?.getString(_languageKey);
+    
+    if (savedLanguageCode != null) {
+      // Use saved language preference
+      final savedLocale = supportedLocales.firstWhere(
+        (locale) => locale.languageCode == savedLanguageCode,
+        orElse: () => const Locale('en', 'US'),
+      );
+      _currentLocale = savedLocale;
     } else {
-      timeKey = 'evening';
+      // Auto-detect from device locale
+      final deviceLocale = PlatformDispatcher.instance.locale;
+      _currentLocale = _getBestMatchingLocale(deviceLocale);
     }
     
-    return greetings[_currentLanguage]?[timeKey] ?? 
-           greetings[defaultLanguage]![timeKey]!;
+    notifyListeners();
   }
-  
-  /// Get localized inspiration messages
-  static String getInspirationMessage() {
-    final messages = [
-      {
-        'en': 'Your hard work will pay off. Together we stand strong!',
-        'hi': 'आपकी मेहनत रंग लाएगी। जय किसान!',
-        'te': 'మీ కష్టం ఫలిస్తుంది. జై కిసాన్!',
-      },
-      {
-        'en': 'Together we will protect our land.',
-        'hi': 'एकजुट होकर हम अपनी जमीन की रक्षा करेंगे।',
-        'te': 'కలిసి మన భూమిని కాపాడుకుంటాం.',
-      },
-      {
-        'en': 'Your right, your land, your dignity.',
-        'hi': 'आपका हक, आपकी जमीन, आपका सम्मान।',
-        'te': 'మీ హక్కు, మీ భూమి, మీ గౌరవం.',
-      },
-    ];
+
+  /// Find the best matching supported locale for device locale
+  Locale _getBestMatchingLocale(Locale deviceLocale) {
+    // Try exact match first
+    for (final supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == deviceLocale.languageCode &&
+          supportedLocale.countryCode == deviceLocale.countryCode) {
+        return supportedLocale;
+      }
+    }
     
-    final randomMessage = messages[DateTime.now().day % messages.length];
-    return getText(randomMessage);
+    // Try language code match
+    for (final supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == deviceLocale.languageCode) {
+        return supportedLocale;
+      }
+    }
+    
+    // Fallback to English
+    return const Locale('en', 'US');
   }
-  
-  /// Get localized success stories
-  static Map<String, String> getSuccessStory() {
-    final stories = [
-      {
-        'title': {
-          'en': 'Rameshwar\'s Victory',
-          'hi': 'रामेश्वर की जीत',
-          'te': 'రామేశ్వర్ విజయం',
-        },
-        'content': {
-          'en': 'After 15 years, Telangana\'s Rameshwar finally got his land title.',
-          'hi': 'तेलंगाना के रामेश्वर ने 15 साल बाद अपनी जमीन का पट्टा पाया।',
-          'te': '15 సంవత్సరాల తర్వాత, తెలంగాణకు చెందిన రామేశ్వర్ తన భూమి పట్టా పొందాడు.',
-        },
-      },
-      {
-        'title': {
-          'en': 'Sunita\'s Land Rights',
-          'hi': 'सुनीता के भूमि अधिकार',
-          'te': 'సునీత భూమి హక్కులు',
-        },
-        'content': {
-          'en': 'Sunita from Karnataka successfully defended her 3-acre farm from illegal occupation.',
-          'hi': 'कर्नाटक की सुनीता ने अपनी 3 एकड़ जमीन को अवैध कब्जे से बचाया।',
-          'te': 'కర్ణాటకకు చెందిన సునీత తన 3 ఎకరాల పొలాన్ని అక్రమ ఆక్రమణ నుండి రక్షించుకుంది.',
-        },
-      },
-    ];
+
+  /// Change the app language with performance optimization
+  Future<void> changeLanguage(Locale newLocale) async {
+    if (!supportedLocales.contains(newLocale)) {
+      throw ArgumentError('Unsupported locale: $newLocale');
+    }
+
+    // Preload language resources if not already cached
+    await _loadLanguageResources(newLocale.languageCode);
+
+    _currentLocale = newLocale;
+    await _prefs?.setString(_languageKey, newLocale.languageCode);
     
-    final randomStory = stories[DateTime.now().day % stories.length];
+    // Notify listeners with a slight delay to ensure smooth UI transitions
+    Future.microtask(() => notifyListeners());
+  }
+
+  /// Preload language for faster switching
+  Future<void> preloadLanguage(Locale locale) async {
+    if (supportedLocales.contains(locale)) {
+      await _loadLanguageResources(locale.languageCode);
+    }
+  }
+
+  /// Check if language is preloaded
+  bool isLanguagePreloaded(Locale locale) {
+    return _preloadedLanguages.contains(locale.languageCode);
+  }
+
+  /// Get memory usage statistics
+  Map<String, dynamic> getMemoryStats() {
     return {
-      'title': getText(randomStory['title'] as Map<String, String>),
-      'content': getText(randomStory['content'] as Map<String, String>),
+      'cachedLanguages': _translationCache.length,
+      'preloadedLanguages': _preloadedLanguages.length,
+      'currentLanguage': _currentLocale.languageCode,
+      'memoryCleanupActive': _memoryCleanupTimer?.isActive ?? false,
     };
   }
-  
-  /// Get localized voice assistant responses
-  static String getVoiceResponse(String responseType, {Map<String, String>? customResponses}) {
-    if (customResponses != null) {
-      return getText(customResponses);
+
+  /// Get display name for a locale
+  String getLanguageDisplayName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return 'English';
+      case 'hi':
+        return 'हिन्दी';
+      case 'te':
+        return 'తెలుగు';
+      case 'ta':
+        return 'தமிழ்';
+      default:
+        return locale.languageCode.toUpperCase();
     }
-    
-    final responses = {
-      'land_issue_registered': {
-        'en': 'I understand. Your land issue is being registered. Would you like to share your location?',
-        'hi': 'मैं समझ गया। आपकी जमीन की समस्या दर्ज की जा रही है। क्या आप अपना स्थान बताना चाहेंगे?',
-        'te': 'నేను అర్థం చేసుకున్నాను. మీ భూమి సమస్య నమోదు చేయబడుతోంది. మీ స్థానాన్ని పంచుకోవాలనుకుంటున్నారా?',
-      },
-      'land_help': {
-        'en': 'I will help you with your land issue. Please provide more information.',
-        'hi': 'आपकी जमीन की समस्या के लिए मैं मदद करूंगा। कृपया और जानकारी दें।',
-        'te': 'మీ భూమి సమస్యతో నేను మీకు సహాయం చేస్తాను. దయచేసి మరింత సమాచారం అందించండి.',
-      },
-      'coordinator_search': {
-        'en': 'Searching for your area coordinator.',
-        'hi': 'आपके क्षेत्र का समन्वयक खोजा जा रहा है।',
-        'te': 'మీ ప్రాంత సమన్వయకుడి కోసం వెతుకుతున్నాము.',
-      },
-      'general_help': {
-        'en': 'I am here to help you. You can report land issues, view your network, or get legal assistance.',
-        'hi': 'मैं आपकी मदद के लिए यहां हूं। आप जमीन की समस्या रिपोर्ट कर सकते हैं, अपना नेटवर्क देख सकते हैं, या कानूनी सहायता ले सकते हैं।',
-        'te': 'నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను. మీరు భూమి సమస్యలను నివేదించవచ్చు, మీ నెట్‌వర్క్‌ను చూడవచ్చు లేదా న్యాయ సహాయం పొందవచ్చు.',
-      },
-      'listening': {
-        'en': 'Please speak, I am listening',
-        'hi': 'कहिए, मैं सुन रहा हूं',
-        'te': 'చెప్పండి, నేను వింటున్నాను',
-      },
-      'error': {
-        'en': 'Sorry, I could not understand',
-        'hi': 'माफ करें, मैं समझ नहीं पाया',
-        'te': 'క్షమించండి, నేను అర్థం చేసుకోలేకపోయాను',
-      },
-    };
-    
-    return getText(responses[responseType] ?? responses['error']!);
   }
-  
-  /// Get localized quick action labels
-  static List<Map<String, String>> getQuickActions() {
-    return [
-      {
-        'label': getText({
-          'en': 'Land Issues',
-          'hi': 'जमीन की समस्या',
-          'te': 'భూమి సమస్యలు',
-        }),
-        'query': getText({
-          'en': 'I need to report a land issue',
-          'hi': 'जमीन की समस्या रिपोर्ट करना है',
-          'te': 'భూమి సమస్యను నివేదించాలి',
-        }),
-      },
-      {
-        'label': getText({
-          'en': 'My Network',
-          'hi': 'मेरा नेटवर्क',
-          'te': 'నా నెట్‌వర్క్',
-        }),
-        'query': getText({
-          'en': 'Show my network',
-          'hi': 'मेरा नेटवर्क दिखाओ',
-          'te': 'నా నెట్‌వర్క్ చూపించు',
-        }),
-      },
-      {
-        'label': getText({
-          'en': 'Legal Help',
-          'hi': 'कानूनी मदद',
-          'te': 'న్యాయ సహాయం',
-        }),
-        'query': getText({
-          'en': 'I need legal help',
-          'hi': 'कानूनी मदद चाहिए',
-          'te': 'న్యాయ సహాయం కావాలి',
-        }),
-      },
-      {
-        'label': getText({
-          'en': 'Support',
-          'hi': 'समन्वयक',
-          'te': 'మద్దతు',
-        }),
-        'query': getText({
-          'en': 'Who is my area coordinator',
-          'hi': 'मेरे क्षेत्र का समन्वयक कौन है',
-          'te': 'నా ప్రాంత సమన్వయకుడు ఎవరు',
-        }),
-      },
-    ];
+
+  /// Get native display name for current locale
+  String get currentLanguageDisplayName => getLanguageDisplayName(_currentLocale);
+
+  /// Check if a locale is supported
+  bool isLocaleSupported(Locale locale) {
+    return supportedLocales.any((supportedLocale) =>
+        supportedLocale.languageCode == locale.languageCode);
+  }
+
+  /// Get locale by language code
+  Locale? getLocaleByLanguageCode(String languageCode) {
+    try {
+      return supportedLocales.firstWhere(
+        (locale) => locale.languageCode == languageCode,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Reset to device default language
+  Future<void> resetToDeviceLanguage() async {
+    final deviceLocale = PlatformDispatcher.instance.locale;
+    final bestMatch = _getBestMatchingLocale(deviceLocale);
+    await changeLanguage(bestMatch);
+  }
+
+  /// Clear saved language preference
+  Future<void> clearLanguagePreference() async {
+    await _prefs?.remove(_languageKey);
+    await resetToDeviceLanguage();
+  }
+
+  /// Dispose resources
+  @override
+  void dispose() {
+    _memoryCleanupTimer?.cancel();
+    _translationCache.clear();
+    _preloadedLanguages.clear();
+    super.dispose();
   }
 }

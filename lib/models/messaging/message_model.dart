@@ -16,6 +16,10 @@ class MessageModel {
   final bool isEdited;
   final bool isDeleted;
   final Map<String, dynamic> metadata;
+  // Integration fields
+  final String? linkedCaseId;
+  final String? linkedLandRecordId;
+  final String? linkedCampaignId;
 
   MessageModel({
     required this.id,
@@ -32,6 +36,10 @@ class MessageModel {
     required this.isEdited,
     required this.isDeleted,
     required this.metadata,
+    // Integration fields
+    this.linkedCaseId,
+    this.linkedLandRecordId,
+    this.linkedCampaignId,
   });
 
   // Convert from Firestore document
@@ -53,6 +61,10 @@ class MessageModel {
       isEdited: data['isEdited'] ?? false,
       isDeleted: data['isDeleted'] ?? false,
       metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
+      // Integration fields
+      linkedCaseId: data['linkedCaseId'],
+      linkedLandRecordId: data['linkedLandRecordId'],
+      linkedCampaignId: data['linkedCampaignId'],
     );
   }
 
@@ -72,7 +84,57 @@ class MessageModel {
       'isEdited': isEdited,
       'isDeleted': isDeleted,
       'metadata': metadata,
+      // Integration fields
+      'linkedCaseId': linkedCaseId,
+      'linkedLandRecordId': linkedLandRecordId,
+      'linkedCampaignId': linkedCampaignId,
     };
+  }
+
+  // Convert to Map for caching
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'conversationId': conversationId,
+      'senderId': senderId,
+      'senderName': senderName,
+      'content': content,
+      'messageType': messageType.value,
+      'mediaUrls': mediaUrls,
+      'sentAt': sentAt.toIso8601String(),
+      'deliveredAt': deliveredAt?.toIso8601String(),
+      'readAt': readAt?.toIso8601String(),
+      'readBy': readBy,
+      'isEdited': isEdited,
+      'isDeleted': isDeleted,
+      'metadata': metadata,
+      'linkedCaseId': linkedCaseId,
+      'linkedLandRecordId': linkedLandRecordId,
+      'linkedCampaignId': linkedCampaignId,
+    };
+  }
+
+  // Convert from Map for caching
+  factory MessageModel.fromMap(Map<String, dynamic> map) {
+    return MessageModel(
+      id: map['id'] ?? '',
+      conversationId: map['conversationId'] ?? '',
+      senderId: map['senderId'] ?? '',
+      senderName: map['senderName'] ?? 'Unknown User',
+      content: map['content'] ?? '',
+      messageType: MessageTypeExtension.fromString(map['messageType'] ?? 'text'),
+      mediaUrls: List<String>.from(map['mediaUrls'] ?? []),
+      sentAt: DateTime.parse(map['sentAt'] ?? DateTime.now().toIso8601String()),
+      deliveredAt: map['deliveredAt'] != null ? DateTime.parse(map['deliveredAt']) : null,
+      readAt: map['readAt'] != null ? DateTime.parse(map['readAt']) : null,
+      readBy: List<String>.from(map['readBy'] ?? []),
+      isEdited: map['isEdited'] ?? false,
+      isDeleted: map['isDeleted'] ?? false,
+      metadata: Map<String, dynamic>.from(map['metadata'] ?? {}),
+      linkedCaseId: map['linkedCaseId'],
+      linkedLandRecordId: map['linkedLandRecordId'],
+      linkedCampaignId: map['linkedCampaignId'],
+    );
   }
 
   // Copy with method for updates

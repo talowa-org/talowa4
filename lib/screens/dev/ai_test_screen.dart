@@ -56,20 +56,20 @@ class _AITestScreenState extends State<AITestScreen> {
           )
           .timeout(const Duration(seconds: 12));
 
-      final pretty = (String s) {
+      pretty(String s) {
         try {
           final o = jsonDecode(s);
           return const JsonEncoder.withIndent('  ').convert(o);
         } catch (_) {
           return s;
         }
-      };
+      }
 
       setState(() {
         if (resp.statusCode >= 200 && resp.statusCode < 300) {
-          _result = 'HTTP ${resp.statusCode}\n\n' + pretty(resp.body);
+          _result = 'HTTP ${resp.statusCode}\n\n${pretty(resp.body)}';
         } else {
-          _error = 'HTTP ${resp.statusCode}\n\n' + pretty(resp.body);
+          _error = 'HTTP ${resp.statusCode}\n\n${pretty(resp.body)}';
         }
         _loading = false;
       });

@@ -5,13 +5,10 @@ import 'land_screen.dart';
 import 'payments_screen.dart';
 import 'community_screen.dart';
 import 'profile_screen.dart';
-import '../../widgets/voice_assistant_widget.dart';
 import '../../widgets/ai_assistant/ai_assistant_widget.dart';
 // Test imports removed for production
 import '../../services/cultural_service.dart';
-import '../../services/location_service.dart';
 import '../../services/localization_service.dart';
-import '../../services/data_population_service.dart';
 import '../../services/user_role_fix_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 

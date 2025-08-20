@@ -8,6 +8,9 @@ import '../../widgets/more/profile_summary_card.dart';
 import '../../widgets/more/feature_section_card.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../settings/language_settings_screen.dart';
+import '../help/help_center_screen.dart';
+import '../onboarding/onboarding_screen.dart';
+import '../onboarding/coordinator_training_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -192,11 +195,32 @@ class _MoreScreenState extends State<MoreScreen> {
                     iconColor: AppTheme.legalBlue,
                     items: [
                       FeatureItem(
-                        title: 'Knowledge Center',
-                        subtitle: 'Land rights education',
-                        icon: Icons.school,
+                        title: 'Help Center',
+                        subtitle: 'Comprehensive help and tutorials',
+                        icon: Icons.help_center,
                         onTap: _openKnowledgeCenter,
                       ),
+                      FeatureItem(
+                        title: 'Messaging Tutorial',
+                        subtitle: 'Learn messaging features',
+                        icon: Icons.message,
+                        onTap: _openMessagingTutorial,
+                      ),
+                      FeatureItem(
+                        title: 'Voice Calling Tutorial',
+                        subtitle: 'Learn calling features',
+                        icon: Icons.call,
+                        onTap: _openCallingTutorial,
+                      ),
+                      if (_userProfile?.role == AppConstants.roleVillageCoordinator ||
+                          _userProfile?.role == AppConstants.roleMandalCoordinator ||
+                          _userProfile?.role == AppConstants.roleDistrictCoordinator)
+                        FeatureItem(
+                          title: 'Coordinator Training',
+                          subtitle: 'Group management training',
+                          icon: Icons.admin_panel_settings,
+                          onTap: _openCoordinatorTraining,
+                        ),
                       FeatureItem(
                         title: 'Emergency Contacts',
                         subtitle: 'Police, legal aid, coordinators',
@@ -208,12 +232,6 @@ class _MoreScreenState extends State<MoreScreen> {
                         subtitle: 'Get help with the app',
                         icon: Icons.support,
                         onTap: _contactSupport,
-                      ),
-                      FeatureItem(
-                        title: 'FAQ',
-                        subtitle: 'Frequently asked questions',
-                        icon: Icons.quiz,
-                        onTap: _openFAQ,
                       ),
                     ],
                   ),
@@ -445,53 +463,10 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   void _openHelp() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Help & Support'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: const Text('FAQ'),
-              onTap: () {
-                Navigator.pop(context);
-                _openFAQ();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.contact_support),
-              title: const Text('Contact Support'),
-              onTap: () {
-                Navigator.pop(context);
-                _contactSupport();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.emergency),
-              title: const Text('Emergency Contacts'),
-              onTap: () {
-                Navigator.pop(context);
-                _openEmergencyContacts();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.book),
-              title: const Text('User Guide'),
-              onTap: () {
-                Navigator.pop(context);
-                _openKnowledgeCenter();
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HelpCenterScreen(),
       ),
     );
   }
@@ -646,7 +621,12 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   void _openKnowledgeCenter() {
-    debugPrint('Opening knowledge center');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HelpCenterScreen(),
+      ),
+    );
   }
 
   void _openEmergencyContacts() {
@@ -903,6 +883,38 @@ class _MoreScreenState extends State<MoreScreen> {
 
   void _openLicenses() {
     debugPrint('Opening licenses');
+  }
+
+  // Tutorial Methods
+  void _openMessagingTutorial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const OnboardingScreen(
+          tutorialType: 'messaging',
+        ),
+      ),
+    );
+  }
+
+  void _openCallingTutorial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const OnboardingScreen(
+          tutorialType: 'calling',
+        ),
+      ),
+    );
+  }
+
+  void _openCoordinatorTraining() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CoordinatorTrainingScreen(),
+      ),
+    );
   }
 }
 

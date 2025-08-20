@@ -1,5 +1,5 @@
 // Notification Service - Handle push notifications and in-app notifications
-// Part of Task 14: Build notification system
+// Part of Task 12: Build push notification system
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +9,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
 import '../../models/notification_model.dart';
 import '../auth/auth_service.dart';
+import 'notification_batching_service.dart';
+import 'notification_templates.dart';
+import 'notification_preferences_service.dart';
 
 class NotificationService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -39,6 +42,12 @@ class NotificationService {
     
     try {
       debugPrint('NotificationService: Initializing...');
+      
+      // Initialize preferences service
+      await NotificationPreferencesService.initialize();
+      
+      // Initialize batching service
+      await NotificationBatchingService().initialize();
       
       // Request permissions
       await _requestPermissions();
@@ -226,11 +235,17 @@ class NotificationService {
       // Create notification model
       final notification = NotificationModel.fromRemoteMessage(message);
       
+      // Check if notification should be shown based on preferences
+      if (!NotificationPreferencesService.shouldShowNotification(notification)) {
+        debugPrint('NotificationService: Notification blocked by user preferences');
+        return;
+      }
+      
       // Add to in-app notifications
       _inAppNotifications.insert(0, notification);
       
-      // Show local notification
-      await _showLocalNotification(notification);
+      // Add to batching service (will handle showing local notification)
+      await NotificationBatchingService().addNotificationToBatch(notification);
       
       // Save to database
       await _saveNotificationToDatabase(notification);
@@ -323,7 +338,7 @@ class NotificationService {
         presentSound: true,
       );
       
-      const details = NotificationDetails(
+      final details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
@@ -616,5 +631,247 @@ class NotificationService {
   /// Clear in-app notifications
   static void clearInAppNotifications() {
     _inAppNotifications.clear();
+  }
+
+  /// Send notification using template
+  static Future<void> sendNotificationFromTemplate({
+    required String userId,
+    required NotificationTemplateType templateType,
+    required Map<String, dynamic> templateData,
+    String? customTitle,
+    String? customBody,
+  }) async {
+    try {
+      debugPrint('NotificationService: Sending templated notification to user $userId');
+      
+      // Create notification from template
+      final notification = NotificationTemplates.createFromTemplate(
+        templateType: templateType,
+        data: {
+          ...templateData,
+          'targetUserId': userId,
+        },
+        customTitle: customTitle,
+        customBody: customBody,
+      );
+      
+      // Send the notification
+      await sendNotificationToUser(
+        userId: userId,
+        title: notification.title,
+        body: notification.body,
+        type: notification.type,
+        data: notification.data,
+      );
+      
+      debugPrint('NotificationService: Templated notification sent successfully');
+    } catch (e) {
+      debugPrint('NotificationService: Error sending templated notification: $e');
+      rethrow;
+    }
+  }
+
+  /// Send bulk notifications using template
+  static Future<void> sendBulkNotificationsFromTemplate({
+    required List<String> userIds,
+    required NotificationTemplateType templateType,
+    required Map<String, dynamic> templateData,
+    String? customTitle,
+    String? customBody,
+  }) async {
+    try {
+      debugPrint('NotificationService: Sending bulk templated notifications to ${userIds.length} users');
+      
+      // Process in batches to avoid overwhelming the system
+      const batchSize = 100;
+      for (int i = 0; i < userIds.length; i += batchSize) {
+        final batch = userIds.skip(i).take(batchSize).toList();
+        
+        final futures = batch.map((userId) => sendNotificationFromTemplate(
+          userId: userId,
+          templateType: templateType,
+          templateData: templateData,
+          customTitle: customTitle,
+          customBody: customBody,
+        ));
+        
+        await Future.wait(futures);
+        
+        // Small delay between batches to prevent rate limiting
+        if (i + batchSize < userIds.length) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+      }
+      
+      debugPrint('NotificationService: Bulk templated notifications sent successfully');
+    } catch (e) {
+      debugPrint('NotificationService: Error sending bulk templated notifications: $e');
+      rethrow;
+    }
+  }
+
+  /// Show local notification (enhanced with templates)
+  static Future<void> showLocalNotification(NotificationModel notification) async {
+    try {
+      // Check preferences
+      if (!NotificationPreferencesService.shouldShowNotification(notification)) {
+        debugPrint('NotificationService: Local notification blocked by preferences');
+        return;
+      }
+
+      final preferences = NotificationPreferencesService.getPreferences();
+      
+      // Determine channel ID
+      String channelId = _defaultChannelId;
+      if (notification.data['templateType'] != null) {
+        final templateType = NotificationTemplateType.values.firstWhere(
+          (type) => type.toString() == notification.data['templateType'],
+          orElse: () => NotificationTemplateType.generalAnnouncement,
+        );
+        channelId = NotificationTemplates.getChannelId(templateType);
+      } else {
+        channelId = _getChannelId(notification.type);
+      }
+      
+      // Determine sound
+      String? sound;
+      if (notification.data['templateType'] != null) {
+        final templateType = NotificationTemplateType.values.firstWhere(
+          (type) => type.toString() == notification.data['templateType'],
+          orElse: () => NotificationTemplateType.generalAnnouncement,
+        );
+        sound = NotificationTemplates.getNotificationSound(templateType);
+      }
+      
+      // Check quiet hours
+      bool shouldPlaySound = true;
+      bool shouldVibrate = true;
+      
+      if (preferences.isInQuietHours && !notification.isHighPriority) {
+        shouldPlaySound = false;
+        shouldVibrate = false;
+      }
+      
+      final androidDetails = AndroidNotificationDetails(
+        channelId,
+        _getChannelName(channelId),
+        channelDescription: _getChannelDescription(channelId),
+        importance: _getImportance(notification.type),
+        priority: _getPriority(notification.type),
+        playSound: shouldPlaySound,
+        enableVibration: shouldVibrate,
+        sound: sound != null ? RawResourceAndroidNotificationSound(sound) : null,
+      );
+      
+      final iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: shouldPlaySound,
+        sound: sound,
+        interruptionLevel: notification.isHighPriority 
+            ? InterruptionLevel.critical 
+            : InterruptionLevel.active,
+      );
+      
+      final details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+      
+      await _localNotifications.show(
+        notification.id.hashCode,
+        notification.title,
+        notification.body,
+        details,
+        payload: jsonEncode(notification.data),
+      );
+      
+      debugPrint('NotificationService: Local notification shown: ${notification.title}');
+    } catch (e) {
+      debugPrint('NotificationService: Error showing local notification: $e');
+    }
+  }
+
+  /// Get notification preferences
+  static NotificationPreferences? getNotificationPreferences() {
+    return NotificationPreferencesService.getPreferences();
+  }
+
+  /// Update notification preferences
+  static Future<void> updateNotificationPreferences(NotificationPreferences preferences) async {
+    await NotificationPreferencesService.updatePreferences(preferences);
+  }
+
+  /// Get batching statistics
+  static Map<String, dynamic> getBatchingStatistics() {
+    return NotificationBatchingService().getBatchStatistics();
+  }
+
+  /// Process queued notifications
+  static Future<void> processQueuedNotifications() async {
+    await NotificationBatchingService().processQueuedNotifications();
+  }
+
+  /// Helper methods for notification details
+  static String _getChannelName(String channelId) {
+    switch (channelId) {
+      case _emergencyChannelId:
+        return 'Emergency Alerts';
+      case _announcementChannelId:
+        return 'Announcements';
+      case _engagementChannelId:
+        return 'Engagement Notifications';
+      default:
+        return 'General Notifications';
+    }
+  }
+
+  static String _getChannelDescription(String channelId) {
+    switch (channelId) {
+      case _emergencyChannelId:
+        return 'Critical emergency notifications';
+      case _announcementChannelId:
+        return 'Important announcements from coordinators';
+      case _engagementChannelId:
+        return 'Likes, comments, and shares';
+      default:
+        return 'General app notifications';
+    }
+  }
+
+  static Importance _getImportance(NotificationType type) {
+    switch (type) {
+      case NotificationType.emergency:
+      case NotificationType.landRightsAlert:
+        return Importance.max;
+      case NotificationType.announcement:
+      case NotificationType.courtDateReminder:
+      case NotificationType.legalUpdate:
+        return Importance.high;
+      case NotificationType.postLike:
+      case NotificationType.postShare:
+      case NotificationType.newFollower:
+        return Importance.low;
+      default:
+        return Importance.defaultImportance;
+    }
+  }
+
+  static Priority _getPriority(NotificationType type) {
+    switch (type) {
+      case NotificationType.emergency:
+      case NotificationType.landRightsAlert:
+        return Priority.max;
+      case NotificationType.announcement:
+      case NotificationType.courtDateReminder:
+      case NotificationType.legalUpdate:
+        return Priority.high;
+      case NotificationType.postLike:
+      case NotificationType.postShare:
+      case NotificationType.newFollower:
+        return Priority.low;
+      default:
+        return Priority.defaultPriority;
+    }
   }
 }

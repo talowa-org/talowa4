@@ -390,4 +390,60 @@ class DatabaseService {
       return [];
     }
   }
+
+  // Get users by geographic location
+  static Future<List<UserModel>> getUsersByLocation({
+    required String level,
+    required String locationId,
+    int limit = 100,
+  }) async {
+    try {
+      Query query = _firestore.collection(AppConstants.collectionUsers);
+
+      switch (level) {
+        case AppConstants.levelVillage:
+          query = query.where('address.villageCity', isEqualTo: locationId);
+          break;
+        case AppConstants.levelMandal:
+          query = query.where('address.mandal', isEqualTo: locationId);
+          break;
+        case AppConstants.levelDistrict:
+          query = query.where('address.district', isEqualTo: locationId);
+          break;
+        case AppConstants.levelState:
+          query = query.where('address.state', isEqualTo: locationId);
+          break;
+      }
+
+      final querySnapshot = await query
+          .where('isActive', isEqualTo: true)
+          .limit(limit)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => UserModel.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      debugPrint('Error getting users by location: $e');
+      return [];
+    }
+  }
+
+  // Get user by ID
+  Future<UserModel?> getUser(String userId) async {
+    try {
+      final doc = await _firestore
+          .collection(AppConstants.collectionUsers)
+          .doc(userId)
+          .get();
+      
+      if (doc.exists) {
+        return UserModel.fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error getting user: $e');
+      return null;
+    }
+  }
 }

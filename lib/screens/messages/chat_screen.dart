@@ -1,10 +1,15 @@
-// Chat Screen for TALOWA Messaging
+// Enhanced Chat Screen for TALOWA Messaging
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/messaging/message_model.dart';
 import '../../services/messaging/messaging_service.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/messages/message_bubble_widget.dart';
+import '../../widgets/messages/message_input_widget.dart';
+import '../../widgets/messages/typing_indicator_widget.dart';
+import '../../widgets/onboarding/contextual_tips_widget.dart';
+import '../../widgets/onboarding/feature_discovery_widget.dart';
 
 class ChatScreen extends StatefulWidget {
   final ConversationModel conversation;
@@ -19,23 +24,24 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   List<MessageModel> _messages = [];
   bool _isLoading = true;
-  bool _isSending = false;
+  MessageModel? _replyToMessage;
+  List<String> _typingUsers = [];
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
     _markConversationAsRead();
+    _setupTypingListener();
   }
 
   @override
   void dispose() {
-    _messageController.dispose();
     _scrollController.dispose();
+    TypingStatusManager.removeListener(widget.conversation.id);
     super.dispose();
   }
 
@@ -68,21 +74,46 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _sendMessage() async {
-    final content = _messageController.text.trim();
-    if (content.isEmpty || _isSending) return;
-
-    setState(() {
-      _isSending = true;
+  void _setupTypingListener() {
+    TypingStatusManager.addListener(widget.conversation.id, (typingUsers) {
+      setState(() {
+        _typingUsers = typingUsers;
+      });
     });
+  }
+
+  Future<void> _sendMessage(String content, {MessageType? messageType, List<String>? mediaUrls}) async {
+    if (content.trim().isEmpty) return;
 
     try {
+      Map<String, dynamic>? metadata;
+      
+      // Add reply metadata if replying to a message
+      if (_replyToMessage != null) {
+        metadata = {
+          'replyTo': {
+            'messageId': _replyToMessage!.id,
+            'content': _replyToMessage!.content,
+            'senderName': _replyToMessage!.senderName,
+          }
+        };
+      }
+
       await MessagingService().sendMessage(
         conversationId: widget.conversation.id,
         content: content,
+        messageType: messageType ?? MessageType.text,
+        mediaUrls: mediaUrls,
+        metadata: metadata,
       );
 
-      _messageController.clear();
+      // Clear reply state
+      if (_replyToMessage != null) {
+        setState(() {
+          _replyToMessage = null;
+        });
+      }
+
       _scrollToBottom();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,10 +122,6 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      setState(() {
-        _isSending = false;
-      });
     }
   }
 
@@ -110,9 +137,120 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void _setReplyToMessage(MessageModel message) {
+    setState(() {
+      _replyToMessage = message;
+    });
+  }
+
+  void _addReaction(MessageModel message, String emoji) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) return;
+
+      // TODO: Implement reaction functionality in messaging service
+      // For now, just show a snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Added reaction: $emoji'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error adding reaction: $e');
+    }
+  }
+
+  void _editMessage(MessageModel message) {
+    showDialog(
+      context: context,
+      builder: (context) => EditMessageDialog(
+        message: message,
+        onSave: (newContent) async {
+          try {
+            await MessagingService().editMessage(
+              messageId: message.id,
+              newContent: newContent,
+            );
+            Navigator.pop(context);
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to edit message: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void _deleteMessage(MessageModel message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Message'),
+        content: const Text('Are you sure you want to delete this message?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await MessagingService().deleteMessage(message.id);
+                Navigator.pop(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to delete message: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _startTyping() {
+    final currentUser = AuthService.currentUser;
+    if (currentUser != null) {
+      TypingStatusManager.startTyping(
+        widget.conversation.id,
+        currentUser.uid,
+        'You', // This would be the current user's name
+      );
+    }
+  }
+
+  void _stopTyping() {
+    final currentUser = AuthService.currentUser;
+    if (currentUser != null) {
+      TypingStatusManager.stopTyping(
+        widget.conversation.id,
+        currentUser.uid,
+        'You',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ContextualTipsWidget(
+      screenName: 'chat_screen',
+      child: FeatureDiscoveryWidget(
+        featureKey: 'voice_calling',
+        title: 'Try Voice Calling',
+        description: 'Tap the phone icon to make secure voice calls directly through TALOWA.',
+        icon: Icons.call,
+        child: Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,22 +334,52 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _messages.isEmpty
                     ? _buildEmptyState()
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          final message = _messages[index];
-                          final isCurrentUser = message.senderId == AuthService.currentUser?.uid;
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              itemCount: _messages.length,
+                              itemBuilder: (context, index) {
+                                final message = _messages[index];
+                                final isCurrentUser = message.senderId == AuthService.currentUser?.uid;
+                                final showSenderName = widget.conversation.type == ConversationType.group && !isCurrentUser;
+                                
+                                return MessageBubbleWidget(
+                                  message: message,
+                                  isCurrentUser: isCurrentUser,
+                                  showSenderName: showSenderName,
+                                  onReply: () => _setReplyToMessage(message),
+                                  onReaction: (emoji) => _addReaction(message, emoji),
+                                  onEdit: isCurrentUser ? () => _editMessage(message) : null,
+                                  onDelete: isCurrentUser ? () => _deleteMessage(message) : null,
+                                );
+                              },
+                            ),
+                          ),
                           
-                          return _buildMessageBubble(message, isCurrentUser);
-                        },
+                          // Typing indicator
+                          TypingIndicatorWidget(
+                            typingUsers: _typingUsers,
+                            isVisible: _typingUsers.isNotEmpty,
+                          ),
+                        ],
                       ),
           ),
           
           // Message input
-          _buildMessageInput(),
+          MessageInputWidget(
+            onSendMessage: _sendMessage,
+            onStartTyping: _startTyping,
+            onStopTyping: _stopTyping,
+            replyToMessage: _replyToMessage,
+            onCancelReply: () => setState(() => _replyToMessage = null),
+            isEnabled: true,
+          ),
         ],
+      ),
+        ),
       ),
     );
   }
@@ -249,190 +417,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageBubble(MessageModel message, bool isCurrentUser) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!isCurrentUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppTheme.talowaGreen,
-              child: Text(
-                message.senderName.isNotEmpty ? message.senderName[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          
-          Flexible(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isCurrentUser ? AppTheme.talowaGreen : Colors.grey[200],
-                borderRadius: BorderRadius.circular(18).copyWith(
-                  bottomLeft: isCurrentUser ? const Radius.circular(18) : const Radius.circular(4),
-                  bottomRight: isCurrentUser ? const Radius.circular(4) : const Radius.circular(18),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!isCurrentUser && widget.conversation.type == ConversationType.group) ...[
-                    Text(
-                      message.senderName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.talowaGreen,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-                  
-                  Text(
-                    message.content,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: isCurrentUser ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _formatMessageTime(message.sentAt),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isCurrentUser ? Colors.white70 : Colors.grey[600],
-                        ),
-                      ),
-                      
-                      if (isCurrentUser) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          message.readBy.isNotEmpty ? Icons.done_all : Icons.done,
-                          size: 14,
-                          color: message.readBy.isNotEmpty ? Colors.blue[300] : Colors.white70,
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          if (isCurrentUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.grey[300],
-              child: const Icon(
-                Icons.person,
-                size: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 
-  Widget _buildMessageInput() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: const BorderSide(color: AppTheme.talowaGreen),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.attach_file),
-                  onPressed: _attachFile,
-                ),
-              ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              onSubmitted: (_) => _sendMessage(),
-            ),
-          ),
-          
-          const SizedBox(width: 8),
-          
-          FloatingActionButton(
-            onPressed: _isSending ? null : _sendMessage,
-            backgroundColor: AppTheme.talowaGreen,
-            foregroundColor: Colors.white,
-            mini: true,
-            child: _isSending
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Icon(Icons.send),
-          ),
-        ],
-      ),
-    );
-  }
 
-  String _formatMessageTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
 
-    if (difference.inMinutes < 1) {
-      return 'now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h';
-    } else {
-      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    }
-  }
 
   void _makeCall() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -452,14 +439,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _attachFile() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('File attachment feature coming soon!'),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
+
 
   void _handleMenuAction(String action) {
     switch (action) {
@@ -503,5 +483,91 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+}
+
+// Edit Message Dialog
+class EditMessageDialog extends StatefulWidget {
+  final MessageModel message;
+  final Function(String) onSave;
+
+  const EditMessageDialog({
+    super.key,
+    required this.message,
+    required this.onSave,
+  });
+
+  @override
+  State<EditMessageDialog> createState() => _EditMessageDialogState();
+}
+
+class _EditMessageDialogState extends State<EditMessageDialog> {
+  late TextEditingController _controller;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.message.content);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Message'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          hintText: 'Enter your message...',
+          border: OutlineInputBorder(),
+        ),
+        maxLines: null,
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isSaving ? null : () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isSaving ? null : _saveMessage,
+          child: _isSaving
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Save'),
+        ),
+      ],
+    );
+  }
+
+  void _saveMessage() async {
+    final newContent = _controller.text.trim();
+    if (newContent.isEmpty || newContent == widget.message.content) {
+      Navigator.pop(context);
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      widget.onSave(newContent);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
   }
 }

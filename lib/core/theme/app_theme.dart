@@ -12,6 +12,9 @@ class AppTheme {
   static const Color warningOrange = Color(AppConstants.warningOrangeValue);
   static const Color successGreen = Color(AppConstants.successGreenValue);
   
+  // Primary color for the app
+  static const Color primaryColor = talowaGreen;
+  
   // Neutral Colors
   static const Color primaryText = Color(0xFF111827);
   static const Color secondaryText = Color(0xFF6B7280);

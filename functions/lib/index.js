@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.aiRespond = void 0;
+exports.aiRespond = exports.getWebSocketInfo = exports.cleanupOfflineMessages = exports.keepWebSocketAlive = exports.websocketServer = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const openai_1 = __importDefault(require("openai"));
@@ -162,6 +162,12 @@ async function setCachedAI(query, lang, payload, ttlMs = 6 * 60 * 60 * 1000) {
     }
     catch (_) { }
 }
+// Export WebSocket functions
+var websocket_1 = require("./websocket");
+Object.defineProperty(exports, "websocketServer", { enumerable: true, get: function () { return websocket_1.websocketServer; } });
+Object.defineProperty(exports, "keepWebSocketAlive", { enumerable: true, get: function () { return websocket_1.keepWebSocketAlive; } });
+Object.defineProperty(exports, "cleanupOfflineMessages", { enumerable: true, get: function () { return websocket_1.cleanupOfflineMessages; } });
+Object.defineProperty(exports, "getWebSocketInfo", { enumerable: true, get: function () { return websocket_1.getWebSocketInfo; } });
 exports.aiRespond = functions.runWith({
     secrets: [OPENROUTER_API_KEY],
 }).region('asia-south1').https.onRequest(async (req, res) => {

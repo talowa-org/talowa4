@@ -1,604 +1,449 @@
 {
   "@@locale": "en",
-  "appName": "TALOWA",
-  "@appName": {
-    "description": "The name of the application"
+  "@@last_modified": "2025-08-20T12:00:00.000Z",
+  
+  "appTitle": "TALOWA",
+  "@appTitle": {
+    "description": "The title of the application"
   },
   
-  "welcomeBack": "Welcome Back!",
-  "@welcomeBack": {
-    "description": "Welcome message on login screen"
+  "appSubtitle": "Land Rights Movement",
+  "@appSubtitle": {
+    "description": "The subtitle of the application"
   },
-  
-  "signInToYourAccount": "Sign in to your account",
-  "@signInToYourAccount": {
-    "description": "Subtitle on login screen"
+
+  "welcome": "Welcome to TALOWA",
+  "@welcome": {
+    "description": "Welcome message on the welcome screen"
   },
-  
-  "mobileNumber": "Mobile Number",
-  "@mobileNumber": {
-    "description": "Label for mobile number input field"
+
+  "welcomeMessage": "Join the movement for land rights and social justice",
+  "@welcomeMessage": {
+    "description": "Welcome message description"
   },
-  
-  "sixDigitPin": "6-Digit PIN",
-  "@sixDigitPin": {
-    "description": "Label for PIN input field"
+
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
   },
-  
-  "signIn": "Sign In",
-  "@signIn": {
-    "description": "Sign in button text"
-  },
-  
+
   "register": "Register",
   "@register": {
     "description": "Register button text"
   },
-  
-  "dontHaveAccount": "Don't have an account? ",
-  "@dontHaveAccount": {
-    "description": "Text before register link"
+
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number field label"
   },
-  
-  "loginSuccessful": "Login successful!",
-  "@loginSuccessful": {
-    "description": "Success message after login"
+
+  "enterPhoneNumber": "Enter your phone number",
+  "@enterPhoneNumber": {
+    "description": "Phone number field placeholder"
   },
-  
-  "loginFailed": "Login failed. Please try again.",
-  "@loginFailed": {
-    "description": "Error message when login fails"
+
+  "pin": "PIN",
+  "@pin": {
+    "description": "PIN field label"
   },
-  
-  "invalidCredentials": "The supplied auth credential is incorrect, malformed or has expired.",
-  "@invalidCredentials": {
-    "description": "Error message for invalid credentials"
+
+  "enterPin": "Enter your 4-digit PIN",
+  "@enterPin": {
+    "description": "PIN field placeholder"
   },
-  
+
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name field label"
+  },
+
+  "enterFullName": "Enter your full name",
+  "@enterFullName": {
+    "description": "Full name field placeholder"
+  },
+
+  "address": "Address",
+  "@address": {
+    "description": "Address section label"
+  },
+
+  "state": "State",
+  "@state": {
+    "description": "State field label"
+  },
+
+  "district": "District",
+  "@district": {
+    "description": "District field label"
+  },
+
+  "mandal": "Mandal/Tehsil",
+  "@mandal": {
+    "description": "Mandal field label"
+  },
+
+  "village": "Village/City",
+  "@village": {
+    "description": "Village field label"
+  },
+
+  "referralCode": "Referral Code",
+  "@referralCode": {
+    "description": "Referral code field label"
+  },
+
+  "enterReferralCode": "Enter referral code (optional)",
+  "@enterReferralCode": {
+    "description": "Referral code field placeholder"
+  },
+
   "home": "Home",
   "@home": {
     "description": "Home tab label"
   },
-  
+
   "feed": "Feed",
   "@feed": {
     "description": "Feed tab label"
   },
-  
+
   "messages": "Messages",
   "@messages": {
     "description": "Messages tab label"
   },
-  
+
   "network": "Network",
   "@network": {
     "description": "Network tab label"
   },
-  
+
   "more": "More",
   "@more": {
     "description": "More tab label"
   },
-  
-  "goodMorning": "Good morning! How is your day?",
-  "@goodMorning": {
-    "description": "Morning greeting message"
-  },
-  
-  "welcomeToTalowa": "Welcome to TALOWA",
-  "@welcomeToTalowa": {
-    "description": "Welcome message for new users"
-  },
-  
-  "member": "Member",
-  "@member": {
-    "description": "Member badge text"
-  },
-  
-  "askAnything": "Ask anything...",
-  "@askAnything": {
-    "description": "Placeholder text for input field"
-  },
-  
-  "landIssues": "Land Issues",
-  "@landIssues": {
-    "description": "Land issues button text"
-  },
-  
-  "myNetwork": "My Network",
-  "@myNetwork": {
-    "description": "My network button text"
-  },
-  
-  "legalHelp": "Legal Help",
-  "@legalHelp": {
-    "description": "Legal help button text"
-  },
-  
-  "support": "Support",
-  "@support": {
-    "description": "Support button text"
-  },
-  
-  "todaysInspirationMessage": "Today's Inspiration Message",
-  "@todaysInspirationMessage": {
-    "description": "Header for daily inspiration section"
-  },
-  
-  "unitedWeStandProtectOurLand": "United we stand, let's protect our land together.",
-  "@unitedWeStandProtectOurLand": {
-    "description": "Inspiration message text"
-  },
-  
-  "sambuddhaVictory": "Sambuddha's Victory",
-  "@sambuddhaVictory": {
-    "description": "Victory story title"
-  },
-  
-  "telanganaSambuddhaLandVictoryStory": "After 15 years, Telangana's Sambuddha finally got his land back.",
-  "@telanganaSambuddhaLandVictoryStory": {
-    "description": "Victory story description"
-  },
-  
-  "debugTools": "Debug Tools",
-  "@debugTools": {
-    "description": "Debug tools section header"
-  },
-  
-  "createTestUser": "Create Test User",
-  "@createTestUser": {
-    "description": "Create test user button"
-  },
-  
-  "checkUser": "Check User",
-  "@checkUser": {
-    "description": "Check user button"
-  },
-  
-  "testFirebase": "Test Firebase",
-  "@testFirebase": {
-    "description": "Test Firebase button"
-  },
-  
-  "fillTestData": "Fill Test Data",
-  "@fillTestData": {
-    "description": "Fill test data button"
-  },
-  
-  "mainServices": "Main Services",
-  "@mainServices": {
-    "description": "Main services section header"
-  },
-  
-  "myLand": "My Land",
-  "@myLand": {
-    "description": "My land service button"
-  },
-  
-  "viewLandDetails": "View land details",
-  "@viewLandDetails": {
-    "description": "My land service description"
-  },
-  
-  "payments": "Payments",
-  "@payments": {
-    "description": "Payments service button"
-  },
-  
-  "viewTransactions": "View transactions",
-  "@viewTransactions": {
-    "description": "Payments service description"
-  },
-  
-  "community": "Community",
-  "@community": {
-    "description": "Community service button"
-  },
-  
-  "connectWithPeople": "Connect with people",
-  "@connectWithPeople": {
-    "description": "Community service description"
-  },
-  
+
   "profile": "Profile",
   "@profile": {
-    "description": "Profile service button"
+    "description": "Profile screen title"
   },
-  
-  "accountManagement": "Account management",
-  "@accountManagement": {
-    "description": "Profile service description"
-  },
-  
-  "myReferrals": "My Referrals",
-  "@myReferrals": {
-    "description": "My referrals stats label"
-  },
-  
-  "teamSize": "Team Size",
-  "@teamSize": {
-    "description": "Team size stats label"
-  },
-  
-  "landStatus": "Land Status",
-  "@landStatus": {
-    "description": "Land status stats label"
-  },
-  
-  "active": "Active",
-  "@active": {
-    "description": "Active status text"
-  },
-  
-  "emergencyServices": "Emergency Services",
-  "@emergencyServices": {
-    "description": "Emergency services section header"
-  },
-  
-  "reportLandGrabbing": "Report Land Grabbing",
-  "@reportLandGrabbing": {
-    "description": "Report land grabbing button"
-  },
-  
-  "languageSettings": "Language Settings",
-  "@languageSettings": {
-    "description": "Language settings screen title"
-  },
-  
-  "selectPreferredLanguage": "Select your preferred language:",
-  "@selectPreferredLanguage": {
-    "description": "Language selection instruction"
-  },
-  
-  "applyChanges": "Apply Changes",
-  "@applyChanges": {
-    "description": "Apply changes button"
-  },
-  
-  "languagePreview": "Language Preview",
-  "@languagePreview": {
-    "description": "Language preview section header"
-  },
-  
-  "welcomeToTalowaPreview": "Welcome to TALOWA! Your land rights are protected.",
-  "@welcomeToTalowaPreview": {
-    "description": "Preview text for language selection"
-  },
-  
-  "languageChangedTo": "Language changed to {language}",
-  "@languageChangedTo": {
-    "description": "Language change success message",
-    "placeholders": {
-      "language": {
-        "type": "String",
-        "example": "English"
-      }
-    }
-  },
-  
-  "failedToChangeLanguage": "Failed to change language: {error}",
-  "@failedToChangeLanguage": {
-    "description": "Language change error message",
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Network error"
-      }
-    }
-  },
-  
-  "goodAfternoon": "Good afternoon! Hope you're having a great day.",
-  "@goodAfternoon": {
-    "description": "Afternoon greeting message"
-  },
-  
-  "goodEvening": "Good evening! How was your day?",
-  "@goodEvening": {
-    "description": "Evening greeting message"
-  },
-  
-  "hardWorkWillPayOff": "Your hard work will pay off. Together we stand strong!",
-  "@hardWorkWillPayOff": {
-    "description": "Inspiration message about hard work"
-  },
-  
-  "togetherWeProtectLand": "Together we will protect our land.",
-  "@togetherWeProtectLand": {
-    "description": "Inspiration message about unity"
-  },
-  
-  "yourRightYourLand": "Your right, your land, your dignity.",
-  "@yourRightYourLand": {
-    "description": "Inspiration message about rights"
-  },
-  
-  "rameshwarVictory": "Rameshwar's Victory",
-  "@rameshwarVictory": {
-    "description": "Success story title"
-  },
-  
-  "rameshwarVictoryStory": "After 15 years, Telangana's Rameshwar finally got his land title.",
-  "@rameshwarVictoryStory": {
-    "description": "Success story content"
-  },
-  
-  "sunitaLandRights": "Sunita's Land Rights",
-  "@sunitaLandRights": {
-    "description": "Success story title"
-  },
-  
-  "sunitaLandRightsStory": "Sunita from Karnataka successfully defended her 3-acre farm from illegal occupation.",
-  "@sunitaLandRightsStory": {
-    "description": "Success story content"
-  },
-  
-  "fullName": "Full Name",
-  "@fullName": {
-    "description": "Full name input label"
-  },
-  
-  "village": "Village/City",
-  "@village": {
-    "description": "Village input label"
-  },
-  
-  "mandal": "Mandal/Tehsil",
-  "@mandal": {
-    "description": "Mandal input label"
-  },
-  
-  "district": "District",
-  "@district": {
-    "description": "District input label"
-  },
-  
-  "state": "State",
-  "@state": {
-    "description": "State input label"
-  },
-  
-  "referralCode": "Referral Code (Optional)",
-  "@referralCode": {
-    "description": "Referral code input label"
-  },
-  
-  "completeRegistration": "Complete Registration",
-  "@completeRegistration": {
-    "description": "Complete registration button"
-  },
-  
-  "registrationSuccessful": "Registration successful!",
-  "@registrationSuccessful": {
-    "description": "Registration success message"
-  },
-  
-  "registrationFailed": "Registration failed. Please try again.",
-  "@registrationFailed": {
-    "description": "Registration error message"
-  },
-  
-  "phoneNumberAlreadyRegistered": "Phone number already registered",
-  "@phoneNumberAlreadyRegistered": {
-    "description": "Phone already registered error"
-  },
-  
-  "invalidPhoneNumber": "Invalid phone number format",
-  "@invalidPhoneNumber": {
-    "description": "Invalid phone number error"
-  },
-  
-  "pinTooShort": "PIN must be at least 6 digits",
-  "@pinTooShort": {
-    "description": "PIN validation error"
-  },
-  
-  "fieldRequired": "This field is required",
-  "@fieldRequired": {
-    "description": "Required field validation error"
-  },
-  
-  "networkError": "Network error. Please check your connection.",
-  "@networkError": {
-    "description": "Network error message"
-  },
-  
-  "somethingWentWrong": "Something went wrong. Please try again.",
-  "@somethingWentWrong": {
-    "description": "Generic error message"
-  },
-  
-  "loading": "Loading...",
-  "@loading": {
-    "description": "Loading indicator text"
-  },
-  
-  "retry": "Retry",
-  "@retry": {
-    "description": "Retry button text"
-  },
-  
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button text"
-  },
-  
-  "save": "Save",
-  "@save": {
-    "description": "Save button text"
-  },
-  
-  "edit": "Edit",
-  "@edit": {
-    "description": "Edit button text"
-  },
-  
-  "delete": "Delete",
-  "@delete": {
-    "description": "Delete button text"
-  },
-  
-  "confirm": "Confirm",
-  "@confirm": {
-    "description": "Confirm button text"
-  },
-  
-  "yes": "Yes",
-  "@yes": {
-    "description": "Yes button text"
-  },
-  
-  "no": "No",
-  "@no": {
-    "description": "No button text"
-  },
-  
-  "ok": "OK",
-  "@ok": {
-    "description": "OK button text"
-  },
-  
-  "close": "Close",
-  "@close": {
-    "description": "Close button text"
-  },
-  
-  "search": "Search",
-  "@search": {
-    "description": "Search placeholder text"
-  },
-  
-  "noResultsFound": "No results found",
-  "@noResultsFound": {
-    "description": "No search results message"
-  },
-  
-  "pullToRefresh": "Pull to refresh",
-  "@pullToRefresh": {
-    "description": "Pull to refresh instruction"
-  },
-  
-  "refreshing": "Refreshing...",
-  "@refreshing": {
-    "description": "Refreshing indicator text"
-  },
-  
-  "offline": "Offline",
-  "@offline": {
-    "description": "Offline status indicator"
-  },
-  
-  "online": "Online",
-  "@online": {
-    "description": "Online status indicator"
-  },
-  
+
   "settings": "Settings",
   "@settings": {
     "description": "Settings screen title"
   },
-  
-  "notifications": "Notifications",
-  "@notifications": {
-    "description": "Notifications section title"
+
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
   },
-  
-  "privacy": "Privacy",
-  "@privacy": {
-    "description": "Privacy section title"
+
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Language selection screen title"
   },
-  
-  "security": "Security",
-  "@security": {
-    "description": "Security section title"
+
+  "english": "English",
+  "@english": {
+    "description": "English language option"
   },
-  
-  "about": "About",
-  "@about": {
-    "description": "About section title"
+
+  "hindi": "हिन्दी",
+  "@hindi": {
+    "description": "Hindi language option"
   },
-  
-  "help": "Help",
-  "@help": {
-    "description": "Help section title"
+
+  "telugu": "తెలుగు",
+  "@telugu": {
+    "description": "Telugu language option"
   },
-  
-  "contactSupport": "Contact Support",
-  "@contactSupport": {
-    "description": "Contact support option"
+
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
   },
-  
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  },
+
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button text"
+  },
+
+  "no": "No",
+  "@no": {
+    "description": "No button text"
+  },
+
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+
+  "error": "Error",
+  "@error": {
+    "description": "Error message title"
+  },
+
+  "success": "Success",
+  "@success": {
+    "description": "Success message title"
+  },
+
+  "warning": "Warning",
+  "@warning": {
+    "description": "Warning message title"
+  },
+
+  "info": "Information",
+  "@info": {
+    "description": "Information message title"
+  },
+
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+
+  "back": "Back",
+  "@back": {
+    "description": "Back button text"
+  },
+
+  "next": "Next",
+  "@next": {
+    "description": "Next button text"
+  },
+
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button text"
+  },
+
+  "done": "Done",
+  "@done": {
+    "description": "Done button text"
+  },
+
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button text"
+  },
+
+  "continue_": "Continue",
+  "@continue_": {
+    "description": "Continue button text"
+  },
+
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button text"
+  },
+
+  "search": "Search",
+  "@search": {
+    "description": "Search field placeholder"
+  },
+
+  "noResults": "No results found",
+  "@noResults": {
+    "description": "No search results message"
+  },
+
+  "networkError": "Network error. Please check your connection.",
+  "@networkError": {
+    "description": "Network error message"
+  },
+
+  "serverError": "Server error. Please try again later.",
+  "@serverError": {
+    "description": "Server error message"
+  },
+
+  "invalidInput": "Invalid input. Please check your data.",
+  "@invalidInput": {
+    "description": "Invalid input error message"
+  },
+
+  "requiredField": "This field is required",
+  "@requiredField": {
+    "description": "Required field validation message"
+  },
+
+  "invalidPhoneNumber": "Please enter a valid phone number",
+  "@invalidPhoneNumber": {
+    "description": "Invalid phone number validation message"
+  },
+
+  "invalidPin": "PIN must be 4 digits",
+  "@invalidPin": {
+    "description": "Invalid PIN validation message"
+  },
+
   "logout": "Logout",
   "@logout": {
     "description": "Logout button text"
   },
-  
+
   "logoutConfirmation": "Are you sure you want to logout?",
   "@logoutConfirmation": {
     "description": "Logout confirmation message"
   },
-  
+
+  "myReferralCode": "My Referral Code",
+  "@myReferralCode": {
+    "description": "My referral code section title"
+  },
+
+  "shareReferralCode": "Share Referral Code",
+  "@shareReferralCode": {
+    "description": "Share referral code button text"
+  },
+
+  "copyReferralCode": "Copy Referral Code",
+  "@copyReferralCode": {
+    "description": "Copy referral code button text"
+  },
+
+  "referralCodeCopied": "Referral code copied to clipboard",
+  "@referralCodeCopied": {
+    "description": "Referral code copied success message"
+  },
+
+  "directReferrals": "Direct Referrals",
+  "@directReferrals": {
+    "description": "Direct referrals count label"
+  },
+
+  "totalTeamSize": "Total Team Size",
+  "@totalTeamSize": {
+    "description": "Total team size count label"
+  },
+
+  "role": "Role",
+  "@role": {
+    "description": "User role label"
+  },
+
+  "member": "Member",
+  "@member": {
+    "description": "Member role"
+  },
+
+  "coordinator": "Coordinator",
+  "@coordinator": {
+    "description": "Coordinator role"
+  },
+
+  "aiAssistant": "AI Assistant",
+  "@aiAssistant": {
+    "description": "AI Assistant feature title"
+  },
+
+  "askAIAssistant": "Ask AI Assistant",
+  "@askAIAssistant": {
+    "description": "Ask AI Assistant button text"
+  },
+
+  "typeYourQuestion": "Type your question...",
+  "@typeYourQuestion": {
+    "description": "AI Assistant input placeholder"
+  },
+
+  "emergencyActions": "Emergency Actions",
+  "@emergencyActions": {
+    "description": "Emergency actions section title"
+  },
+
+  "reportLandGrabbing": "Report Land Grabbing",
+  "@reportLandGrabbing": {
+    "description": "Report land grabbing button text"
+  },
+
+  "callForHelp": "Call for Help",
+  "@callForHelp": {
+    "description": "Call for help button text"
+  },
+
+  "landRecords": "Land Records",
+  "@landRecords": {
+    "description": "Land records section title"
+  },
+
+  "legalCases": "Legal Cases",
+  "@legalCases": {
+    "description": "Legal cases section title"
+  },
+
+  "campaigns": "Campaigns",
+  "@campaigns": {
+    "description": "Campaigns section title"
+  },
+
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications screen title"
+  },
+
+  "noNotifications": "No notifications",
+  "@noNotifications": {
+    "description": "No notifications message"
+  },
+
+  "markAllAsRead": "Mark All as Read",
+  "@markAllAsRead": {
+    "description": "Mark all notifications as read button text"
+  },
+
+  "about": "About",
+  "@about": {
+    "description": "About screen title"
+  },
+
   "version": "Version",
   "@version": {
     "description": "App version label"
   },
-  
-  "buildNumber": "Build",
-  "@buildNumber": {
-    "description": "App build number label"
-  },
-  
-  "termsOfService": "Terms of Service",
-  "@termsOfService": {
-    "description": "Terms of service link"
-  },
-  
+
   "privacyPolicy": "Privacy Policy",
   "@privacyPolicy": {
-    "description": "Privacy policy link"
+    "description": "Privacy policy link text"
   },
-  
-  "shareApp": "Share App",
-  "@shareApp": {
-    "description": "Share app option"
+
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {
+    "description": "Terms of service link text"
   },
-  
+
+  "contactSupport": "Contact Support",
+  "@contactSupport": {
+    "description": "Contact support link text"
+  },
+
+  "helpCenter": "Help Center",
+  "@helpCenter": {
+    "description": "Help center link text"
+  },
+
+  "feedback": "Feedback",
+  "@feedback": {
+    "description": "Feedback link text"
+  },
+
   "rateApp": "Rate App",
   "@rateApp": {
-    "description": "Rate app option"
-  },
-  
-  "sendFeedback": "Send Feedback",
-  "@sendFeedback": {
-    "description": "Send feedback option"
-  },
-  
-  "reportBug": "Report Bug",
-  "@reportBug": {
-    "description": "Report bug option"
-  },
-  
-  "checkForUpdates": "Check for Updates",
-  "@checkForUpdates": {
-    "description": "Check for updates option"
-  },
-  
-  "appUpToDate": "App is up to date",
-  "@appUpToDate": {
-    "description": "App up to date message"
-  },
-  
-  "updateAvailable": "Update available",
-  "@updateAvailable": {
-    "description": "Update available message"
-  },
-  
-  "updateNow": "Update Now",
-  "@updateNow": {
-    "description": "Update now button"
-  },
-  
-  "updateLater": "Update Later",
-  "@updateLater": {
-    "description": "Update later button"
+    "description": "Rate app link text"
   }
 }

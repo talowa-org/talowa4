@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../services/search/advanced_search_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../../widgets/search/search_result_widget.dart';
 import '../../widgets/search/search_filters_widget.dart';
 import '../../widgets/search/trending_topics_widget.dart';

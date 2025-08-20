@@ -1,58 +1,60 @@
-// Common Error Widget
-// Reference: Used across all screens for consistent error handling
+// Error Widget for TALOWA
+// Common error display with retry functionality
 
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
 
-class CustomErrorWidget extends StatelessWidget {
-  final String message;
+class ErrorDisplayWidget extends StatelessWidget {
+  final String error;
   final VoidCallback? onRetry;
+  final String? retryText;
   final IconData? icon;
 
-  const CustomErrorWidget({
-    super.key,
-    required this.message,
+  const ErrorDisplayWidget({
+    Key? key,
+    required this.error,
     this.onRetry,
+    this.retryText,
     this.icon,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingLarge),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon ?? Icons.error_outline,
               size: 64,
-              color: AppTheme.emergencyRed,
+              color: const Color(AppConstants.emergencyRedValue),
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            const SizedBox(height: 16),
             Text(
-              'Oops! Something went wrong',
-              style: AppTheme.heading3Style.copyWith(
-                color: AppTheme.emergencyRed,
+              'Something went wrong',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: const Color(AppConstants.emergencyRedValue),
+                fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppTheme.spacingSmall),
+            const SizedBox(height: 8),
             Text(
-              message,
-              style: AppTheme.bodyStyle.copyWith(
-                color: AppTheme.secondaryText,
+              error,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: AppTheme.spacingLarge),
+              const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
+                label: Text(retryText ?? 'Try Again'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.talowaGreen,
+                  backgroundColor: const Color(AppConstants.talowaGreenValue),
                   foregroundColor: Colors.white,
                 ),
               ),

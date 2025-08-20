@@ -2,12 +2,10 @@
 // Implements Task 23: Implement content analytics - Dashboard UI
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/analytics/content_analytics_service.dart';
 import '../../models/analytics_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../../widgets/analytics/analytics_chart_widget.dart';
 import '../../widgets/analytics/metrics_card_widget.dart';
 

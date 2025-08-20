@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../services/sync/intelligent_sync_service.dart';
 import '../../services/sync/sync_conflict_resolver.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class SyncSettingsScreen extends StatefulWidget {
   const SyncSettingsScreen({super.key});

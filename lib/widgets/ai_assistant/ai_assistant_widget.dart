@@ -585,7 +585,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     // Find the first sentence or line
     final sentences = fullResponse.split(RegExp(r'[.!?]\s+'));
     if (sentences.isNotEmpty && sentences.first.length <= 150) {
-      return sentences.first + '.';
+      return '${sentences.first}.';
     }
     
     // Find the first line
@@ -595,7 +595,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     }
     
     // Fallback: truncate to 100 characters
-    return fullResponse.substring(0, 100) + '...';
+    return '${fullResponse.substring(0, 100)}...';
   }
 
   void _toggleTTS() {

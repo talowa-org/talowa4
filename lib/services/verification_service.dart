@@ -2,12 +2,8 @@
 // Tests all the urgent fixes for registration, referral codes, and navigation
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'auth_service.dart';
 import 'referral_code_cache_service.dart';
-import 'server_profile_ensure_service.dart';
 
 class VerificationService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

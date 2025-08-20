@@ -303,7 +303,7 @@ void main() {
         int failureCount = 0;
         
         for (final result in results) {
-          if (result is String && result.isNotEmpty) {
+          if (result.isNotEmpty) {
             successCount++;
           } else {
             failureCount++;

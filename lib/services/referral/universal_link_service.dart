@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:app_links/app_links.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -8,7 +8,13 @@ import '../../services/messaging/simple_messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/conversation_tile_widget.dart';
 import '../../widgets/messages/emergency_alert_banner.dart';
+import '../../widgets/messages/message_search_widget.dart';
 import '../../widgets/common/loading_widget.dart';
+import '../../widgets/onboarding/feature_discovery_widget.dart';
+import '../../widgets/onboarding/contextual_tips_widget.dart';
+import '../../services/onboarding_service.dart';
+import '../onboarding/onboarding_screen.dart';
+import '../help/help_center_screen.dart';
 import 'chat_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -45,7 +51,14 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ContextualTipsWidget(
+      screenName: 'messages_screen',
+      child: FeatureDiscoveryWidget(
+        featureKey: 'messaging_tutorial',
+        title: 'New to TALOWA Messaging?',
+        description: 'Take a quick tutorial to learn how to send secure messages, make voice calls, and use group chats effectively.',
+        icon: Icons.message,
+        child: Scaffold(
       appBar: AppBar(
         title: const Text(
           'Messages',
@@ -100,6 +113,26 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
                     Icon(Icons.emergency, color: AppTheme.emergencyRed),
                     SizedBox(width: 8),
                     Text('Emergency Broadcast'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'tutorial',
+                child: Row(
+                  children: [
+                    Icon(Icons.school),
+                    SizedBox(width: 8),
+                    Text('Messaging Tutorial'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'help',
+                child: Row(
+                  children: [
+                    Icon(Icons.help),
+                    SizedBox(width: 8),
+                    Text('Help Center'),
                   ],
                 ),
               ),
@@ -189,6 +222,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         tooltip: 'New Message',
         heroTag: "messages_new_chat",
         child: const Icon(Icons.chat),
+      ),
+        ),
       ),
     );
   }
@@ -302,9 +337,16 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   // Action Methods
   void _openSearch() {
-    showSearch(
-      context: context,
-      delegate: MessageSearchDelegate(),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MessageSearchWidget(
+          onMessageTap: (message, conversation) {
+            Navigator.pop(context);
+            _openConversation(conversation);
+          },
+        ),
+      ),
     );
   }
 
@@ -517,7 +559,42 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         // TODO: Navigate to emergency broadcast
         debugPrint('Opening emergency broadcast');
         break;
+      case 'tutorial':
+        _openMessagingTutorial();
+        break;
+      case 'help':
+        _openHelpCenter();
+        break;
     }
+  }
+
+  void _openMessagingTutorial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OnboardingScreen(
+          tutorialType: 'messaging',
+          onCompleted: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Messaging tutorial completed! You\'re ready to communicate securely.'),
+                backgroundColor: AppTheme.talowaGreen,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _openHelpCenter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HelpCenterScreen(),
+      ),
+    );
   }
 
   void _filterConversations(String query) {

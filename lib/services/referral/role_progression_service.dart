@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'referral_chain_service.dart';
 
 /// Exception thrown when role progression operations fail
 class RoleProgressionException implements Exception {

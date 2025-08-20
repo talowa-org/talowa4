@@ -1,7 +1,6 @@
 // Enhanced Post Creation Screen for TALOWA
 // Full-featured post creation with media upload and stories
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';

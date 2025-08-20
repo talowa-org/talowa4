@@ -171,7 +171,7 @@ class QRScannerService {
   static Future<void> dispose() async {
     try {
       await stopScanning();
-      await _controller?.dispose();
+      _controller?.dispose();
       _controller = null;
     } catch (e) {
       // Handle gracefully

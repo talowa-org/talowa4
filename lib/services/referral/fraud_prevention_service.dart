@@ -66,7 +66,7 @@ class DeviceFingerprint {
 /// Service for fraud prevention and security
 class FraudPreventionService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
+  static final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   
   // Fraud detection thresholds
   static const int MAX_ACCOUNTS_PER_DEVICE = 3;

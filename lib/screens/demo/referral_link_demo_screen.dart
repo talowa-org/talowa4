@@ -252,12 +252,12 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
               },
-              child: Text('Go to Real Registration'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
                 minimumSize: Size(double.infinity, 48),
               ),
+              child: Text('Go to Real Registration'),
             ),
           ],
         ),

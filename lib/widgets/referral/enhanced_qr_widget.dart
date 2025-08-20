@@ -16,7 +16,7 @@ class EnhancedQRWidget extends StatefulWidget {
   final VoidCallback? onDownload;
   
   const EnhancedQRWidget({
-    Key? key,
+    super.key,
     required this.referralCode,
     this.userName,
     this.size = 300,
@@ -25,7 +25,7 @@ class EnhancedQRWidget extends StatefulWidget {
     this.showDownloadButton = true,
     this.onShare,
     this.onDownload,
-  }) : super(key: key);
+  });
 
   @override
   State<EnhancedQRWidget> createState() => _EnhancedQRWidgetState();

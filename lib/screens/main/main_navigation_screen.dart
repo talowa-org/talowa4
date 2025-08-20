@@ -4,11 +4,13 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../services/onboarding_service.dart';
 import '../home/home_screen.dart';
 import '../feed/feed_screen.dart';
 import '../messages/messages_screen.dart';
 import '../network/network_screen.dart';
 import '../more/more_screen.dart';
+import '../onboarding/onboarding_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -19,6 +21,84 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    await OnboardingService.initialize();
+    
+    // Check if user needs onboarding
+    if (!OnboardingService.isOnboardingCompleted()) {
+      // Show messaging tutorial for new users
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showInitialOnboarding();
+      });
+    }
+  }
+
+  void _showInitialOnboarding() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Welcome to TALOWA!'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Let\'s get you started with a quick tutorial on how to use TALOWA\'s secure messaging features.',
+            ),
+            SizedBox(height: 16),
+            Text(
+              'This will only take a few minutes and will help you communicate effectively with other activists.',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              OnboardingService.markOnboardingCompleted();
+            },
+            child: const Text('Skip for now'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OnboardingScreen(
+                    tutorialType: 'messaging',
+                    onCompleted: () {
+                      Navigator.pop(context);
+                      OnboardingService.markOnboardingCompleted();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Welcome to TALOWA! You\'re ready to start communicating securely.'),
+                          backgroundColor: AppTheme.talowaGreen,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.talowaGreen,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Start Tutorial'),
+          ),
+        ],
+      ),
+    );
+  }
   
   // 5 Main Tabs - Mobile Optimized
   final List<Widget> _screens = [

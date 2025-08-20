@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../services/safety/safety_education_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class SafetyEducationScreen extends StatefulWidget {
   const SafetyEducationScreen({super.key});

@@ -25,9 +25,7 @@ class AdminBootstrapService {
       String? adminUid = await _findAdminByEmail();
       
       // If not found, create admin user
-      if (adminUid == null) {
-        adminUid = await _createAdminUser();
-      }
+      adminUid ??= await _createAdminUser();
       
       // Ensure admin user document exists with correct data
       await _ensureAdminUserDocument(adminUid);

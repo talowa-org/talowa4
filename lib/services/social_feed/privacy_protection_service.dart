@@ -328,10 +328,6 @@ class PrivacyProtectionService {
       final viewerLocation = viewer.address;
       final targetLocation = target.address;
 
-      if (targetLocation == null) {
-        return false;
-      }
-
       // Same village
       if (viewerLocation.villageCode == targetLocation.villageCode) {
         return true;

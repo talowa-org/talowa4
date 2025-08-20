@@ -3,11 +3,9 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/media/media_service.dart';
 import '../../services/media/media_picker_service.dart';
 import '../../services/media/media_upload_manager.dart';
-import '../../services/media/media_cache_service.dart';
 import 'media_preview_widget.dart';
 
 /// Comprehensive media handling widget for post creation

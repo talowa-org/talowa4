@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../services/social_feed/content_moderation_service.dart';
-import '../../core/theme/app_theme.dart';
 
 class ModerationStatsWidget extends StatelessWidget {
   final ModerationStats stats;

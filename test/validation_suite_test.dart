@@ -1,13 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
 import 'package:talowa/services/referral/referral_code_generator.dart';
 import 'package:talowa/services/referral/user_registration_service.dart';
 import 'package:talowa/services/admin/admin_bootstrap_service.dart';
-import 'package:talowa/services/auth_service.dart';
 import 'package:talowa/services/referral/universal_link_service.dart';
 
 void main() {

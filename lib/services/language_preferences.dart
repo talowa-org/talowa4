@@ -125,7 +125,7 @@ class LanguagePreferences {
   
   /// Validate language code
   static bool isValidLanguageCode(String languageCode) {
-    const validLanguages = ['en', 'hi', 'te'];
+    const validLanguages = ['en', 'hi', 'te', 'ur', 'ar'];
     return validLanguages.contains(languageCode);
   }
   

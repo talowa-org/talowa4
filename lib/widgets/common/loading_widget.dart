@@ -1,18 +1,20 @@
-// Common Loading Widget
-// Reference: Used across all screens for consistent loading states
+// Loading Widget for TALOWA
+// Common loading indicator with optional message
 
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
 
 class LoadingWidget extends StatelessWidget {
-  final String message;
-  final bool showProgress;
+  final String? message;
+  final double? size;
+  final Color? color;
 
   const LoadingWidget({
-    super.key,
-    this.message = 'Loading...',
-    this.showProgress = true,
-  });
+    Key? key,
+    this.message,
+    this.size,
+    this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,18 +22,26 @@ class LoadingWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (showProgress)
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.talowaGreen),
+          SizedBox(
+            width: size ?? 40,
+            height: size ?? 40,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                color ?? const Color(AppConstants.talowaGreenValue),
+              ),
             ),
-          if (showProgress) const SizedBox(height: AppTheme.spacingMedium),
-          Text(
-            message,
-            style: AppTheme.bodyStyle.copyWith(
-              color: AppTheme.secondaryText,
-            ),
-            textAlign: TextAlign.center,
           ),
+          if (message != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              message!,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ],
       ),
     );

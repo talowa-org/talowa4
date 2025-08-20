@@ -151,7 +151,7 @@ class ErrorEvent {
 class MonitoringService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final Map<String, Stopwatch> _activeOperations = {};
-  static String _currentSessionId = DateTime.now().millisecondsSinceEpoch.toString();
+  static final String _currentSessionId = DateTime.now().millisecondsSinceEpoch.toString();
   
   /// For testing purposes - allows injection of fake firestore
   static void setFirestoreInstance(FirebaseFirestore firestore) {

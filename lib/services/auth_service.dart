@@ -1,5 +1,4 @@
-// Authentication Service for TALOWA
-// Reference: REGISTRATION_SYSTEM.md - Auth Flows
+
 
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +9,15 @@ import '../models/user_model.dart';
 import 'database_service.dart';
 import 'referral_code_cache_service.dart';
 import 'server_profile_ensure_service.dart';
+
+// Helper to sanitize user profile writes
+Map<String, dynamic> ProfileWritePolicy(Map<String, dynamic> input) {
+  final allowed = [
+    'fullName','email','emailAlias','phone','language','locale','bio','address',
+    'profileCompleted','phoneVerified','lastLoginAt','device'
+  ];
+  return Map.fromEntries(input.entries.where((e) => allowed.contains(e.key)));
+}
 
 
 class AuthService {
@@ -367,9 +375,7 @@ class AuthService {
   }) async {
     try {
       final firestore = FirebaseFirestore.instance;
-
-      // Only send allowed fields to avoid permission errors
-      final userData = {
+      final rawUserData = {
         'fullName': fullName,
         'email': email,
         'emailAlias': email,
@@ -382,12 +388,11 @@ class AuthService {
         'locale': 'en_US',
         'device': {
           'platform': kIsWeb ? 'web' : Platform.operatingSystem,
-          'appVersion': '1.0.0', // TODO: Get from package_info
+          'appVersion': '1.0.0',
         },
       };
-
+      final userData = ProfileWritePolicy(rawUserData);
       debugPrint('Creating user profile with payload: ${userData.keys.toList()}');
-
       await firestore.collection('users').doc(uid).set(userData);
       debugPrint('User profile created successfully');
     } catch (e) {
