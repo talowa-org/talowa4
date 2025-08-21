@@ -8,7 +8,6 @@ import '../../models/notification_model.dart';
 import '../../services/notifications/notification_service.dart';
 import '../../widgets/notifications/notification_widget.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

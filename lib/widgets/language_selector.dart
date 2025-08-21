@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/localization_provider.dart';
@@ -32,7 +31,7 @@ class LanguageSelector extends StatelessWidget {
             children: [
               if (showTitle) ...[
                 Text(
-                  AppLocalizations.of(context)?.selectLanguage ?? 'Select Language',
+                  AppLocalizations.of(context).selectLanguage ?? 'Select Language',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
@@ -104,7 +103,7 @@ class LanguageSelector extends StatelessWidget {
                 },
                 icon: const Icon(Icons.phone_android),
                 label: Text(
-                  AppLocalizations.of(context)?.resetToDeviceLanguage ?? 'Use Device Language',
+                  AppLocalizations.of(context).resetToDeviceLanguage ?? 'Use Device Language',
                 ),
               ),
             ],
@@ -152,7 +151,7 @@ class LanguageSelectorDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        AppLocalizations.of(context)?.selectLanguage ?? 'Select Language',
+        AppLocalizations.of(context).selectLanguage ?? 'Select Language',
       ),
       content: SizedBox(
         width: double.maxFinite,
@@ -168,7 +167,7 @@ class LanguageSelectorDialog extends StatelessWidget {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            AppLocalizations.of(context)?.close ?? 'Close',
+            AppLocalizations.of(context).close ?? 'Close',
           ),
         ),
       ],

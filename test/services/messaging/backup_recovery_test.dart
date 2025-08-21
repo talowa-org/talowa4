@@ -54,7 +54,9 @@ void main() {
         
         when(mockFirestore.collection('user_backups')).thenReturn(mockCollection);
         when(mockCollection.doc(any)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Mock conversations collection
         final mockConversationsCollection = MockCollectionReference<Map<String, dynamic>>();
@@ -170,7 +172,9 @@ void main() {
         
         when(mockFirestore.collection('recovery_plans')).thenReturn(mockCollection);
         when(mockCollection.doc(any)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         final planId = await recoveryService.createRecoveryPlan(
@@ -191,9 +195,13 @@ void main() {
         
         when(mockFirestore.collection('health_check')).thenReturn(mockCollection);
         when(mockCollection.doc('test')).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
         when(mockDoc.get()).thenAnswer((_) async => MockDocumentSnapshot<Map<String, dynamic>>());
-        when(mockDoc.delete()).thenAnswer((_) async {});
+        when(mockDoc.delete()).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         final healthCheck = await recoveryService.checkSystemHealth();
@@ -237,7 +245,9 @@ void main() {
         
         when(mockFirestore.collection('backup_schedules')).thenReturn(mockCollection);
         when(mockCollection.doc(any)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         final scheduleId = await schedulerService.createBackupSchedule(
@@ -293,7 +303,9 @@ void main() {
           'lastRun': Timestamp.now(),
           'interval': const Duration(days: 1).inMilliseconds,
         });
-        when(mockDoc.update(any)).thenAnswer((_) async {});
+        when(mockDoc.update(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         await schedulerService.updateBackupSchedule(
@@ -315,7 +327,9 @@ void main() {
         
         when(mockFirestore.collection('backup_schedules')).thenReturn(mockCollection);
         when(mockCollection.doc(scheduleId)).thenReturn(mockDoc);
-        when(mockDoc.delete()).thenAnswer((_) async {});
+        when(mockDoc.delete()).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         await schedulerService.deleteBackupSchedule(scheduleId);
@@ -337,7 +351,9 @@ void main() {
         
         when(mockFirestore.collection('retention_policies')).thenReturn(mockCollection);
         when(mockCollection.doc(entityId)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         await retentionService.setRetentionPolicy(
@@ -413,8 +429,12 @@ void main() {
         
         when(mockFirestore.collection('cleanup_jobs')).thenReturn(mockJobsCollection);
         when(mockJobsCollection.doc(any)).thenReturn(mockJobDoc);
-        when(mockJobDoc.set(any)).thenAnswer((_) async {});
-        when(mockJobDoc.update(any)).thenAnswer((_) async {});
+        when(mockJobDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
+        when(mockJobDoc.update(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         await retentionService.cleanupExpiredMessages(userId);
@@ -432,7 +452,9 @@ void main() {
         
         when(mockFirestore.collection('migration_configs')).thenReturn(mockCollection);
         when(mockCollection.doc(any)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         final configId = await migrationService.createMigrationConfig(
@@ -517,7 +539,9 @@ void main() {
         when(mockCollection.doc(any)).thenReturn(mockDoc);
         when(mockCollection.where(any, isEqualTo: any)).thenReturn(MockQuery<Map<String, dynamic>>());
         when(mockCollection.where(any, arrayContains: any)).thenReturn(MockQuery<Map<String, dynamic>>());
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
         when(mockDoc.get()).thenAnswer((_) async => mockSnapshot);
         when(mockSnapshot.exists).thenReturn(true);
         when(mockSnapshot.data()).thenReturn({
@@ -564,7 +588,9 @@ void main() {
         
         when(mockFirestore.collection(any)).thenReturn(mockCollection);
         when(mockCollection.doc(any)).thenReturn(mockDoc);
-        when(mockDoc.set(any)).thenAnswer((_) async {});
+        when(mockDoc.set(any)).thenAnswer((_) async {
+          return null;
+        });
         when(mockDoc.get()).thenAnswer((_) async => mockSnapshot);
         when(mockSnapshot.exists).thenReturn(true);
         when(mockSnapshot.data()).thenReturn({

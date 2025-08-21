@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import '../lib/screens/network_screen.dart';
-import '../lib/services/auth_service.dart';
+import 'package:talowa/screens/network_screen.dart';
+import 'package:talowa/services/auth_service.dart';
 
 void main() {
   testWidgets('Back navigation preserves session', (WidgetTester tester) async {

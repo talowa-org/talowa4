@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';  // Not supported on web
 import 'universal_link_service.dart';
 import 'referral_lookup_service.dart';

@@ -1,12 +1,10 @@
 // Network Screen for TALOWA
 // Shows user's referral network and team management
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/referral_code_cache_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
-import 'dart:async';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});

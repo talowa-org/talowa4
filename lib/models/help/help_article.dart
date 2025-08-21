@@ -1,7 +1,6 @@
 // TALOWA Help Article Model
 // Represents a single help article with content and metadata
 
-import 'package:flutter/material.dart';
 
 class HelpArticle {
   final String id;

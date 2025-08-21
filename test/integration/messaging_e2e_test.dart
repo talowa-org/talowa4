@@ -8,19 +8,19 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:integration_test/integration_test.dart';
 
 // Import services for integration testing
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/encryption_service.dart';
-import '../../lib/services/messaging/webrtc_service.dart';
-import '../../lib/services/messaging/group_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/anonymous_messaging_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
-import '../../lib/services/messaging/offline_messaging_service.dart';
-import '../../lib/services/messaging/message_sync_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/messaging/webrtc_service.dart';
+import 'package:talowa/services/messaging/group_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/offline_messaging_service.dart';
+import 'package:talowa/services/messaging/message_sync_service.dart';
 
 // Import models
-import '../../lib/models/message_model.dart';
-import '../../lib/models/user_model.dart';
+import 'package:talowa/models/message_model.dart';
+import 'package:talowa/models/user_model.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -196,7 +196,7 @@ void main() {
         // Step 5: Recipient downloads file
         final downloadedFile = await fileService.downloadFile(uploadResult.fileId);
         expect(downloadedFile, isNotNull);
-        expect(downloadedFile!.length, equals(fileData.fileBytes.length));
+        expect(downloadedFile.length, equals(fileData.fileBytes.length));
       });
 
       test('should handle anonymous reporting flow', () async {
@@ -396,7 +396,7 @@ void main() {
         }
 
         // Step 4: Verify all participants are connected
-        final updatedSession = await webrtcService.getCallSession(groupCallSession.id);
+        final updatedSession = webrtcService.getCallSession(groupCallSession.id);
         final connectedParticipants = updatedSession.participants
             .where((p) => p.status == ParticipantStatus.connected)
             .length;
@@ -591,7 +591,7 @@ void main() {
     tearDownAll(() async {
       // Clean up services
       await messagingService.dispose();
-      await webrtcService.dispose();
+      webrtcService.dispose();
     });
   });
 }

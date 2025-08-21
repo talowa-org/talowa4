@@ -4,7 +4,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'referral_code_policy_validator.dart';
-import 'validation_framework.dart';
 
 void main() {
   group('Referral Code Policy Validation Tests', () {

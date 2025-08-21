@@ -101,6 +101,32 @@ The system will support 5+ million users across rural and urban areas of Telanga
 
 ### Requirement 8
 
+**User Story:** As a TALOWA member, I want to receive instant notifications about referral activities and role progressions, so that I can stay updated on my network growth and achievements.
+
+#### Acceptance Criteria
+
+1. WHEN someone joins using my referral code THEN the system SHALL send me an immediate notification with their name and location
+2. WHEN I achieve a role promotion THEN the system SHALL send a congratulatory message with new role details and benefits
+3. WHEN my team reaches milestones THEN the system SHALL notify me about team size achievements
+4. WHEN referral statistics update THEN the system SHALL send real-time updates through the messaging system
+5. IF I reach referral goals THEN the system SHALL send celebration messages with achievement badges
+6. WHEN sharing referral codes THEN the system SHALL provide pre-formatted messages for easy sharing
+
+### Requirement 9
+
+**User Story:** As a TALOWA coordinator, I want to send referral-related broadcasts to my team, so that I can motivate members and share referral strategies.
+
+#### Acceptance Criteria
+
+1. WHEN sending referral updates THEN the system SHALL allow broadcasting to entire referral chain
+2. WHEN sharing referral achievements THEN the system SHALL include visual elements like badges and progress bars
+3. WHEN motivating team members THEN the system SHALL provide templates for referral encouragement messages
+4. WHEN celebrating team milestones THEN the system SHALL send group congratulations with team statistics
+5. IF team members need referral help THEN the system SHALL provide guided messaging for referral strategies
+6. WHEN referral campaigns are launched THEN the system SHALL coordinate messaging across all team levels
+
+### Requirement 8
+
 **User Story:** As a TALOWA member in a rural area, I want the messaging system to work with poor internet connectivity, so that I can stay connected even with limited network access.
 
 #### Acceptance Criteria

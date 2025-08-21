@@ -6,7 +6,7 @@
 
 ## Overview
 
-This specification defines the comprehensive validation suite for the TALOWA login and registration flow, including OTP verification, form submission, optional payment processing, and referral system integration.
+This specification defines the comprehensive validation suite for the TALOWA login and registration flow, including OTP verification, form submission, and referral system integration.
 
 ## User Stories
 
@@ -24,31 +24,34 @@ This specification defines the comprehensive validation suite for the TALOWA log
    - `status: 'active'`
    - `phoneVerified: true`
    - `profileCompleted: true`
-   - `membershipPaid: false`
+   - `membershipPaid: true` (true if payment sucessful)
+   - `referralStatus: 'active'`
    - `referralCode` present (starts with TAL, not "Loading")
-   - `provisionalRef` set to deep link ref or TALADMIN fallback
-6. **WHEN** registration is complete **THEN** I can access the app even without payment
+   - `referredBy` set immediately if referral code provided
+   - `activeDirectReferrals: 0`
+   - `activeTeamSize: 0`
+6. **WHEN** registration is complete **THEN** I have full access to all referral features immediately
 
-### Story 2: Optional Payment Processing
+### Story 2: Simplified Referral Activation (No Payment Dependency)
 **As a** newly registered user  
-**I want** to optionally complete membership payment  
-**So that** I can contribute to the organization (payment is optional and doesn't affect access)  
+**I want** my referral features to work immediately upon registration  
+**So that** I can start building my network from day one without payment barriers  
 
 #### Acceptance Criteria
-1. **WHEN** payment is successful **THEN** my profile is updated with:
+1. **WHEN** I complete registration **THEN** my profile is immediately updated with:
    - `status: 'active'`
-   - `membershipPaid: true`
-   - `paidAt` and `paymentRef` set
-   - `referredBy` set from `provisionalRef`
-   - `referralChain` populated
-   - Referrer's `directReferralCount` incremented
-   - Ancestors' `totalTeamSize` incremented
-   - Role/achievements evaluation triggered
-2. **WHEN** payment fails or is skipped **THEN**:
-   - `status` remains 'active'
-   - `membershipPaid` remains false
-   - I can still access and use the app with full membership benefits
-   - I can still share my referral code
+   - `membershipPaid: true` (always true in simplified system)
+   - `referralStatus: 'active'`
+   - `referredBy` set from referral code (if provided)
+   - `referralChain` populated immediately
+   - Referrer's `activeDirectReferrals` incremented immediately
+   - Ancestors' `activeTeamSize` incremented immediately
+   - Role/achievements evaluation triggered immediately
+2. **WHEN** I register with a referral code **THEN**:
+   - All referral statistics update in real-time
+   - I can immediately start referring others
+   - My referrer sees the new team member instantly
+   - Role progression happens automatically if thresholds are met
 
 ### Story 3: Existing User Login
 **As an** existing user  
@@ -132,21 +135,21 @@ This specification defines the comprehensive validation suite for the TALOWA log
 - `referralCode` present (TAL prefix, not "Loading")
 - User can access app
 
-#### B3: Payment Success Simulation
+#### B3: Immediate Referral Activation
 **Steps**:
-1. Simulate successful payment
-2. Check profile updates
-3. Verify referral chain updates
+1. Complete registration with referral code
+2. Check immediate profile updates
+3. Verify referral chain updates in real-time
 
-**Expected Result**: Full activation and referral processing
+**Expected Result**: Instant referral activation and statistics updates
 
-#### B4: Payment Failure Simulation
+#### B4: Referral Statistics Verification
 **Steps**:
-1. Simulate payment failure
-2. Check profile remains active
-3. Verify full app access retained
+1. Register user with referral code
+2. Check referrer's statistics update immediately
+3. Verify role progression if thresholds met
 
-**Expected Result**: Active status maintained, full membership benefits accessible
+**Expected Result**: Real-time statistics updates and automatic role progression
 
 ### Test Case C: Existing User Login
 **Steps**:

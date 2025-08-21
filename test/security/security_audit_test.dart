@@ -3,10 +3,10 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import '../test_utils/security_test_utils.dart';
-import '../../lib/services/messaging/encryption_service.dart';
-import '../../lib/services/messaging/anonymous_messaging_service.dart';
-import '../../lib/services/auth_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/auth_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
 
 void main() {
   group('Security Audit and Penetration Testing', () {

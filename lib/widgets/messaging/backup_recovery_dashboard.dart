@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../services/messaging/backup_recovery_integration_service.dart';
 import '../../services/messaging/data_backup_service.dart';
 import '../../services/messaging/backup_scheduler_service.dart';
@@ -221,7 +220,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -388,7 +387,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -430,7 +429,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
               ),
             )
           else
-            ...schedules.map((schedule) => _buildScheduleCard(schedule)).toList(),
+            ...schedules.map((schedule) => _buildScheduleCard(schedule)),
         ],
       ),
     );
@@ -528,7 +527,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
                   const SizedBox(height: 16),
                   ...retentionPeriods.entries.map((entry) {
                     return _buildRetentionSetting(entry.key, entry.value);
-                  }).toList(),
+                  }),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _saveRetentionSettings,
@@ -595,7 +594,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
               ),
             )
           else
-            ...backupHistory.map((backup) => _buildHistoryCard(backup)).toList(),
+            ...backupHistory.map((backup) => _buildHistoryCard(backup)),
         ],
       ),
     );
@@ -637,7 +636,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
               child: Text('Delete'),
             ),
           ],
-          onSelected: (value) => _handleBackupAction(backupId, value as String),
+          onSelected: (value) => _handleBackupAction(backupId, value),
         ),
       ),
     );
@@ -890,7 +889,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
             const SizedBox(height: 8),
             ...files.map((file) {
               return Text('• ${file['type']}: ${_formatBytes(file['size'])}');
-            }).toList(),
+            }),
           ],
         ),
         actions: [
@@ -932,7 +931,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
                   Expanded(child: Text(task)),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
         actions: [

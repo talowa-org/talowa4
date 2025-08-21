@@ -527,24 +527,16 @@ class PaginatedQueryResult<T> extends QueryResult<T> {
   final DocumentSnapshot? lastDocument;
 
   PaginatedQueryResult({
-    required List<T> data,
-    required String queryKey,
-    required int executionTime,
-    required bool fromCache,
-    required int documentCount,
-    required DateTime timestamp,
+    required super.data,
+    required super.queryKey,
+    required super.executionTime,
+    required super.fromCache,
+    required super.documentCount,
+    required super.timestamp,
     required this.hasMore,
     required this.lastDocument,
-    String? error,
-  }) : super(
-          data: data,
-          queryKey: queryKey,
-          executionTime: executionTime,
-          fromCache: fromCache,
-          documentCount: documentCount,
-          timestamp: timestamp,
-          error: error,
-        );
+    super.error,
+  });
 }
 
 /// Aggregation result

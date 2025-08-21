@@ -11,7 +11,6 @@ import '../../widgets/common/loading_overlay.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
 
 class AnonymousReportingScreen extends StatefulWidget {
   final String? coordinatorId;

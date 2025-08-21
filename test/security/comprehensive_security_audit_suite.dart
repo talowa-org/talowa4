@@ -5,10 +5,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import '../test_utils/firebase_test_init.dart';
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/encryption_service.dart';
-import '../../lib/services/auth_service.dart';
-import '../../lib/services/messaging/anonymous_reporting_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/auth_service.dart';
+import 'package:talowa/services/messaging/anonymous_reporting_service.dart';
 
 /// Comprehensive Security Audit Suite for TALOWA In-App Communication System
 /// 
@@ -875,9 +875,9 @@ Future<String> _generateExpiredToken(String userId) async {
 String _tamperWithToken(String originalToken) {
   // Simulate token tampering by modifying a character
   if (originalToken.length > 10) {
-    return originalToken.substring(0, 10) + 'X' + originalToken.substring(11);
+    return '${originalToken.substring(0, 10)}X${originalToken.substring(11)}';
   }
-  return originalToken + 'X';
+  return '${originalToken}X';
 }
 
 Future<void> _simulateUnusualLoginPattern(String userId) async {

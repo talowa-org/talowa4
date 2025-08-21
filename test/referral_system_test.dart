@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import '../lib/services/referral/simplified_referral_service.dart';
-import '../lib/services/referral/referral_registration_service.dart';
-import '../lib/services/referral/role_progression_service.dart';
-import '../lib/services/referral/referral_tracking_service.dart';
-import '../lib/services/referral/referral_lookup_service.dart';
+import 'package:talowa/services/referral/simplified_referral_service.dart';
+import 'package:talowa/services/referral/referral_registration_service.dart';
+import 'package:talowa/services/referral/role_progression_service.dart';
+import 'package:talowa/services/referral/referral_tracking_service.dart';
+import 'package:talowa/services/referral/referral_lookup_service.dart';
 
 void main() {
   group('Simplified Referral System Tests', () {

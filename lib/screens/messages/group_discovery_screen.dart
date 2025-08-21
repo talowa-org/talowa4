@@ -13,7 +13,7 @@ import '../../widgets/common/error_widget.dart';
 import 'group_detail_screen.dart';
 
 class GroupDiscoveryScreen extends StatefulWidget {
-  const GroupDiscoveryScreen({Key? key}) : super(key: key);
+  const GroupDiscoveryScreen({super.key});
 
   @override
   State<GroupDiscoveryScreen> createState() => _GroupDiscoveryScreenState();

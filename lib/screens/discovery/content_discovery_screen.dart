@@ -6,7 +6,6 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
 import '../../services/social_feed/index.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../../widgets/discovery/trending_hashtags_widget.dart';
 import '../../widgets/discovery/category_filter_widget.dart';
 import '../../widgets/discovery/geographic_discovery_widget.dart';

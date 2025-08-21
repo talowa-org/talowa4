@@ -6,12 +6,9 @@ import 'package:mockito/mockito.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../lib/services/messaging/talowa_messaging_integration.dart';
-import '../../lib/services/messaging/messaging_integration_service.dart';
-import '../../lib/services/messaging/auth_integration_service.dart';
-import '../../lib/models/messaging/group_model.dart';
-import '../../lib/models/campaign_model.dart';
-import '../../lib/core/constants/app_constants.dart';
+import 'package:talowa/services/messaging/talowa_messaging_integration.dart';
+import 'package:talowa/services/messaging/messaging_integration_service.dart';
+import 'package:talowa/services/messaging/auth_integration_service.dart';
 
 // Mock classes
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}

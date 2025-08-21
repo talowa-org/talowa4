@@ -2,17 +2,15 @@
 // Tests all security components for comprehensive coverage
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
 // Import the services we're testing
-import '../../../lib/services/messaging/encryption_service.dart';
-import '../../../lib/services/messaging/anonymous_messaging_service.dart';
-import '../../../lib/services/messaging/message_validation_service.dart';
-import '../../../lib/services/security/rate_limiting_service.dart';
-import '../../../lib/services/security/audit_logging_service.dart';
-import '../../../lib/services/messaging/integrated_security_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/messaging/message_validation_service.dart';
+import 'package:talowa/services/security/rate_limiting_service.dart';
+import 'package:talowa/services/messaging/integrated_security_service.dart';
 
 void main() {
   group('Message Encryption Service Tests', () {

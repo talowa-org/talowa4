@@ -97,7 +97,34 @@ The TALOWA Social Feed System will serve as the primary platform for community e
 5. WHEN viewing user profiles THEN the system SHALL only show information the user has made public
 6. WHEN content contains sensitive information THEN the system SHALL warn users before sharing
 
-### Requirement 8: Offline Support and Synchronization
+### Requirement 8: Referral System Integration
+
+**User Story:** As a user, I want to see referral-related content and achievements in the social feed, so that I can celebrate successes and stay motivated about network building.
+
+#### Acceptance Criteria
+
+1. WHEN someone achieves a role promotion THEN the system SHALL automatically create a celebration post visible to their network
+2. WHEN referral milestones are reached THEN the system SHALL allow sharing achievement posts with custom messages
+3. WHEN viewing the feed THEN the system SHALL show referral success stories and testimonials from community members
+4. WHEN coordinators want to motivate referrals THEN the system SHALL provide templates for referral campaign posts
+5. WHEN users share referral codes THEN the system SHALL create engaging social posts with QR codes and call-to-action
+6. WHEN team achievements occur THEN the system SHALL allow coordinators to post team celebration content
+7. WHEN viewing posts THEN the system SHALL show referral-related hashtags like #TalowaGrowth #NewMembers #TeamSuccess
+
+### Requirement 9: Referral Achievement Celebrations
+
+**User Story:** As a coordinator, I want to celebrate referral achievements and role promotions in the social feed, so that I can recognize member contributions and motivate others.
+
+#### Acceptance Criteria
+
+1. WHEN a member gets promoted THEN the system SHALL create an automatic celebration post with their achievement details
+2. WHEN posting achievements THEN the system SHALL include visual elements like badges, progress bars, and celebration graphics
+3. WHEN celebrating team milestones THEN the system SHALL allow tagging all team members in the celebration post
+4. WHEN sharing success stories THEN the system SHALL provide templates highlighting member journeys and growth
+5. WHEN promoting referral activities THEN the system SHALL allow creating motivational posts with referral statistics
+6. WHEN achievements are posted THEN the system SHALL encourage community engagement through congratulatory comments
+
+### Requirement 10: Offline Support and Synchronization
 
 **User Story:** As a user in areas with poor connectivity, I want to access and interact with social content offline, so that I can stay engaged even without internet.
 

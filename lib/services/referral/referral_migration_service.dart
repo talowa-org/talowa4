@@ -3,7 +3,7 @@ import 'simplified_referral_service.dart';
 
 /// Service to migrate existing users from two-step to simplified referral system
 class ReferralMigrationService {
-  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   /// Migrate all users to simplified referral system
   static Future<Map<String, dynamic>> migrateAllUsers() async {
@@ -49,7 +49,7 @@ class ReferralMigrationService {
           }
         }
         
-      } while (lastDoc != null && lastDoc.docs.length == batchSize);
+      } while (lastDoc.docs.length == batchSize);
       
       print('Migration completed!');
       print('Total users: $totalUsers');
@@ -93,7 +93,7 @@ class ReferralMigrationService {
     final directReferrals = List<String>.from(userData['directReferrals'] ?? []);
     
     // In simplified system, all referrals are active
-    final allReferrals = [...directReferrals, ...pendingReferrals].toSet().toList();
+    final allReferrals = <dynamic>{...directReferrals, ...pendingReferrals}.toList();
     
     migrationData['directReferrals'] = allReferrals;
     migrationData['activeDirectReferrals'] = allReferrals.length;

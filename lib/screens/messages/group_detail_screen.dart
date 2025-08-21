@@ -15,9 +15,9 @@ class GroupDetailScreen extends StatefulWidget {
   final GroupModel group;
 
   const GroupDetailScreen({
-    Key? key,
+    super.key,
     required this.group,
-  }) : super(key: key);
+  });
 
   @override
   State<GroupDetailScreen> createState() => _GroupDetailScreenState();

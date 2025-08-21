@@ -6,13 +6,13 @@ import 'dart:math';
 import '../test_utils/firebase_test_init.dart';
 import '../test_utils/load_test_utils.dart';
 import '../test_utils/performance_metrics.dart';
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/websocket_service.dart';
-import '../../lib/services/messaging/voice_calling_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
-import '../../lib/services/messaging/anonymous_reporting_service.dart';
-import '../../lib/services/messaging/disaster_recovery_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/websocket_service.dart';
+import 'package:talowa/services/messaging/voice_calling_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/anonymous_reporting_service.dart';
+import 'package:talowa/services/messaging/disaster_recovery_service.dart';
 
 /// Final Integration Test Suite for TALOWA In-App Communication System
 /// 

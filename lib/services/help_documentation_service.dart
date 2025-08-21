@@ -164,8 +164,8 @@ class HelpDocumentationService {
     final end = (index + query.length + 50).clamp(0, content.length);
     
     String snippet = content.substring(start, end);
-    if (start > 0) snippet = '...' + snippet;
-    if (end < content.length) snippet = snippet + '...';
+    if (start > 0) snippet = '...$snippet';
+    if (end < content.length) snippet = '$snippet...';
     
     return snippet;
   }

@@ -10,20 +10,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Import messaging services
-import '../../../lib/services/messaging/messaging_service.dart';
-import '../../../lib/services/messaging/encryption_service.dart';
-import '../../../lib/services/messaging/webrtc_service.dart';
-import '../../../lib/services/messaging/group_service.dart';
-import '../../../lib/services/messaging/file_sharing_service.dart';
-import '../../../lib/services/messaging/anonymous_messaging_service.dart';
-import '../../../lib/services/messaging/emergency_broadcast_service.dart';
-import '../../../lib/services/messaging/message_validation_service.dart';
-import '../../../lib/services/messaging/signaling_service.dart';
-import '../../../lib/services/messaging/call_quality_monitor.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/messaging/webrtc_service.dart';
+import 'package:talowa/services/messaging/group_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/message_validation_service.dart';
+import 'package:talowa/services/messaging/signaling_service.dart';
+import 'package:talowa/services/messaging/call_quality_monitor.dart';
 
 // Import models
-import '../../../lib/models/message_model.dart';
-import '../../../lib/models/user_model.dart';
+import 'package:talowa/models/message_model.dart';
+import 'package:talowa/models/user_model.dart';
 
 // Generate mocks
 @GenerateMocks([
@@ -650,7 +650,7 @@ void main() {
         
         await qualityMonitor.startMonitoring(callId);
         
-        final quality = await qualityMonitor.getCurrentQuality(callId);
+        final quality = qualityMonitor.getCurrentQuality(callId);
         expect(quality, isNotNull);
         expect(quality.callId, equals(callId));
       });
@@ -672,7 +672,7 @@ void main() {
       test('should provide quality recommendations', () async {
         const callId = 'call_789';
         
-        final recommendations = await qualityMonitor.getQualityRecommendations(callId);
+        final recommendations = qualityMonitor.getQualityRecommendations(callId);
         expect(recommendations, isA<List<QualityRecommendation>>());
       });
     });

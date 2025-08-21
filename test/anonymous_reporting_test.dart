@@ -3,7 +3,7 @@
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
 
 void main() {
   group('Anonymous Reporting System Tests', () {

@@ -8,8 +8,6 @@ import '../../services/auth_service.dart';
 import '../../widgets/messages/message_bubble_widget.dart';
 import '../../widgets/messages/message_input_widget.dart';
 import '../../widgets/messages/typing_indicator_widget.dart';
-import '../../widgets/onboarding/contextual_tips_widget.dart';
-import '../../widgets/onboarding/feature_discovery_widget.dart';
 
 class ChatScreen extends StatefulWidget {
   final ConversationModel conversation;

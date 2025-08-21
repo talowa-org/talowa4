@@ -11,9 +11,9 @@ class BulkMessageScreen extends StatefulWidget {
   final GroupModel group;
 
   const BulkMessageScreen({
-    Key? key,
+    super.key,
     required this.group,
-  }) : super(key: key);
+  });
 
   @override
   State<BulkMessageScreen> createState() => _BulkMessageScreenState();

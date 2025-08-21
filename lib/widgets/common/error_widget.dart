@@ -11,12 +11,12 @@ class ErrorDisplayWidget extends StatelessWidget {
   final IconData? icon;
 
   const ErrorDisplayWidget({
-    Key? key,
+    super.key,
     required this.error,
     this.onRetry,
     this.retryText,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

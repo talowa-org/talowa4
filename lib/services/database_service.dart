@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import '../models/land_record_model.dart';
+import 'referral/referral_code_generator.dart';
 import '../models/message_model.dart';
 
 class DatabaseService {
@@ -36,6 +37,9 @@ class DatabaseService {
     String? village,
   }) async {
     try {
+      // Generate proper TAL referral code
+      final referralCode = await ReferralCodeGenerator.generateUniqueCode();
+
       await _firestore
           .collection(AppConstants.collectionUserRegistry)
           .doc(phoneNumber)
@@ -51,7 +55,7 @@ class DatabaseService {
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
         'lastLoginAt': FieldValue.serverTimestamp(),
-        'referralCode': _generateReferralCode(phoneNumber),
+        'referralCode': referralCode,
         'directReferrals': 0,
         'teamSize': 0,
         'membershipPaid': false,
@@ -309,12 +313,8 @@ class DatabaseService {
   }
 
   // Utility Methods
-  static String _generateReferralCode(String phoneNumber) {
-    // Generate referral code from phone number
-    final lastFourDigits = phoneNumber.substring(phoneNumber.length - 4);
-    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    return 'REF$lastFourDigits${timestamp.substring(timestamp.length - 4)}';
-  }
+  // Note: Referral code generation is now handled by ReferralCodeGenerator service
+  // All referral codes follow TAL + 6 Crockford base32 format
 
   // Performance Monitoring
   static Future<void> logDatabaseOperation(String operation, int duration) async {

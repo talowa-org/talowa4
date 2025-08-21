@@ -4,13 +4,13 @@ import 'package:mockito/annotations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
-import '../../../lib/services/messaging/backup_recovery_integration_service.dart';
-import '../../../lib/services/messaging/data_backup_service.dart';
-import '../../../lib/services/messaging/disaster_recovery_service.dart';
-import '../../../lib/services/messaging/message_retention_service.dart';
-import '../../../lib/services/messaging/data_migration_service.dart';
-import '../../../lib/services/messaging/backup_scheduler_service.dart';
-import '../../../lib/services/auth_service.dart';
+import 'package:talowa/services/messaging/backup_recovery_integration_service.dart';
+import 'package:talowa/services/messaging/data_backup_service.dart';
+import 'package:talowa/services/messaging/disaster_recovery_service.dart';
+import 'package:talowa/services/messaging/message_retention_service.dart';
+import 'package:talowa/services/messaging/data_migration_service.dart';
+import 'package:talowa/services/messaging/backup_scheduler_service.dart';
+import 'package:talowa/services/auth_service.dart';
 
 // Generate mocks
 @GenerateMocks([
@@ -59,10 +59,14 @@ void main() {
           entityType: anyNamed('entityType'),
           retentionPeriods: anyNamed('retentionPeriods'),
           autoCleanup: anyNamed('autoCleanup'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
         when(mockSchedulerService.createDefaultSchedules(any))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async {
+              return null;
+            });
 
         // Act
         await service.initializeBackupSystem();
@@ -91,7 +95,9 @@ void main() {
           entityType: anyNamed('entityType'),
           retentionPeriods: anyNamed('retentionPeriods'),
           autoCleanup: anyNamed('autoCleanup'),
-        )).thenAnswer((_) async {});
+        )).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         await service.initializeBackupSystem(
@@ -331,7 +337,9 @@ void main() {
         when(mockRecoveryService.checkSystemHealth())
             .thenAnswer((_) async => mockSystemHealth);
         when(mockBackupService.restoreFromBackup(backupId))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async {
+              return null;
+            });
 
         // Act
         final result = await service.executeDisasterRecovery(backupId: backupId);
@@ -425,9 +433,13 @@ void main() {
           'components': {'firestore': {'status': 'healthy'}},
         };
 
-        when(mockBackupService.cleanupExpiredBackups()).thenAnswer((_) async {});
+        when(mockBackupService.cleanupExpiredBackups()).thenAnswer((_) async {
+          return null;
+        });
         when(mockRetentionService.cleanupExpiredMessagesForAllUsers())
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async {
+              return null;
+            });
         when(mockRecoveryService.checkSystemHealth())
             .thenAnswer((_) async => mockSystemHealth);
 
@@ -451,7 +463,9 @@ void main() {
         when(mockBackupService.cleanupExpiredBackups())
             .thenThrow(Exception('Cleanup failed'));
         when(mockRetentionService.cleanupExpiredMessagesForAllUsers())
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async {
+              return null;
+            });
 
         final mockSystemHealth = {
           'overall': 'healthy',
@@ -471,7 +485,9 @@ void main() {
 
       test('should allow selective maintenance tasks', () async {
         // Arrange
-        when(mockBackupService.cleanupExpiredBackups()).thenAnswer((_) async {});
+        when(mockBackupService.cleanupExpiredBackups()).thenAnswer((_) async {
+          return null;
+        });
 
         // Act
         final result = await service.performSystemMaintenance(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'screens/auth/welcome_screen.dart';
 import 'screens/auth/new_login_screen.dart';
-import 'screens/auth/real_user_registration_screen.dart';
+import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
 import 'screens/dev/ai_test_screen.dart';
 import 'screens/land_records/land_records_list_screen.dart';
@@ -22,7 +21,6 @@ import 'services/performance_monitor.dart';
 import 'services/data_population_service.dart';
 import 'services/remote_config_service.dart';
 import 'services/bootstrap_service.dart';
-import 'services/messaging/talowa_messaging_integration.dart';
 import 'services/notifications/notification_service.dart';
 import 'providers/localization_provider.dart';
 import 'generated/l10n/app_localizations.dart';
@@ -107,7 +105,7 @@ class TalowaApp extends StatelessWidget {
       routes: {
         '/welcome': (context) => const WelcomeScreen(),
         '/login': (context) => const NewLoginScreen(),
-        '/register': (context) => const RealUserRegistrationScreen(),
+        '/register': (context) => const IntegratedRegistrationScreen(),
         '/main': (context) => const MainNavigationScreen(),
         '/ai-test': (context) => const AITestScreen(),
         // Land records

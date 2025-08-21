@@ -10,9 +10,9 @@ class GroupSettingsScreen extends StatefulWidget {
   final GroupModel group;
 
   const GroupSettingsScreen({
-    Key? key,
+    super.key,
     required this.group,
-  }) : super(key: key);
+  });
 
   @override
   State<GroupSettingsScreen> createState() => _GroupSettingsScreenState();

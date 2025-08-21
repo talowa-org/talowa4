@@ -2,7 +2,6 @@
 // Implements Task 16: Implement monitoring and analytics - Error Tracking & Alerting
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/messaging/communication_analytics_models.dart';

@@ -2,7 +2,6 @@
 // Handles text direction, layout, and UI adjustments for Arabic and Urdu
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'localization_service.dart';
 
 class RTLSupportService {

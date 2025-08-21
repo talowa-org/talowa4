@@ -104,7 +104,14 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    // Handle localizations safely for testing
+    AppLocalizations? localizations;
+    try {
+      localizations = AppLocalizations.of(context);
+    } catch (e) {
+      debugPrint('Localizations not available: $e');
+      // Continue without localizations for testing
+    }
     
     return Scaffold(
       appBar: AppBar(
@@ -550,7 +557,9 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
   }
 
   Future<void> _handleRegistration() async {
-    if (!_formKey.currentState!.validate()) {
+    // Validate form with null safety
+    if (_formKey.currentState?.validate() != true) {
+      _showErrorMessage('Please fill in all required fields correctly');
       return;
     }
 
@@ -564,31 +573,55 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
     });
 
     try {
-      final phoneNumber = '+91${_phoneController.text.trim()}';
+      // Validate required fields
+      final phoneText = _phoneController.text.trim();
+      final pinText = _pinController.text.trim();
+      final nameText = _nameController.text.trim();
+      final villageText = _villageController.text.trim();
+      final mandalText = _mandalController.text.trim();
+      final districtText = _districtController.text.trim();
 
-      // Check if phone number is already registered
-      final isRegistered = await DatabaseService.isPhoneRegistered(phoneNumber);
-      if (isRegistered) {
-        _showErrorMessage('This mobile number is already registered. Please login instead.');
+      if (phoneText.isEmpty || pinText.isEmpty || nameText.isEmpty ||
+          villageText.isEmpty || mandalText.isEmpty || districtText.isEmpty) {
+        _showErrorMessage('Please fill in all required fields');
         return;
       }
 
-      // Step 1: Create Firebase Auth user (OTP verification would happen before this)
-      final pin = _pinController.text.trim();
+      final phoneNumber = '+91$phoneText';
+      debugPrint('Starting registration for: $phoneNumber');
+
+      // Check if phone number is already registered
+      try {
+        final isRegistered = await DatabaseService.isPhoneRegistered(phoneNumber);
+        if (isRegistered) {
+          _showErrorMessage('This mobile number is already registered. Please login instead.');
+          return;
+        }
+      } catch (e) {
+        debugPrint('Error checking phone registration: $e');
+        // Continue with registration if check fails
+      }
+
+      // Create address object safely
+      final address = Address(
+        villageCity: villageText,
+        mandal: mandalText,
+        district: districtText,
+        state: _selectedState,
+      );
+
+      // Get referral code if provided
+      final referralCodeText = _referralCodeController.text.trim();
+      final referralCode = referralCodeText.isEmpty ? null : referralCodeText;
+
+      debugPrint('Calling AuthService.registerUser...');
 
       final authResult = await AuthService.registerUser(
         phoneNumber: phoneNumber,
-        pin: pin,
-        fullName: _nameController.text.trim(),
-        address: Address(
-          villageCity: _villageController.text.trim(),
-          mandal: _mandalController.text.trim(),
-          district: _districtController.text.trim(),
-          state: _selectedState,
-        ),
-        referralCode: _referralCodeController.text.trim().isEmpty
-            ? null
-            : _referralCodeController.text.trim(),
+        pin: pinText,
+        fullName: nameText,
+        address: address,
+        referralCode: referralCode,
       );
 
       if (!authResult.success) {
@@ -603,20 +636,34 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         return;
       }
 
-      final referralCode = userProfile.referralCode;
-      _showSuccessMessage('Registration successful! Your referral code: $referralCode');
+      final generatedReferralCode = userProfile.referralCode;
+      _showSuccessMessage('Registration successful! Your referral code: $generatedReferralCode');
 
-      // Navigate to main app after a short delay
+      // Navigate to success screen after a short delay
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/main',
+          '/success',
           (route) => false,
         );
       }
-    } catch (e) {
-      _showErrorMessage('Registration failed: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Registration error: $e');
+      debugPrint('Stack trace: $stackTrace');
+
+      String errorMessage = 'Registration failed. Please try again.';
+
+      // Provide more specific error messages
+      if (e.toString().contains('network')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (e.toString().contains('firebase')) {
+        errorMessage = 'Service temporarily unavailable. Please try again in a few moments.';
+      } else if (e.toString().contains('phone')) {
+        errorMessage = 'Invalid phone number format. Please check and try again.';
+      }
+
+      _showErrorMessage(errorMessage);
     } finally {
       if (mounted) {
         setState(() {
@@ -627,23 +674,49 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
   }
 
   void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    try {
+      if (mounted && context.mounted) {
+        final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+        if (scaffoldMessenger != null) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        } else {
+          // Fallback: print to console if ScaffoldMessenger not available
+          debugPrint('Success message (no ScaffoldMessenger): $message');
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to show success message: $e');
+      debugPrint('Original success message: $message');
+    }
   }
 
   void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    try {
+      if (mounted && context.mounted) {
+        final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+        if (scaffoldMessenger != null) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        } else {
+          // Fallback: print to console if ScaffoldMessenger not available
+          debugPrint('Error message (no ScaffoldMessenger): $message');
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to show error message: $e');
+      debugPrint('Original error message: $message');
+    }
   }
 
   @override

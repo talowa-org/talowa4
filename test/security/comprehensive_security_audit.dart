@@ -3,10 +3,10 @@ import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import '../test_utils/security_test_helpers.dart';
 import '../test_utils/mock_services.dart';
-import '../../lib/services/messaging/encryption_service.dart';
-import '../../lib/services/auth/authentication_service.dart';
-import '../../lib/services/messaging/websocket_service.dart';
-import '../../lib/services/messaging/file_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/auth/authentication_service.dart';
+import 'package:talowa/services/messaging/websocket_service.dart';
+import 'package:talowa/services/messaging/file_service.dart';
 
 /// Comprehensive security audit and penetration testing suite
 /// Tests all security aspects of the TALOWA messaging system

@@ -7,17 +7,17 @@ import 'dart:async';
 import 'dart:math';
 
 // Import services for performance testing
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/webrtc_service.dart';
-import '../../lib/services/messaging/call_quality_monitor.dart';
-import '../../lib/services/messaging/offline_messaging_service.dart';
-import '../../lib/services/messaging/message_sync_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/webrtc_service.dart';
+import 'package:talowa/services/messaging/call_quality_monitor.dart';
+import 'package:talowa/services/messaging/offline_messaging_service.dart';
+import 'package:talowa/services/messaging/message_sync_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
 
 // Import models
-import '../../lib/models/message_model.dart';
-import '../../lib/models/user_model.dart';
+import 'package:talowa/models/message_model.dart';
+import 'package:talowa/models/user_model.dart';
 
 class PerformanceMetrics {
   final String testName;
@@ -386,7 +386,7 @@ void main() {
           // Monitor for 5 seconds
           await Future.delayed(const Duration(seconds: 5));
 
-          await qualityMonitor.stopMonitoring(callSession.id);
+          qualityMonitor.stopMonitoring(callSession.id);
           await webrtcService.endCall(callSession.id);
 
           // Analyze quality metrics
@@ -479,7 +479,7 @@ void main() {
         );
         await Future.delayed(const Duration(seconds: 2));
 
-        await qualityMonitor.stopMonitoring(callSession.id);
+        qualityMonitor.stopMonitoring(callSession.id);
         await webrtcService.endCall(callSession.id);
 
         // Verify quality adaptation
@@ -564,7 +564,7 @@ void main() {
             final fileId = uploadedFiles[Random().nextInt(uploadedFiles.length)];
             final fileData = await fileService.downloadFile(fileId);
             
-            if (fileData == null || fileData.isEmpty) {
+            if (fileData.isEmpty) {
               throw Exception('File download failed');
             }
           },
@@ -711,8 +711,8 @@ void main() {
 
     tearDownAll(() async {
       await messagingService.dispose();
-      await webrtcService.dispose();
-      await offlineService.dispose();
+      webrtcService.dispose();
+      offlineService.dispose();
     });
   });
 }

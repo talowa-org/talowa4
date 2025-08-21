@@ -1,8 +1,6 @@
 // Admin Dashboard Service for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import '../../models/messaging/content_report_model.dart';
-import '../../models/messaging/moderation_action_model.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../messaging/content_moderation_service.dart';
 
@@ -29,12 +27,12 @@ class AdminDashboardService {
       final moderationStats = await ContentModerationService.getModerationStats();
 
       return AdminDashboardData(
-        activeUsers: futures[0] as int,
-        messagesLast24h: futures[1] as int,
-        totalConversations: futures[2] as int,
-        pendingReports: futures[3] as int,
-        activeActions: futures[4] as int,
-        urgentReviews: futures[5] as int,
+        activeUsers: futures[0],
+        messagesLast24h: futures[1],
+        totalConversations: futures[2],
+        pendingReports: futures[3],
+        activeActions: futures[4],
+        urgentReviews: futures[5],
         moderationStats: moderationStats,
         lastUpdated: now,
       );

@@ -2,9 +2,9 @@
 // Tests core integration logic without Firebase dependencies
 
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/models/messaging/group_model.dart';
-import '../../lib/models/campaign_model.dart';
-import '../../lib/core/constants/app_constants.dart';
+import 'package:talowa/models/messaging/group_model.dart';
+import 'package:talowa/models/campaign_model.dart';
+import 'package:talowa/core/constants/app_constants.dart';
 
 void main() {
   group('Messaging Integration Unit Tests', () {

@@ -8,16 +8,16 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 // Import security services
-import '../../lib/services/messaging/encryption_service.dart';
-import '../../lib/services/messaging/anonymous_messaging_service.dart';
-import '../../lib/services/messaging/message_validation_service.dart';
-import '../../lib/services/security/rate_limiting_service.dart';
-import '../../lib/services/security/audit_logging_service.dart';
-import '../../lib/services/messaging/integrated_security_service.dart';
+import 'package:talowa/services/messaging/encryption_service.dart';
+import 'package:talowa/services/messaging/anonymous_messaging_service.dart';
+import 'package:talowa/services/messaging/message_validation_service.dart';
+import 'package:talowa/services/security/rate_limiting_service.dart';
+import 'package:talowa/services/security/audit_logging_service.dart';
+import 'package:talowa/services/messaging/integrated_security_service.dart';
 
 // Import models
-import '../../lib/models/message_model.dart';
-import '../../lib/models/user_model.dart';
+import 'package:talowa/models/message_model.dart';
+import 'package:talowa/models/user_model.dart';
 
 class SecurityTestUtils {
   static String generateRandomString(int length) {
@@ -234,7 +234,7 @@ void main() {
         );
         
         // Tamper with encrypted data
-        final tamperedData = encrypted.data.substring(0, encrypted.data.length - 10) + 'TAMPERED!!';
+        final tamperedData = '${encrypted.data.substring(0, encrypted.data.length - 10)}TAMPERED!!';
         final tamperedEncrypted = EncryptedContent(
           data: tamperedData,
           iv: encrypted.iv,

@@ -7,15 +7,15 @@ import 'dart:async';
 import 'dart:math';
 
 // Import services for load testing
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/webrtc_service.dart';
-import '../../lib/services/messaging/group_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/webrtc_service.dart';
+import 'package:talowa/services/messaging/group_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
 
 // Import models
-import '../../lib/models/message_model.dart';
-import '../../lib/models/user_model.dart';
+import 'package:talowa/models/message_model.dart';
+import 'package:talowa/models/user_model.dart';
 
 class LoadTestMetrics {
   final int totalOperations;
@@ -491,7 +491,7 @@ void main() {
             final fileId = uploadedFiles[Random().nextInt(uploadedFiles.length)];
             final fileData = await fileService.downloadFile(fileId);
             
-            if (fileData == null || fileData.isEmpty) {
+            if (fileData.isEmpty) {
               throw Exception('File download failed');
             }
           },
@@ -635,7 +635,7 @@ void main() {
 
     tearDownAll(() async {
       await messagingService.dispose();
-      await webrtcService.dispose();
+      webrtcService.dispose();
     });
   });
 }

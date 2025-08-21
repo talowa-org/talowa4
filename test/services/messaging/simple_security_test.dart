@@ -2,8 +2,8 @@
 // Tests core functionality without complex dependencies
 
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/services/messaging/message_validation_service.dart';
-import '../../../lib/services/security/rate_limiting_service.dart';
+import 'package:talowa/services/messaging/message_validation_service.dart';
+import 'package:talowa/services/security/rate_limiting_service.dart';
 
 void main() {
   group('Message Validation Service Tests', () {

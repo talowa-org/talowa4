@@ -95,6 +95,6 @@ class TutorialProgress {
   @override
   String toString() {
     return 'TutorialProgress(messaging: $messagingCompleted, calling: $callingCompleted, '
-           'groupManagement: $groupManagementCompleted, progress: ${completionPercentage}%)';
+           'groupManagement: $groupManagementCompleted, progress: $completionPercentage%)';
   }
 }

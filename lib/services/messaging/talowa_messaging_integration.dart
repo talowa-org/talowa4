@@ -3,7 +3,6 @@
 // Reference: in-app-communication/tasks.md - Task 11
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../../models/messaging/message_model.dart';
 import '../../models/messaging/group_model.dart';

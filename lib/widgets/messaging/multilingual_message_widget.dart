@@ -45,7 +45,7 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
   TranscriptionResult? _transcriptionResult;
   bool _isTranslating = false;
   bool _isTranscribing = false;
-  bool _showOriginalText = true;
+  final bool _showOriginalText = true;
 
   @override
   void initState() {

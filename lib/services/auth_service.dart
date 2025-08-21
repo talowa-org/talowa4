@@ -6,15 +6,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
+
 import 'database_service.dart';
 import 'referral_code_cache_service.dart';
 import 'server_profile_ensure_service.dart';
+import 'referral/referral_code_generator.dart';
 
 // Helper to sanitize user profile writes
-Map<String, dynamic> ProfileWritePolicy(Map<String, dynamic> input) {
+Map<String, dynamic> profileWritePolicy(Map<String, dynamic> input) {
   final allowed = [
     'fullName','email','emailAlias','phone','language','locale','bio','address',
-    'profileCompleted','phoneVerified','lastLoginAt','device'
+    'profileCompleted','phoneVerified','lastLoginAt','device','referralCode',
+    'membershipPaid','status','role','createdAt','updatedAt'
   ];
   return Map.fromEntries(input.entries.where((e) => allowed.contains(e.key)));
 }
@@ -101,12 +104,14 @@ class AuthService {
         throw Exception('Failed to retrieve created user profile');
       }
 
-      // Ensure server-side profile fields are populated BEFORE cache initialization
-      String referralCode = 'TAL---';
+      // Get the referralCode that was generated during profile creation
+      String referralCode = userProfile.referralCode;
+      debugPrint('User profile created with referralCode: $referralCode');
+
+      // Ensure server-side profile fields are populated (non-blocking)
       try {
-        final ensureResult = await ServerProfileEnsureService.ensureUserProfile(user.uid);
-        referralCode = ensureResult['referralCode'] ?? 'TAL---';
-        debugPrint('Server-side profile ensure completed, referralCode: $referralCode');
+        await ServerProfileEnsureService.ensureUserProfile(user.uid);
+        debugPrint('Server-side profile ensure completed');
       } catch (e) {
         debugPrint('Server-side profile ensure failed (non-blocking): $e');
       }
@@ -375,6 +380,17 @@ class AuthService {
   }) async {
     try {
       final firestore = FirebaseFirestore.instance;
+
+      // Generate referralCode immediately during profile creation
+      String referralCode;
+      try {
+        referralCode = await ReferralCodeGenerator.generateUniqueCode();
+        debugPrint('Generated referralCode for user $uid: $referralCode');
+      } catch (e) {
+        debugPrint('Failed to generate referralCode: $e');
+        throw Exception('Failed to generate referralCode: $e');
+      }
+
       final rawUserData = {
         'fullName': fullName,
         'email': email,
@@ -386,15 +402,21 @@ class AuthService {
         'lastLoginAt': FieldValue.serverTimestamp(),
         'language': 'en',
         'locale': 'en_US',
+        'referralCode': referralCode, // Include referralCode in initial creation
+        'membershipPaid': true, // Set to true by default for simplified flow
+        'status': 'active', // Set user as active immediately
+        'role': 'member', // Default role
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
         'device': {
           'platform': kIsWeb ? 'web' : Platform.operatingSystem,
           'appVersion': '1.0.0',
         },
       };
-      final userData = ProfileWritePolicy(rawUserData);
+      final userData = profileWritePolicy(rawUserData);
       debugPrint('Creating user profile with payload: ${userData.keys.toList()}');
       await firestore.collection('users').doc(uid).set(userData);
-      debugPrint('User profile created successfully');
+      debugPrint('User profile created successfully with referralCode: $referralCode');
     } catch (e) {
       debugPrint('Failed to create user profile: $e');
       throw Exception('Failed to create user profile: $e');

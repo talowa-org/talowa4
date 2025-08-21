@@ -2,13 +2,12 @@
 // Tests the performance optimization and caching features
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../lib/services/messaging/redis_cache_service.dart';
-import '../../../lib/services/messaging/message_pagination_service.dart';
-import '../../../lib/services/messaging/cdn_integration_service.dart';
-import '../../../lib/services/messaging/lazy_loading_service.dart';
-import '../../../lib/services/messaging/performance_integration_service.dart';
+import 'package:talowa/services/messaging/redis_cache_service.dart';
+import 'package:talowa/services/messaging/message_pagination_service.dart';
+import 'package:talowa/services/messaging/cdn_integration_service.dart';
+import 'package:talowa/services/messaging/lazy_loading_service.dart';
+import 'package:talowa/services/messaging/performance_integration_service.dart';
 
 void main() {
   group('Performance Optimization Tests', () {

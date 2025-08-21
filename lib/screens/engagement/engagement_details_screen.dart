@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class EngagementDetailsScreen extends StatefulWidget {
   final PostModel post;

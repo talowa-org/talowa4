@@ -24,7 +24,7 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
   String? _selectedDistrict;
   String? _selectedMandal;
   String? _selectedVillage;
-  List<String> _selectedRoles = [];
+  final List<String> _selectedRoles = [];
   EmergencyTemplate? _selectedTemplate;
   
   bool _isLoading = false;

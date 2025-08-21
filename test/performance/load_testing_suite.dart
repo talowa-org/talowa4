@@ -4,10 +4,10 @@ import 'dart:math';
 import 'dart:isolate';
 import '../test_utils/load_test_utils.dart';
 import '../test_utils/performance_metrics.dart';
-import '../../lib/services/messaging/websocket_service.dart';
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/voice_calling_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/websocket_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/voice_calling_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
 
 void main() {
   group('Load Testing Suite - 100,000+ Concurrent Users', () {

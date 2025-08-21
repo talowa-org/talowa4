@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'validation_framework.dart';
 import 'test_environment.dart' hide ValidationResult;
-import '../../lib/services/referral/universal_link_service.dart';
+import 'package:talowa/services/referral/universal_link_service.dart';
 
 /// Deep link auto-fill validator for Test Case D
 class DeepLinkValidator {

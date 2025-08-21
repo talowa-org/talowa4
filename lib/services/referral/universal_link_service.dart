@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' if (dart.library.html) 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 // import 'package:app_links/app_links.dart';  // Not supported on web
 // import 'package:uni_links/uni_links.dart';  // Not supported on web

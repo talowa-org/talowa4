@@ -76,7 +76,52 @@ TALOWA needs a robust localization system that defaults to English while support
 4. WHEN showing currency THEN the system SHALL display it in Indian Rupees with appropriate formatting
 5. WHEN rendering fonts THEN the system SHALL use appropriate font families for each language script
 
-### Requirement 7: Offline Language Support
+### Requirement 7: Referral System Localization
+
+**User Story:** As a user using the referral system, I want all referral-related messages, notifications, and interface elements to appear in my selected language, so that I can fully understand the referral process and my progress.
+
+#### Acceptance Criteria
+
+1. WHEN viewing referral dashboard THEN the system SHALL display all statistics labels in the user's selected language
+2. WHEN receiving referral notifications THEN the system SHALL show them in the user's selected language
+3. WHEN sharing referral codes THEN the system SHALL provide sharing messages in the user's selected language
+4. WHEN viewing role progression THEN the system SHALL display role names and descriptions in the user's selected language
+5. WHEN seeing referral success messages THEN the system SHALL show them in the user's selected language
+6. WHEN displaying referral validation errors THEN the system SHALL present them in the user's selected language
+
+#### Required Localization Strings
+
+**Referral Dashboard:**
+- "My Referral Code"
+- "Direct Referrals"
+- "Team Size"
+- "Current Role"
+- "Next Role"
+- "Share Referral Link"
+- "Copy Code"
+- "QR Code"
+
+**Role Names:**
+- "Member"
+- "Activist"
+- "Organizer"
+- "Team Leader"
+- "Coordinator"
+- "Area Coordinator"
+- "District Coordinator"
+- "Regional Coordinator"
+- "State Coordinator"
+- "National Coordinator"
+
+**Notifications:**
+- "Someone joined using your referral code!"
+- "Congratulations! You've been promoted to {role}!"
+- "Your referral code has been copied"
+- "Referral link shared successfully"
+- "Invalid referral code"
+- "Referral system activated"
+
+### Requirement 8: Offline Language Support
 
 **User Story:** As a user in areas with poor connectivity, I want language switching to work offline, so that I can change languages even when not connected to the internet.
 

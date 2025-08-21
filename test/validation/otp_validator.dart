@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'validation_framework.dart';
-import 'test_environment.dart' hide ValidationResult;
-import '../../lib/services/auth_service.dart';
 
 /// OTP verification validator for Test Case B1
 class OTPValidator {

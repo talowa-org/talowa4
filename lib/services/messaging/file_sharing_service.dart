@@ -3,7 +3,6 @@
 // Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,7 +13,6 @@ import 'package:crypto/crypto.dart';
 import 'package:image/image.dart' as img;
 import '../../models/messaging/file_model.dart';
 import '../auth_service.dart';
-import '../land_records_service.dart';
 import 'encryption_service.dart';
 import 'virus_scanning_service.dart';
 import 'land_record_integration_service.dart';

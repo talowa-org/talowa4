@@ -9,10 +9,10 @@ class SimplifiedReferralDashboard extends StatefulWidget {
   final VoidCallback? onRefresh;
 
   const SimplifiedReferralDashboard({
-    Key? key,
+    super.key,
     required this.userId,
     this.onRefresh,
-  }) : super(key: key);
+  });
 
   @override
   State<SimplifiedReferralDashboard> createState() => _SimplifiedReferralDashboardState();

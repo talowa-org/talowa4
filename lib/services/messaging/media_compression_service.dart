@@ -3,10 +3,8 @@
 // Requirements: 4.2 - Create media compression and optimization
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
-import 'package:path/path.dart' as path;
 
 class MediaCompressionService {
   static final MediaCompressionService _instance = MediaCompressionService._internal();

@@ -452,7 +452,7 @@ Future<void> main() async {
     final allPassed = comprehensiveResult.passed && 
                      componentResults.values.every((r) => r.passed);
     
-    print('\n' + '=' * 60);
+    print('\n${'=' * 60}');
     if (allPassed) {
       print('🎉 SUCCESS: Automated Fix System is fully functional');
       print('✅ Ready for production use');

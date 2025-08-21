@@ -226,7 +226,7 @@ class CommunicationAnalyticsService {
       
       final averageEngagement = groupMetrics.values
           .map((g) => g['engagementRate'] as double? ?? 0.0)
-          .fold(0.0, (a, b) => a + b) / (groupMetrics.length > 0 ? groupMetrics.length : 1);
+          .fold(0.0, (a, b) => a + b) / (groupMetrics.isNotEmpty ? groupMetrics.length : 1);
 
       return {
         'coordinatorId': coordinatorId,

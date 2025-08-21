@@ -654,17 +654,15 @@ class ComprehensiveValidator {
             continue;
         }
         
-        if (newResult != null) {
-          // Update result in report
-          _report.addResult('$testName (Re-run)', newResult);
-          
-          if (newResult.passed) {
-            _logExecution('✅ $testName passed on re-run');
-          } else {
-            _logExecution('❌ $testName still failing after re-run: ${newResult.message}');
-          }
-        }
+        // Update result in report
+        _report.addResult('$testName (Re-run)', newResult);
         
+        if (newResult.passed) {
+          _logExecution('✅ $testName passed on re-run');
+        } else {
+          _logExecution('❌ $testName still failing after re-run: ${newResult.message}');
+        }
+              
       } catch (e) {
         _logExecution('❌ Failed to re-run $testName: $e');
       }

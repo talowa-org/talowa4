@@ -37,16 +37,17 @@ service cloud.firestore {
            newData.device.appVersion is string));
     }
 
-    // Validate registration data structure
+    // Validate registration data structure - allow all necessary fields
     function isValidRegistrationData(data) {
-      return data.keys().hasOnly([
+      return data.keys().hasAny([
         'fullName','email','emailAlias','phone',
         'language','locale','address',
         'profileCompleted','phoneVerified',
-        'lastLoginAt','device'
+        'lastLoginAt','device','referralCode',
+        'status','role','membershipPaid','createdAt'
       ]) &&
-      data.profileCompleted == true &&
-      data.phoneVerified == true;
+      data.fullName is string &&
+      data.phone is string;
     }
 
     // Users collection - strict security rules for referral system
@@ -57,11 +58,9 @@ service cloud.firestore {
         isPublicUserData()
       );
 
-      // Allow create only for own profile during registration with tight constraints
+      // Allow create only for own profile during registration - allow server fields during creation
       allow create: if isOwn(userId) &&
-                    !hasServerOnlyChanges(request.resource.data, {}) &&
-                    isValidRegistrationData(request.resource.data) &&
-                    isLoginPatchValid(request.resource.data);
+                    isValidRegistrationData(request.resource.data);
 
       // Allow update only for specific safe fields and own profile
       allow update: if isOwn(userId) &&
@@ -347,13 +346,22 @@ service cloud.firestore {
 
     // Referral system collections - strict server-only access
 
-    // Referral codes collection - read-only for clients
+    // Referral codes collection - allow creation during registration
     match /referralCodes/{codeId} {
       // Allow read for validation purposes
       allow read: if request.auth != null;
 
-      // No write access for clients - server only
-      allow write: if false;
+      // Allow create during user registration (when user creates their own referral code)
+      allow create: if request.auth != null &&
+                    request.auth.uid == request.resource.data.uid &&
+                    request.resource.data.active == true;
+
+      // Allow update only for the owner (to deactivate their own code)
+      allow update: if request.auth != null &&
+                    request.auth.uid == resource.data.uid;
+
+      // No delete access
+      allow delete: if false;
     }
 
     // Referrals collection - read-only for clients

@@ -491,7 +491,7 @@ void main() async {
       }
     }
     
-    print('\n' + '=' * 60);
+    print('\n${'=' * 60}');
     print('Admin Bootstrap Validation Complete');
     
   } catch (e) {

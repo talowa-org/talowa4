@@ -3,11 +3,8 @@
 // Requirements: 4.1 - Implement secure file upload service with virus scanning
 
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
-import 'package:crypto/crypto.dart';
 import '../../models/messaging/file_model.dart';
 
 class VirusScanningService {

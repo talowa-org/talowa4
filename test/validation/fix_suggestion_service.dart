@@ -1,8 +1,6 @@
 // TALOWA Fix Suggestion Service
 // Provides detailed fix suggestions with file:function references
 
-import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'validation_framework.dart';
 
 /// Fix suggestion service with detailed file:function references

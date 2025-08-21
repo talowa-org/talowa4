@@ -107,7 +107,7 @@ Future<void> main() async {
     print('- validation_report.md');
     print('- validation_fix_suggestions.md');
     
-    print('\n' + '=' * 60);
+    print('\n${'=' * 60}');
     print('Automated Fix Application Complete');
     
   } catch (e) {

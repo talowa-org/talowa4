@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
 import '../../models/messaging/message_model.dart';
-import '../auth_service.dart';
 import 'redis_cache_service.dart';
 import '../database/database_optimization_service.dart';
 

@@ -1,7 +1,6 @@
 // Notification Templates - Templates for different message types and priorities
 // Part of Task 12: Build push notification system
 
-import 'package:flutter/foundation.dart';
 import '../../models/notification_model.dart';
 
 class NotificationTemplates {

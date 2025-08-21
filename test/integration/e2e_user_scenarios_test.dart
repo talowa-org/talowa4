@@ -3,12 +3,12 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import '../test_utils/test_data_generator.dart';
 import '../test_utils/mock_services.dart';
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/voice_calling_service.dart';
-import '../../lib/services/messaging/group_management_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
-import '../../lib/services/messaging/anonymous_reporting_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/voice_calling_service.dart';
+import 'package:talowa/services/messaging/group_management_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/anonymous_reporting_service.dart';
 
 void main() {
   group('End-to-End User Scenarios', () {

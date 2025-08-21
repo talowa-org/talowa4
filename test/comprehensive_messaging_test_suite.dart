@@ -5,16 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 
 // Import all test suites
-import 'services/messaging/comprehensive_messaging_test.dart' as unit_tests;
-import 'integration/messaging_e2e_test.dart' as integration_tests;
-import 'performance/messaging_load_test.dart' as load_tests;
-import 'security/messaging_security_test.dart' as security_tests;
-import 'performance/messaging_performance_test.dart' as performance_tests;
 
 // Import existing messaging tests
-import 'services/messaging/security_layer_test.dart' as security_layer_tests;
-import 'services/messaging/offline_messaging_test.dart' as offline_tests;
-import 'services/messaging/performance_optimization_test.dart' as optimization_tests;
 
 class TestSuiteResults {
   final Map<String, TestResult> results = {};

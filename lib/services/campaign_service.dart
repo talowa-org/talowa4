@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/campaign_model.dart';
-import '../models/user_model.dart';
 import '../core/constants/app_constants.dart';
 import 'auth_service.dart';
 import 'database_service.dart';

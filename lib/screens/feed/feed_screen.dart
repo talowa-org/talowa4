@@ -6,7 +6,6 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../post_creation/simple_post_creation_screen.dart';
 import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';

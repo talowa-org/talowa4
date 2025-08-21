@@ -238,7 +238,7 @@ class _FAQSectionState extends State<FAQSection> {
                                     ],
                                   ),
                                 );
-                              }).toList(),
+                              }),
                             ],
 
                             const SizedBox(height: 16),

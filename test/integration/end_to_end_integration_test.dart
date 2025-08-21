@@ -5,12 +5,12 @@ import 'dart:async';
 import 'dart:convert';
 import '../test_utils/test_environment.dart';
 import '../test_utils/real_user_scenarios.dart';
-import '../../lib/services/messaging/messaging_service.dart';
-import '../../lib/services/messaging/voice_calling_service.dart';
-import '../../lib/services/messaging/file_sharing_service.dart';
-import '../../lib/services/messaging/group_management_service.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
-import '../../lib/services/messaging/anonymous_reporting_service.dart';
+import 'package:talowa/services/messaging/messaging_service.dart';
+import 'package:talowa/services/messaging/voice_calling_service.dart';
+import 'package:talowa/services/messaging/file_sharing_service.dart';
+import 'package:talowa/services/messaging/group_management_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/anonymous_reporting_service.dart';
 
 void main() {
   group('End-to-End Integration Tests - Real User Scenarios', () {

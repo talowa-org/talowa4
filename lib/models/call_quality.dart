@@ -174,7 +174,7 @@ class CallQuality {
 
   @override
   String toString() {
-    return 'CallQuality(latency: ${averageLatency}ms, packetLoss: ${packetLoss}%, '
+    return 'CallQuality(latency: ${averageLatency}ms, packetLoss: $packetLoss%, '
            'jitter: ${jitter}ms, quality: $audioQuality, score: $overallScore)';
   }
 }

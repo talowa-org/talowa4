@@ -5,8 +5,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/onboarding_service.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/onboarding/onboarding_step_widget.dart';
 import '../../widgets/onboarding/progress_indicator_widget.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../help/help_center_screen.dart';
@@ -30,7 +28,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
   
   int _currentModuleIndex = 0;
   int _currentStepIndex = 0;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool _isCompleting = false;
 
   final List<TrainingModule> _modules = [

@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
-import '../lib/services/referral/referral_migration_service.dart';
+import 'package:talowa/services/referral/referral_migration_service.dart';
 
 /// Script to migrate from two-step to simplified referral system
 Future<void> main(List<String> args) async {

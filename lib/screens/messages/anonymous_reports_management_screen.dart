@@ -3,14 +3,10 @@
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../services/messaging/anonymous_messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/common/loading_overlay.dart';
-import '../../widgets/common/custom_button.dart';
-import '../../widgets/common/custom_text_field.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
 
 class AnonymousReportsManagementScreen extends StatefulWidget {
   const AnonymousReportsManagementScreen({super.key});

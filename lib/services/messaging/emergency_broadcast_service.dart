@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../notifications/notification_service.dart';
 import '../../models/notification_model.dart';
-import '../auth/auth_service.dart';
 
 class EmergencyBroadcastService {
   static final EmergencyBroadcastService _instance = EmergencyBroadcastService._internal();

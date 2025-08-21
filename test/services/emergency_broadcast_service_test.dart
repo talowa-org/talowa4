@@ -3,7 +3,7 @@
 // Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
 
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/services/messaging/emergency_broadcast_service.dart';
+import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
 
 void main() {
   group('EmergencyBroadcastService Data Models', () {

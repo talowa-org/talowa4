@@ -141,7 +141,7 @@ class ValidationReport {
         : '0.0';
     buffer.writeln('📊 **Test Statistics:**');
     buffer.writeln('- Total Tests Executed: ${executionStats['totalTests']}');
-    buffer.writeln('- Tests Passed: ${executionStats['passedTests']} (${successRate}%)');
+    buffer.writeln('- Tests Passed: ${executionStats['passedTests']} ($successRate%)');
     buffer.writeln('- Tests Failed: ${executionStats['failedTests']}');
     buffer.writeln('- Tests with Warnings: ${executionStats['warningTests']}');
     buffer.writeln('- Admin Bootstrap: ${adminBootstrapVerified ? "✅ VERIFIED" : "❌ FAILED"}');
@@ -326,7 +326,7 @@ class ValidationReport {
     json.forEach((key, value) {
       if (value is Map) {
         buffer.writeln('  "$key": {');
-        (value as Map).forEach((subKey, subValue) {
+        (value).forEach((subKey, subValue) {
           buffer.writeln('    "$subKey": ${_formatJsonValue(subValue)},');
         });
         buffer.writeln('  },');

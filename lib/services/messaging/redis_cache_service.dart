@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../auth_service.dart';
 
 /// Redis Cache Service for session management and presence tracking
 /// Enhanced for performance optimization with message and user data caching

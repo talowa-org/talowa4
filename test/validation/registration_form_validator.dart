@@ -5,8 +5,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'validation_framework.dart';
-import '../../lib/services/auth_service.dart';
-import '../../lib/models/user_model.dart';
+import 'package:talowa/services/auth_service.dart';
+import 'package:talowa/models/user_model.dart';
 
 /// Registration form validator for Test Case B2
 class RegistrationFormValidator {

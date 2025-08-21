@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../referral/referral_code_generator.dart';
 
 /// Service for bootstrapping admin user and ensuring system integrity
 class AdminBootstrapService {

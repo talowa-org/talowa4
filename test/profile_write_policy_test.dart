@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../lib/services/auth_service.dart';
+import 'package:talowa/services/auth_service.dart';
 
 void main() {
   test('Minimal profile write succeeds', () async {

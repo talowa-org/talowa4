@@ -2,7 +2,6 @@
 // Implements Task 16: Implement monitoring and analytics - Dashboard UI
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../../services/messaging/communication_monitoring_service.dart';
 import '../../services/messaging/communication_analytics_service.dart';
 import '../../services/messaging/error_tracking_service.dart';
@@ -16,12 +15,12 @@ class CommunicationDashboardWidget extends StatefulWidget {
   final bool isAdmin;
 
   const CommunicationDashboardWidget({
-    Key? key,
+    super.key,
     this.userId,
     this.groupId,
     this.isCoordinator = false,
     this.isAdmin = false,
-  }) : super(key: key);
+  });
 
   @override
   State<CommunicationDashboardWidget> createState() => _CommunicationDashboardWidgetState();

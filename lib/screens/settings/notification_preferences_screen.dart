@@ -2,7 +2,6 @@
 // Part of Task 12: Build push notification system
 
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import '../../models/notification_model.dart';
 import '../../services/notifications/notification_preferences_service.dart';
 import '../../core/theme/app_theme.dart';

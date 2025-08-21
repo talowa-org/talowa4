@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/services/referral_code_cache_service.dart';
+import 'package:talowa/services/referral_code_cache_service.dart';
 
 void main() {
   test('Referral code cache fallback works', () async {

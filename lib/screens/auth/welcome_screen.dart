@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'new_login_screen.dart';
-import 'real_user_registration_screen.dart';
+import 'integrated_registration_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -222,7 +222,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const RealUserRegistrationScreen(),
+                  builder: (context) => const IntegratedRegistrationScreen(),
                 ),
               );
             },
@@ -243,7 +243,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               color: AppTheme.talowaGreen,
             ),
             label: Text(
-              'Register',
+              'Join TALOWA Movement',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,

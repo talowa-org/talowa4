@@ -10,11 +10,9 @@ import '../../services/database_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/onboarding/feature_discovery_widget.dart';
-import '../../services/onboarding_service.dart';
-import '../onboarding/coordinator_training_screen.dart';
 
 class CreateGroupScreen extends StatefulWidget {
-  const CreateGroupScreen({Key? key}) : super(key: key);
+  const CreateGroupScreen({super.key});
 
   @override
   State<CreateGroupScreen> createState() => _CreateGroupScreenState();
@@ -30,7 +28,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   GroupType _selectedType = GroupType.village;
   GeographicScope? _selectedLocation;
   GroupSettings _settings = GroupSettings.defaultSettings();
-  List<String> _selectedMemberIds = [];
+  final List<String> _selectedMemberIds = [];
   List<UserModel> _availableUsers = [];
   bool _isLoading = false;
   bool _isLoadingUsers = false;

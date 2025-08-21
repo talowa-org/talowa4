@@ -12,7 +12,7 @@ import 'create_group_screen.dart';
 import 'group_discovery_screen.dart';
 
 class GroupListScreen extends StatefulWidget {
-  const GroupListScreen({Key? key}) : super(key: key);
+  const GroupListScreen({super.key});
 
   @override
   State<GroupListScreen> createState() => _GroupListScreenState();

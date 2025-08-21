@@ -207,7 +207,7 @@ class NotificationBatchingService {
       final batch = _typeBatches[type];
       if (batch == null || batch.isEmpty) return;
 
-      debugPrint('NotificationBatchingService: Delivering batch of ${batch.length} ${type} notifications');
+      debugPrint('NotificationBatchingService: Delivering batch of ${batch.length} $type notifications');
 
       // Create batched notification
       final batchedNotification = _createBatchedNotification(type, batch);

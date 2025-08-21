@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/auth_service.dart';
+import '../../services/hybrid_auth_service.dart';
 import '../../services/database_service.dart';
-import 'real_user_registration_screen.dart';
+import 'integrated_registration_screen.dart';
 import '../../services/performance_monitor.dart';
 import '../../config/app_config.dart';
 import '../../core/theme/app_theme.dart';
@@ -67,15 +67,15 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       // Track login performance
       final result = await PerformanceMonitor.trackOperation(
         'user_login',
-        () => AuthService.loginUser(
-          phoneNumber: phoneNumber,
+        () => HybridAuthService.signInWithMobileAndPin(
+          mobileNumber: phoneNumber,
           pin: pin,
         ),
       );
 
       debugPrint('Login result: ${result.success}');
       debugPrint('Message: ${result.message}');
-      debugPrint('User: ${result.user?.fullName}');
+      debugPrint('User: ${result.user?.uid}');
 
       if (mounted) {
         if (result.success) {
@@ -131,7 +131,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const RealUserRegistrationScreen(),
+          builder: (context) => const IntegratedRegistrationScreen(),
         ),
       );
     }
@@ -577,7 +577,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const RealUserRegistrationScreen(),
+                        builder: (context) => const IntegratedRegistrationScreen(),
                       ),
                     );
                   },
