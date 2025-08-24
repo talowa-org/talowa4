@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'core/constants/app_constants.dart';
 import 'screens/auth/real_user_registration_screen.dart';
 import 'screens/auth/new_login_screen.dart';
 import 'widgets/error_boundary.dart';
@@ -48,7 +49,8 @@ class TalowaFixedApp extends StatelessWidget {
         ),
         '/login': (context) => ErrorBoundary(
           errorTitle: 'Login Error',
-          errorMessage: 'There was an issue with the login form. Please refresh and try again.',
+          errorMessage:
+              'There was an issue with the login form. Please refresh and try again.',
           onRetry: () => Navigator.pushReplacementNamed(context, '/login'),
           child: const NewLoginScreen(),
         ),
@@ -90,11 +92,7 @@ class LandingScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.terrain,
-                  size: 70,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.terrain, size: 70, color: Colors.white),
               ),
 
               const SizedBox(height: 40),
@@ -175,10 +173,7 @@ class LandingScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     'Login to TALOWA',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -202,10 +197,7 @@ class LandingScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     'Join TALOWA Movement',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -215,10 +207,7 @@ class LandingScreen extends StatelessWidget {
               // Info text
               Text(
                 'Existing users: Login with your mobile number and PIN.\nNew users: Register to join the movement.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppTheme.secondaryText,
-                ),
+                style: TextStyle(fontSize: 14, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -274,10 +263,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
 
               Text(
                 'Welcome to TALOWA! Your account has been created with a proper TAL referral code.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.secondaryText,
-                ),
+                style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,
               ),
 
@@ -304,10 +290,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     'Back to Home',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -335,11 +318,7 @@ class MainAppScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/',
-                (route) => false,
-              );
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
             },
           ),
         ],
@@ -358,11 +337,7 @@ class MainAppScreen extends StatelessWidget {
                   color: AppTheme.talowaGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(60),
                 ),
-                child: Icon(
-                  Icons.home,
-                  size: 80,
-                  color: AppTheme.talowaGreen,
-                ),
+                child: Icon(Icons.home, size: 80, color: AppTheme.talowaGreen),
               ),
 
               const SizedBox(height: 40),
@@ -381,10 +356,7 @@ class MainAppScreen extends StatelessWidget {
 
               Text(
                 'You have successfully logged in. All fixes have been applied.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.secondaryText,
-                ),
+                style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,
               ),
             ],

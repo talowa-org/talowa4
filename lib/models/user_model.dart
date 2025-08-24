@@ -23,6 +23,7 @@ class UserModel {
   final DateTime? lastLoginAt;
   final UserPreferences preferences;
   final bool isActive;
+  final String? pinHash; // For phone auth users
 
   UserModel({
     required this.id,
@@ -43,12 +44,13 @@ class UserModel {
     this.lastLoginAt,
     required this.preferences,
     this.isActive = true,
+    this.pinHash,
   });
 
   // Convert from Firestore document
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    
+
     return UserModel(
       id: doc.id,
       phoneNumber: data['phoneNumber'] ?? '',
@@ -68,6 +70,7 @@ class UserModel {
       lastLoginAt: (data['lastLoginAt'] as Timestamp?)?.toDate(),
       preferences: UserPreferences.fromMap(data['preferences'] ?? {}),
       isActive: data['isActive'] ?? true,
+      pinHash: data['pinHash'],
     );
   }
 
@@ -88,9 +91,12 @@ class UserModel {
       'paymentTransactionId': paymentTransactionId,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
-      'lastLoginAt': lastLoginAt != null ? Timestamp.fromDate(lastLoginAt!) : null,
+      'lastLoginAt': lastLoginAt != null
+          ? Timestamp.fromDate(lastLoginAt!)
+          : null,
       'preferences': preferences.toMap(),
       'isActive': isActive,
+      'pinHash': pinHash,
     };
   }
 
@@ -134,10 +140,18 @@ class UserModel {
       teamSize: map['teamSize'] ?? 0,
       membershipPaid: map['membershipPaid'] ?? false,
       paymentTransactionId: map['paymentTransactionId'],
-      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
-      lastLoginAt: map['lastLoginAt'] != null ? DateTime.parse(map['lastLoginAt']) : null,
-      preferences: UserPreferences.fromMap(Map<String, dynamic>.from(map['preferences'] ?? {})),
+      createdAt: DateTime.parse(
+        map['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        map['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      lastLoginAt: map['lastLoginAt'] != null
+          ? DateTime.parse(map['lastLoginAt'])
+          : null,
+      preferences: UserPreferences.fromMap(
+        Map<String, dynamic>.from(map['preferences'] ?? {}),
+      ),
       isActive: map['isActive'] ?? true,
     );
   }
@@ -245,7 +259,9 @@ class UserPreferences {
   factory UserPreferences.fromMap(Map<String, dynamic> map) {
     return UserPreferences(
       language: map['language'] ?? AppConstants.languageEnglish,
-      notifications: NotificationPreferences.fromMap(map['notifications'] ?? {}),
+      notifications: NotificationPreferences.fromMap(
+        map['notifications'] ?? {},
+      ),
       privacy: PrivacyPreferences.fromMap(map['privacy'] ?? {}),
     );
   }
@@ -287,19 +303,11 @@ class NotificationPreferences {
   }
 
   factory NotificationPreferences.defaultPreferences() {
-    return NotificationPreferences(
-      push: true,
-      sms: true,
-      email: false,
-    );
+    return NotificationPreferences(push: true, sms: true, email: false);
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'push': push,
-      'sms': sms,
-      'email': email,
-    };
+    return {'push': push, 'sms': sms, 'email': email};
   }
 }
 
@@ -320,10 +328,7 @@ class PrivacyPreferences {
   }
 
   factory PrivacyPreferences.defaultPreferences() {
-    return PrivacyPreferences(
-      showLocation: false,
-      allowDirectContact: true,
-    );
+    return PrivacyPreferences(showLocation: false, allowDirectContact: true);
   }
 
   Map<String, dynamic> toMap() {

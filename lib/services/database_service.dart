@@ -37,6 +37,17 @@ class DatabaseService {
     String? village,
   }) async {
     try {
+      // Check if registry already exists to prevent duplicates
+      final existingDoc = await _firestore
+          .collection(AppConstants.collectionUserRegistry)
+          .doc(phoneNumber)
+          .get();
+
+      if (existingDoc.exists) {
+        debugPrint('User registry already exists for phone: $phoneNumber');
+        return;
+      }
+
       // Generate proper TAL referral code
       final referralCode = await ReferralCodeGenerator.generateUniqueCode();
 
@@ -44,22 +55,22 @@ class DatabaseService {
           .collection(AppConstants.collectionUserRegistry)
           .doc(phoneNumber)
           .set({
-        'uid': uid,
-        'email': email,
-        'phoneNumber': phoneNumber,
-        'role': role,
-        'state': state,
-        'district': district,
-        'mandal': mandal,
-        'village': village,
-        'isActive': true,
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLoginAt': FieldValue.serverTimestamp(),
-        'referralCode': referralCode,
-        'directReferrals': 0,
-        'teamSize': 0,
-        'membershipPaid': false,
-      });
+            'uid': uid,
+            'email': email,
+            'phoneNumber': phoneNumber,
+            'role': role,
+            'state': state,
+            'district': district,
+            'mandal': mandal,
+            'village': village,
+            'isActive': true,
+            'createdAt': FieldValue.serverTimestamp(),
+            'lastLoginAt': FieldValue.serverTimestamp(),
+            'referralCode': referralCode,
+            'directReferrals': 0,
+            'teamSize': 0,
+            'membershipPaid': false,
+          });
     } catch (e) {
       debugPrint('Error creating user registry: $e');
       throw Exception('Failed to create user registry');
@@ -69,6 +80,17 @@ class DatabaseService {
   // User Profile Operations
   static Future<void> createUserProfile(UserModel user) async {
     try {
+      // Check if user profile already exists to prevent duplicates
+      final existingDoc = await _firestore
+          .collection(AppConstants.collectionUsers)
+          .doc(user.id)
+          .get();
+
+      if (existingDoc.exists) {
+        debugPrint('User profile already exists for UID: ${user.id}');
+        return;
+      }
+
       await _firestore
           .collection(AppConstants.collectionUsers)
           .doc(user.id)
@@ -85,7 +107,7 @@ class DatabaseService {
           .collection(AppConstants.collectionUsers)
           .doc(uid)
           .get();
-      
+
       if (doc.exists) {
         return UserModel.fromFirestore(doc);
       }
@@ -121,7 +143,9 @@ class DatabaseService {
     }
   }
 
-  static Future<List<LandRecordModel>> getUserLandRecords(String ownerId) async {
+  static Future<List<LandRecordModel>> getUserLandRecords(
+    String ownerId,
+  ) async {
     try {
       final querySnapshot = await _firestore
           .collection(AppConstants.collectionLandRecords)
@@ -183,9 +207,11 @@ class DatabaseService {
           .orderBy('timestamp', descending: true)
           .limit(limit)
           .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map((doc) => MessageModel.fromFirestore(doc))
-              .toList());
+          .map(
+            (snapshot) => snapshot.docs
+                .map((doc) => MessageModel.fromFirestore(doc))
+                .toList(),
+          );
     } catch (e) {
       debugPrint('Error getting conversation messages: $e');
       return Stream.value([]);
@@ -198,10 +224,10 @@ class DatabaseService {
           .collection(AppConstants.collectionMessages)
           .doc(messageId)
           .update({
-        'status': 'read',
-        'readAt': FieldValue.serverTimestamp(),
-        'readBy': FieldValue.arrayUnion([userId]),
-      });
+            'status': 'read',
+            'readAt': FieldValue.serverTimestamp(),
+            'readBy': FieldValue.arrayUnion([userId]),
+          });
     } catch (e) {
       debugPrint('Error marking message as read: $e');
     }
@@ -223,17 +249,17 @@ class DatabaseService {
         .collection(AppConstants.collectionStates)
         .doc('telangana')
         .set({
-      'id': 'telangana',
-      'name': 'Telangana',
-      'coordinator': null,
-      'totalMembers': 0,
-      'activeCoordinators': 0,
-      'activeCampaigns': 0,
-      'landRecords': 0,
-      'districts': ['hyderabad', 'warangal', 'nizamabad', 'karimnagar'],
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'id': 'telangana',
+          'name': 'Telangana',
+          'coordinator': null,
+          'totalMembers': 0,
+          'activeCoordinators': 0,
+          'activeCampaigns': 0,
+          'landRecords': 0,
+          'districts': ['hyderabad', 'warangal', 'nizamabad', 'karimnagar'],
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
 
     // Create sample districts
     final districts = [
@@ -250,18 +276,18 @@ class DatabaseService {
           .collection('districts')
           .doc(district['id'])
           .set({
-        'id': district['id'],
-        'name': district['name'],
-        'stateId': 'telangana',
-        'coordinator': null,
-        'totalMembers': 0,
-        'activeCoordinators': 0,
-        'activeCampaigns': 0,
-        'landRecords': 0,
-        'mandals': [],
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+            'id': district['id'],
+            'name': district['name'],
+            'stateId': 'telangana',
+            'coordinator': null,
+            'totalMembers': 0,
+            'activeCoordinators': 0,
+            'activeCampaigns': 0,
+            'landRecords': 0,
+            'mandals': [],
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
     }
   }
 
@@ -277,10 +303,10 @@ class DatabaseService {
           .collection(AppConstants.collectionUsers)
           .doc(referrerId)
           .update({
-        'directReferrals': FieldValue.increment(1),
-        'teamSize': FieldValue.increment(1),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+            'directReferrals': FieldValue.increment(1),
+            'teamSize': FieldValue.increment(1),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
 
       // Update user registry
       final userRegistryQuery = await _firestore
@@ -297,9 +323,7 @@ class DatabaseService {
       }
 
       // Create referral relationship record
-      await _firestore
-          .collection('referral_relationships')
-          .add({
+      await _firestore.collection('referral_relationships').add({
         'referrerId': referrerId,
         'referredUserId': referredUserId,
         'referralCode': referralCode,
@@ -317,11 +341,12 @@ class DatabaseService {
   // All referral codes follow TAL + 6 Crockford base32 format
 
   // Performance Monitoring
-  static Future<void> logDatabaseOperation(String operation, int duration) async {
+  static Future<void> logDatabaseOperation(
+    String operation,
+    int duration,
+  ) async {
     try {
-      await _firestore
-          .collection('performance_metrics')
-          .add({
+      await _firestore.collection('performance_metrics').add({
         'operation': operation,
         'responseTime': duration,
         'success': true,
@@ -337,14 +362,14 @@ class DatabaseService {
   static Future<void> batchCreateUsers(List<UserModel> users) async {
     try {
       final batch = _firestore.batch();
-      
+
       for (final user in users) {
         final docRef = _firestore
             .collection(AppConstants.collectionUsers)
             .doc(user.id);
         batch.set(docRef, user.toFirestore());
       }
-      
+
       await batch.commit();
     } catch (e) {
       debugPrint('Error batch creating users: $e');
@@ -361,29 +386,37 @@ class DatabaseService {
     int limit = 20,
   }) async {
     try {
-      Query firestoreQuery = _firestore.collection(AppConstants.collectionUsers);
+      Query firestoreQuery = _firestore.collection(
+        AppConstants.collectionUsers,
+      );
 
       if (role != null) {
         firestoreQuery = firestoreQuery.where('role', isEqualTo: role);
       }
-      
+
       if (state != null) {
-        firestoreQuery = firestoreQuery.where('address.state', isEqualTo: state);
-      }
-      
-      if (district != null) {
-        firestoreQuery = firestoreQuery.where('address.district', isEqualTo: district);
+        firestoreQuery = firestoreQuery.where(
+          'address.state',
+          isEqualTo: state,
+        );
       }
 
-      final querySnapshot = await firestoreQuery
-          .limit(limit)
-          .get();
+      if (district != null) {
+        firestoreQuery = firestoreQuery.where(
+          'address.district',
+          isEqualTo: district,
+        );
+      }
+
+      final querySnapshot = await firestoreQuery.limit(limit).get();
 
       return querySnapshot.docs
           .map((doc) => UserModel.fromFirestore(doc))
-          .where((user) => 
-              user.fullName.toLowerCase().contains(query.toLowerCase()) ||
-              user.phoneNumber.contains(query))
+          .where(
+            (user) =>
+                user.fullName.toLowerCase().contains(query.toLowerCase()) ||
+                user.phoneNumber.contains(query),
+          )
           .toList();
     } catch (e) {
       debugPrint('Error searching users: $e');
@@ -436,7 +469,7 @@ class DatabaseService {
           .collection(AppConstants.collectionUsers)
           .doc(userId)
           .get();
-      
+
       if (doc.exists) {
         return UserModel.fromFirestore(doc);
       }

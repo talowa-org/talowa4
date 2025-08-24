@@ -37,38 +37,66 @@ class HybridAuthService {
     required String pin,
   }) async {
     try {
-      final fakeEmail = phoneToEmail(mobileNumber);
-      
-      final credential = await _auth.signInWithEmailAndPassword(
-        email: fakeEmail,
-        password: pin,
-      );
+      // First, find user by phone number in user_registry
+      final phoneQuery = await _firestore
+          .collection('user_registry')
+          .doc(mobileNumber)
+          .get();
 
-      if (credential.user != null) {
-        // Check if user profile exists
-        final userExists = await _checkUserExists(credential.user!.uid);
+      if (!phoneQuery.exists) {
         return AuthResult(
-          success: true,
-          user: credential.user,
-          isNewUser: !userExists,
-          message: 'Login successful',
-          phoneNumber: emailToPhone(fakeEmail),
+          success: false,
+          message: 'Phone number not registered. Please register first.',
         );
       }
 
+      final uid = phoneQuery.data()!['uid'] as String;
+
+      // Get user profile to check PIN hash
+      final userDoc = await _firestore.collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        return AuthResult(
+          success: false,
+          message: 'User profile not found. Please contact support.',
+        );
+      }
+
+      final userData = userDoc.data()!;
+      final storedPinHash = userData['pinHash'] as String?;
+      final inputPinHash = _hashPin(pin);
+
+      if (storedPinHash != inputPinHash) {
+        return AuthResult(
+          success: false,
+          message: 'Invalid PIN. Please check your PIN and try again.',
+        );
+      }
+
+      // PIN is correct, now sign in the user (they should already be signed in from registration)
+      final currentUser = _auth.currentUser;
+      if (currentUser?.uid == uid) {
+        // User is already signed in
+        return AuthResult(
+          success: true,
+          user: currentUser,
+          isNewUser: false,
+          message: 'Login successful',
+          phoneNumber: mobileNumber,
+        );
+      }
+
+      // If user is not signed in, we need to sign them in
+      // For phone auth users, we'll use a custom token approach
       return AuthResult(
         success: false,
-        message: 'Login failed',
-      );
-    } on FirebaseAuthException catch (e) {
-      return AuthResult(
-        success: false,
-        message: _getAuthErrorMessage(e),
+        message: 'Please restart the app and try logging in again.',
       );
     } catch (e) {
+      debugPrint('Login error: $e');
       return AuthResult(
         success: false,
-        message: 'An unexpected error occurred',
+        message: 'Login failed. Please try again.',
       );
     }
   }
@@ -93,14 +121,15 @@ class HybridAuthService {
       if (isRegistered) {
         return AuthResult(
           success: false,
-          message: 'This mobile number is already registered. Please login instead.',
+          message:
+              'This mobile number is already registered. Please login instead.',
           errorCode: 'phone-already-exists',
         );
       }
 
       final credential = await _auth.createUserWithEmailAndPassword(
         email: fakeEmail,
-        password: pin,
+        password: _hashPin(pin),
       );
 
       if (credential.user != null) {
@@ -111,7 +140,9 @@ class HybridAuthService {
           String referralCode;
           try {
             referralCode = await ReferralCodeGenerator.generateUniqueCode();
-            debugPrint('Generated referralCode for user ${user.uid}: $referralCode');
+            debugPrint(
+              'Generated referralCode for user ${user.uid}: $referralCode',
+            );
           } catch (e) {
             debugPrint('Failed to generate referralCode: $e');
             throw Exception('Failed to generate referralCode: $e');
@@ -161,15 +192,9 @@ class HybridAuthService {
         }
       }
 
-      return AuthResult(
-        success: false,
-        message: 'Account creation failed',
-      );
+      return AuthResult(success: false, message: 'Account creation failed');
     } on FirebaseAuthException catch (e) {
-      return AuthResult(
-        success: false,
-        message: _getAuthErrorMessage(e),
-      );
+      return AuthResult(success: false, message: _getAuthErrorMessage(e));
     } catch (e) {
       return AuthResult(
         success: false,
@@ -178,19 +203,23 @@ class HybridAuthService {
     }
   }
 
-  /// Register new user with mobile number and PIN (legacy method for backward compatibility)
+  /// Register new user with mobile number and PIN with complete profile data
   static Future<AuthResult> registerWithMobileAndPin({
     required String mobileNumber,
     required String pin,
+    String? fullName,
+    String? email,
+    String? bio,
+    Map<String, dynamic>? address,
   }) async {
     try {
-      final fakeEmail = phoneToEmail(mobileNumber);
+      final fakeEmail = email ?? phoneToEmail(mobileNumber);
       debugPrint('Creating Firebase user with email: $fakeEmail');
 
       // Create Firebase user with email/password
       final credential = await _auth.createUserWithEmailAndPassword(
         email: fakeEmail,
-        password: pin,
+        password: _hashPin(pin),
       );
 
       if (credential.user != null) {
@@ -201,18 +230,23 @@ class HybridAuthService {
           String referralCode;
           try {
             referralCode = await ReferralCodeGenerator.generateUniqueCode();
-            debugPrint('Generated referralCode for user ${user.uid}: $referralCode');
+            debugPrint(
+              'Generated referralCode for user ${user.uid}: $referralCode',
+            );
           } catch (e) {
             debugPrint('Failed to generate referralCode: $e');
             throw Exception('Failed to generate referralCode: $e');
           }
 
-          // Create user profile with referral code (legacy method)
-          await _createUserProfile(
+          // Create user profile with collected data
+          await _createUserProfileWithData(
             uid: user.uid,
             phoneNumber: mobileNumber,
             email: fakeEmail,
             referralCode: referralCode,
+            fullName: fullName ?? '',
+            bio: bio,
+            address: address,
           );
 
           // Create user registry entry with same referral code
@@ -258,7 +292,7 @@ class HybridAuthService {
   }) async {
     // For web and to avoid reCAPTCHA issues, we'll simulate OTP sending
     // In a real implementation, you could integrate with SMS services like Twilio
-    
+
     if (kIsWeb) {
       // On web, simulate OTP sending without Firebase phone auth
       await Future.delayed(const Duration(seconds: 1));
@@ -276,28 +310,16 @@ class HybridAuthService {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        return AuthResult(
-          success: false,
-          message: 'User not authenticated',
-        );
+        return AuthResult(success: false, message: 'User not authenticated');
       }
 
-      await user.updatePassword(newPin);
-      
-      return AuthResult(
-        success: true,
-        message: 'PIN updated successfully',
-      );
+      await user.updatePassword(_hashPin(newPin));
+
+      return AuthResult(success: true, message: 'PIN updated successfully');
     } on FirebaseAuthException catch (e) {
-      return AuthResult(
-        success: false,
-        message: _getAuthErrorMessage(e),
-      );
+      return AuthResult(success: false, message: _getAuthErrorMessage(e));
     } catch (e) {
-      return AuthResult(
-        success: false,
-        message: 'PIN update failed',
-      );
+      return AuthResult(success: false, message: 'PIN update failed');
     }
   }
 
@@ -305,7 +327,7 @@ class HybridAuthService {
   static Future<bool> isMobileRegistered(String mobileNumber) async {
     try {
       final fakeEmail = phoneToEmail(mobileNumber);
-      
+
       // Try to sign in with a dummy password to check if user exists
       // This is a workaround since fetchSignInMethodsForEmail is deprecated
       try {
@@ -398,6 +420,69 @@ class HybridAuthService {
     }
   }
 
+  /// Create user profile with flexible data (for integrated registration)
+  static Future<void> _createUserProfileWithData({
+    required String uid,
+    required String phoneNumber,
+    required String email,
+    required String referralCode,
+    String? fullName,
+    String? bio,
+    Map<String, dynamic>? address,
+  }) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Create user profile data with all available information
+      final userData = {
+        'fullName': fullName ?? '',
+        'email': email,
+        'phone': phoneNumber,
+        'referralCode': referralCode,
+        'membershipPaid': true, // Set to true by default for simplified flow
+        'status': 'active',
+        'role': 'member',
+        'profileCompleted':
+            fullName?.isNotEmpty == true, // Complete if name provided
+        'phoneVerified': true,
+        'bio': bio ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'isActive': true,
+        'directReferrals': 0,
+        'totalTeamSize': 0,
+        'directReferralCount': 0,
+        'paidAt': FieldValue.serverTimestamp(),
+        'paymentRef': 'payment_${DateTime.now().millisecondsSinceEpoch}',
+        'assignedBySystem': false,
+        'provisionalRef': null,
+        'referredBy': null,
+        'referralChain': [],
+      };
+
+      // Add address data if provided
+      if (address != null) {
+        userData['address'] = address;
+        // Also add individual location fields for compatibility
+        if (address['state'] != null) userData['state'] = address['state'];
+        if (address['district'] != null)
+          userData['district'] = address['district'];
+        if (address['mandal'] != null) userData['mandal'] = address['mandal'];
+        if (address['village'] != null)
+          userData['village'] = address['village'];
+      }
+
+      await firestore.collection('users').doc(uid).set(userData);
+      debugPrint(
+        'User profile created successfully for $uid with data: ${userData.keys.toList()}',
+      );
+    } catch (e) {
+      debugPrint('Failed to create user profile: $e');
+      throw Exception('Failed to create user profile: $e');
+    }
+  }
+
   /// Create user profile in Firestore with referral code (legacy method)
   static Future<void> _createUserProfile({
     required String uid,
@@ -417,7 +502,8 @@ class HybridAuthService {
         'membershipPaid': true, // Set to true by default for simplified flow
         'status': 'active',
         'role': 'member',
-        'profileCompleted': false, // Will be set to true after profile completion
+        'profileCompleted':
+            false, // Will be set to true after profile completion
         'phoneVerified': true,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
@@ -445,10 +531,7 @@ class HybridAuthService {
     try {
       final firestore = FirebaseFirestore.instance;
 
-      await firestore
-          .collection('user_registry')
-          .doc(phoneNumber)
-          .set({
+      await firestore.collection('user_registry').doc(phoneNumber).set({
         'uid': uid,
         'email': email,
         'phoneNumber': phoneNumber,
@@ -499,6 +582,12 @@ class HybridAuthService {
       default:
         return e.message ?? 'An authentication error occurred.';
     }
+  }
+
+  /// Hash PIN for consistent authentication
+  static String _hashPin(String pin) {
+    // Use same hashing as AuthService for consistency
+    return 'talowa_${pin}_secure';
   }
 }
 

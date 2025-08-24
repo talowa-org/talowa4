@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../services/hybrid_auth_service.dart';
 import '../../services/database_service.dart';
 import 'integrated_registration_screen.dart';
+import 'mobile_entry_screen.dart';
 import '../../services/performance_monitor.dart';
 import '../../config/app_config.dart';
 import '../../core/theme/app_theme.dart';
@@ -15,11 +16,12 @@ class NewLoginScreen extends StatefulWidget {
   State<NewLoginScreen> createState() => _NewLoginScreenState();
 }
 
-class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStateMixin {
+class _NewLoginScreenState extends State<NewLoginScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
   final _pinController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscurePin = true;
   late AnimationController _animationController;
@@ -32,13 +34,9 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
     _animationController.forward();
   }
 
@@ -58,12 +56,12 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
     try {
       final phoneNumber = _mobileController.text.trim();
       final pin = _pinController.text.trim();
-      
+
       debugPrint('=== LOGIN ATTEMPT ===');
       debugPrint('Phone: $phoneNumber');
       debugPrint('PIN: $pin');
       debugPrint('Time: ${DateTime.now()}');
-      
+
       // Track login performance
       final result = await PerformanceMonitor.trackOperation(
         'user_login',
@@ -81,10 +79,10 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
         if (result.success) {
           debugPrint('Login successful - showing success message');
           _showSuccessMessage(result.message);
-          
+
           // Small delay to show success message
           await Future.delayed(const Duration(milliseconds: 1000));
-          
+
           if (mounted) {
             debugPrint('Navigating to /main');
             // Navigate to main app
@@ -93,7 +91,17 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
           }
         } else {
           debugPrint('Login failed - showing error message');
-          _showErrorMessage(result.message);
+
+          // If login failed, suggest phone verification
+          if (result.message.contains('credential') ||
+              result.message.contains('expired') ||
+              result.message.contains('malformed')) {
+            _showErrorMessage(
+              'Please verify your phone number again. Tap "Register" to re-verify.',
+            );
+          } else {
+            _showErrorMessage(result.message);
+          }
         }
       }
     } catch (e) {
@@ -110,19 +118,21 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
 
   Future<void> _navigateToRegister() async {
     final mobile = _mobileController.text.trim();
-    
+
     if (mobile.isNotEmpty && mobile.length == 10) {
       // Add country code if not present
       final phoneNumber = mobile.startsWith('+91') ? mobile : '+91$mobile';
-      
+
       // Check if mobile is already registered with performance tracking
       final isRegistered = await PerformanceMonitor.trackOperation(
         'check_registration',
         () => DatabaseService.isPhoneRegistered(phoneNumber),
       );
-      
+
       if (isRegistered && mounted) {
-        _showErrorMessage('This mobile number is already registered. Please login instead.');
+        _showErrorMessage(
+          'This mobile number is already registered. Please login instead.',
+        );
         return;
       }
     }
@@ -130,9 +140,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
     if (mounted) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const IntegratedRegistrationScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const MobileEntryScreen()),
       );
     }
   }
@@ -186,33 +194,33 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 40),
-                  
+
                   // App Logo and Title
                   _buildHeader(),
-                  
+
                   const SizedBox(height: 60),
-                  
+
                   // Login Form
                   _buildLoginForm(),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Login Button
                   _buildLoginButton(),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Register Link
                   _buildRegisterLink(),
-                  
+
                   // Debug section (only in debug mode)
                   if (kDebugMode) ...[
                     const SizedBox(height: 20),
                     _buildDebugSection(),
                   ],
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Features Info
                   _buildFeaturesInfo(),
                 ],
@@ -246,15 +254,11 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
               ),
             ],
           ),
-          child: const Icon(
-            Icons.landscape,
-            size: 50,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.landscape, size: 50, color: Colors.white),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // App Title
         Text(
           AppConfig.appName,
@@ -264,9 +268,9 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
             color: Colors.grey.shade800,
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         Text(
           AppConfig.appTagline,
           textAlign: TextAlign.center,
@@ -305,19 +309,16 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
               color: Colors.grey.shade800,
             ),
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           Text(
             'Sign in to your account',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Mobile Number Field
           Text(
             'Mobile Number',
@@ -373,9 +374,9 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
               return null;
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // PIN Field
           Text(
             '6-Digit PIN',
@@ -398,7 +399,9 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
               hintText: '••••••',
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
-                icon: Icon(_obscurePin ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  _obscurePin ? Icons.visibility : Icons.visibility_off,
+                ),
                 onPressed: () => setState(() => _obscurePin = !_obscurePin),
               ),
               border: OutlineInputBorder(
@@ -485,10 +488,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       children: [
         Text(
           "Don't have an account? ",
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 16,
-          ),
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
         ),
         GestureDetector(
           onTap: _navigateToRegister,
@@ -515,11 +515,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.security,
-            color: Colors.blue.shade600,
-            size: 32,
-          ),
+          Icon(Icons.security, color: Colors.blue.shade600, size: 32),
           const SizedBox(height: 12),
           Text(
             'Secure & Fast Login',
@@ -533,10 +529,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
           Text(
             'Your mobile number and PIN are securely encrypted. No OTP required for login after registration.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.blue.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.blue.shade600),
           ),
         ],
       ),
@@ -555,15 +548,11 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
         children: [
           const Text(
             'Debug Tools',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.orange,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-
               // Debug button removed for production
             ],
           ),
@@ -577,7 +566,8 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const IntegratedRegistrationScreen(),
+                        builder: (context) =>
+                            const IntegratedRegistrationScreen(),
                       ),
                     );
                   },
@@ -597,8 +587,6 @@ class _NewLoginScreenState extends State<NewLoginScreen> with TickerProviderStat
       ),
     );
   }
-
-
 
   // Test methods removed for production
 }

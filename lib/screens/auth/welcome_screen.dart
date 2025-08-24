@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'new_login_screen.dart';
-import 'integrated_registration_screen.dart';
+import 'mobile_entry_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -32,34 +32,27 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
   }
 
   void _startAnimations() {
     Future.delayed(const Duration(milliseconds: 300), () {
       _fadeController.forward();
     });
-    
+
     Future.delayed(const Duration(milliseconds: 600), () {
       _slideController.forward();
     });
@@ -77,9 +70,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             padding: const EdgeInsets.all(24.0),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height - 
-                          MediaQuery.of(context).padding.top - 
-                          MediaQuery.of(context).padding.bottom - 48,
+                minHeight:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    48,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -88,9 +83,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     opacity: _fadeAnimation,
                     child: _buildHeroSection(),
                   ),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   SlideTransition(
                     position: _slideAnimation,
                     child: FadeTransition(
@@ -112,7 +107,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 60),
-        
+
         // App Logo - Mountain icon like in the image
         Container(
           width: 140,
@@ -132,17 +127,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             alignment: Alignment.center,
             children: [
               // Mountain peaks icon
-              Icon(
-                Icons.terrain,
-                size: 70,
-                color: Colors.white,
-              ),
+              Icon(Icons.terrain, size: 70, color: Colors.white),
             ],
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Organization Name
         Text(
           'Telangana Assigned Land Owners Welfare\nAssociation',
@@ -154,9 +145,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
           textAlign: TextAlign.center,
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Mission Statement
         Text(
           'Empowering landowners, preserving rights, and\nuniting voices across Telangana.',
@@ -167,7 +158,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
           textAlign: TextAlign.center,
         ),
-        
+
         const SizedBox(height: 60),
       ],
     );
@@ -184,9 +175,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const NewLoginScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const NewLoginScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -197,22 +186,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
               elevation: 2,
             ),
-            icon: const Icon(
-              Icons.login,
-              size: 20,
-            ),
+            icon: const Icon(Icons.login, size: 20),
             label: const Text(
               'Login',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Register Button (Secondary - Green outlined)
         SizedBox(
           width: double.infinity,
@@ -222,16 +205,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const IntegratedRegistrationScreen(),
+                  builder: (context) => const MobileEntryScreen(),
                 ),
               );
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppTheme.talowaGreen,
-              side: BorderSide(
-                color: AppTheme.talowaGreen,
-                width: 2,
-              ),
+              side: BorderSide(color: AppTheme.talowaGreen, width: 2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
@@ -252,9 +232,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             ),
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Copyright Information
         Text(
           '© 2025 TALOWA. All rights reserved.',

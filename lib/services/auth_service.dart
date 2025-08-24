@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,17 +13,31 @@ import 'referral/referral_code_generator.dart';
 // Helper to sanitize user profile writes
 Map<String, dynamic> profileWritePolicy(Map<String, dynamic> input) {
   final allowed = [
-    'fullName','email','emailAlias','phone','language','locale','bio','address',
-    'profileCompleted','phoneVerified','lastLoginAt','device','referralCode',
-    'membershipPaid','status','role','createdAt','updatedAt'
+    'fullName',
+    'email',
+    'emailAlias',
+    'phone',
+    'language',
+    'locale',
+    'bio',
+    'address',
+    'profileCompleted',
+    'phoneVerified',
+    'lastLoginAt',
+    'device',
+    'referralCode',
+    'membershipPaid',
+    'status',
+    'role',
+    'createdAt',
+    'updatedAt',
   ];
   return Map.fromEntries(input.entries.where((e) => allowed.contains(e.key)));
 }
 
-
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Rate limiting storage
   static final Map<String, List<DateTime>> _loginAttempts = {};
   static const int maxAttemptsPerHour = 5;
@@ -43,13 +55,15 @@ class AuthService {
     String? referralCode,
   }) async {
     final startTime = DateTime.now();
-    
+
     try {
       // Normalize phone number
       final normalizedPhone = _normalizePhoneNumber(phoneNumber);
-      
+
       // Check if phone is already registered
-      final isRegistered = await DatabaseService.isPhoneRegistered(normalizedPhone);
+      final isRegistered = await DatabaseService.isPhoneRegistered(
+        normalizedPhone,
+      );
       if (isRegistered) {
         return AuthResult(
           success: false,
@@ -60,43 +74,64 @@ class AuthService {
 
       // Create fake email for Firebase Auth
       final email = '$normalizedPhone@talowa.app';
-      
-      // Create Firebase Auth user
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: _hashPin(pin),
-      );
 
-      if (userCredential.user == null) {
-        return AuthResult(
-          success: false,
-          message: 'Failed to create user account',
-          errorCode: 'user-creation-failed',
+      // Check if user is already authenticated (from phone verification)
+      User? user = _auth.currentUser;
+
+      if (user == null) {
+        // Create Firebase Auth user only if not already authenticated
+        final userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: _hashPin(pin),
         );
+
+        if (userCredential.user == null) {
+          return AuthResult(
+            success: false,
+            message: 'Failed to create user account',
+            errorCode: 'user-creation-failed',
+          );
+        }
+
+        user = userCredential.user!;
+      } else {
+        // Update existing user's password for PIN-based login
+        try {
+          await user.updatePassword(_hashPin(pin));
+          debugPrint('Updated existing user password for PIN-based login');
+        } catch (e) {
+          debugPrint('Warning: Could not update user password: $e');
+          // Continue with registration even if password update fails
+        }
       }
 
-      final user = userCredential.user!;
+      // Check if user profile already exists to prevent duplicates
+      final existingProfile = await DatabaseService.getUserProfile(user.uid);
 
-      // Create client-safe user profile with only allowed fields
-      await _createClientUserProfile(
-        uid: user.uid,
-        fullName: fullName,
-        email: email,
-        phone: normalizedPhone,
-        address: address,
-      );
+      if (existingProfile == null) {
+        // Create client-safe user profile with only allowed fields
+        await _createClientUserProfile(
+          uid: user.uid,
+          fullName: fullName,
+          email: email,
+          phone: normalizedPhone,
+          address: address,
+        );
 
-      // Create user registry entry
-      await DatabaseService.createUserRegistry(
-        phoneNumber: normalizedPhone,
-        uid: user.uid,
-        email: email,
-        role: AppConstants.roleMember,
-        state: address.state,
-        district: address.district,
-        mandal: address.mandal,
-        village: address.villageCity,
-      );
+        // Create user registry entry
+        await DatabaseService.createUserRegistry(
+          phoneNumber: normalizedPhone,
+          uid: user.uid,
+          email: email,
+          role: AppConstants.roleMember,
+          state: address.state,
+          district: address.district,
+          mandal: address.mandal,
+          village: address.villageCity,
+        );
+      } else {
+        debugPrint('User profile already exists for UID: ${user.uid}');
+      }
 
       // Get the created user profile
       final userProfile = await DatabaseService.getUserProfile(user.uid);
@@ -109,15 +144,22 @@ class AuthService {
       debugPrint('User profile created with referralCode: $referralCode');
 
       // Ensure server-side profile fields are populated (non-blocking)
-      try {
-        await ServerProfileEnsureService.ensureUserProfile(user.uid);
-        debugPrint('Server-side profile ensure completed');
-      } catch (e) {
-        debugPrint('Server-side profile ensure failed (non-blocking): $e');
-      }
+      ServerProfileEnsureService.ensureUserProfile(user.uid)
+          .then((_) {
+            debugPrint('Server-side profile ensure completed');
+          })
+          .catchError((e) {
+            debugPrint('Server-side profile ensure failed (non-blocking): $e');
+          });
 
-      // Initialize referral code cache with the generated code
-      await ReferralCodeCacheService.initializeWithCode(user.uid, referralCode);
+      // Initialize referral code cache with the generated code (non-blocking)
+      try {
+        ReferralCodeCacheService.initializeWithCode(user.uid, referralCode);
+      } catch (e) {
+        debugPrint(
+          'Referral code cache initialization failed (non-blocking): $e',
+        );
+      }
 
       // Log performance
       final duration = DateTime.now().difference(startTime).inMilliseconds;
@@ -130,10 +172,9 @@ class AuthService {
         message: 'Registration successful',
         user: userProfile,
       );
-
     } catch (e) {
       debugPrint('Registration error: $e');
-      
+
       // Log error
       final duration = DateTime.now().difference(startTime).inMilliseconds;
       debugPrint('User registration failed in ${duration}ms: $e');
@@ -152,11 +193,11 @@ class AuthService {
     required String pin,
   }) async {
     final startTime = DateTime.now();
-    
+
     try {
       // Normalize phone number
       final normalizedPhone = _normalizePhoneNumber(phoneNumber);
-      
+
       // Check rate limiting
       if (!_canAttemptLogin(normalizedPhone)) {
         return AuthResult(
@@ -170,7 +211,9 @@ class AuthService {
       _recordLoginAttempt(normalizedPhone);
 
       // Check if phone is registered
-      final isRegistered = await DatabaseService.isPhoneRegistered(normalizedPhone);
+      final isRegistered = await DatabaseService.isPhoneRegistered(
+        normalizedPhone,
+      );
       if (!isRegistered) {
         return AuthResult(
           success: false,
@@ -181,7 +224,7 @@ class AuthService {
 
       // Create fake email for Firebase Auth
       final email = '$normalizedPhone@talowa.app';
-      
+
       // Sign in with Firebase Auth
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -197,7 +240,9 @@ class AuthService {
       }
 
       // Get user profile
-      final userProfile = await DatabaseService.getUserProfile(userCredential.user!.uid);
+      final userProfile = await DatabaseService.getUserProfile(
+        userCredential.user!.uid,
+      );
       if (userProfile == null) {
         return AuthResult(
           success: false,
@@ -226,10 +271,9 @@ class AuthService {
         message: 'Login successful',
         user: userProfile,
       );
-
     } catch (e) {
       debugPrint('Login error: $e');
-      
+
       // Log error
       final duration = DateTime.now().difference(startTime).inMilliseconds;
       debugPrint('User login failed in ${duration}ms: $e');
@@ -278,11 +322,7 @@ class AuthService {
       // Update password with new PIN
       await user.updatePassword(_hashPin(newPin));
 
-      return AuthResult(
-        success: true,
-        message: 'PIN changed successfully',
-      );
-
+      return AuthResult(success: true, message: 'PIN changed successfully');
     } catch (e) {
       debugPrint('Change PIN error: $e');
       return AuthResult(
@@ -301,18 +341,14 @@ class AuthService {
     try {
       // This would typically involve SMS verification
       // For now, we'll implement a basic reset
-      
+
       final normalizedPhone = _normalizePhoneNumber(phoneNumber);
       final email = '$normalizedPhone@talowa.app';
-      
+
       // Send password reset email (this won't actually send an email)
       await _auth.sendPasswordResetEmail(email: email);
-      
-      return AuthResult(
-        success: true,
-        message: 'PIN reset instructions sent',
-      );
 
+      return AuthResult(success: true, message: 'PIN reset instructions sent');
     } catch (e) {
       debugPrint('Reset PIN error: $e');
       return AuthResult(
@@ -327,7 +363,7 @@ class AuthService {
   static String _normalizePhoneNumber(String phoneNumber) {
     // Remove all non-digit characters
     String normalized = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     // Handle different formats
     if (normalized.startsWith('91') && normalized.length == 12) {
       // Remove country code
@@ -335,12 +371,12 @@ class AuthService {
     } else if (normalized.startsWith('+91')) {
       normalized = normalized.substring(3);
     }
-    
+
     // Ensure it's a 10-digit number
     if (normalized.length == 10 && normalized.startsWith(RegExp(r'[6-9]'))) {
       return '+91$normalized';
     }
-    
+
     throw Exception('Invalid phone number format');
   }
 
@@ -349,15 +385,13 @@ class AuthService {
     return 'talowa_${pin}_secure';
   }
 
-
-
   static bool _canAttemptLogin(String phoneNumber) {
     final attempts = _loginAttempts[phoneNumber] ?? [];
     final oneHourAgo = DateTime.now().subtract(const Duration(hours: 1));
-    
+
     // Remove attempts older than 1 hour
     attempts.removeWhere((attempt) => attempt.isBefore(oneHourAgo));
-    
+
     return attempts.length < maxAttemptsPerHour;
   }
 
@@ -402,7 +436,8 @@ class AuthService {
         'lastLoginAt': FieldValue.serverTimestamp(),
         'language': 'en',
         'locale': 'en_US',
-        'referralCode': referralCode, // Include referralCode in initial creation
+        'referralCode':
+            referralCode, // Include referralCode in initial creation
         'membershipPaid': true, // Set to true by default for simplified flow
         'status': 'active', // Set user as active immediately
         'role': 'member', // Default role
@@ -414,9 +449,13 @@ class AuthService {
         },
       };
       final userData = profileWritePolicy(rawUserData);
-      debugPrint('Creating user profile with payload: ${userData.keys.toList()}');
+      debugPrint(
+        'Creating user profile with payload: ${userData.keys.toList()}',
+      );
       await firestore.collection('users').doc(uid).set(userData);
-      debugPrint('User profile created successfully with referralCode: $referralCode');
+      debugPrint(
+        'User profile created successfully with referralCode: $referralCode',
+      );
     } catch (e) {
       debugPrint('Failed to create user profile: $e');
       throw Exception('Failed to create user profile: $e');
@@ -437,7 +476,9 @@ class AuthService {
         },
       };
 
-      debugPrint('Updating login timestamp with payload: ${updateData.keys.toList()}');
+      debugPrint(
+        'Updating login timestamp with payload: ${updateData.keys.toList()}',
+      );
 
       await firestore.collection('users').doc(uid).update(updateData);
       debugPrint('Login timestamp updated successfully');

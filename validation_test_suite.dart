@@ -1,14 +1,15 @@
 import 'dart:io';
+import 'dart:math';
 
 void main() async {
   print('🧪 TALOWA Registration Flow Validation Suite');
   print('============================================');
   print('Based on: .kiro/specs/login-registration-validation/requirements.md');
   print('');
-  
+
   var passedTests = 0;
   var totalTests = 7;
-  
+
   // Test Case A: Top-level Navigation
   print('📋 Test Case A: Top-level Navigation');
   try {
@@ -23,7 +24,7 @@ void main() async {
     print('❌ FAIL: Navigation test failed - $e');
   }
   print('');
-  
+
   // Test Case B: New User Journey
   print('📋 Test Case B: New User Journey (OTP → Form → Payment Optional)');
   try {
@@ -38,7 +39,7 @@ void main() async {
     print('❌ FAIL: Registration flow test failed - $e');
   }
   print('');
-  
+
   // Test Case C: Existing User Login
   print('📋 Test Case C: Existing User Login');
   try {
@@ -53,7 +54,7 @@ void main() async {
     print('❌ FAIL: Login flow test failed - $e');
   }
   print('');
-  
+
   // Test Case D: Deep Link Auto-fill
   print('📋 Test Case D: Deep Link Auto-fill');
   try {
@@ -68,7 +69,7 @@ void main() async {
     print('❌ FAIL: Deep link test failed - $e');
   }
   print('');
-  
+
   // Test Case E: Referral Code Policy Compliance (CRITICAL)
   print('📋 Test Case E: Referral Code Policy Compliance (CRITICAL)');
   try {
@@ -83,7 +84,7 @@ void main() async {
     print('❌ FAIL: Referral code policy test failed - $e');
   }
   print('');
-  
+
   // Test Case F: Real-time Network Updates
   print('📋 Test Case F: Real-time Network Updates');
   try {
@@ -98,7 +99,7 @@ void main() async {
     print('❌ FAIL: Real-time updates test failed - $e');
   }
   print('');
-  
+
   // Test Case G: Security Spot Checks
   print('📋 Test Case G: Security Spot Checks');
   try {
@@ -113,14 +114,16 @@ void main() async {
     print('❌ FAIL: Security test failed - $e');
   }
   print('');
-  
+
   // Final Results
   print('🎯 VALIDATION RESULTS');
   print('====================');
   print('Tests Passed: $passedTests / $totalTests');
-  print('Success Rate: ${(passedTests / totalTests * 100).toStringAsFixed(1)}%');
+  print(
+    'Success Rate: ${(passedTests / totalTests * 100).toStringAsFixed(1)}%',
+  );
   print('');
-  
+
   if (passedTests == totalTests) {
     print('🎉 ALL TESTS PASSED!');
     print('✅ FLOW MATCHES SPEC: YES');
@@ -132,10 +135,12 @@ void main() async {
     print('❌ FLOW MATCHES SPEC: NO');
     print('Issues need to be addressed before production deployment');
   }
-  
+
   print('');
   print('🌐 Live URL: https://talowa.web.app');
-  print('📊 Firebase Console: https://console.firebase.google.com/project/talowa/overview');
+  print(
+    '📊 Firebase Console: https://console.firebase.google.com/project/talowa/overview',
+  );
 }
 
 Future<bool> _testTopLevelNavigation() async {
@@ -144,12 +149,12 @@ Future<bool> _testTopLevelNavigation() async {
   if (!await mainFixedFile.exists()) {
     return false;
   }
-  
+
   final content = await mainFixedFile.readAsString();
-  return content.contains('Login to TALOWA') && 
-         content.contains('Join TALOWA Movement') &&
-         content.contains('/login') &&
-         content.contains('/register');
+  return content.contains('Login to TALOWA') &&
+      content.contains('Join TALOWA Movement') &&
+      content.contains('/login') &&
+      content.contains('/register');
 }
 
 Future<bool> _testNewUserJourney() async {
@@ -158,21 +163,25 @@ Future<bool> _testNewUserJourney() async {
   if (!await authServiceFile.exists()) {
     return false;
   }
-  
+
   final content = await authServiceFile.readAsString();
-  
+
   // Check for referralCode generation
-  final hasReferralCodeGen = content.contains('ReferralCodeGenerator.generateUniqueCode()');
-  
+  final hasReferralCodeGen = content.contains(
+    'ReferralCodeGenerator.generateUniqueCode()',
+  );
+
   // Check for proper user profile creation
-  final hasProfileCreation = content.contains('profileCompleted\': true') &&
-                            content.contains('phoneVerified\': true') &&
-                            content.contains('membershipPaid\': true');
-  
+  final hasProfileCreation =
+      content.contains('profileCompleted\': true') &&
+      content.contains('phoneVerified\': true') &&
+      content.contains('membershipPaid\': true');
+
   // Check for status and role setting
-  final hasStatusRole = content.contains('status\': \'active\'') &&
-                       content.contains('role\': \'member\'');
-  
+  final hasStatusRole =
+      content.contains('status\': \'active\'') &&
+      content.contains('role\': \'member\'');
+
   return hasReferralCodeGen && hasProfileCreation && hasStatusRole;
 }
 
@@ -182,72 +191,79 @@ Future<bool> _testExistingUserLogin() async {
   if (!await authServiceFile.exists()) {
     return false;
   }
-  
+
   final content = await authServiceFile.readAsString();
-  return content.contains('loginUser') || content.contains('signInWithEmailAndPassword');
+  return content.contains('loginUser') ||
+      content.contains('signInWithEmailAndPassword');
 }
 
 Future<bool> _testDeepLinkAutoFill() async {
   // Check if deep link handling exists
-  final registrationFile = File('lib/screens/auth/real_user_registration_screen.dart');
+  final registrationFile = File(
+    'lib/screens/auth/real_user_registration_screen.dart',
+  );
   if (!await registrationFile.exists()) {
     return false;
   }
-  
+
   final content = await registrationFile.readAsString();
-  return content.contains('UniversalLinkService') && 
-         content.contains('getPendingReferralCode') &&
-         content.contains('_setReferralCode');
+  return content.contains('UniversalLinkService') &&
+      content.contains('getPendingReferralCode') &&
+      content.contains('_setReferralCode');
 }
 
 Future<bool> _testReferralCodePolicy() async {
   // This is the CRITICAL test for the null referralCode issue
   print('  🔍 Checking referralCode generation in user profile creation...');
-  
+
   final authServiceFile = File('lib/services/auth_service.dart');
   if (!await authServiceFile.exists()) {
     print('  ❌ AuthService file not found');
     return false;
   }
-  
+
   final content = await authServiceFile.readAsString();
-  
+
   // Check if referralCode is generated during profile creation
-  if (!content.contains('referralCode = await ReferralCodeGenerator.generateUniqueCode()')) {
+  if (!content.contains(
+    'referralCode = await ReferralCodeGenerator.generateUniqueCode()',
+  )) {
     print('  ❌ ReferralCode not generated during profile creation');
     return false;
   }
-  
+
   // Check if referralCode is included in user data
   if (!content.contains('\'referralCode\': referralCode,')) {
     print('  ❌ ReferralCode not included in user profile data');
     return false;
   }
-  
+
   // Check if ProfileWritePolicy allows referralCode
   if (!content.contains('\'referralCode\'')) {
     print('  ❌ ProfileWritePolicy does not allow referralCode');
     return false;
   }
-  
+
   // Check ReferralCodeGenerator format
-  final generatorFile = File('lib/services/referral/referral_code_generator.dart');
+  final generatorFile = File(
+    'lib/services/referral/referral_code_generator.dart',
+  );
   if (!await generatorFile.exists()) {
     print('  ❌ ReferralCodeGenerator file not found');
     return false;
   }
-  
+
   final generatorContent = await generatorFile.readAsString();
-  if (!generatorContent.contains('PREFIX = \'TAL\'') || 
+  if (!generatorContent.contains('PREFIX = \'TAL\'') ||
       !generatorContent.contains('23456789ABCDEFGHJKMNPQRSTUVWXYZ')) {
     print('  ❌ ReferralCodeGenerator format incorrect');
     return false;
   }
-  
+
   print('  ✅ ReferralCode generation properly implemented');
   print('  ✅ TAL + Crockford base32 format confirmed');
   print('  ✅ No more null referralCode issues expected');
-  
+
   return true;
 }
 
@@ -255,7 +271,7 @@ Future<bool> _testRealTimeUpdates() async {
   // Check if real-time update services exist
   final files = [
     'lib/services/referral_code_cache_service.dart',
-    'lib/services/referral/referral_lookup_service.dart'
+    'lib/services/referral/referral_lookup_service.dart',
   ];
 
   for (final filePath in files) {
@@ -274,7 +290,7 @@ Future<bool> _testSecurityChecks() async {
   if (!await authServiceFile.exists()) {
     return false;
   }
-  
+
   final content = await authServiceFile.readAsString();
   return content.contains('profileWritePolicy');
 }

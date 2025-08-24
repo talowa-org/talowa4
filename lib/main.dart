@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'screens/auth/welcome_screen.dart';
 import 'screens/auth/new_login_screen.dart';
+import 'screens/auth/mobile_entry_screen.dart';
 import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
 import 'screens/dev/ai_test_screen.dart';
@@ -27,19 +29,17 @@ import 'generated/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize localization service
   // await LocalizationService.initialize();
-  
+
   // Initialize RTL support service
   // await RTLSupportService.initialize();
-  
+
   // Initialize message translation service
   // await MessageTranslationService.initialize();
-  
+
   // Initialize voice transcription service
   // await VoiceTranscriptionService.initialize();
 
@@ -63,11 +63,13 @@ void main() async {
   //   debugPrint('Failed to initialize messaging integration: $e');
   // }
 
-  // Initialize notification system
-  try {
-    await NotificationService.initialize();
-  } catch (e) {
-    debugPrint('Failed to initialize notification system: $e');
+  // Initialize notification system (skip on web to avoid console errors)
+  if (!kIsWeb) {
+    try {
+      await NotificationService.initialize();
+    } catch (e) {
+      debugPrint('Failed to initialize notification system: $e');
+    }
   }
 
   runApp(const TalowaApp());
@@ -87,43 +89,48 @@ class TalowaApp extends StatelessWidget {
       child: Consumer<LocalizationProvider>(
         builder: (context, localizationProvider, child) {
           return MaterialApp(
-      title: AppConstants.appName,
-      theme: AppTheme.lightTheme,
-      debugShowCheckedModeBanner: false,
-      
-      // Localization configuration
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: localizationProvider.supportedLocales,
-      locale: localizationProvider.currentLocale,
-      
-      home: const WelcomeScreen(),
-      routes: {
-        '/welcome': (context) => const WelcomeScreen(),
-        '/login': (context) => const NewLoginScreen(),
-        '/register': (context) => const IntegratedRegistrationScreen(),
-        '/main': (context) => const MainNavigationScreen(),
-        '/ai-test': (context) => const AITestScreen(),
-        // Land records
-        '/land/records': (context) => const LandRecordsListScreen(),
-        '/land/add': (context) => const LandRecordFormScreen(),
-      },
-      // onGenerateRoute for dynamic detail/edit routes
-      onGenerateRoute: (settings) {
-        if (settings.name == '/land/detail') {
-          final id = settings.arguments as String;
-          return MaterialPageRoute(builder: (_) => LandRecordDetailScreen(recordId: id));
-        }
-        if (settings.name == '/land/edit') {
-          final initial = settings.arguments as dynamic;
-          return MaterialPageRoute(builder: (_) => LandRecordFormScreen(initial: initial));
-        }
-        return null;
-      },
+            title: AppConstants.appName,
+            theme: AppTheme.lightTheme,
+            debugShowCheckedModeBanner: false,
+
+            // Localization configuration
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: localizationProvider.supportedLocales,
+            locale: localizationProvider.currentLocale,
+
+            home: const WelcomeScreen(),
+            routes: {
+              '/welcome': (context) => const WelcomeScreen(),
+              '/login': (context) => const NewLoginScreen(),
+              '/mobile-entry': (context) => const MobileEntryScreen(),
+              '/register': (context) => const IntegratedRegistrationScreen(),
+              '/main': (context) => const MainNavigationScreen(),
+              '/ai-test': (context) => const AITestScreen(),
+              // Land records
+              '/land/records': (context) => const LandRecordsListScreen(),
+              '/land/add': (context) => const LandRecordFormScreen(),
+            },
+            // onGenerateRoute for dynamic detail/edit routes
+            onGenerateRoute: (settings) {
+              if (settings.name == '/land/detail') {
+                final id = settings.arguments as String;
+                return MaterialPageRoute(
+                  builder: (_) => LandRecordDetailScreen(recordId: id),
+                );
+              }
+              if (settings.name == '/land/edit') {
+                final initial = settings.arguments as dynamic;
+                return MaterialPageRoute(
+                  builder: (_) => LandRecordFormScreen(initial: initial),
+                );
+              }
+              return null;
+            },
           );
         },
       ),

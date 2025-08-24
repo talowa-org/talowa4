@@ -1,890 +1,1019 @@
+// Real User Registration Screen for TALOWA
+// Regional user experience with proper validation
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
-import '../../services/hybrid_auth_service.dart';
-import '../../services/payment_service.dart';
-import '../../config/app_config.dart';
+import '../../core/constants/app_constants.dart';
+import '../../models/user_model.dart';
 
-enum RegistrationStep { mobile, otp, pin, profile, payment }
+import '../../services/database_service.dart';
+import '../../services/referral/referral_code_generator.dart';
+import 'payment_screen.dart';
+
+import '../../services/referral/universal_link_service.dart';
 
 class IntegratedRegistrationScreen extends StatefulWidget {
-  final String? initialMobile;
-  
-  const IntegratedRegistrationScreen({super.key, this.initialMobile});
+  final String? phoneNumber;
+
+  const IntegratedRegistrationScreen({super.key, this.phoneNumber});
 
   @override
-  State<IntegratedRegistrationScreen> createState() => _IntegratedRegistrationScreenState();
+  State<IntegratedRegistrationScreen> createState() =>
+      _IntegratedRegistrationScreenState();
 }
 
-class _IntegratedRegistrationScreenState extends State<IntegratedRegistrationScreen> 
-    with TickerProviderStateMixin {
+class _IntegratedRegistrationScreenState
+    extends State<IntegratedRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
-  
-  // Controllers for all steps
-  final _mobileController = TextEditingController();
-  final _otpController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _villageController = TextEditingController();
+  final _mandalController = TextEditingController();
+  final _districtController = TextEditingController();
   final _referralCodeController = TextEditingController();
-  
-  RegistrationStep _currentStep = RegistrationStep.mobile;
+
+  String _selectedState = 'Telangana';
   bool _isLoading = false;
-  bool _obscurePin = true;
-  bool _obscureConfirmPin = true;
-  String _verificationId = '';
-  String _phoneNumber = '';
-  DateTime? _selectedDate;
-  bool _acceptTerms = false;
-  
-  late AnimationController _animationController;
-  late Animation<double> _slideAnimation;
+  bool _acceptedTerms = false;
+
+  final List<String> _states = [
+    'Telangana',
+    'Andhra Pradesh',
+    'Karnataka',
+    'Maharashtra',
+    'Tamil Nadu',
+    'Kerala',
+    'Odisha',
+    'Chhattisgarh',
+  ];
+
+  final List<String> _telanganDistricts = [
+    'Hyderabad',
+    'Warangal',
+    'Khammam',
+    'Nizamabad',
+    'Karimnagar',
+    'Mahbubnagar',
+    'Nalgonda',
+    'Adilabad',
+    'Medak',
+    'Rangareddy',
+    'Other',
+  ];
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialMobile != null) {
-      _mobileController.text = widget.initialMobile!;
+
+    // Pre-fill phone number if provided
+    if (widget.phoneNumber != null) {
+      String cleanPhone = widget.phoneNumber!.replaceAll('+91', '');
+      _phoneController.text = cleanPhone;
     }
-    
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    _animationController.forward();
+
+    // Check for pending referral code from deep link
+    final pendingCode = UniversalLinkService.getPendingReferralCode();
+    if (pendingCode != null) {
+      _setReferralCode(pendingCode);
+    }
+  }
+
+  void onReferralCodeReceived(String referralCode) {
+    // Handle referral code from deep link
+    _setReferralCode(referralCode);
+
+    // Show a snackbar to inform user
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.link, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(child: Text('Referral code auto-filled: $referralCode')),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _setReferralCode(String referralCode) {
+    setState(() {
+      _referralCodeController.text = referralCode;
+    });
   }
 
   @override
-  void dispose() {
-    _mobileController.dispose();
-    _otpController.dispose();
-    _pinController.dispose();
-    _confirmPinController.dispose();
-    _nameController.dispose();
-    _emailController.dispose();
-    _referralCodeController.dispose();
-    _animationController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Join TALOWA Movement',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: AppTheme.talowaGreen,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.talowaGreen.withValues(alpha: 0.1), Colors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Welcome Message
+                  _buildWelcomeSection(),
+
+                  const SizedBox(height: 32),
+
+                  // Personal Information
+                  _buildSectionTitle('Personal Information'),
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _nameController,
+                    label: 'Full Name *',
+                    hint: 'Enter your full name',
+                    icon: Icons.person,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your full name';
+                      }
+                      if (value.trim().length < 2) {
+                        return 'Name must be at least 2 characters';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: widget.phoneNumber != null
+                        ? 'Mobile Number * (Verified)'
+                        : 'Mobile Number *',
+                    hint: '9876543210',
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.phone,
+                    readOnly: widget.phoneNumber != null,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your mobile number';
+                      }
+                      if (value.length != 10) {
+                        return 'Mobile number must be 10 digits';
+                      }
+                      if (!value.startsWith(RegExp(r'[6-9]'))) {
+                        return 'Please enter a valid Indian mobile number';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // PIN Fields
+                  _buildTextField(
+                    controller: _pinController,
+                    label: 'Create PIN *',
+                    hint: 'Enter 6-digit PIN',
+                    icon: Icons.lock,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a PIN';
+                      }
+                      if (value.length != 6) {
+                        return 'PIN must be 6 digits';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _confirmPinController,
+                    label: 'Confirm PIN *',
+                    hint: 'Re-enter your PIN',
+                    icon: Icons.lock_outline,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your PIN';
+                      }
+                      if (value != _pinController.text) {
+                        return 'PINs do not match';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Location Information
+                  _buildSectionTitle('Location Information'),
+                  const SizedBox(height: 16),
+
+                  _buildDropdownField(
+                    value: _selectedState,
+                    label: 'State *',
+                    items: _states,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedState = value!;
+                        _districtController.clear();
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  if (_selectedState == 'Telangana')
+                    _buildDropdownField(
+                      value: _districtController.text.isEmpty
+                          ? null
+                          : _districtController.text,
+                      label: 'District *',
+                      items: _telanganDistricts,
+                      onChanged: (value) {
+                        _districtController.text = value!;
+                      },
+                    )
+                  else
+                    _buildTextField(
+                      controller: _districtController,
+                      label: 'District *',
+                      hint: 'Enter your district',
+                      icon: Icons.location_city,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your district';
+                        }
+                        return null;
+                      },
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _mandalController,
+                    label: 'Mandal/Tehsil *',
+                    hint: 'Enter your mandal or tehsil',
+                    icon: Icons.location_on,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your mandal/tehsil';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _villageController,
+                    label: 'Village/City *',
+                    hint: 'Enter your village or city',
+                    icon: Icons.home,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your village/city';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Security Information
+                  _buildSectionTitle('Security Information'),
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _pinController,
+                    label: 'Create PIN *',
+                    hint: 'Enter 6-digit PIN',
+                    icon: Icons.lock,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please create a PIN';
+                      }
+                      if (value.length != 6) {
+                        return 'PIN must be exactly 6 digits';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _confirmPinController,
+                    label: 'Confirm PIN *',
+                    hint: 'Re-enter your PIN',
+                    icon: Icons.lock_outline,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your PIN';
+                      }
+                      if (value != _pinController.text) {
+                        return 'PINs do not match';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Referral Information (Optional)
+                  _buildSectionTitle('Referral Information (Optional)'),
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _referralCodeController,
+                    label: 'Referral Code',
+                    hint: 'Enter referral code if you have one',
+                    icon: Icons.people,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Terms and Conditions
+                  _buildTermsCheckbox(),
+
+                  const SizedBox(height: 32),
+
+                  // Register Button
+                  _buildRegisterButton(),
+
+                  const SizedBox(height: 16),
+
+                  // Login Link
+                  _buildLoginLink(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  // Step 1: Mobile Number Entry and OTP Request
-  Future<void> _handleMobileSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-    _phoneNumber = '+91${_mobileController.text.trim()}';
-
-    try {
-      // Check if mobile is already registered
-      final isRegistered = await HybridAuthService.isMobileRegistered(_mobileController.text.trim());
-      
-      if (isRegistered) {
-        _showErrorMessage('This mobile number is already registered. Please login instead.');
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      // Simplified OTP System - Works immediately without complex setup
-      await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _verificationId = 'DEMO_${DateTime.now().millisecondsSinceEpoch}';
-        });
-
-        _showSuccessMessage(
-          '✅ Demo OTP sent to $_phoneNumber\n\n'
-          '🔑 Use OTP: 123456 for testing\n'
-          '📱 (In production, real SMS will be sent)\n\n'
-          '💡 This demo shows the complete registration flow!'
-        );
-        _moveToNextStep();
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        _showErrorMessage('Failed to send OTP. Please try again.');
-      }
-    }
+  Widget _buildWelcomeSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.talowaGreen.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.eco, size: 48, color: AppTheme.talowaGreen),
+          const SizedBox(height: 12),
+          Text(
+            'Welcome to TALOWA',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.talowaGreen,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Join the movement for land rights and rural empowerment',
+            style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 
-  // Step 2: OTP Verification
-  Future<void> _handleOtpSubmit() async {
-    if (_otpController.text.trim().length != 6) {
-      _showErrorMessage('Please enter a valid 6-digit OTP');
-      return;
-    }
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppTheme.primaryText,
+      ),
+    );
+  }
 
-    setState(() => _isLoading = true);
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+    bool obscureText = false,
+    bool readOnly = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      validator: validator,
+      obscureText: obscureText,
+      readOnly: readOnly,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: AppTheme.talowaGreen),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+      ),
+    );
+  }
 
-    try {
-      // Simplified OTP verification - accepts demo OTP or tries Firebase
-      final enteredOtp = _otpController.text.trim();
-
-      // Demo mode: Accept 123456 as valid OTP
-      if (enteredOtp == '123456') {
-        await Future.delayed(const Duration(seconds: 1)); // Simulate verification
-        _handleOtpVerified();
-        return;
-      }
-
-      // If not demo OTP, try Firebase verification (if available)
-      if (_verificationId.startsWith('DEMO_')) {
-        // In demo mode, only accept 123456
-        throw Exception('Invalid demo OTP. Use 123456');
-      }
-
-      // Try Firebase verification for real verification IDs
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
-        smsCode: enteredOtp,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      await FirebaseAuth.instance.signOut();
-
-      _handleOtpVerified();
-    } catch (e) {
-      debugPrint('OTP verification failed: $e');
-      if (mounted) {
-        setState(() => _isLoading = false);
-        if (e.toString().contains('Invalid demo OTP')) {
-          _showErrorMessage('❌ Invalid OTP!\n\n🔑 Use: 123456 for demo\n📱 Or enter the SMS OTP if received');
-        } else {
-          _showErrorMessage('Invalid OTP. Please try again.');
+  Widget _buildDropdownField({
+    required String? value,
+    required String label,
+    required List<String> items,
+    required void Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(Icons.location_on, color: AppTheme.talowaGreen),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+      ),
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(value: item, child: Text(item));
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select $label';
         }
-      }
-    }
+        return null;
+      },
+    );
   }
 
-  void _handleOtpVerified() {
-    if (mounted) {
-      setState(() => _isLoading = false);
-      _showSuccessMessage('Phone number verified successfully!');
-      _moveToNextStep();
-    }
+  Widget _buildTermsCheckbox() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Checkbox(
+          value: _acceptedTerms,
+          onChanged: (value) {
+            setState(() {
+              _acceptedTerms = value ?? false;
+            });
+          },
+          activeColor: AppTheme.talowaGreen,
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _acceptedTerms = !_acceptedTerms;
+              });
+            },
+            child: Text(
+              'I agree to the Terms of Service and Privacy Policy of TALOWA. I understand that this app is for land rights activism and I will use it responsibly.',
+              style: TextStyle(fontSize: 14, color: AppTheme.secondaryText),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  // Step 3: PIN Creation (no account creation yet)
-  Future<void> _handlePinSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-    
-    if (_pinController.text != _confirmPinController.text) {
-      _showErrorMessage('PINs do not match');
+  Widget _buildRegisterButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: _isLoading || !_acceptedTerms ? null : _handleRegistration,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.talowaGreen,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+        ),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text(
+                'Join TALOWA Movement',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text(
+          'Already have an account? Login here',
+          style: TextStyle(
+            color: AppTheme.talowaGreen,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleRegistration() async {
+    // Validate form with null safety
+    if (_formKey.currentState?.validate() != true) {
+      _showErrorMessage('Please fill in all required fields correctly');
       return;
     }
 
-    _showSuccessMessage('PIN created successfully!');
-    _moveToNextStep();
-  }
-
-  // Step 4: Profile Information
-  Future<void> _handleProfileSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-    
-    if (!_acceptTerms) {
+    if (!_acceptedTerms) {
       _showErrorMessage('Please accept the terms and conditions');
       return;
     }
 
-    _showSuccessMessage('Profile information saved!');
-    _moveToNextStep();
+    // If phone number is already verified (came from mobile entry screen), skip verification
+    if (widget.phoneNumber != null) {
+      await _completeRegistration();
+    } else {
+      // Start phone verification process for direct registration
+      await _startPhoneVerification();
+    }
   }
 
-  // Step 5: Payment and Final Account Creation
-  Future<void> _handlePaymentAndRegistration() async {
-    setState(() => _isLoading = true);
+  String _verificationId = '';
+  final _otpController = TextEditingController();
+
+  Future<void> _startPhoneVerification() async {
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      // Create the account with all collected information
-      final result = await HybridAuthService.registerWithMobileAndPin(
-        mobileNumber: _mobileController.text.trim(),
-        pin: _pinController.text.trim(),
-      );
+      final phoneText = _phoneController.text.trim();
+      final phoneNumber = '+91$phoneText';
 
-      if (!result.success) {
-        _showErrorMessage(result.message);
+      debugPrint('Starting phone verification for: $phoneNumber');
+
+      // Check if phone number is already registered
+      final isRegistered = await DatabaseService.isPhoneRegistered(phoneNumber);
+      if (isRegistered) {
+        _showErrorMessage(
+          'This mobile number is already registered. Please login instead.',
+        );
         return;
       }
 
-      // Process payment
-      final paymentResult = await PaymentService.processMembershipPayment(
-        userId: result.user!.uid,
-        phoneNumber: _phoneNumber,
-        amount: AppConfig.membershipFee,
+      // Start Firebase phone verification
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-verification completed (Android only)
+          debugPrint('Phone verification completed automatically');
+          await _completeRegistrationWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          debugPrint('Phone verification failed: ${e.code} - ${e.message}');
+          setState(() => _isLoading = false);
+
+          String errorMessage = 'Phone verification failed. Please try again.';
+          if (e.code == 'invalid-phone-number') {
+            errorMessage = 'Invalid phone number format.';
+          } else if (e.code == 'too-many-requests') {
+            errorMessage = 'Too many requests. Please try again later.';
+          } else if (e.code == 'quota-exceeded') {
+            errorMessage = 'SMS quota exceeded. Please try again later.';
+          }
+
+          _showErrorMessage(errorMessage);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          debugPrint('OTP sent successfully. Verification ID: $verificationId');
+          setState(() {
+            _isLoading = false;
+            _verificationId = verificationId;
+          });
+          _showOtpDialog();
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          debugPrint(
+            'Code auto-retrieval timeout. Verification ID: $verificationId',
+          );
+          _verificationId = verificationId;
+        },
+        timeout: const Duration(seconds: 60),
       );
-
-      if (paymentResult.success) {
-        _showSuccessMessage('Registration and payment completed successfully!');
-        
-        // Navigate to main app
-        await Future.delayed(const Duration(seconds: 2));
-        if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-        }
-      } else {
-        _showErrorMessage('Registration successful but payment failed: ${paymentResult.message}');
-        // Still allow access to app
-        await Future.delayed(const Duration(seconds: 2));
-        if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-        }
-      }
     } catch (e) {
-      _showErrorMessage('Registration failed: ${e.toString()}');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      debugPrint('Error starting phone verification: $e');
+      setState(() => _isLoading = false);
+      _showErrorMessage('Failed to send OTP. Please try again.');
     }
   }
 
-  void _moveToNextStep() {
-    setState(() {
-      switch (_currentStep) {
-        case RegistrationStep.mobile:
-          _currentStep = RegistrationStep.otp;
-          break;
-        case RegistrationStep.otp:
-          _currentStep = RegistrationStep.pin;
-          break;
-        case RegistrationStep.pin:
-          _currentStep = RegistrationStep.profile;
-          break;
-        case RegistrationStep.profile:
-          _currentStep = RegistrationStep.payment;
-          break;
-        case RegistrationStep.payment:
-          break;
-      }
-    });
-    _animationController.reset();
-    _animationController.forward();
-
-    // Show helpful instruction for OTP step
-    if (_currentStep == RegistrationStep.otp) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showOtpInstructions();
-      });
-    }
-  }
-
-  void _showOtpInstructions() {
+  void _showOtpDialog() {
     showDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.blue),
-            SizedBox(width: 8),
-            Text('OTP Instructions'),
-          ],
-        ),
+        title: const Text('Verify Phone Number'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '📱 Demo Mode Active',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            const Text('🔑 Use OTP: 123456'),
-            const SizedBox(height: 8),
-            const Text('This demonstrates the complete registration flow.'),
-            const SizedBox(height: 8),
-            const Text('In production, you would receive a real SMS with the OTP.'),
+            Text('Enter the 6-digit OTP sent to +91${_phoneController.text}'),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green.shade200),
-              ),
-              child: const Text(
-                '✅ Just enter: 123456',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 16,
-                ),
+            TextField(
+              controller: _otpController,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              decoration: const InputDecoration(
+                labelText: 'Enter OTP',
+                border: OutlineInputBorder(),
               ),
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Got it!'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() => _isLoading = false);
+            },
+            child: const Text('Cancel'),
           ),
+          ElevatedButton(onPressed: _verifyOtp, child: const Text('Verify')),
         ],
       ),
     );
   }
 
-  void _moveToPreviousStep() {
-    setState(() {
-      switch (_currentStep) {
-        case RegistrationStep.mobile:
-          break;
-        case RegistrationStep.otp:
-          _currentStep = RegistrationStep.mobile;
-          break;
-        case RegistrationStep.pin:
-          _currentStep = RegistrationStep.otp;
-          break;
-        case RegistrationStep.profile:
-          _currentStep = RegistrationStep.pin;
-          break;
-        case RegistrationStep.payment:
-          _currentStep = RegistrationStep.profile;
-          break;
-      }
-    });
-    _animationController.reset();
-    _animationController.forward();
-  }
+  Future<void> _verifyOtp() async {
+    final otp = _otpController.text.trim();
+    if (otp.length != 6) {
+      _showErrorMessage('Please enter a valid 6-digit OTP');
+      return;
+    }
 
-  void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: otp,
+      );
 
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Join TALOWA Movement'),
-        backgroundColor: AppTheme.talowaGreen,
-        foregroundColor: Colors.white,
-        leading: _currentStep != RegistrationStep.mobile
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _moveToPreviousStep,
-              )
-            : null,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1.0, 0.0),
-              end: Offset.zero,
-            ).animate(_slideAnimation),
-            child: _buildStepContent(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepContent() {
-    switch (_currentStep) {
-      case RegistrationStep.mobile:
-        return _buildMobileStep();
-      case RegistrationStep.otp:
-        return _buildOtpStep();
-      case RegistrationStep.pin:
-        return _buildPinStep();
-      case RegistrationStep.profile:
-        return _buildProfileStep();
-      case RegistrationStep.payment:
-        return _buildPaymentStep();
+      Navigator.of(context).pop(); // Close OTP dialog
+      await _completeRegistrationWithCredential(credential);
+    } catch (e) {
+      debugPrint('OTP verification failed: $e');
+      _showErrorMessage('Invalid OTP. Please try again.');
     }
   }
 
-  Widget _buildMobileStep() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Enter Your Mobile Number',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'We\'ll send you an OTP to verify your number',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _mobileController,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(10),
-            ],
-            decoration: InputDecoration(
-              labelText: 'Mobile Number',
-              prefixText: '+91 ',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.phone),
-            ),
-            validator: (value) {
-              if (value == null || value.length != 10) {
-                return 'Please enter a valid 10-digit mobile number';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _handleMobileSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.talowaGreen,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      'Send OTP',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> _completeRegistration() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        _showErrorMessage('User not authenticated');
+        return;
+      }
+
+      await _createUserProfile(user);
+    } catch (e) {
+      debugPrint('Registration failed: $e');
+      _showErrorMessage('Registration failed: ${e.toString()}');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
-  Widget _buildOtpStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Enter OTP',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'We\'ve sent a 6-digit OTP to $_phoneNumber',
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 32),
-        TextFormField(
-          controller: _otpController,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(6),
-          ],
-          decoration: InputDecoration(
-            labelText: 'Enter 6-digit OTP',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            prefixIcon: const Icon(Icons.security),
-          ),
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 8,
-          ),
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _handleOtpSubmit,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.talowaGreen,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: _isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    'Verify OTP',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-          ),
-        ),
-      ],
-    );
+  Future<void> _completeRegistrationWithCredential(
+    PhoneAuthCredential credential,
+  ) async {
+    setState(() => _isLoading = true);
+
+    try {
+      // Sign in with phone credential
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final user = userCredential.user;
+
+      if (user == null) {
+        _showErrorMessage('Failed to verify phone number');
+        return;
+      }
+
+      await _createUserProfile(user);
+    } catch (e) {
+      debugPrint('Registration failed: $e');
+      _showErrorMessage('Registration failed: ${e.toString()}');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
-  Widget _buildPinStep() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Create Your PIN',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+  Future<void> _createUserProfile(User user) async {
+    try {
+      // Collect form data
+      final nameText = _nameController.text.trim();
+      final phoneText = _phoneController.text.trim();
+      final pinText = _pinController.text.trim();
+
+      final phoneNumber = '+91$phoneText';
+
+      // Get referral code if provided
+      final referralCodeText = _referralCodeController.text.trim();
+      final referralCode = referralCodeText.isEmpty ? null : referralCodeText;
+
+      // Get current Firebase Auth user (created during phone verification)
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        debugPrint('❌ No authenticated user found');
+        _showErrorMessage('Authentication error. Please restart registration.');
+        // Navigate back to mobile entry
+        Navigator.pushReplacementNamed(context, '/mobile-entry');
+        return;
+      }
+      debugPrint('✅ Found authenticated user: ${currentUser.uid}');
+
+      // Create email/password credentials for login compatibility
+      final fakeEmail = '$phoneNumber@talowa.app';
+      final hashedPin = 'talowa_${pinText}_secure';
+
+      try {
+        // Link email/password to the existing phone auth user
+        final emailCredential = EmailAuthProvider.credential(
+          email: fakeEmail,
+          password: hashedPin,
+        );
+
+        await currentUser.linkWithCredential(emailCredential);
+        debugPrint(
+          '✅ Email/password credentials linked for login compatibility',
+        );
+      } catch (e) {
+        debugPrint('⚠️ Could not link email/password credentials: $e');
+        // Continue with registration - PIN will be stored in Firestore
+      }
+
+      // Create user profile and registry for the existing Firebase Auth user
+      final userAddress = Address(
+        state: _selectedState,
+        district: _districtController.text.trim(),
+        mandal: _mandalController.text.trim(),
+        villageCity: _villageController.text.trim(),
+      );
+
+      // Generate referral code with error handling
+      String newReferralCode;
+      try {
+        newReferralCode = await ReferralCodeGenerator.generateUniqueCode();
+        debugPrint('✅ Generated referral code: $newReferralCode');
+      } catch (e) {
+        debugPrint('⚠️ Referral code generation failed: $e');
+        // Fallback to a simple unique code
+        newReferralCode =
+            'TAL${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+        debugPrint('🔄 Using fallback referral code: $newReferralCode');
+      }
+
+      // Create user profile directly with error handling
+      try {
+        await DatabaseService.createUserProfile(
+          UserModel(
+            id: currentUser.uid,
+            fullName: nameText,
+            email: '$phoneNumber@talowa.app',
+            phoneNumber: phoneNumber,
+            role: AppConstants.roleMember,
+            memberId: 'TAL${DateTime.now().millisecondsSinceEpoch}',
+            referralCode: newReferralCode,
+            referredBy: referralCode,
+            address: userAddress,
+            directReferrals: 0,
+            teamSize: 0,
+            membershipPaid: false,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            preferences: UserPreferences.defaultPreferences(),
+            pinHash: hashedPin, // Store PIN hash for authentication
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Create a 6-digit PIN to secure your account',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _pinController,
-            obscureText: _obscurePin,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            decoration: InputDecoration(
-              labelText: 'Create PIN',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.lock),
-              suffixIcon: IconButton(
-                icon: Icon(_obscurePin ? Icons.visibility : Icons.visibility_off),
-                onPressed: () => setState(() => _obscurePin = !_obscurePin),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.length != 6) {
-                return 'PIN must be exactly 6 digits';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _confirmPinController,
-            obscureText: _obscureConfirmPin,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            decoration: InputDecoration(
-              labelText: 'Confirm PIN',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.lock_outline),
-              suffixIcon: IconButton(
-                icon: Icon(_obscureConfirmPin ? Icons.visibility : Icons.visibility_off),
-                onPressed: () => setState(() => _obscureConfirmPin = !_obscureConfirmPin),
+        );
+        debugPrint('✅ User profile created successfully');
+      } catch (e) {
+        debugPrint('⚠️ User profile creation failed: $e');
+        _showErrorMessage('Failed to create user profile: $e');
+        return;
+      }
+
+      // Create user registry entry with error handling
+      try {
+        await DatabaseService.createUserRegistry(
+          phoneNumber: phoneNumber,
+          uid: currentUser.uid,
+          email: '$phoneNumber@talowa.app',
+          role: AppConstants.roleMember,
+          state: _selectedState,
+          district: _districtController.text.trim(),
+          mandal: _mandalController.text.trim(),
+          village: _villageController.text.trim(),
+        );
+        debugPrint('✅ User registry created successfully');
+      } catch (e) {
+        debugPrint('⚠️ User registry creation failed: $e');
+        // Don't return here as profile is already created
+      }
+
+      // Get the created user profile
+      final userProfile = await DatabaseService.getUserProfile(currentUser.uid);
+      if (userProfile == null) {
+        _showErrorMessage('Failed to create user profile');
+        return;
+      }
+
+      final finalReferralCode = userProfile.referralCode;
+      _showSuccessMessage(
+        'Registration successful! Your referral code: $finalReferralCode',
+      );
+
+      // Navigate to payment screen after a short delay
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        try {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentScreen(
+                phoneNumber: phoneNumber,
+                fullName: _nameController.text.trim(),
+                email: '$phoneNumber@talowa.app',
+                referralCode: finalReferralCode,
               ),
             ),
-            validator: (value) {
-              if (value == null || value.length != 6) {
-                return 'Please confirm your PIN';
-              }
-              if (value != _pinController.text) {
-                return 'PINs do not match';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _handlePinSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.talowaGreen,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      'Create PIN',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        } catch (e) {
+          debugPrint('⚠️ Payment screen navigation failed: $e');
+          // Fallback: Navigate directly to main app
+          Navigator.pushReplacementNamed(context, '/main');
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Registration error: $e');
+      debugPrint('Stack trace: $stackTrace');
+
+      String errorMessage = 'Registration failed. Please try again.';
+
+      // Provide more specific error messages
+      if (e.toString().contains('network')) {
+        errorMessage =
+            'Network error. Please check your internet connection and try again.';
+      } else if (e.toString().contains('firebase')) {
+        errorMessage =
+            'Service temporarily unavailable. Please try again in a few moments.';
+      } else if (e.toString().contains('phone')) {
+        errorMessage =
+            'Invalid phone number format. Please check and try again.';
+      }
+
+      _showErrorMessage(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  Widget _buildProfileStep() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Complete Your Profile',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+  void _showSuccessMessage(String message) {
+    try {
+      if (mounted && context.mounted) {
+        final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+        if (scaffoldMessenger != null) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
             ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Tell us a bit about yourself',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'Full Name *',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.person),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your full name';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email (Optional)',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.email),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _referralCodeController,
-            decoration: InputDecoration(
-              labelText: 'Referral Code (Optional)',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.group),
-            ),
-          ),
-          const SizedBox(height: 24),
-          CheckboxListTile(
-            value: _acceptTerms,
-            onChanged: (value) => setState(() => _acceptTerms = value ?? false),
-            title: const Text('I accept the Terms of Service and Privacy Policy'),
-            controlAffinity: ListTileControlAffinity.leading,
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _handleProfileSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.talowaGreen,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      'Continue to Payment',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        } else {
+          // Fallback: print to console if ScaffoldMessenger not available
+          debugPrint('Success message (no ScaffoldMessenger): $message');
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to show success message: $e');
+      debugPrint('Original success message: $message');
+    }
   }
 
-  Widget _buildPaymentStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Complete Your Registration',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Final step: Complete payment to activate your account',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 32),
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.green.shade50,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.green.shade200),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                Icons.payment,
-                size: 48,
-                color: Colors.green.shade600,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'TALOWA Membership',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'One-time membership fee: ₹${AppConfig.membershipFee.toInt()}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Benefits:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('• Access to TALOWA network'),
-                  Text('• Referral earning opportunities'),
-                  Text('• Land rights advocacy support'),
-                  Text('• Community networking'),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 32),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _isLoading ? null : () {
-                  // Skip payment for now - still create account
-                  _handlePaymentAndRegistration();
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.talowaGreen,
-                  side: BorderSide(color: AppTheme.talowaGreen),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Skip Payment',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
+  void _showErrorMessage(String message) {
+    try {
+      if (mounted && context.mounted) {
+        final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+        if (scaffoldMessenger != null) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _handlePaymentAndRegistration,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.talowaGreen,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Pay & Register',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Note: You can skip payment for now and complete it later. You\'ll still have access to basic features.',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-            fontStyle: FontStyle.italic,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+          );
+        } else {
+          // Fallback: print to console if ScaffoldMessenger not available
+          debugPrint('Error message (no ScaffoldMessenger): $message');
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to show error message: $e');
+      debugPrint('Original error message: $message');
+    }
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _pinController.dispose();
+    _confirmPinController.dispose();
+    _nameController.dispose();
+    _villageController.dispose();
+    _mandalController.dispose();
+    _districtController.dispose();
+    _referralCodeController.dispose();
+    super.dispose();
   }
 }
