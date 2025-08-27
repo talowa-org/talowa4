@@ -479,7 +479,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
             const SizedBox(width: 8),
             Expanded(child: Text(message)),
           ],
@@ -643,25 +643,25 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           // Header
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.talowaGreen,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.smart_toy,
                   color: Colors.white,
                   size: 24,
                 ),
                 const SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: Text(
                     'TALOWA AI Assistant',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -734,7 +734,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             color: AppTheme.talowaGreen.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Welcome to TALOWA AI Assistant',
             style: TextStyle(
               fontSize: 18,
@@ -743,7 +743,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Ask me anything about land rights, legal support, or app navigation',
             style: TextStyle(
               fontSize: 14,
@@ -765,10 +765,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!message.isUser) ...[
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
               backgroundColor: AppTheme.talowaGreen,
-              child: const Icon(
+              child: Icon(
                 Icons.smart_toy,
                 size: 16,
                 color: Colors.white,
@@ -819,7 +819,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             CircleAvatar(
               radius: 16,
               backgroundColor: AppTheme.talowaGreen.withOpacity(0.2),
-              child: Icon(
+              child: const Icon(
                 Icons.person,
                 size: 16,
                 color: AppTheme.talowaGreen,
@@ -868,7 +868,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
               ),
               onPressed: () => _useSuggestion(_suggestions[index]),
               backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
-              labelStyle: TextStyle(color: AppTheme.talowaGreen),
+              labelStyle: const TextStyle(color: AppTheme.talowaGreen),
             ),
           );
         },
@@ -967,7 +967,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
             child: Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.talowaGreen,
                 shape: BoxShape.circle,
               ),

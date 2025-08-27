@@ -66,7 +66,7 @@ void main() {
       });
 
       test('Session management security', () async {
-        final userId = 'test_user_session';
+        const userId = 'test_user_session';
         
         // Create session
         final sessionId = await authService.createSession(userId);
@@ -78,8 +78,8 @@ void main() {
         expect(sessionValid, isTrue);
 
         // Test session timeout
-        await authService.setSessionTimeout(sessionId, Duration(milliseconds: 100));
-        await Future.delayed(Duration(milliseconds: 200));
+        await authService.setSessionTimeout(sessionId, const Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 200));
         final expiredSessionValid = await authService.validateSession(sessionId);
         expect(expiredSessionValid, isFalse);
 
@@ -542,7 +542,7 @@ void main() {
         expect(deletionResult.deletionId, isNotNull);
         
         // Wait for deletion processing
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         
         // Verify data is deleted
         final deletedProfile = await authService.getUserProfile(userId);
@@ -816,7 +816,7 @@ void main() {
         final criticalAlerts = alertsGenerated.where((a) => a.severity == 'critical');
         for (final alert in criticalAlerts) {
           final response = await authService.getAlertResponse(alert.id);
-          expect(response.responseTime, lessThan(Duration(minutes: 5)));
+          expect(response.responseTime, lessThan(const Duration(minutes: 5)));
           expect(response.actionTaken, isNotNull);
         }
       });
@@ -833,7 +833,7 @@ void main() {
         // Retrieve audit logs
         final auditLogs = await authService.getAuditLogs(
           userId: userId,
-          startTime: DateTime.now().subtract(Duration(hours: 1)),
+          startTime: DateTime.now().subtract(const Duration(hours: 1)),
           endTime: DateTime.now(),
         );
         
@@ -868,7 +868,7 @@ void main() {
 
 Future<String> _generateExpiredToken(String userId) async {
   // Generate a token that's already expired
-  final expiredTime = DateTime.now().subtract(Duration(hours: 1));
+  final expiredTime = DateTime.now().subtract(const Duration(hours: 1));
   return 'expired_token_for_$userId';
 }
 
@@ -885,7 +885,7 @@ Future<void> _simulateUnusualLoginPattern(String userId) async {
   final locations = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai'];
   for (final location in locations) {
     await AuthService().recordLoginAttempt(userId, location);
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
   }
 }
 

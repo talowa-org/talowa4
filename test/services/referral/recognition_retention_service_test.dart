@@ -54,7 +54,7 @@ void main() {
           secondaryColor: Colors.lightBlue,
           confettiColors: ['#FFD700', '#FF6B6B'],
           soundEffect: 'celebration.mp3',
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
 
         expect(animation['type'], equals('promotion'));
@@ -77,7 +77,7 @@ void main() {
           secondaryColor: Colors.lightGreen,
           confettiColors: ['#00FF00'],
           soundEffect: 'achievement.mp3',
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         );
 
         expect(animation['animations']['fireworks']['enabled'], isFalse);
@@ -420,7 +420,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test recognition error';
-        final exception = RecognitionRetentionException(message);
+        final exception = const RecognitionRetentionException(message);
 
         expect(exception.code, equals('RECOGNITION_RETENTION_FAILED'));
         expect(exception.context, isNull);

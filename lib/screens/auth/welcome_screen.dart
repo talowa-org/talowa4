@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import 'new_login_screen.dart';
+import '../../auth/login.dart';
 import 'mobile_entry_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -123,7 +123,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
             ],
           ),
-          child: Stack(
+          child: const Stack(
             alignment: Alignment.center,
             children: [
               // Mountain peaks icon
@@ -135,7 +135,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         const SizedBox(height: 40),
 
         // Organization Name
-        Text(
+        const Text(
           'Telangana Assigned Land Owners Welfare\nAssociation',
           style: TextStyle(
             fontSize: 24,
@@ -149,7 +149,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         const SizedBox(height: 16),
 
         // Mission Statement
-        Text(
+        const Text(
           'Empowering landowners, preserving rights, and\nuniting voices across Telangana.',
           style: TextStyle(
             fontSize: 16,
@@ -175,7 +175,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NewLoginScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -211,18 +211,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppTheme.talowaGreen,
-              side: BorderSide(color: AppTheme.talowaGreen, width: 2),
+              side: const BorderSide(color: AppTheme.talowaGreen, width: 2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
               backgroundColor: Colors.white,
             ),
-            icon: Icon(
+            icon: const Icon(
               Icons.app_registration,
               size: 20,
               color: AppTheme.talowaGreen,
             ),
-            label: Text(
+            label: const Text(
               'Join TALOWA Movement',
               style: TextStyle(
                 fontSize: 18,

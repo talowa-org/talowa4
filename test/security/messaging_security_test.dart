@@ -2,7 +2,6 @@
 // Tests encryption validation, authentication, and security vulnerabilities
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -17,7 +16,6 @@ import 'package:talowa/services/messaging/integrated_security_service.dart';
 
 // Import models
 import 'package:talowa/models/message_model.dart';
-import 'package:talowa/models/user_model.dart';
 
 class SecurityTestUtils {
   static String generateRandomString(int length) {

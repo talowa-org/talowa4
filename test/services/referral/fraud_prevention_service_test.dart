@@ -292,7 +292,7 @@ void main() {
           'userId': userId,
           'activityType': 'rate_limit_exceeded',
           'details': {'test': 'data2'},
-          'timestamp': DateTime.now().subtract(Duration(hours: 1)),
+          'timestamp': DateTime.now().subtract(const Duration(hours: 1)),
           'resolved': false,
         });
         
@@ -360,7 +360,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test fraud prevention error';
-        final exception = FraudPreventionException(message);
+        final exception = const FraudPreventionException(message);
 
         expect(exception.code, equals('FRAUD_PREVENTION_FAILED'));
         expect(exception.context, isNull);

@@ -118,11 +118,11 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Row(
+      title: const Row(
         children: [
-          const Icon(Icons.eco, color: Colors.white, size: 32),
-          const SizedBox(width: 8),
-          const Text(
+          Icon(Icons.eco, color: Colors.white, size: 32),
+          SizedBox(width: 8),
+          Text(
             'TALOWA Feed',
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -278,7 +278,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
                     ),
                     child: Text(
                       '#$hashtag',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppTheme.talowaGreen,
                         fontWeight: FontWeight.w600,
@@ -902,7 +902,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
                           );
                         }
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.send,
                         color: AppTheme.talowaGreen,
                       ),

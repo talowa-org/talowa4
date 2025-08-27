@@ -2,7 +2,6 @@
 // Implements Task 18: Add security and content safety - Content Warnings
 
 import 'package:flutter/material.dart';
-import '../../services/security/content_moderation_service.dart';
 
 class ContentWarningWidget extends StatefulWidget {
   final Widget child;

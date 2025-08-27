@@ -200,7 +200,7 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.favorite, size: 16, color: Colors.red),
+              const Icon(Icons.favorite, size: 16, color: Colors.red),
               const SizedBox(width: 4),
               Text(
                 '${widget.post.likesCount}',
@@ -371,7 +371,7 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(color: AppTheme.talowaGreen),
+                    borderSide: const BorderSide(color: AppTheme.talowaGreen),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -385,7 +385,7 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
             ),
             const SizedBox(width: 8),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.talowaGreen,
                 shape: BoxShape.circle,
               ),

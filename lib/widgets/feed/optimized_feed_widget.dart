@@ -565,7 +565,7 @@ class _OptimizedPostCardState extends State<OptimizedPostCard>
       runSpacing: 4,
       children: widget.post.hashtags.take(3).map((hashtag) => Text(
         '#$hashtag',
-        style: TextStyle(
+        style: const TextStyle(
           color: AppTheme.talowaGreen,
           fontWeight: FontWeight.w600,
           fontSize: 12,

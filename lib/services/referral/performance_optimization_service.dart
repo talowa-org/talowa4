@@ -194,7 +194,7 @@ class PerformanceOptimizationService {
         
         // Small delay between batches to avoid rate limiting
         if (i + DEFAULT_BATCH_SIZE < userIds.length) {
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
         }
       }
     } catch (e) {
@@ -415,7 +415,7 @@ class PerformanceOptimizationService {
           // This would fetch global statistics
           return {'preloaded': true};
         },
-        cacheDuration: Duration(minutes: 10),
+        cacheDuration: const Duration(minutes: 10),
       );
     } catch (e) {
       print('Warning: Failed to preload frequent data: $e');

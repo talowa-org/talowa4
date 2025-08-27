@@ -5,7 +5,7 @@ import 'package:talowa/services/auth_service.dart';
 
 void main() {
   testWidgets('Back navigation preserves session', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: NetworkScreen()));
+    await tester.pumpWidget(const MaterialApp(home: NetworkScreen()));
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
     // Assert user is still authenticated

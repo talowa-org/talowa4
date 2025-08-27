@@ -191,7 +191,7 @@ void main() {
             calls.add(loadTestEnv.initiateVoiceCall(
               callerId: 'caller_${condition['name']}_$i',
               calleeId: 'callee_${condition['name']}_$i',
-              duration: Duration(minutes: 2),
+              duration: const Duration(minutes: 2),
             ));
           }
           
@@ -465,7 +465,7 @@ void main() {
         // Validate graceful degradation
         expect(result.systemCrashed, isFalse);
         expect(result.gracefulDegradation, isTrue);
-        expect(result.recoveryTime, lessThan(Duration(minutes: 5)));
+        expect(result.recoveryTime, lessThan(const Duration(minutes: 5)));
         
         await metrics.recordTestResult('stress_test', {
           'stress_users': stressUsers,
@@ -484,7 +484,7 @@ void main() {
         expect(backupTest.backupSuccess, isTrue);
         expect(backupTest.restoreSuccess, isTrue);
         expect(backupTest.dataIntegrity, equals(1.0)); // 100% data integrity
-        expect(backupTest.restoreTime, lessThan(Duration(minutes: 30)));
+        expect(backupTest.restoreTime, lessThan(const Duration(minutes: 30)));
         
         await metrics.recordTestResult('backup_restore_test', {
           'backup_success': backupTest.backupSuccess,
@@ -509,7 +509,7 @@ void main() {
           recoveryResults[scenario] = result;
           
           expect(result.recoverySuccess, isTrue);
-          expect(result.recoveryTime, lessThan(Duration(minutes: 10)));
+          expect(result.recoveryTime, lessThan(const Duration(minutes: 10)));
           expect(result.dataLoss, equals(0.0)); // No data loss
         }
         
@@ -708,7 +708,7 @@ Future<UserScenarioResult> _executeCompleteUserScenario(TestUser user, int scena
   // Implementation for complete user scenario testing
   return UserScenarioResult(
     success: true,
-    totalTime: Duration(seconds: 30),
+    totalTime: const Duration(seconds: 30),
     completedSteps: ['registration', 'messaging', 'voice_call', 'file_share'],
     errors: [],
   );
@@ -719,7 +719,7 @@ Future<MessagingResult> _executeMessagingScenario(TestUser sender, TestUser reci
   return MessagingResult(
     success: true,
     messagesSent: messageCount,
-    averageLatency: Duration(milliseconds: 500),
+    averageLatency: const Duration(milliseconds: 500),
     errors: [],
   );
 }
@@ -728,7 +728,7 @@ Future<GroupMessagingResult> _executeGroupMessagingScenario(TestGroup group, int
   // Implementation for group messaging scenario testing
   return GroupMessagingResult(
     success: true,
-    averageBroadcastTime: Duration(seconds: 3),
+    averageBroadcastTime: const Duration(seconds: 3),
     deliveryRate: 0.98,
     errors: [],
   );
@@ -755,7 +755,7 @@ Future<EmergencyBroadcastResult> _executeEmergencyBroadcast({
 }) async {
   // Implementation for emergency broadcast testing
   return EmergencyBroadcastResult(
-    deliveryTime: Duration(seconds: 25),
+    deliveryTime: const Duration(seconds: 25),
     deliveryRate: 0.97,
     totalRecipients: recipients.length,
   );
@@ -769,7 +769,7 @@ Future<AnonymousReportResult> _executeAnonymousReport({
   // Implementation for anonymous reporting testing
   return AnonymousReportResult(
     privacyProtected: true,
-    processingTime: Duration(milliseconds: 800),
+    processingTime: const Duration(milliseconds: 800),
     caseId: 'CASE_${DateTime.now().millisecondsSinceEpoch}',
   );
 }
@@ -889,7 +889,7 @@ class StressTest {
     return StressTestResult(
       systemCrashed: false,
       gracefulDegradation: true,
-      recoveryTime: Duration(minutes: 3),
+      recoveryTime: const Duration(minutes: 3),
     );
   }
 }
@@ -901,7 +901,7 @@ Future<BackupRestoreTestResult> _testBackupAndRestore() async {
     backupSuccess: true,
     restoreSuccess: true,
     dataIntegrity: 1.0,
-    restoreTime: Duration(minutes: 15),
+    restoreTime: const Duration(minutes: 15),
   );
 }
 
@@ -909,7 +909,7 @@ Future<FailureRecoveryResult> _simulateSystemFailure(String failureType) async {
   // Implementation for system failure simulation
   return FailureRecoveryResult(
     recoverySuccess: true,
-    recoveryTime: Duration(minutes: 5),
+    recoveryTime: const Duration(minutes: 5),
     dataLoss: 0.0,
   );
 }

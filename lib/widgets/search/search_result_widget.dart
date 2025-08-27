@@ -183,9 +183,9 @@ class SearchResultWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundColor: Colors.orange,
-          child: const Icon(Icons.topic, color: Colors.white),
+          child: Icon(Icons.topic, color: Colors.white),
         ),
         title: _buildHighlightedText(result.title, query),
         subtitle: Text(

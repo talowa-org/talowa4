@@ -201,7 +201,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test error';
-        final exception = UniversalLinkException(message);
+        final exception = const UniversalLinkException(message);
 
         expect(exception.code, equals('UNIVERSAL_LINK_FAILED'));
         expect(exception.context, isNull);

@@ -61,7 +61,7 @@ class _ArticleRatingWidgetState extends State<ArticleRatingWidget> {
 
           // Rating text
           if (_hasRated)
-            Text(
+            const Text(
               'Thank you for rating this article!',
               style: TextStyle(
                 fontSize: 14,
@@ -143,13 +143,13 @@ class _ArticleRatingWidgetState extends State<ArticleRatingWidget> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Additional Feedback'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Help us improve this article:'),
-            const SizedBox(height: 16),
+            Text('Help us improve this article:'),
+            SizedBox(height: 16),
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Your feedback...',
                 border: OutlineInputBorder(),
               ),

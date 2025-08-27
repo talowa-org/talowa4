@@ -67,7 +67,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
                 Colors.purple,
                 Colors.blue,
@@ -300,7 +300,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
               // Engagement stats
               Row(
                 children: [
-                  Icon(Icons.favorite, size: 16, color: Colors.red),
+                  const Icon(Icons.favorite, size: 16, color: Colors.red),
                   const SizedBox(width: 4),
                   Text(
                     '${post.likesCount}',
@@ -314,7 +314,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const Spacer(),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
                     color: AppTheme.talowaGreen,
@@ -429,7 +429,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                   const SizedBox(height: AppTheme.spacingSmall),
                   Row(
                     children: [
-                      Icon(Icons.favorite, size: 14, color: Colors.red),
+                      const Icon(Icons.favorite, size: 14, color: Colors.red),
                       const SizedBox(width: 4),
                       Text(
                         '${post.likesCount}',

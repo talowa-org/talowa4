@@ -58,8 +58,8 @@ class _DeepLinkHandlerState extends State<DeepLinkHandler> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.link, color: Colors.white),
-                SizedBox(width: 8),
+                const Icon(Icons.link, color: Colors.white),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text('Referral code received: $referralCode'),
                 ),
@@ -90,8 +90,8 @@ class _DeepLinkHandlerState extends State<DeepLinkHandler> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.error, color: Colors.white),
-                SizedBox(width: 8),
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text('Link error: $error'),
                 ),
@@ -181,14 +181,14 @@ class ReferralLinkSharingWidget extends StatelessWidget {
     
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 Icon(Icons.share, color: Theme.of(context).primaryColor),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(
                   'Share Your Referral Link',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -198,10 +198,10 @@ class ReferralLinkSharingWidget extends StatelessWidget {
               ],
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(8),
@@ -217,7 +217,7 @@ class ReferralLinkSharingWidget extends StatelessWidget {
                       color: Colors.grey[700],
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   SelectableText(
                     referralLink,
                     style: TextStyle(
@@ -230,7 +230,7 @@ class ReferralLinkSharingWidget extends StatelessWidget {
               ),
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             Row(
               children: [
@@ -240,11 +240,11 @@ class ReferralLinkSharingWidget extends StatelessWidget {
                       // Copy link to clipboard
                       _copyToClipboard(context, referralLink);
                     },
-                    icon: Icon(Icons.copy),
-                    label: Text('Copy Link'),
+                    icon: const Icon(Icons.copy),
+                    label: const Text('Copy Link'),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
@@ -252,8 +252,8 @@ class ReferralLinkSharingWidget extends StatelessWidget {
                       _shareLink(referralLink);
                       onShare?.call();
                     },
-                    icon: Icon(Icons.share),
-                    label: Text('Share'),
+                    icon: const Icon(Icons.share),
+                    label: const Text('Share'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Colors.white,
@@ -263,7 +263,7 @@ class ReferralLinkSharingWidget extends StatelessWidget {
               ],
             ),
             
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             
             Text(
               'Share this link with friends and family to invite them to join TALOWA!',
@@ -282,7 +282,7 @@ class ReferralLinkSharingWidget extends StatelessWidget {
   void _copyToClipboard(BuildContext context, String link) {
     // Implementation would use Clipboard.setData
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Row(
           children: [
             Icon(Icons.check_circle, color: Colors.white),
@@ -331,7 +331,7 @@ class _DeepLinkTesterState extends State<DeepLinkTester> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -339,35 +339,35 @@ class _DeepLinkTesterState extends State<DeepLinkTester> {
               'Deep Link Tester',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             TextField(
               controller: _codeController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Referral Code',
                 border: OutlineInputBorder(),
                 hintText: 'TAL8K9M2X',
               ),
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             ElevatedButton(
               onPressed: _testDeepLink,
-              child: Text('Test Deep Link'),
+              child: const Text('Test Deep Link'),
             ),
             
             if (_lastResult != null) ...[
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Result: $_lastResult',
-                  style: TextStyle(fontFamily: 'monospace'),
+                  style: const TextStyle(fontFamily: 'monospace'),
                 ),
               ),
             ],

@@ -26,7 +26,7 @@ class NetworkStatsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Network Overview',
               style: AppTheme.heading3Style,
             ),

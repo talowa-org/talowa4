@@ -46,37 +46,35 @@ class DefaultFirebaseOptions {
     appId: '1:132354679195:android:0d857b6e7f33760683013e',
     messagingSenderId: '132354679195',
     projectId: 'talowa',
-    authDomain: 'talowa.firebaseapp.com',
     storageBucket: 'talowa.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBEZwrO7edBTlfbGtKyH9Z0M7DcXthDZ6Q',
+    apiKey: 'AIzaSyBuPqk3p25GH0RJI_VGo5MUCq9QGibQbuM',
     appId: '1:132354679195:ios:88abaa5b815f955883013e',
     messagingSenderId: '132354679195',
     projectId: 'talowa',
-    authDomain: 'talowa.firebaseapp.com',
     storageBucket: 'talowa.firebasestorage.app',
     iosBundleId: 'com.example.talowa',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBEZwrO7edBTlfbGtKyH9Z0M7DcXthDZ6Q',
+    apiKey: 'AIzaSyBuPqk3p25GH0RJI_VGo5MUCq9QGibQbuM',
     appId: '1:132354679195:ios:88abaa5b815f955883013e',
     messagingSenderId: '132354679195',
     projectId: 'talowa',
-    authDomain: 'talowa.firebaseapp.com',
     storageBucket: 'talowa.firebasestorage.app',
     iosBundleId: 'com.example.talowa',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBEZwrO7edBTlfbGtKyH9Z0M7DcXthDZ6Q',
+    apiKey: 'AIzaSyBkqk0UpmgGCabHRSQK3V9oH7Dxb5sa9Vk',
     appId: '1:132354679195:web:89037424c20b677483013e',
     messagingSenderId: '132354679195',
     projectId: 'talowa',
     authDomain: 'talowa.firebaseapp.com',
     storageBucket: 'talowa.firebasestorage.app',
-    measurementId: 'G-4L640E27ZN',
+    measurementId: 'G-VWSTHMXX82',
   );
+
 }

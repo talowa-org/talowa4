@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 
 void main() async {
   print('🧪 TALOWA Fixes Verification - Chrome Automated Test');
@@ -110,9 +109,9 @@ void main() async {
         final timeDiff = now.difference(buildTime).inMinutes;
 
         if (timeDiff < 10) {
-          print('✅ Build is recent (${timeDiff} minutes ago)');
+          print('✅ Build is recent ($timeDiff minutes ago)');
         } else {
-          print('⚠️  Build is older than expected (${timeDiff} minutes ago)');
+          print('⚠️  Build is older than expected ($timeDiff minutes ago)');
         }
       } else {
         print('❌ Required build files missing');

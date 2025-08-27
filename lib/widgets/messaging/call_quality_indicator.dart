@@ -43,7 +43,7 @@ class CallQualityIndicator extends StatelessWidget {
 
   Widget _buildQualityBars() {
     final score = quality.overallScore;
-    final bars = 4;
+    const bars = 4;
     final activeBars = (score / 25).ceil().clamp(0, bars);
 
     return Row(

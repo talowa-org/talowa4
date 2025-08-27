@@ -150,7 +150,7 @@ class TestEnvironment {
   }) async {
     final testPhone = phoneNumber ?? _generateTestPhoneNumber();
     final testEmail = '$testPhone@talowa.app';
-    final testPin = '1234';
+    const testPin = '1234';
     
     try {
       debugPrint('👤 Creating test user: $testPhone');

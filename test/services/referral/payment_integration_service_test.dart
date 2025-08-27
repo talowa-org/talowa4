@@ -140,7 +140,7 @@ void main() {
           'userId': userId,
           'amount': 100.0,
           'status': 'completed',
-          'timestamp': DateTime.now().subtract(Duration(days: 1)),
+          'timestamp': DateTime.now().subtract(const Duration(days: 1)),
         });
 
         await fakeFirestore.collection('payments').add({
@@ -249,7 +249,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test payment error';
-        final exception = PaymentIntegrationException(message);
+        final exception = const PaymentIntegrationException(message);
 
         expect(exception.code, equals('PAYMENT_INTEGRATION_FAILED'));
         expect(exception.context, isNull);

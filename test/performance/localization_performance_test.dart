@@ -105,7 +105,7 @@ void main() {
       await localizationService.initialize();
       
       final futures = <Future>[];
-      final locales = LocalizationService.supportedLocales;
+      const locales = LocalizationService.supportedLocales;
       
       // Create multiple concurrent language switches
       for (int i = 0; i < 20; i++) {

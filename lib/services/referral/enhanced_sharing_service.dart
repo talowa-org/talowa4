@@ -223,7 +223,7 @@ class EnhancedSharingService {
       );
       
       // Clean up temp file after a delay
-      Future.delayed(Duration(minutes: 5), () {
+      Future.delayed(const Duration(minutes: 5), () {
         if (file.existsSync()) {
           file.deleteSync();
         }
@@ -375,7 +375,7 @@ Or visit: $referralLink
   static Future<void> _shareToInstagram(String message) async {
     // Instagram doesn't support direct text sharing, would need to share as story
     assert(message.isNotEmpty);
-    throw SharingException('Instagram sharing requires image/story format', 'INSTAGRAM_TEXT_NOT_SUPPORTED');
+    throw const SharingException('Instagram sharing requires image/story format', 'INSTAGRAM_TEXT_NOT_SUPPORTED');
   }
 
   /// Share to Telegram

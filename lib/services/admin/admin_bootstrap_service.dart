@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart'; // Added for debugPrint
 
 /// Service for bootstrapping admin user and ensuring system integrity
 class AdminBootstrapService {
@@ -23,8 +24,14 @@ class AdminBootstrapService {
       // Try to find existing admin user by email
       String? adminUid = await _findAdminByEmail();
       
-      // If not found, create admin user
-      adminUid ??= await _createAdminUser();
+      if (adminUid != null) {
+        debugPrint('✅ Admin user already exists with UID: $adminUid');
+      } else {
+        // If not found, create admin user
+        debugPrint('📝 Creating new admin user...');
+        adminUid = await _createAdminUser();
+        debugPrint('✅ Admin user created with UID: $adminUid');
+      }
       
       // Ensure admin user document exists with correct data
       await _ensureAdminUserDocument(adminUid);
@@ -34,6 +41,40 @@ class AdminBootstrapService {
       
       return adminUid;
     } catch (e) {
+      if (e.toString().contains('email-already-in-use')) {
+        debugPrint('⚠️ Admin user already exists in Firebase Auth, trying to find existing...');
+        try {
+          // Try to find the existing admin user in Firestore
+          final usersQuery = await _firestore
+              .collection('users')
+              .where('email', isEqualTo: ADMIN_EMAIL)
+              .limit(1)
+              .get();
+          
+          if (usersQuery.docs.isNotEmpty) {
+            final adminUid = usersQuery.docs.first.id;
+            debugPrint('✅ Found existing admin user with UID: $adminUid');
+            
+            // Ensure admin user document exists with correct data
+            await _ensureAdminUserDocument(adminUid);
+            
+            // Ensure TALADMIN referral code is reserved
+            await _ensureAdminReferralCode(adminUid);
+            
+            return adminUid;
+          } else {
+            debugPrint('❌ Admin user exists in Firebase Auth but not in Firestore');
+            throw const AdminBootstrapException(
+              'Admin user exists in Firebase Auth but not in Firestore',
+              'ADMIN_DOCUMENT_MISSING',
+              {'error': 'Admin user exists in Firebase Auth but not in Firestore'}
+            );
+          }
+        } catch (findError) {
+          debugPrint('❌ Error finding existing admin user: $findError');
+        }
+      }
+      
       throw AdminBootstrapException(
         'Failed to bootstrap admin: $e',
         'BOOTSTRAP_FAILED',

@@ -2,7 +2,6 @@
 // Tests complete message flow and call setup scenarios
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:integration_test/integration_test.dart';
@@ -20,7 +19,6 @@ import 'package:talowa/services/messaging/message_sync_service.dart';
 
 // Import models
 import 'package:talowa/models/message_model.dart';
-import 'package:talowa/models/user_model.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

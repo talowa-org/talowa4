@@ -53,8 +53,9 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
 
     // Check if it's a valid 10-digit Indian mobile number
     if (cleaned.length != 10) return false;
-    if (cleaned.startsWith('0'))
+    if (cleaned.startsWith('0')) {
       return false; // Indian mobiles don't start with 0
+    }
 
     // Indian mobile numbers start with 6, 7, 8, or 9
     String firstDigit = cleaned.substring(0, 1);

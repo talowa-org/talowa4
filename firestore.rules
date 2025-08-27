@@ -1,346 +1,84 @@
+// firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection - users can read/write their own data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null &&
-        (resource.data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership']);
-      allow read: if request.auth != null; // Allow authenticated users to read other user profiles for network features
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // Users own their profile
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update, delete: if isOwner(uid);
     }
 
-    // User registry for quick lookups - MUST allow unauthenticated read for login check
+    // Unique phone → points to one uid only. Create once by the owner.
+    match /phones/{e164} {
+      allow create: if signedIn()
+                    && !exists(/databases/$(database)/documents/phones/$(e164))
+                    && request.resource.data.uid == request.auth.uid;
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // User registry - phone number based lookup (used by app)
+    // Allow unauthenticated reads for login verification
     match /user_registry/{phoneNumber} {
-      allow read: if true; // Allow unauthenticated read for login verification
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.uid;
+      allow read: if true; // Allow unauthenticated reads for login
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
-    // Land records - users can manage their own records
-    match /land_records/{recordId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
-      allow read: if request.auth != null &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    // Legacy registries collection (keeping for compatibility)
+    match /registries/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update, delete: if isOwner(uid);
     }
 
-    // Legal cases - users can manage their own cases
-    match /legal_cases/{caseId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.clientId;
-      allow read: if request.auth != null &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    // Referral codes - users can create their own codes during registration
+    match /referralCodes/{code} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid;
+      allow delete: if false; // Referral codes are permanent
     }
 
-    // Emergency incidents - users can create and read relevant incidents
-    match /emergency_incidents/{incidentId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null;
-      allow update: if request.auth != null &&
-        (request.auth.uid == resource.data.reporterId ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator']);
+    // Referral relationships - users can create their own referral records
+    match /referral_relationships/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update, delete: if false; // Immutable once created
     }
 
-    // Emergency broadcasts - only coordinators can create
-    match /emergency_broadcasts/{broadcastId} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
+    // Performance metrics - allow users to log their own metrics
+    match /performance_metrics/{id} {
+      allow create: if signedIn();
+      allow read, update, delete: if false;
     }
 
-    // Emergency contacts - read-only for users
-    match /emergency_contacts/{contactId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    // Land records - users can manage their own land records
+    match /land_records/{id} {
+      allow read, write: if signedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
     }
 
-    // Lawyers directory - read-only for users
-    match /lawyers/{lawyerId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
+    // Messages - users can send and receive messages
+    match /messages/{id} {
+      allow read: if signedIn() && (resource.data.senderId == request.auth.uid || resource.data.recipientId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.senderId == request.auth.uid;
+      allow update: if signedIn() && resource.data.senderId == request.auth.uid;
+      allow delete: if false; // Messages are immutable
     }
 
-    // Feed posts - users can read all, coordinators can write
-    match /feed_posts/{postId} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
-    }
+    // Public read-only content (tune for your app)
+    match /posts/{id} { allow read: if true; allow write: if false; }
+    match /stories/{id} { allow read: if true; allow write: if false; }
 
-    // Messages and conversations
-    match /conversations/{conversationId} {
-      allow read, write: if request.auth != null &&
-        request.auth.uid in resource.data.participantIds;
-    }
+    // Geographic hierarchy - read-only for users
+    match /states/{id} { allow read: if true; allow write: if false; }
 
-    match /messages/{messageId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Voice calls collection
-    match /voice_calls/{callId} {
-      allow read: if request.auth != null && (
-        request.auth.uid == resource.data.callerId ||
-        request.auth.uid == resource.data.recipientId ||
-        request.auth.uid in resource.data.participantIds
-      );
-      allow create: if request.auth != null && 
-        request.auth.uid == request.resource.data.callerId;
-      allow update: if request.auth != null && (
-        request.auth.uid == resource.data.callerId ||
-        request.auth.uid == resource.data.recipientId ||
-        request.auth.uid in resource.data.participantIds
-      );
-      allow delete: if request.auth != null && 
-        request.auth.uid == resource.data.callerId;
-    }
-    
-    // Message encryption keys - user can only access their own keys
-    match /encryption_keys/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Anonymous message routing - special handling for anonymous messages
-    match /anonymous_messages/{messageId} {
-      allow read: if request.auth != null && (
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator'] ||
-        resource.data.caseId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedCases
-      );
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator'];
-    }
-    
-    // Posts collection - social feed posts
-    match /posts/{postId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
-    }
-    
-    // Post likes
-    match /post_likes/{likeId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Post comments
-    match /post_comments/{commentId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
-    }
-    
-    // Stories collection - 24-hour temporary content
-    match /stories/{storyId} {
-      allow read: if request.auth != null && 
-        resource.data.isActive == true && 
-        resource.data.expiresAt > request.time;
-      allow create: if request.auth != null && 
-        request.auth.uid == request.resource.data.authorId;
-      allow update: if request.auth != null && (
-        request.auth.uid == resource.data.authorId ||
-        // Allow any authenticated user to update view counts and reactions
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'reactions']))
-      );
-      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
-    }
-    
-    // Story views
-    match /story_views/{viewId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // AI interactions - users can create their own
-    match /ai_interactions/{interactionId} {
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-    }
-
-    // Content collection - daily motivation and other content
-    match /content/{contentId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
-      allow create: if request.auth != null;
-    }
-    
-    // Daily motivation collection
-    match /daily_motivation/{motivationId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-    }
-    
-    // Active stories collection
-    match /active_stories/{storyId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-    }
-
-    // Drafts collection - users can manage their own drafts
-    match /drafts/{draftId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.authorId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-    }
-
-    // Analytics collection - users can read their own analytics
-    match /analytics/{analyticsId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if request.auth != null;
-    }
-
-    // User analytics collection
-    match /user_analytics/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null;
-    }
-
-    // Notifications collection - users can read their own notifications
-    match /notifications/{notificationId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
-    }
-
-    // Hashtags collection - read access for all authenticated users
-    match /hashtags/{hashtagId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-
-    // Reports collection - for content moderation
-    match /reports/{reportId} {
-      allow read: if request.auth != null &&
-        (request.auth.uid == resource.data.reportedBy ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator']);
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.reportedBy;
-      allow update: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
-    }
-
-    // Campaign collection - for movement campaigns
-    match /campaigns/{campaignId} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator'];
-    }
-
-    // Geographic hierarchy collections
-    match /states/{stateId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['state_coordinator', 'national_leadership'];
-    }
-
-    match /districts/{districtId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['district_coordinator', 'state_coordinator', 'national_leadership'];
-    }
-
-    match /mandals/{mandalId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership'];
-    }
-
-    match /villages/{villageId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['village_coordinator', 'mandal_coordinator', 'district_coordinator', 'state_coordinator', 'national_leadership'];
-    }
-
-    // Referral system collections - strict server-only access
-
-    // Referral codes collection - allow creation during registration
-    match /referralCodes/{codeId} {
-      // Allow read for validation purposes
-      allow read: if request.auth != null;
-
-      // Allow create during user registration (when user creates their own referral code)
-      allow create: if request.auth != null &&
-                    request.auth.uid == request.resource.data.uid &&
-                    request.resource.data.active == true;
-
-      // Allow update only for the owner (to deactivate their own code)
-      allow update: if request.auth != null &&
-                    request.auth.uid == resource.data.uid;
-
-      // No delete access
-      allow delete: if false;
-    }
-
-    // Referrals collection - read-only for clients
-    match /referrals/{referralId} {
-      // Allow read for own referrals only
-      allow read: if request.auth != null && (
-        resource.data.referrerId == request.auth.uid ||
-        resource.data.referredUserId == request.auth.uid
-      );
-
-      // No write access for clients - server only
-      allow write: if false;
-    }
-
-    // Payments collection - read-only for own payments
-    match /payments/{paymentId} {
-      // Allow read for own payments only
-      allow read: if request.auth != null &&
-        resource.data.userId == request.auth.uid;
-
-      // No write access for clients - server only
-      allow write: if false;
-    }
-
-    // Commissions collection - read-only for own commissions
-    match /commissions/{commissionId} {
-      // Allow read for own commissions only
-      allow read: if request.auth != null &&
-        resource.data.userId == request.auth.uid;
-
-      // No write access for clients - server only
-      allow write: if false;
-    }
-
-    // Performance metrics - no client access
-    match /performance_metrics/{metricId} {
-      allow read, write: if false;
-    }
-
-    // Error events - no client access
-    match /error_events/{errorId} {
-      allow read, write: if false;
-    }
-
-    // Critical alerts - no client access
-    match /critical_alerts/{alertId} {
-      allow read, write: if false;
-    }
-
-    // Analytics events - no client access
-    match /analytics_events/{eventId} {
-      allow read, write: if false;
-    }
-
-    // Achievements collection - read-only for own achievements
-    match /achievements/{achievementId} {
-      // Allow read for own achievements
-      allow read: if request.auth != null &&
-        resource.data.userId == request.auth.uid;
-
-      // No write access for clients - server only
-      allow write: if false;
-    }
-
-    // Certificates collection - read-only for own certificates
-    match /certificates/{certificateId} {
-      // Allow read for own certificates
-      allow read: if request.auth != null &&
-        resource.data.userId == request.auth.uid;
-
-      // No write access for clients - server only
-      allow write: if false;
-    }
-
-
+    // Deny everything else by default
+    match /{document=**} { allow read, write: if false; }
   }
 }

@@ -72,7 +72,7 @@ void main() {
 
       test('should create radius-based targeting', () {
         // Arrange
-        final centerPoint = const GeoPoint(23.3441, 85.3096); // Ranchi coordinates
+        const centerPoint = GeoPoint(23.3441, 85.3096); // Ranchi coordinates
         const radiusKm = 50.0;
 
         // Act
@@ -233,14 +233,14 @@ void main() {
     group('Radius-based Targeting', () {
       test('should match locations within radius', () {
         // Arrange
-        final centerPoint = const GeoPoint(23.3441, 85.3096); // Ranchi
+        const centerPoint = GeoPoint(23.3441, 85.3096); // Ranchi
         final targeting = GeographicTargeting.forRadius(
           centerPoint: centerPoint,
           radiusKm: 100.0,
         );
 
         // Nearby location (approximately 50km from Ranchi)
-        final nearbyLocation = const GeoPoint(23.8103, 85.8372);
+        const nearbyLocation = GeoPoint(23.8103, 85.8372);
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
@@ -250,14 +250,14 @@ void main() {
 
       test('should not match locations outside radius', () {
         // Arrange
-        final centerPoint = const GeoPoint(23.3441, 85.3096); // Ranchi
+        const centerPoint = GeoPoint(23.3441, 85.3096); // Ranchi
         final targeting = GeographicTargeting.forRadius(
           centerPoint: centerPoint,
           radiusKm: 50.0,
         );
 
         // Far location (Delhi - much farther than 50km)
-        final farLocation = const GeoPoint(28.6139, 77.2090);
+        const farLocation = GeoPoint(28.6139, 77.2090);
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
@@ -267,7 +267,7 @@ void main() {
 
       test('should handle missing location data for radius targeting', () {
         // Arrange
-        final centerPoint = const GeoPoint(23.3441, 85.3096);
+        const centerPoint = GeoPoint(23.3441, 85.3096);
         final targeting = GeographicTargeting.forRadius(
           centerPoint: centerPoint,
           radiusKm: 50.0,
@@ -356,7 +356,7 @@ void main() {
 
       test('should fail validation for incomplete village targeting', () {
         // Arrange
-        final targeting = GeographicTargeting(
+        final targeting = const GeographicTargeting(
           village: 'रामपुर',
           // Missing mandal, district, state
           scope: TargetingScope.village,
@@ -386,8 +386,8 @@ void main() {
 
       test('should fail validation for invalid radius', () {
         // Arrange
-        final targeting = GeographicTargeting(
-          centerPoint: const GeoPoint(23.3441, 85.3096),
+        final targeting = const GeographicTargeting(
+          centerPoint: GeoPoint(23.3441, 85.3096),
           radiusKm: 1500.0, // Exceeds 1000km limit
           scope: TargetingScope.radius,
         );
@@ -402,7 +402,7 @@ void main() {
 
       test('should fail validation for missing radius data', () {
         // Arrange
-        final targeting = GeographicTargeting(
+        final targeting = const GeographicTargeting(
           // Missing centerPoint and radiusKm
           scope: TargetingScope.radius,
         );

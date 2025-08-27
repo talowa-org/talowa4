@@ -104,7 +104,7 @@ class VoiceTranscriptionService {
       ).take(10);
     } catch (e) {
       debugPrint('Error starting real-time transcription: $e');
-      return Stream.empty();
+      return const Stream.empty();
     }
   }
   

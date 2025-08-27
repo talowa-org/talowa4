@@ -3,10 +3,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/user_model.dart';
-import '../../services/auth_service.dart';
+import '../../models/address.dart' as address_model;
+import '../../services/unified_auth_service.dart';
 import '../../services/database_service.dart';
+import '../../services/web_payment_service.dart';
+import '../../services/auth_policy.dart';
+import '../../services/backend.dart';
 
 import '../../services/referral/universal_link_service.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -82,15 +89,15 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.link, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.link, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text('Referral code auto-filled: $referralCode'),
               ),
             ],
           ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -115,9 +122,9 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Join TALOWA Movement',
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -365,14 +372,14 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.talowaGreen.withOpacity(0.3)),
       ),
-      child: Column(
+      child: const Column(
         children: [
           Icon(
             Icons.eco,
             size: 48,
             color: AppTheme.talowaGreen,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Welcome to TALOWA',
             style: TextStyle(
@@ -381,7 +388,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
               color: AppTheme.talowaGreen,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Join the movement for land rights and rural empowerment',
             style: TextStyle(
@@ -432,7 +439,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+          borderSide: const BorderSide(color: AppTheme.talowaGreen, width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -450,14 +457,14 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.location_on, color: AppTheme.talowaGreen),
+        prefixIcon: const Icon(Icons.location_on, color: AppTheme.talowaGreen),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+          borderSide: const BorderSide(color: AppTheme.talowaGreen, width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -498,7 +505,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
                 _acceptedTerms = !_acceptedTerms;
               });
             },
-            child: Text(
+            child: const Text(
               'I agree to the Terms of Service and Privacy Policy of TALOWA. I understand that this app is for land rights activism and I will use it responsibly.',
               style: TextStyle(
                 fontSize: 14,
@@ -544,7 +551,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Text(
+        child: const Text(
           'Already have an account? Login here',
           style: TextStyle(
             color: AppTheme.talowaGreen,
@@ -587,13 +594,13 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         return;
       }
 
-      final phoneNumber = '+91$phoneText';
+      final phoneNumber = AuthPolicy.normalizePhoneE164(phoneText);
       debugPrint('Starting registration for: $phoneNumber');
 
-      // Check if phone number is already registered
+      // Check if phone number is already registered using Backend service
       try {
-        final isRegistered = await DatabaseService.isPhoneRegistered(phoneNumber);
-        if (isRegistered) {
+        final phoneExists = await Backend().checkPhoneExists(phoneNumber);
+        if (phoneExists) {
           _showErrorMessage('This mobile number is already registered. Please login instead.');
           return;
         }
@@ -603,7 +610,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
       }
 
       // Create address object safely
-      final address = Address(
+      final address = address_model.Address(
         villageCity: villageText,
         mandal: mandalText,
         district: districtText,
@@ -614,30 +621,75 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
       final referralCodeText = _referralCodeController.text.trim();
       final referralCode = referralCodeText.isEmpty ? null : referralCodeText;
 
-      debugPrint('Calling AuthService.registerUser...');
+      debugPrint('Starting Firebase Auth and Backend registration...');
 
-      final authResult = await AuthService.registerUser(
-        phoneNumber: phoneNumber,
-        pin: pinText,
-        fullName: nameText,
-        address: address,
-        referralCode: referralCode,
+      // Step 1: Create Firebase Auth account with alias email
+      final aliasEmail = AuthPolicy.phoneToAliasEmail(phoneNumber);
+      final pinHash = AuthPolicy.hashPin(pinText);
+      
+      debugPrint('Creating Firebase Auth user with email: $aliasEmail');
+      
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: aliasEmail,
+        password: pinHash,
       );
 
-      if (!authResult.success) {
-        _showErrorMessage(authResult.message);
+      if (userCredential.user == null) {
+        _showErrorMessage('Failed to create user account');
         return;
       }
 
-      // AuthService now handles user profile creation internally with TAL referral codes
-      final userProfile = authResult.user;
-      if (userProfile == null) {
-        _showErrorMessage('Failed to create user profile');
-        return;
+      debugPrint('Firebase Auth user created with UID: ${userCredential.user!.uid}');
+
+      // Step 2: Write user profile and registry directly with owner permissions
+      final uid = userCredential.user!.uid;
+      final now = FieldValue.serverTimestamp();
+      final db = FirebaseFirestore.instance;
+
+      // Write user profile
+      await db.collection('users').doc(uid).set({
+        'fullName': nameText,
+        'phone': phoneNumber,
+        'email': aliasEmail,
+        'active': true,
+        'role': 'member',
+        'state': _selectedState,
+        'district': districtText,
+        'mandal': mandalText,
+        'village': villageText,
+        'referralChain': {
+          'referredBy': referralCode,
+          'referralCode': null, // can be filled later
+        },
+        'directReferrals': 0,
+        'teamSize': 0,
+        'createdAt': now,
+        'updatedAt': now,
+        'membershipPaid': kIsWeb, // Simulate payment on web
+        'paymentCompletedAt': kIsWeb ? now : null,
+        'paymentTransactionId': kIsWeb ? 'web_simulation_${DateTime.now().millisecondsSinceEpoch}' : null,
+      }, SetOptions(merge: true));
+
+      // Unique phone binding (only if not already bound)
+      final phoneRef = db.collection('phones').doc(phoneNumber);
+      final phoneSnap = await phoneRef.get();
+      if (!phoneSnap.exists) {
+        await phoneRef.set({'uid': uid, 'createdAt': now});
+      } else if (phoneSnap.data()?['uid'] != uid) {
+        throw Exception('This phone is already registered to another account.');
       }
 
-      final generatedReferralCode = userProfile.referralCode;
-      _showSuccessMessage('Registration successful! Your referral code: $generatedReferralCode');
+      // Registry doc your app expects
+      await db.collection('registries').doc(uid).set({
+        'uid': uid,
+        'phone': phoneNumber,
+        'email': aliasEmail,
+        'membershipPaid': kIsWeb,
+        'createdAt': now,
+        'updatedAt': now,
+      }, SetOptions(merge: true));
+
+      _showSuccessMessage('Registration successful! Welcome to TALOWA!');
 
       // Navigate to success screen after a short delay
       await Future.delayed(const Duration(seconds: 2));

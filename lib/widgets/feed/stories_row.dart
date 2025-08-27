@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../screens/feed/feed_screen.dart';
 
 class StoriesRow extends StatelessWidget {
   final List<FeedStory> stories;

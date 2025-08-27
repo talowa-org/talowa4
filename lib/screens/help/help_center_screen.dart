@@ -460,7 +460,7 @@ class HelpCategoryArticlesScreen extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
-                      child: Icon(
+                      child: const Icon(
                         Icons.article,
                         color: AppTheme.talowaGreen,
                       ),

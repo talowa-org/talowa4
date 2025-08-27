@@ -398,7 +398,7 @@ class MonitoringService {
   static Future<Map<String, dynamic>> generateHealthReport() async {
     try {
       final now = DateTime.now();
-      final last24Hours = now.subtract(Duration(hours: 24));
+      final last24Hours = now.subtract(const Duration(hours: 24));
       
       // Get recent metrics
       final recentMetrics = await getPerformanceMetrics(

@@ -1,14 +1,11 @@
 // Post Creation Screen - Interface for coordinators to create new posts
 // Part of Task 9: Build PostCreationScreen for coordinators
 
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/geographic_targeting.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../services/auth/auth_service.dart';
-import '../../services/media/media_upload_manager.dart';
 import '../../services/media/media_service.dart';
 import '../../widgets/media/comprehensive_media_widget.dart';
 import '../../widgets/social_feed/hashtag_text_widget.dart';

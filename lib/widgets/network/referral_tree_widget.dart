@@ -23,7 +23,7 @@ class ReferralTreeWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Network Tree',
               style: AppTheme.heading3Style,
             ),

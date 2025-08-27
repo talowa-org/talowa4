@@ -260,19 +260,19 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
                     color: const Color(AppConstants.emergencyRedValue).withOpacity(0.3),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.warning,
                       color: Color(AppConstants.emergencyRedValue),
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Emergency messages will be delivered immediately and may trigger push notifications even if the app is closed.',
                         style: TextStyle(
-                          color: const Color(AppConstants.emergencyRedValue),
+                          color: Color(AppConstants.emergencyRedValue),
                           fontSize: 12,
                         ),
                       ),
@@ -318,10 +318,10 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
             ),
             const SizedBox(height: 8),
             if (_isEmergency)
-              Text(
+              const Text(
                 'Emergency messages should be clear, concise, and actionable.',
                 style: TextStyle(
-                  color: const Color(AppConstants.emergencyRedValue),
+                  color: Color(AppConstants.emergencyRedValue),
                   fontSize: 12,
                 ),
               ),

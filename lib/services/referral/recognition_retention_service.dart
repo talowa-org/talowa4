@@ -416,7 +416,7 @@ class RecognitionRetentionService {
           secondaryColor: _getRoleColors(newRole)['secondary'] as Color,
           confettiColors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1'],
           soundEffect: 'achievement_unlock.mp3',
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       };
     } catch (e) {
@@ -717,7 +717,7 @@ class RecognitionRetentionService {
         'description': _getFeatureDescription(feature),
         'action': _getFeatureAction(feature),
       }).toList(),
-      'duration': Duration(minutes: 5).inMilliseconds,
+      'duration': const Duration(minutes: 5).inMilliseconds,
     };
   }
   

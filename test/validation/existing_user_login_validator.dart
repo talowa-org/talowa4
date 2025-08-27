@@ -400,7 +400,7 @@ class ExistingUserLoginValidator {
       }
       
       // Check if user remains authenticated
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {

@@ -43,13 +43,13 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
               Text('Referral code auto-filled: $referralCode'),
             ],
           ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -73,25 +73,25 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Referral Link Auto-Fill Demo'),
+        title: const Text('Referral Link Auto-Fill Demo'),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
       ),
       body: DeepLinkHandler(
         onReferralCodeReceived: onReferralCodeReceived,
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildInfoCard(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildTestSection(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildRegistrationFormDemo(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildLinkGeneratorSection(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildInstructionsSection(),
             ],
           ),
@@ -104,14 +104,14 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
     return Card(
       color: Colors.blue[50],
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.info, color: Colors.blue),
-                SizedBox(width: 8),
+                const Icon(Icons.info, color: Colors.blue),
+                const SizedBox(width: 8),
                 Text(
                   'Auto-Fill System Status',
                   style: TextStyle(
@@ -122,8 +122,8 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               '✅ Deep link handling is active\n'
               '✅ Universal links are supported\n'
               '✅ QR code scanning is available\n'
@@ -131,9 +131,9 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
               style: TextStyle(fontSize: 14),
             ),
             if (_lastReceivedCode != null) ...[
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.green[100],
                   borderRadius: BorderRadius.circular(8),
@@ -156,50 +156,50 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
   Widget _buildTestSection() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Test Deep Link',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextField(
               controller: _testLinkController,
               decoration: InputDecoration(
                 labelText: 'Test Link',
                 hintText: 'https://talowa.web.app/join?ref=TAL234567',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.content_paste),
+                  icon: const Icon(Icons.content_paste),
                   onPressed: _pasteFromClipboard,
                 ),
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _testDeepLink,
-                    icon: Icon(Icons.link),
-                    label: Text('Test Link'),
+                    icon: const Icon(Icons.link),
+                    label: const Text('Test Link'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _scanQRCode,
-                    icon: Icon(Icons.qr_code_scanner),
-                    label: Text('Scan QR'),
+                    icon: const Icon(Icons.qr_code_scanner),
+                    label: const Text('Scan QR'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
@@ -217,37 +217,37 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
   Widget _buildRegistrationFormDemo() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Registration Form (Demo)',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               'This simulates how the referral code would auto-fill in the registration form:',
               style: TextStyle(color: Colors.grey[600]),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _referralCodeController,
               decoration: InputDecoration(
                 labelText: 'Referral Code',
                 hintText: 'Will auto-fill from deep links',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.people),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.people),
                 suffixIcon: _referralCodeController.text.isNotEmpty
-                    ? Icon(Icons.check_circle, color: Colors.green)
+                    ? const Icon(Icons.check_circle, color: Colors.green)
                     : null,
               ),
               readOnly: true,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
@@ -255,9 +255,9 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
-                minimumSize: Size(double.infinity, 48),
+                minimumSize: const Size(double.infinity, 48),
               ),
-              child: Text('Go to Real Registration'),
+              child: const Text('Go to Real Registration'),
             ),
           ],
         ),
@@ -268,32 +268,32 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
   Widget _buildLinkGeneratorSection() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Generate Referral Link',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _generateReferralLink,
-              icon: Icon(Icons.link),
-              label: Text('Generate Link for TAL234567'),
+              icon: const Icon(Icons.link),
+              label: const Text('Generate Link for TAL234567'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
                 foregroundColor: Colors.white,
-                minimumSize: Size(double.infinity, 48),
+                minimumSize: const Size(double.infinity, 48),
               ),
             ),
             if (_generatedLink != null) ...[
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
@@ -302,23 +302,23 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Generated Link:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     SelectableText(
                       _generatedLink!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 12,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: () => _copyToClipboard(_generatedLink!),
-                      icon: Icon(Icons.copy, size: 16),
-                      label: Text('Copy Link'),
+                      icon: const Icon(Icons.copy, size: 16),
+                      label: const Text('Copy Link'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[600],
                         foregroundColor: Colors.white,
@@ -338,14 +338,14 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
     return Card(
       color: Colors.amber[50],
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.lightbulb, color: Colors.amber[800]),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'How It Works',
                   style: TextStyle(
@@ -356,8 +356,8 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               '1. User clicks a referral link (e.g., https://talowa.web.app/join?ref=TAL234567)\n'
               '2. App opens and extracts the referral code from the URL\n'
               '3. Code is stored temporarily and auto-fills in registration forms\n'
@@ -441,8 +441,8 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(child: Text(message)),
             ],
           ),
@@ -458,8 +458,8 @@ class _ReferralLinkDemoScreenState extends State<ReferralLinkDemoScreen>
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.error, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(child: Text(message)),
             ],
           ),

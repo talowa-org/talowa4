@@ -261,8 +261,8 @@ class ModerationStatsWidget extends StatelessWidget {
         ? (stats.resolvedReports / stats.totalReports * 100).round()
         : 0;
     
-    final avgResponseTime = '2.3 hours'; // This would be calculated from actual data
-    final moderatorEfficiency = '85%'; // This would be calculated from actual data
+    const avgResponseTime = '2.3 hours'; // This would be calculated from actual data
+    const moderatorEfficiency = '85%'; // This would be calculated from actual data
 
     return Card(
       child: Padding(

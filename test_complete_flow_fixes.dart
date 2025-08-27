@@ -106,7 +106,7 @@ Future<void> testDuplicateUserPrevention() async {
   print('   📋 Testing duplicate user prevention logic...');
 
   // Simulate checking if user already exists
-  final testPhone = '+919876543210';
+  const testPhone = '+919876543210';
 
   // Test that AuthService checks for existing users
   // Test that DatabaseService prevents duplicate registry entries
@@ -135,7 +135,7 @@ Future<void> testLoginAuthentication() async {
   print('   📋 Testing login authentication with PIN hashing...');
 
   // Test that both AuthService and HybridAuthService use same PIN hashing
-  final testPin = '123456';
+  const testPin = '123456';
   final hashedPin = 'talowa_${testPin}_secure';
 
   // Verify both services use the same hashing

@@ -2,7 +2,6 @@
 // Tests concurrent users, message throughput, and system performance
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -15,7 +14,6 @@ import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
 
 // Import models
 import 'package:talowa/models/message_model.dart';
-import 'package:talowa/models/user_model.dart';
 
 class LoadTestMetrics {
   final int totalOperations;

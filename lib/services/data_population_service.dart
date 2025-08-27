@@ -12,15 +12,25 @@ class DataPopulationService {
     try {
       debugPrint('🔄 Starting data population...');
       
-      await populateDailyMotivation();
-      await populateHashtags();
-      await populateAnalytics();
-      await populateNotifications();
-      await populateActiveStories();
+      // Populate each collection independently, don't stop if one fails
+      await populateDailyMotivation().catchError((e) => 
+        debugPrint('❌ Daily motivation population failed: $e'));
       
-      debugPrint('✅ All missing data populated successfully!');
+      await populateHashtags().catchError((e) => 
+        debugPrint('❌ Hashtags population failed: $e'));
+      
+      await populateAnalytics().catchError((e) => 
+        debugPrint('❌ Analytics population failed: $e'));
+      
+      await populateNotifications().catchError((e) => 
+        debugPrint('❌ Notifications population failed: $e'));
+      
+      await populateActiveStories().catchError((e) => 
+        debugPrint('❌ Active stories population failed: $e'));
+      
+      debugPrint('✅ Data population completed (some operations may have failed)');
     } catch (e) {
-      debugPrint('❌ Error populating data: $e');
+      debugPrint('❌ Critical error in data population: $e');
       // Don't rethrow to prevent app crashes
       debugPrint('⚠️ Continuing app startup despite data population errors...');
     }
@@ -113,11 +123,24 @@ class DataPopulationService {
         'last_updated': FieldValue.serverTimestamp()
       };
 
-      await _firestore.collection('content').doc('daily_motivation').set(motivationData);
-      debugPrint('✅ Daily motivation populated successfully!');
+      // Try to write to daily_motivation collection first (has unauthenticated read)
+      try {
+        await _firestore.collection('daily_motivation').doc('current').set(motivationData);
+        debugPrint('✅ Daily motivation populated successfully in daily_motivation collection!');
+      } catch (e) {
+        debugPrint('⚠️ Could not write to daily_motivation collection: $e');
+        // Fallback: try content collection
+        try {
+          await _firestore.collection('content').doc('daily_motivation').set(motivationData);
+          debugPrint('✅ Daily motivation populated successfully in content collection!');
+        } catch (e2) {
+          debugPrint('❌ Could not write to content collection either: $e2');
+          // Don't rethrow - this is a background operation
+        }
+      }
     } catch (e) {
       debugPrint('❌ Error populating daily motivation: $e');
-      rethrow;
+      // Don't rethrow - this is a background operation
     }
   }
 
@@ -153,7 +176,7 @@ class DataPopulationService {
       debugPrint('✅ Hashtags populated successfully!');
     } catch (e) {
       debugPrint('❌ Error populating hashtags: $e');
-      rethrow;
+      // Don't rethrow - this is a background operation
     }
   }
 
@@ -178,7 +201,7 @@ class DataPopulationService {
       debugPrint('✅ Analytics populated successfully!');
     } catch (e) {
       debugPrint('❌ Error populating analytics: $e');
-      rethrow;
+      // Don't rethrow - this is a background operation
     }
   }
 
@@ -209,7 +232,7 @@ class DataPopulationService {
       debugPrint('✅ Notifications structure populated successfully!');
     } catch (e) {
       debugPrint('❌ Error populating notifications: $e');
-      rethrow;
+      // Don't rethrow - this is a background operation
     }
   }
 
@@ -217,23 +240,60 @@ class DataPopulationService {
   static Future<bool> needsDataPopulation() async {
     try {
       // Check if daily motivation exists
-      final motivationDoc = await _firestore.collection('content').doc('daily_motivation').get();
-      if (!motivationDoc.exists) {
-        return true;
+      try {
+        final motivationDoc = await _firestore.collection('daily_motivation').doc('current').get();
+        if (motivationDoc.exists) {
+          debugPrint('✅ Daily motivation exists in daily_motivation collection');
+        } else {
+          debugPrint('📝 Daily motivation needs population');
+          return true;
+        }
+      } catch (e) {
+        debugPrint('⚠️ Could not check daily_motivation collection: $e');
+        // Try content collection as fallback
+        try {
+          final motivationDoc = await _firestore.collection('content').doc('daily_motivation').get();
+          if (motivationDoc.exists) {
+            debugPrint('✅ Daily motivation exists in content collection');
+          } else {
+            debugPrint('📝 Daily motivation needs population');
+            return true;
+          }
+        } catch (e2) {
+          debugPrint('⚠️ Could not check content collection either: $e2');
+          return true; // Assume we need population if we can't check
+        }
       }
 
       // Check if hashtags exist
-      final hashtagsSnapshot = await _firestore.collection('hashtags').limit(1).get();
-      if (hashtagsSnapshot.docs.isEmpty) {
-        return true;
+      try {
+        final hashtagsSnapshot = await _firestore.collection('hashtags').limit(1).get();
+        if (hashtagsSnapshot.docs.isNotEmpty) {
+          debugPrint('✅ Hashtags exist');
+        } else {
+          debugPrint('🏷️ Hashtags need population');
+          return true;
+        }
+      } catch (e) {
+        debugPrint('⚠️ Could not check hashtags collection: $e');
+        return true; // Assume we need population if we can't check
       }
 
       // Check if analytics exist
-      final analyticsDoc = await _firestore.collection('analytics').doc('global_stats').get();
-      if (!analyticsDoc.exists) {
-        return true;
+      try {
+        final analyticsDoc = await _firestore.collection('analytics').doc('global_stats').get();
+        if (analyticsDoc.exists) {
+          debugPrint('✅ Analytics exist');
+        } else {
+          debugPrint('📊 Analytics need population');
+          return true;
+        }
+      } catch (e) {
+        debugPrint('⚠️ Could not check analytics collection: $e');
+        return true; // Assume we need population if we can't check
       }
 
+      debugPrint('✅ All required data already exists');
       return false;
     } catch (e) {
       debugPrint('Error checking data population needs: $e');

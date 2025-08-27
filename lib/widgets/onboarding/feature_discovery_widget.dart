@@ -328,7 +328,7 @@ class _FeatureContextualTipsWidgetState extends State<FeatureContextualTipsWidge
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.lightbulb_outline,
                           color: AppTheme.talowaGreen,
                           size: 20,

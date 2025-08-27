@@ -120,7 +120,7 @@ class QRScannerService {
       _onReferralCodeScanned?.call(referralCode);
       
       // Resume scanning after a delay
-      Future.delayed(Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 3), () {
         resumeScanning();
       });
       

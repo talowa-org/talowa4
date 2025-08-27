@@ -35,6 +35,7 @@ class DatabaseService {
     required String district,
     String? mandal,
     String? village,
+    String? pinHash, // Add PIN hash parameter for login verification
   }) async {
     try {
       // Check if registry already exists to prevent duplicates
@@ -70,6 +71,7 @@ class DatabaseService {
             'directReferrals': 0,
             'teamSize': 0,
             'membershipPaid': false,
+            'pinHash': pinHash, // Store PIN hash for login verification
           });
     } catch (e) {
       debugPrint('Error creating user registry: $e');

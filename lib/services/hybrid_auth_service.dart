@@ -466,11 +466,13 @@ class HybridAuthService {
         userData['address'] = address;
         // Also add individual location fields for compatibility
         if (address['state'] != null) userData['state'] = address['state'];
-        if (address['district'] != null)
+        if (address['district'] != null) {
           userData['district'] = address['district'];
+        }
         if (address['mandal'] != null) userData['mandal'] = address['mandal'];
-        if (address['village'] != null)
+        if (address['village'] != null) {
           userData['village'] = address['village'];
+        }
       }
 
       await firestore.collection('users').doc(uid).set(userData);

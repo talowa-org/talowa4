@@ -2,8 +2,6 @@
 // Tests message delivery speed, voice call quality, and system responsiveness
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'dart:async';
 import 'dart:math';
 
 // Import services for performance testing
@@ -17,7 +15,6 @@ import 'package:talowa/services/messaging/emergency_broadcast_service.dart';
 
 // Import models
 import 'package:talowa/models/message_model.dart';
-import 'package:talowa/models/user_model.dart';
 
 class PerformanceMetrics {
   final String testName;

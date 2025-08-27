@@ -29,8 +29,8 @@ void main() {
 
     group('Anonymous ID Generation', () {
       test('should generate consistent anonymous IDs for same input', () {
-        final userId = 'user_123';
-        final caseId = 'ANON-123456-789012';
+        const userId = 'user_123';
+        const caseId = 'ANON-123456-789012';
         
         final anonymousId1 = _generateTestAnonymousId(userId, caseId);
         final anonymousId2 = _generateTestAnonymousId(userId, caseId);
@@ -40,7 +40,7 @@ void main() {
       });
 
       test('should generate different anonymous IDs for different users', () {
-        final caseId = 'ANON-123456-789012';
+        const caseId = 'ANON-123456-789012';
         
         final anonymousId1 = _generateTestAnonymousId('user_123', caseId);
         final anonymousId2 = _generateTestAnonymousId('user_456', caseId);
@@ -51,7 +51,7 @@ void main() {
       });
 
       test('should generate different anonymous IDs for different cases', () {
-        final userId = 'user_123';
+        const userId = 'user_123';
         
         final anonymousId1 = _generateTestAnonymousId(userId, 'ANON-123456-789012');
         final anonymousId2 = _generateTestAnonymousId(userId, 'ANON-654321-210987');
@@ -116,7 +116,7 @@ void main() {
 
     group('Report Type Validation', () {
       test('should have all required report types', () {
-        final reportTypes = ReportType.values;
+        const reportTypes = ReportType.values;
         
         expect(reportTypes, contains(ReportType.landGrabbing));
         expect(reportTypes, contains(ReportType.corruption));
@@ -148,7 +148,7 @@ void main() {
 
     group('Report Status Validation', () {
       test('should have all required report statuses', () {
-        final reportStatuses = ReportStatus.values;
+        const reportStatuses = ReportStatus.values;
         
         expect(reportStatuses, contains(ReportStatus.pending));
         expect(reportStatuses, contains(ReportStatus.inProgress));

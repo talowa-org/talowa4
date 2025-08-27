@@ -74,11 +74,11 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
         child: Column(
           crossAxisAlignment: RTLSupportService.crossAxisAlignment,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.language, color: AppTheme.talowaGreen),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Select Language',
                   style: TextStyle(
                     fontSize: 18,
@@ -89,7 +89,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
             ),
             const SizedBox(height: 16),
             ...{'en': 'English', 'hi': 'Hindi', 'te': 'Telugu'}.entries.map((entry) {
-              final isRTL = false;
+              const isRTL = false;
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: RadioListTile<String>(
@@ -156,11 +156,11 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
         child: Column(
           crossAxisAlignment: RTLSupportService.crossAxisAlignment,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.translate, color: AppTheme.talowaGreen),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Translation Settings',
                   style: TextStyle(
                     fontSize: 18,
@@ -218,11 +218,11 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
         child: Column(
           crossAxisAlignment: RTLSupportService.crossAxisAlignment,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.mic, color: AppTheme.talowaGreen),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Voice Settings',
                   style: TextStyle(
                     fontSize: 18,
@@ -287,7 +287,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   Widget _buildRTLSettings() {
-    final isRTLLanguage = false;
+    const isRTLLanguage = false;
     
     if (!isRTLLanguage) {
       return const SizedBox.shrink();
@@ -299,11 +299,11 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
         child: Column(
           crossAxisAlignment: RTLSupportService.crossAxisAlignment,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.format_textdirection_r_to_l, color: AppTheme.talowaGreen),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'RTL Settings',
                   style: TextStyle(
                     fontSize: 18,
@@ -395,7 +395,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   Widget _buildPreviewStats() {
-    final isRTL = false;
+    const isRTL = false;
     final accuracy = VoiceTranscriptionService.getLanguageAccuracy()[_selectedLanguage] ?? 0.0;
     
     return Row(
@@ -530,7 +530,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
       
       if (mounted) {
         final languageName = {'en': 'English', 'hi': 'Hindi', 'te': 'Telugu'}[_selectedLanguage];
-        final isRTL = false;
+        const isRTL = false;
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

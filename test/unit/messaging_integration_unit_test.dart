@@ -151,7 +151,7 @@ void main() {
           id: 'test_event',
           name: 'Test Event',
           description: 'Test Event Description',
-          scheduledAt: DateTime.now().add(Duration(days: 7)),
+          scheduledAt: DateTime.now().add(const Duration(days: 7)),
           status: EventStatus.scheduled,
           participantIds: ['user1', 'user2'],
           metadata: {},
@@ -188,7 +188,7 @@ void main() {
           AppConstants.roleStateCoordinator,
         ];
 
-        final memberRole = AppConstants.roleMember;
+        const memberRole = AppConstants.roleMember;
 
         expect(coordinatorRoles.contains(AppConstants.roleVillageCoordinator), true);
         expect(coordinatorRoles.contains(memberRole), false);
@@ -208,7 +208,7 @@ void main() {
       });
 
       test('should handle group type validation', () {
-        final groupTypes = GroupType.values;
+        const groupTypes = GroupType.values;
         
         expect(groupTypes.contains(GroupType.village), true);
         expect(groupTypes.contains(GroupType.campaign), true);
@@ -217,7 +217,7 @@ void main() {
       });
 
       test('should handle campaign type validation', () {
-        final campaignTypes = CampaignType.values;
+        const campaignTypes = CampaignType.values;
         
         expect(campaignTypes.contains(CampaignType.awareness), true);
         expect(campaignTypes.contains(CampaignType.protest), true);

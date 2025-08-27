@@ -8,12 +8,12 @@ class NetworkScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: Text('Network'),
+        title: const Text('Network'),
       ),
-      body: Center(child: Text('Network Screen')),
+      body: const Center(child: Text('Network Screen')),
     );
   }
 }

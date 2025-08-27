@@ -286,7 +286,7 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
         ),
         child: Text(
           '#$hashtag',
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.talowaGreen,
             fontWeight: FontWeight.w500,
           ),
@@ -313,7 +313,7 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
               width: 4,
               height: 4,
               margin: const EdgeInsets.only(top: 8, right: 8),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.talowaGreen,
                 shape: BoxShape.circle,
               ),

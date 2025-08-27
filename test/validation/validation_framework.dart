@@ -706,7 +706,7 @@ class ValidationTestRunner {
           }
         } else {
           debugPrint('⚠️ $testName attempt $attempts failed, retrying: $e');
-          await Future.delayed(Duration(seconds: 1)); // Brief delay before retry
+          await Future.delayed(const Duration(seconds: 1)); // Brief delay before retry
         }
       }
     }
@@ -1048,7 +1048,7 @@ class ValidationTestRunner {
   /// Validate Firestore connection
   Future<bool> _validateFirestoreConnection() async {
     try {
-      await _firestore.collection('_test').limit(1).get().timeout(Duration(seconds: 5));
+      await _firestore.collection('_test').limit(1).get().timeout(const Duration(seconds: 5));
       return true;
     } catch (e) {
       debugPrint('❌ Firestore connection failed: $e');

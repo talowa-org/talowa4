@@ -391,7 +391,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
           onTap: () => _onHashtagTap(hashtag),
           child: Text(
             '#$hashtag',
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.talowaGreen,
               fontWeight: FontWeight.w500,
             ),
@@ -715,11 +715,11 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.red.withOpacity(0.3)),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.warning, size: 12, color: Colors.red),
-                  const SizedBox(width: 2),
+                  SizedBox(width: 2),
                   Text(
                     'EMERGENCY',
                     style: TextStyle(
@@ -781,7 +781,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
       child: Row(
         children: [
           if (widget.post.likesCount > 0) ...[
-            Icon(Icons.favorite, size: 16, color: Colors.red),
+            const Icon(Icons.favorite, size: 16, color: Colors.red),
             const SizedBox(width: 4),
             Text(
               _formatCount(widget.post.likesCount),

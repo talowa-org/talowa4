@@ -156,7 +156,7 @@ class GeographicDiscoveryWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.my_location,
                 color: AppTheme.talowaGreen,
                 size: 20,

@@ -147,9 +147,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
             color: Colors.white,
           ),
         ),
-        title: Text(
+        title: const Text(
           'Membership Fee',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

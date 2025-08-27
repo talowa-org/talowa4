@@ -184,7 +184,7 @@ void main() {
       test('Offline messaging and synchronization', () async {
         // Scenario: User goes offline, sends messages, comes back online
         final offlineScenario = await scenarios.offlineMessagingSynchronization(
-          offlineDuration: Duration(hours: 2),
+          offlineDuration: const Duration(hours: 2),
           messagesWhileOffline: 10,
           incomingMessagesWhileOffline: 15,
         );
@@ -328,7 +328,7 @@ void main() {
         // Test complete user workflows under load
         final performanceTest = await scenarios.endToEndPerformanceTest(
           concurrentUsers: 1000,
-          testDuration: Duration(minutes: 10),
+          testDuration: const Duration(minutes: 10),
         );
 
         expect(performanceTest['responseTime']['average'], lessThan(2000));
@@ -340,7 +340,7 @@ void main() {
       test('Memory and resource usage', () async {
         // Test resource usage during intensive operations
         final resourceTest = await scenarios.resourceUsageTest(
-          testDuration: Duration(minutes: 30),
+          testDuration: const Duration(minutes: 30),
           operationIntensity: 'high',
         );
 

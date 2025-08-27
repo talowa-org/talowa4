@@ -122,7 +122,7 @@ class FraudPreventionService {
         }
       }
       
-      final appVersion = '1.0.0'; // Should be from package_info_plus
+      const appVersion = '1.0.0'; // Should be from package_info_plus
       
       // Generate unique fingerprint
       final fingerprintData = '$deviceId-$platform-$model-$osVersion-$appVersion';

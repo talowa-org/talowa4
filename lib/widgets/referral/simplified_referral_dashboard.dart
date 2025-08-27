@@ -466,7 +466,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.emoji_events,
                 color: Colors.amber,
                 size: 48,

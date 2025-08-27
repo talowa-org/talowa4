@@ -27,8 +27,8 @@ void main() {
       });
 
       test('should create anonymous report with encrypted content', () async {
-        final testContent = 'Test anonymous report content';
-        final testCoordinatorId = 'coordinator_123';
+        const testContent = 'Test anonymous report content';
+        const testCoordinatorId = 'coordinator_123';
         
         try {
           final caseId = await anonymousService.sendAnonymousReport(
@@ -74,8 +74,8 @@ void main() {
       });
 
       test('should generate anonymous ID that cannot be reversed', () {
-        final userId = 'user_123';
-        final caseId = 'ANON-123456-789012';
+        const userId = 'user_123';
+        const caseId = 'ANON-123456-789012';
         
         final anonymousId1 = anonymousService.generateAnonymousId(userId, caseId);
         final anonymousId2 = anonymousService.generateAnonymousId(userId, caseId);
@@ -97,8 +97,8 @@ void main() {
 
     group('Anonymous Report Response System', () {
       test('should allow coordinators to respond anonymously', () async {
-        final testCaseId = 'ANON-123456-789012';
-        final testResponse = 'Thank you for your report. We are investigating.';
+        const testCaseId = 'ANON-123456-789012';
+        const testResponse = 'Thank you for your report. We are investigating.';
         
         try {
           await anonymousService.respondToAnonymousReport(
@@ -113,8 +113,8 @@ void main() {
       });
 
       test('should generate anonymous coordinator ID for responses', () {
-        final coordinatorId = 'coordinator_123';
-        final caseId = 'ANON-123456-789012';
+        const coordinatorId = 'coordinator_123';
+        const caseId = 'ANON-123456-789012';
         
         final anonymousCoordinatorId1 = anonymousService.generateAnonymousCoordinatorId(
           coordinatorId, 
@@ -261,7 +261,7 @@ void main() {
 extension AnonymousMessagingServiceTest on AnonymousMessagingService {
   String generateAnonymousCaseId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final random = 123456; // Fixed for testing
+    const random = 123456; // Fixed for testing
     return 'ANON-${timestamp.toString().substring(8)}-${random.toString().padLeft(6, '0')}';
   }
 

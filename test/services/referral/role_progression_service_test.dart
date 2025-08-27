@@ -329,7 +329,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test role progression error';
-        final exception = RoleProgressionException(message);
+        final exception = const RoleProgressionException(message);
 
         expect(exception.code, equals('ROLE_PROGRESSION_FAILED'));
         expect(exception.context, isNull);

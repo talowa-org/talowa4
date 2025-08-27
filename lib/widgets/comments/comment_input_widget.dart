@@ -81,10 +81,10 @@ class _CommentInputWidgetState extends State<CommentInputWidget>
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // User avatar (current user)
-          CircleAvatar(
+          const CircleAvatar(
             radius: 16,
             backgroundColor: AppTheme.talowaGreen,
-            child: const Icon(
+            child: Icon(
               Icons.person,
               size: 16,
               color: Colors.white,
@@ -159,7 +159,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget>
                         ? _handleSubmit 
                         : null,
                     icon: widget.isSubmitting
-                        ? SizedBox(
+                        ? const SizedBox(
                             width: 16,
                             height: 16,
                             child: CircularProgressIndicator(

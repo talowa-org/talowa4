@@ -209,7 +209,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget>
         decoration: BoxDecoration(
           color: AppTheme.talowaGreen.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border(
+          border: const Border(
             left: BorderSide(
               color: AppTheme.talowaGreen,
               width: 3,
@@ -464,9 +464,9 @@ class AttachmentOptionsSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
-          Text(
+          const Text(
             'Share Content',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),

@@ -237,7 +237,7 @@ class _HashtagScreenState extends State<HashtagScreen> {
                   label: const Text('Follow'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.talowaGreen,
-                    side: BorderSide(color: AppTheme.talowaGreen),
+                    side: const BorderSide(color: AppTheme.talowaGreen),
                   ),
                 ),
               ),

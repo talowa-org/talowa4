@@ -24,7 +24,7 @@ void main() {
         MonitoringService.startOperation(operationId, operation, userId);
         
         // Simulate some work
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
         
         // End monitoring
         await MonitoringService.endOperation(
@@ -330,7 +330,7 @@ void main() {
     group('Health Report', () {
       test('should generate comprehensive health report', () async {
         final now = DateTime.now();
-        final yesterday = now.subtract(Duration(hours: 12));
+        final yesterday = now.subtract(const Duration(hours: 12));
         
         // Create test data
         await fakeFirestore.collection('performance_metrics').add({
@@ -513,7 +513,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test monitoring error';
-        final exception = MonitoringException(message);
+        final exception = const MonitoringException(message);
 
         expect(exception.code, equals('MONITORING_FAILED'));
         expect(exception.context, isNull);

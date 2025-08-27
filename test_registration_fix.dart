@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'lib/services/hybrid_auth_service.dart';
-import 'lib/services/auth_service.dart';
 import 'lib/services/database_service.dart';
-import 'lib/models/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +17,9 @@ void main() async {
 }
 
 Future<void> testRegistrationFlow() async {
-  final testPhone = '9876543210';
-  final testPin = '123456';
-  final testName = 'Test User';
+  const testPhone = '9876543210';
+  const testPin = '123456';
+  const testName = 'Test User';
 
   print('📱 Testing registration for: +91$testPhone');
 

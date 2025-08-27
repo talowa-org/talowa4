@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -18,8 +16,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get welcome => 'తలోవాకు స్వాగతం';
 
   @override
-  String get welcomeMessage =>
-      'భూమి హక్కులు మరియు సామాజిక న్యాయం కోసం ఉద్యమంలో చేరండి';
+  String get welcomeMessage => 'భూమి హక్కులు మరియు సామాజిక న్యాయం కోసం ఉద్యమంలో చేరండి';
 
   @override
   String get login => 'లాగిన్';
@@ -166,8 +163,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get noResults => 'ఫలితాలు లేవు';
 
   @override
-  String get networkError =>
-      'నెట్‌వర్క్ లోపం. దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేయండి.';
+  String get networkError => 'నెట్‌వర్క్ లోపం. దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేయండి.';
 
   @override
   String get serverError => 'సర్వర్ లోపం. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.';
@@ -179,8 +175,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get requiredField => 'ఈ ఫీల్డ్ అవసరం';
 
   @override
-  String get invalidPhoneNumber =>
-      'దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి';
+  String get invalidPhoneNumber => 'దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి';
 
   @override
   String get invalidPin => 'పిన్ 4 అంకెలు ఉండాలి';
@@ -201,8 +196,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get copyReferralCode => 'రెఫరల్ కోడ్‌ను కాపీ చేయండి';
 
   @override
-  String get referralCodeCopied =>
-      'రెఫరల్ కోడ్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది';
+  String get referralCodeCopied => 'రెఫరల్ కోడ్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది';
 
   @override
   String get directReferrals => 'ప్రత్యక్ష రెఫరల్‌లు';

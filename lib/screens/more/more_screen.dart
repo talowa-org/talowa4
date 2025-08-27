@@ -289,7 +289,7 @@ class _MoreScreenState extends State<MoreScreen> {
           children: [
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.eco,
                   color: AppTheme.talowaGreen,
                   size: 32,
@@ -305,11 +305,11 @@ class _MoreScreenState extends State<MoreScreen> {
                           color: AppTheme.talowaGreen,
                         ),
                       ),
-                      Text(
+                      const Text(
                         AppConstants.appFullName,
                         style: AppTheme.captionStyle,
                       ),
-                      Text(
+                      const Text(
                         'Version ${AppConstants.appVersion}',
                         style: AppTheme.captionStyle,
                       ),
@@ -433,23 +433,23 @@ class _MoreScreenState extends State<MoreScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Analytics'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('App Usage Statistics:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('• Daily Active Users: 1,234'),
-            const Text('• Posts Created: 567'),
-            const Text('• Messages Sent: 2,345'),
-            const Text('• Network Growth: +15%'),
-            const SizedBox(height: 16),
-            const Text('Your Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('• Posts: 12'),
-            const Text('• Likes Received: 89'),
-            const Text('• Comments: 34'),
-            const Text('• Referrals: 5'),
+            Text('App Usage Statistics:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text('• Daily Active Users: 1,234'),
+            Text('• Posts Created: 567'),
+            Text('• Messages Sent: 2,345'),
+            Text('• Network Growth: +15%'),
+            SizedBox(height: 16),
+            Text('Your Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text('• Posts: 12'),
+            Text('• Likes Received: 89'),
+            Text('• Comments: 34'),
+            Text('• Referrals: 5'),
           ],
         ),
         actions: [
@@ -698,40 +698,40 @@ class _MoreScreenState extends State<MoreScreen> {
           width: double.maxFinite,
           height: 400,
           child: ListView(
-            children: [
+            children: const [
               ExpansionTile(
-                title: const Text('How do I register my land?'),
+                title: Text('How do I register my land?'),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: const Text('To register your land, go to the Land Records section and follow the step-by-step guide. You\'ll need your survey number, village details, and ownership documents.'),
+                    padding: EdgeInsets.all(16),
+                    child: Text('To register your land, go to the Land Records section and follow the step-by-step guide. You\'ll need your survey number, village details, and ownership documents.'),
                   ),
                 ],
               ),
               ExpansionTile(
-                title: const Text('How does the referral system work?'),
+                title: Text('How does the referral system work?'),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: const Text('Share your referral code with others. When they join using your code, they become part of your network. You can track your referrals in the Network tab.'),
+                    padding: EdgeInsets.all(16),
+                    child: Text('Share your referral code with others. When they join using your code, they become part of your network. You can track your referrals in the Network tab.'),
                   ),
                 ],
               ),
               ExpansionTile(
-                title: const Text('How do I report land grabbing?'),
+                title: Text('How do I report land grabbing?'),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: const Text('Use the Emergency button on the Home screen or go to More > Emergency Contacts. You can report incidents anonymously with photo evidence.'),
+                    padding: EdgeInsets.all(16),
+                    child: Text('Use the Emergency button on the Home screen or go to More > Emergency Contacts. You can report incidents anonymously with photo evidence.'),
                   ),
                 ],
               ),
               ExpansionTile(
-                title: const Text('How do I get legal help?'),
+                title: Text('How do I get legal help?'),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: const Text('Access our legal support network through the Legal Cases section. We connect you with lawyers specializing in land rights.'),
+                    padding: EdgeInsets.all(16),
+                    child: Text('Access our legal support network through the Legal Cases section. We connect you with lawyers specializing in land rights.'),
                   ),
                 ],
               ),
@@ -834,7 +834,7 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.star,
                     color: Colors.amber,
                     size: 32,

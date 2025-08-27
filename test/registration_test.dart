@@ -4,8 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
-import '../lib/screens/auth/real_user_registration_screen.dart';
-import '../lib/models/user_model.dart';
+import 'package:talowa/screens/auth/real_user_registration_screen.dart';
 
 // Mock Firebase for testing
 class MockFirebaseApp extends Fake implements FirebaseApp {
@@ -29,7 +28,7 @@ void main() {
     ) async {
       // Build the registration screen
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Verify the screen loads
@@ -39,7 +38,7 @@ void main() {
 
     testWidgets('Form validation works correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Try to submit empty form
@@ -56,7 +55,7 @@ void main() {
 
     testWidgets('Phone number validation works', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Enter invalid phone number
@@ -73,7 +72,7 @@ void main() {
 
     testWidgets('PIN validation works', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Enter valid phone but invalid PIN
@@ -93,7 +92,7 @@ void main() {
 
     testWidgets('Address fields are required', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Fill only phone and PIN
@@ -116,7 +115,7 @@ void main() {
 
     testWidgets('Terms acceptance is required', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: const RealUserRegistrationScreen()),
+        const MaterialApp(home: RealUserRegistrationScreen()),
       );
 
       // Fill all fields but don't accept terms

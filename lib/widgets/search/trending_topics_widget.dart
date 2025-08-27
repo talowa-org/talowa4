@@ -372,7 +372,7 @@ class TrendingTopicsCarousel extends StatelessWidget {
                     ),
                     const Spacer(),
                     if (topic.growth > 0)
-                      Icon(
+                      const Icon(
                         Icons.trending_up,
                         size: 16,
                         color: Colors.green,
@@ -463,7 +463,7 @@ class TrendingHashtagsWidget extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           if (topic.growth > 0)
-            Icon(
+            const Icon(
               Icons.trending_up,
               size: 12,
               color: Colors.green,

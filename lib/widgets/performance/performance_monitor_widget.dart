@@ -160,7 +160,7 @@ class _PerformanceMonitorWidgetState extends State<PerformanceMonitorWidget> {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.talowaGreen,
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -421,7 +421,7 @@ class _MemoryUsageIndicatorState extends State<MemoryUsageIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final maxMemory = 50.0; // MB
+    const maxMemory = 50.0; // MB
     final usagePercentage = (_memoryUsage / maxMemory).clamp(0.0, 1.0);
     
     return Container(

@@ -75,7 +75,7 @@ class _CachedNetworkImageWidgetState extends State<CachedNetworkImageWidget> {
             color: Colors.grey[400],
           ),
           const SizedBox(height: 8),
-          SizedBox(
+          const SizedBox(
             width: 20,
             height: 20,
             child: CircularProgressIndicator(

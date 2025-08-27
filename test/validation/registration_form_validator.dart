@@ -692,7 +692,7 @@ class RegistrationFormValidator {
       
       // Generate test user data with referral code
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-      final testReferralCode = 'TAL234567';
+      const testReferralCode = 'TAL234567';
       final testUserData = _generateTestUserData(
         phoneNumber: testPhone,
         referralCode: testReferralCode,
@@ -797,7 +797,7 @@ class RegistrationFormValidator {
       
       // Generate test user data with referral code
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-      final testReferralCode = 'TAL789ABC';
+      const testReferralCode = 'TAL789ABC';
       final testUserData = _generateTestUserData(
         phoneNumber: testPhone,
         referralCode: testReferralCode,
@@ -816,7 +816,7 @@ class RegistrationFormValidator {
       final userUid = submissionResult.userUid!;
       
       // Wait a moment and check if provisionalRef is still there
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       
       final userDoc = await _firestore.collection('users').doc(userUid).get();
       final userData = userDoc.data()!;

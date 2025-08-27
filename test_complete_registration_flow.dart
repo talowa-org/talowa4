@@ -18,10 +18,10 @@ void main() async {
 }
 
 Future<void> testCompleteRegistrationFlow() async {
-  final testPhone = '8765432109'; // Different from previous tests
-  final testPin = '654321';
-  final testName = 'Complete Test User';
-  final testEmail = 'test@example.com';
+  const testPhone = '8765432109'; // Different from previous tests
+  const testPin = '654321';
+  const testName = 'Complete Test User';
+  const testEmail = 'test@example.com';
   
   print('📱 Testing complete registration flow for: +91$testPhone');
   

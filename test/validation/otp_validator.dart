@@ -271,7 +271,7 @@ class OTPValidator {
         // Verify OTP expiration is set correctly (5 minutes)
         final createdAt = (data['createdAt'] as Timestamp).toDate();
         final expiresAt = (data['expiresAt'] as Timestamp).toDate();
-        final expectedExpiry = createdAt.add(Duration(minutes: 5));
+        final expectedExpiry = createdAt.add(const Duration(minutes: 5));
         
         if (expiresAt.difference(expectedExpiry).abs().inMinutes > 1) {
           return ValidationResult.fail(
@@ -493,7 +493,7 @@ class OTPValidator {
         debugPrint('✓ OTP request $i succeeded (within rate limit)');
         
         // Small delay between requests
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
       }
 
       // Test 2: Send 4th OTP request (should fail due to rate limit)
@@ -588,7 +588,7 @@ class OTPValidator {
         'phoneNumber': phoneNumber,
         'otpCode': '123456', // Test OTP
         'createdAt': FieldValue.serverTimestamp(),
-        'expiresAt': Timestamp.fromDate(DateTime.now().add(Duration(minutes: 5))),
+        'expiresAt': Timestamp.fromDate(DateTime.now().add(const Duration(minutes: 5))),
         'verified': false,
         'attempts': 0,
       });
@@ -643,8 +643,8 @@ class OTPValidator {
       await _firestore.collection('otp_requests').doc(phoneNumber).set({
         'phoneNumber': phoneNumber,
         'otpCode': '123456',
-        'createdAt': Timestamp.fromDate(DateTime.now().subtract(Duration(minutes: 10))),
-        'expiresAt': Timestamp.fromDate(DateTime.now().subtract(Duration(minutes: 5))),
+        'createdAt': Timestamp.fromDate(DateTime.now().subtract(const Duration(minutes: 10))),
+        'expiresAt': Timestamp.fromDate(DateTime.now().subtract(const Duration(minutes: 5))),
         'verified': false,
         'attempts': 0,
       });
@@ -679,7 +679,7 @@ class OTPValidator {
       final lastAttempt = (data['lastAttempt'] as Timestamp?)?.toDate();
       
       if (lastAttempt != null) {
-        final oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
+        final oneHourAgo = DateTime.now().subtract(const Duration(hours: 1));
         if (lastAttempt.isBefore(oneHourAgo)) {
           // Reset counter if more than 1 hour has passed
           await _firestore.collection('otp_rate_limits').doc(phoneNumber).delete();

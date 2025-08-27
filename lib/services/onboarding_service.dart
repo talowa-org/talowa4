@@ -126,7 +126,7 @@ class OnboardingService {
   /// Get onboarding steps for messaging tutorial
   static List<OnboardingStep> getMessagingTutorialSteps() {
     return [
-      OnboardingStep(
+      const OnboardingStep(
         id: 'messaging_intro',
         title: 'Welcome to TALOWA Messaging',
         description: 'Secure communication for land rights activism',
@@ -134,7 +134,7 @@ class OnboardingService {
         iconData: Icons.message,
         actionText: 'Get Started',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'send_message',
         title: 'Send Your First Message',
         description: 'Learn how to send secure messages',
@@ -143,7 +143,7 @@ class OnboardingService {
         actionText: 'Try It',
         isInteractive: true,
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'group_chats',
         title: 'Join Group Conversations',
         description: 'Connect with your village and mandal',
@@ -151,7 +151,7 @@ class OnboardingService {
         iconData: Icons.group,
         actionText: 'Explore Groups',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'anonymous_reporting',
         title: 'Anonymous Reporting',
         description: 'Report issues safely and securely',
@@ -159,7 +159,7 @@ class OnboardingService {
         iconData: Icons.security,
         actionText: 'Learn More',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'message_security',
         title: 'Your Messages Are Secure',
         description: 'End-to-end encryption protects your privacy',
@@ -173,7 +173,7 @@ class OnboardingService {
   /// Get onboarding steps for calling tutorial
   static List<OnboardingStep> getCallingTutorialSteps() {
     return [
-      OnboardingStep(
+      const OnboardingStep(
         id: 'calling_intro',
         title: 'Voice Calling in TALOWA',
         description: 'Secure voice communication',
@@ -181,7 +181,7 @@ class OnboardingService {
         iconData: Icons.call,
         actionText: 'Learn More',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'make_call',
         title: 'Making a Call',
         description: 'Start a voice conversation',
@@ -190,7 +190,7 @@ class OnboardingService {
         actionText: 'Try It',
         isInteractive: true,
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'call_controls',
         title: 'Call Controls',
         description: 'Manage your calls effectively',
@@ -198,7 +198,7 @@ class OnboardingService {
         iconData: Icons.settings_voice,
         actionText: 'Practice',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'call_quality',
         title: 'Call Quality',
         description: 'Optimized for rural networks',
@@ -212,7 +212,7 @@ class OnboardingService {
   /// Get onboarding steps for group management tutorial (coordinators only)
   static List<OnboardingStep> getGroupManagementTutorialSteps() {
     return [
-      OnboardingStep(
+      const OnboardingStep(
         id: 'group_management_intro',
         title: 'Group Management for Coordinators',
         description: 'Lead your community effectively',
@@ -220,7 +220,7 @@ class OnboardingService {
         iconData: Icons.admin_panel_settings,
         actionText: 'Get Started',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'create_group',
         title: 'Creating Groups',
         description: 'Organize your community',
@@ -229,7 +229,7 @@ class OnboardingService {
         actionText: 'Try Creating',
         isInteractive: true,
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'manage_members',
         title: 'Managing Members',
         description: 'Add and remove group participants',
@@ -237,7 +237,7 @@ class OnboardingService {
         iconData: Icons.people,
         actionText: 'Practice',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'broadcast_messages',
         title: 'Broadcast Messages',
         description: 'Reach your entire network',
@@ -245,7 +245,7 @@ class OnboardingService {
         iconData: Icons.campaign,
         actionText: 'Learn How',
       ),
-      OnboardingStep(
+      const OnboardingStep(
         id: 'emergency_features',
         title: 'Emergency Broadcasting',
         description: 'Rapid response capabilities',

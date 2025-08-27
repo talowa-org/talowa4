@@ -184,13 +184,13 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (context) => const AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            const Text('Checking link safety...'),
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Checking link safety...'),
           ],
         ),
       ),
@@ -221,7 +221,7 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'This link may not be safe to visit:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),

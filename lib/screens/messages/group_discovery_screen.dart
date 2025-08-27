@@ -422,7 +422,7 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Are you sure you want to join this group?'),
+            const Text('Are you sure you want to join this group?'),
             const SizedBox(height: 8),
             if (group.settings.requireApprovalToJoin)
               const Text(

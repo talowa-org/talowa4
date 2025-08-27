@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'lib/firebase_options.dart';
 import 'lib/services/auth_service.dart';
 import 'lib/models/address.dart';
@@ -83,7 +82,7 @@ Future<bool> simulateOTPVerification() async {
     // For Phase 1, we simulate OTP verification since it's handled in the UI
     print('  📱 Simulating mobile number entry: +919876543210');
     print('  📤 Simulating OTP request...');
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     print('  📥 Simulating OTP: 123456');
     print('  ✅ Simulating OTP verification success');
 

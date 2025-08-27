@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -32,8 +33,8 @@ class ReferralCodeGenerator {
   }
   
   /// Generates a unique referral code
-  /// BULLETPROOF: This method will NEVER throw exceptions or return null
-  /// Always returns a valid TAL-format referral code
+  /// Generates a unique referral code
+  /// Uses simple fallback if secure generation fails
   static Future<String> generateUniqueCode() async {
     int attempts = 0;
 
@@ -65,19 +66,19 @@ class ReferralCodeGenerator {
         debugPrint('⚠️  Error in generation attempt ${attempts + 1}: $e');
         attempts++;
 
-        // If we're on the last attempt, generate an emergency fallback
+        // If we're on the last attempt, use simple fallback without scary logs
         if (attempts >= MAX_ATTEMPTS) {
-          final emergencyCode = _generateEmergencyFallbackCode();
-          debugPrint('🚨 EMERGENCY: Using fallback code $emergencyCode after $MAX_ATTEMPTS failed attempts');
-          return emergencyCode;
+          final simpleCode = '${PREFIX}${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+          debugPrint('⚠️ Using simple fallback code: $simpleCode');
+          return simpleCode;
         }
       }
     }
 
-    // Final fallback - should never reach here, but ensure we always return a code
-    final finalFallbackCode = _generateEmergencyFallbackCode();
-    debugPrint('🔄 FINAL FALLBACK: Generated code $finalFallbackCode');
-    return finalFallbackCode;
+    // Final simple fallback
+    final finalCode = '${PREFIX}${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    debugPrint('⚠️ Using final fallback code: $finalCode');
+    return finalCode;
   }
 
   /// Ensures a user has a TAL-prefixed referral code, generating one if needed
@@ -236,13 +237,22 @@ class ReferralCodeGenerator {
   /// Reserves a referral code in the database
   static Future<void> _reserveCode(String code) async {
     try {
+      // Get current user UID for Firestore rules compliance
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw ReferralCodeGenerationException(
+          'User must be authenticated to reserve referral code',
+          'USER_NOT_AUTHENTICATED'
+        );
+      }
+
       await _firestore.collection('referralCodes').doc(code).set({
         'code': code,
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
         'clickCount': 0,
         'conversionCount': 0,
-        'uid': null, // Will be updated when assigned to user
+        'uid': currentUser.uid, // Set to current user's UID for Firestore rules
       });
     } catch (e) {
       throw ReferralCodeGenerationException(
@@ -342,31 +352,5 @@ class ReferralCodeGenerator {
     }
   }
 
-  /// Generates an emergency fallback code when all else fails
-  /// This method uses a simple timestamp-based approach to ensure uniqueness
-  static String _generateEmergencyFallbackCode() {
-    try {
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final timestampStr = timestamp.toString();
-
-      // Take last 6 digits and convert to allowed chars
-      final lastSixDigits = timestampStr.substring(timestampStr.length - 6);
-      final codeBuffer = StringBuffer(PREFIX);
-
-      for (int i = 0; i < lastSixDigits.length; i++) {
-        final digit = int.parse(lastSixDigits[i]);
-        // Map digits 0-9 to first 10 allowed chars
-        final charIndex = digit % ALLOWED_CHARS.length;
-        codeBuffer.write(ALLOWED_CHARS[charIndex]);
-      }
-
-      final emergencyCode = codeBuffer.toString();
-      debugPrint('🚨 Generated emergency fallback code: $emergencyCode');
-      return emergencyCode;
-    } catch (e) {
-      // Ultimate fallback - hardcoded emergency code
-      debugPrint('🚨 CRITICAL: Emergency fallback generation failed: $e');
-      return '${PREFIX}EMRGCY'; // Emergency code
-    }
-  }
+  // Emergency fallback function removed - using simple timestamp-based fallback instead
 }

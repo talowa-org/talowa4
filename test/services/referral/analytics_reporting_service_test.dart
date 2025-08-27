@@ -252,7 +252,7 @@ void main() {
         // Setup today's data
         await fakeFirestore.collection('users').doc('user1').set({
           'fullName': 'User 1',
-          'registrationDate': Timestamp.fromDate(today.add(Duration(hours: 10))),
+          'registrationDate': Timestamp.fromDate(today.add(const Duration(hours: 10))),
           'membershipPaid': true,
         });
         
@@ -322,7 +322,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test analytics error';
-        final exception = AnalyticsReportingException(message);
+        final exception = const AnalyticsReportingException(message);
 
         expect(exception.code, equals('ANALYTICS_REPORTING_FAILED'));
         expect(exception.context, isNull);

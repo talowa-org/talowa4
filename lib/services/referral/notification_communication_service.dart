@@ -272,7 +272,7 @@ class NotificationCommunicationService {
       );
       
       // Small delay to ensure unique IDs
-      await Future.delayed(Duration(milliseconds: 1));
+      await Future.delayed(const Duration(milliseconds: 1));
 
       // Notification for the referrer
       final referrerNotification = NotificationData(
@@ -723,21 +723,21 @@ class NotificationCommunicationService {
   static Future<bool> _deliverPushNotification(NotificationData notification) async {
     // In a real implementation, this would integrate with FCM or similar
     // For now, we'll simulate delivery
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     return true;
   }
   
   static Future<bool> _deliverEmailNotification(NotificationData notification) async {
     // In a real implementation, this would integrate with an email service
     // For now, we'll simulate delivery
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
     return true;
   }
   
   static Future<bool> _deliverSmsNotification(NotificationData notification) async {
     // In a real implementation, this would integrate with an SMS service
     // For now, we'll simulate delivery
-    await Future.delayed(Duration(milliseconds: 150));
+    await Future.delayed(const Duration(milliseconds: 150));
     return true;
   }
 }

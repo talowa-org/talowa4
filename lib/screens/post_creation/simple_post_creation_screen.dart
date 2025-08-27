@@ -513,7 +513,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                         ),
                         child: Text(
                           '#$hashtag',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppTheme.talowaGreen,
                             fontWeight: FontWeight.w600,
                           ),
@@ -665,15 +665,15 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.blue[200]!),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                          const SizedBox(width: 12),
-                          const Text('Uploading media files...'),
+                          SizedBox(width: 12),
+                          Text('Uploading media files...'),
                         ],
                       ),
                     ),

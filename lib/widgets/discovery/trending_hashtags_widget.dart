@@ -81,7 +81,7 @@ class TrendingHashtagsWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isTopTrending)
-              Icon(
+              const Icon(
                 Icons.trending_up,
                 size: 16,
                 color: Colors.white,

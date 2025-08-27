@@ -2,7 +2,6 @@
 // Part of Task 9: Build PostCreationScreen for coordinators
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,7 +12,6 @@ import '../../services/social_feed/feed_service.dart';
 import '../../services/auth/auth_service.dart';
 import '../../widgets/social_feed/hashtag_text_widget.dart';
 import '../../widgets/social_feed/geographic_scope_widget.dart';
-import '../../widgets/media/image_gallery_widget.dart';
 import '../../widgets/social_feed/document_preview_widget.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../services/media/media_upload_service.dart';

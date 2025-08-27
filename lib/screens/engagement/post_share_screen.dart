@@ -147,7 +147,7 @@ class _PostShareScreenState extends State<PostShareScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.favorite, size: 14, color: Colors.red),
+                    const Icon(Icons.favorite, size: 14, color: Colors.red),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.post.likesCount}',

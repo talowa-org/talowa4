@@ -211,7 +211,7 @@ Map<String, dynamic> updateReferrerStatistics(
 /// Generate referral code (improved for uniqueness)
 String generateReferralCode() {
   final timestamp = DateTime.now().microsecondsSinceEpoch;
-  final chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   
   String code = 'TAL';
   for (int i = 0; i < 6; i++) {

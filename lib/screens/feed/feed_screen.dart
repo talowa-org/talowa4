@@ -143,7 +143,7 @@ class _FeedScreenState extends State<FeedScreen>
             Text('Error: ${_errorMessage ?? 'Failed to load feed'}'),
             ElevatedButton(
               onPressed: _loadFeed,
-              child: Text('Retry'),
+              child: const Text('Retry'),
             ),
           ],
         ),
@@ -276,7 +276,7 @@ class _FeedScreenState extends State<FeedScreen>
                     ),
                     child: Text(
                       '#$hashtag',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppTheme.talowaGreen,
                         fontWeight: FontWeight.w600,
@@ -625,7 +625,7 @@ class _FeedScreenState extends State<FeedScreen>
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update like. Please try again.'),
+            content: const Text('Failed to update like. Please try again.'),
             backgroundColor: Colors.red,
             action: SnackBarAction(
               label: 'Retry',
@@ -821,10 +821,10 @@ class _FeedScreenState extends State<FeedScreen>
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Post shared successfully!'),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 1),
+            duration: Duration(seconds: 1),
           ),
         );
       }
@@ -840,7 +840,7 @@ class _FeedScreenState extends State<FeedScreen>
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to share post. Please try again.'),
+            content: const Text('Failed to share post. Please try again.'),
             backgroundColor: Colors.red,
             action: SnackBarAction(
               label: 'Retry',
@@ -1175,7 +1175,7 @@ class _FeedScreenState extends State<FeedScreen>
                 ),
                 color: Colors.grey.shade50,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: AppTheme.talowaGreen,
                 size: 32,
@@ -1239,7 +1239,7 @@ class _FeedScreenState extends State<FeedScreen>
                               story.authorName.isNotEmpty 
                                   ? story.authorName[0].toUpperCase()
                                   : '?',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppTheme.talowaGreen,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

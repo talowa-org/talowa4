@@ -233,7 +233,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildOverviewMetrics() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: MetricsCardWidget(
@@ -245,7 +245,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             color: Colors.blue,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: MetricsCardWidget(
             title: 'Engagement',
@@ -256,7 +256,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             color: Colors.red,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: MetricsCardWidget(
             title: 'Reach',
@@ -325,7 +325,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildContentMetricsCards() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: MetricsCardWidget(
@@ -337,7 +337,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             color: Colors.orange,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: MetricsCardWidget(
             title: 'Best Performing',
@@ -770,7 +770,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb, color: Colors.blue, size: 20),
+              const Icon(Icons.lightbulb, color: Colors.blue, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

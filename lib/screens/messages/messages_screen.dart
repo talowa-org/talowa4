@@ -243,7 +243,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   Widget _buildConversationsList(List<ConversationModel> conversations) {
     if (conversations.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -252,19 +252,19 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
               size: 64,
               color: AppTheme.secondaryText,
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: AppTheme.spacingMedium),
             Text(
               'No conversations yet',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.secondaryText,
               ),
             ),
-            const SizedBox(height: AppTheme.spacingSmall),
+            SizedBox(height: AppTheme.spacingSmall),
             Text(
               'Start a conversation to connect with your network',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 color: AppTheme.secondaryText,
               ),
@@ -444,25 +444,25 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Create Group Chat'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Group Name',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Group Description (Optional)',
                 border: OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
-            const SizedBox(height: 16),
-            const Text('Select members:'),
+            SizedBox(height: 16),
+            Text('Select members:'),
             // Add member selection UI here
           ],
         ),
@@ -493,8 +493,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              decoration: const InputDecoration(
+            const TextField(
+              decoration: InputDecoration(
                 labelText: 'Message',
                 border: OutlineInputBorder(),
               ),

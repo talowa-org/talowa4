@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
-import '../../screens/feed/feed_screen.dart';
 
 class FeedPostCard extends StatelessWidget {
   final FeedPost post;

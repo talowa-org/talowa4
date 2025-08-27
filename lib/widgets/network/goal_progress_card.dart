@@ -28,10 +28,10 @@ class GoalProgressCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.emoji_events, color: AppTheme.warningOrange),
-                const SizedBox(width: AppTheme.spacingSmall),
+                Icon(Icons.emoji_events, color: AppTheme.warningOrange),
+                SizedBox(width: AppTheme.spacingSmall),
                 Text(
                   'Current Goals',
                   style: AppTheme.heading3Style,

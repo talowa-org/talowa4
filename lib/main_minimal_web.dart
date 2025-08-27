@@ -98,9 +98,9 @@ class MinimalWelcomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Platform: ${kIsWeb ? "Web" : "Mobile"}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white54,
                 fontSize: 12,
               ),

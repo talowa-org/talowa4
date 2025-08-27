@@ -7,7 +7,7 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'screens/auth/welcome_screen.dart';
-import 'screens/auth/new_login_screen.dart';
+import 'auth/login.dart';
 import 'screens/auth/mobile_entry_screen.dart';
 import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
@@ -29,7 +29,17 @@ import 'generated/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Guard against future crashes by logging Flutter errors early
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    // ignore: avoid_print
+    print('Uncaught Flutter error: ${details.exceptionAsString()}');
+  };
+  
+  // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint('✅ Firebase initialized successfully');
 
   // Initialize localization service
   // await LocalizationService.initialize();
@@ -46,15 +56,20 @@ void main() async {
   // Initialize Remote Config (feature flags)
   await RemoteConfigService.init();
 
-  // Initialize performance monitoring
-  PerformanceMonitor.logMemoryUsage('app_startup');
-
   // Fix user roles and populate missing data collections (runs in background)
   // Note: This will run after user authentication in the app
   DataPopulationService.populateIfNeeded();
 
   // Bootstrap admin user and migrate legacy data
-  BootstrapService.bootstrap();
+  try {
+    await BootstrapService.bootstrap();
+  } catch (e) {
+    debugPrint('⚠️ Bootstrap failed, but app will continue: $e');
+    // Don't let bootstrap failures prevent app startup
+  }
+
+  // Initialize performance monitoring (works without Firebase)
+  PerformanceMonitor.logMemoryUsage('app_startup');
 
   // Initialize messaging integration system
   // try {
@@ -106,7 +121,7 @@ class TalowaApp extends StatelessWidget {
             home: const WelcomeScreen(),
             routes: {
               '/welcome': (context) => const WelcomeScreen(),
-              '/login': (context) => const NewLoginScreen(),
+              '/login': (context) => const LoginScreen(),
               '/mobile-entry': (context) => const MobileEntryScreen(),
               '/register': (context) => const IntegratedRegistrationScreen(),
               '/main': (context) => const MainNavigationScreen(),

@@ -26,7 +26,7 @@ void main() {
       });
 
       test('should have correct admin user profile', () {
-        final profile = ReferralConfig.adminUserProfile;
+        const profile = ReferralConfig.adminUserProfile;
         
         expect(profile['fullName'], equals('Talowa Admin'));
         expect(profile['email'], equals(ReferralConfig.adminEmail));
@@ -56,7 +56,7 @@ void main() {
 
       test('should verify admin configuration structure', () async {
         // Test the admin profile structure
-        final profile = ReferralConfig.adminUserProfile;
+        const profile = ReferralConfig.adminUserProfile;
         
         // Required fields for admin user
         final requiredFields = [
@@ -84,14 +84,14 @@ void main() {
         const fallbackUsers = 20;
         const expectedPercentage = 20.0;
         
-        final percentage = (fallbackUsers / totalUsers) * 100;
+        const percentage = (fallbackUsers / totalUsers) * 100;
         expect(percentage, equals(expectedPercentage));
         
         // Test threshold checking
         expect(percentage > ReferralConfig.maxFallbackPercentage, isFalse);
         
         const highFallbackUsers = 30;
-        final highPercentage = (highFallbackUsers / totalUsers) * 100;
+        const highPercentage = (highFallbackUsers / totalUsers) * 100;
         expect(highPercentage > ReferralConfig.maxFallbackPercentage, isTrue);
       });
 
@@ -99,7 +99,7 @@ void main() {
         const totalUsers = 0;
         const fallbackUsers = 0;
         
-        final percentage = totalUsers > 0 
+        const percentage = totalUsers > 0 
             ? (fallbackUsers / totalUsers) * 100 
             : 0.0;
         
@@ -111,7 +111,7 @@ void main() {
 
     group('Configuration Validation', () {
       test('should validate referral code format', () {
-        final code = ReferralConfig.defaultReferrerCode;
+        const code = ReferralConfig.defaultReferrerCode;
 
         // Should be 8 characters for TALADMIN
         expect(code.length, equals(8));
@@ -131,8 +131,8 @@ void main() {
       });
 
       test('should validate admin contact information', () {
-        final email = ReferralConfig.adminEmail;
-        final phone = ReferralConfig.adminPhone;
+        const email = ReferralConfig.adminEmail;
+        const phone = ReferralConfig.adminPhone;
         
         // Email should be valid format
         expect(email.contains('@'), isTrue);
@@ -175,7 +175,7 @@ void main() {
       });
 
       test('should validate admin profile completeness', () {
-        final profile = ReferralConfig.adminUserProfile;
+        const profile = ReferralConfig.adminUserProfile;
         
         // No null values in critical fields
         expect(profile['fullName'], isNotNull);
@@ -199,7 +199,7 @@ void main() {
     group('Security Considerations', () {
       test('should use secure admin credentials', () {
         // Admin should have highest privileges
-        final profile = ReferralConfig.adminUserProfile;
+        const profile = ReferralConfig.adminUserProfile;
         expect(profile['role'], equals('regional_coordinator'));
         expect(profile['isSystemAdmin'], isTrue);
         
@@ -224,16 +224,16 @@ void main() {
     group('Integration Points', () {
       test('should provide consistent configuration across services', () {
         // All services should use the same admin code
-        final adminCode = ReferralConfig.defaultReferrerCode;
+        const adminCode = ReferralConfig.defaultReferrerCode;
         expect(adminCode, isNotNull);
         expect(adminCode.isNotEmpty, isTrue);
         
         // Fallback should be configurable
-        final fallbackEnabled = ReferralConfig.fallbackEnabled;
+        const fallbackEnabled = ReferralConfig.fallbackEnabled;
         expect(fallbackEnabled, isA<bool>());
         
         // Admin profile should be complete for service usage
-        final profile = ReferralConfig.adminUserProfile;
+        const profile = ReferralConfig.adminUserProfile;
         expect(profile, isNotNull);
         expect(profile.isNotEmpty, isTrue);
       });

@@ -66,7 +66,7 @@ class LandRecordsListScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.landscape, size: 56, color: AppTheme.talowaGreen),
+            const Icon(Icons.landscape, size: 56, color: AppTheme.talowaGreen),
             const SizedBox(height: 12),
             const Text('No land records yet'),
             const SizedBox(height: 8),

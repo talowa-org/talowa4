@@ -23,7 +23,6 @@ import 'package:talowa/services/messaging/call_quality_monitor.dart';
 
 // Import models
 import 'package:talowa/models/message_model.dart';
-import 'package:talowa/models/user_model.dart';
 
 // Generate mocks
 @GenerateMocks([

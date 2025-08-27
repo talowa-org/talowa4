@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
-import 'core/constants/app_constants.dart';
 import 'screens/auth/real_user_registration_screen.dart';
-import 'screens/auth/new_login_screen.dart';
+import 'auth/login.dart';
 import 'widgets/error_boundary.dart';
 
 void main() async {
@@ -22,6 +22,12 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     debugPrint('✅ Firebase initialized successfully for web');
+    
+    // Set Firebase Auth persistence for web
+    if (kIsWeb) {
+      await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+      debugPrint('✅ Firebase Auth persistence set to LOCAL for web');
+    }
   } catch (e) {
     debugPrint('❌ Firebase initialization failed: $e');
     // Continue without Firebase - app should still work for basic functionality
@@ -52,7 +58,7 @@ class TalowaFixedApp extends StatelessWidget {
           errorMessage:
               'There was an issue with the login form. Please refresh and try again.',
           onRetry: () => Navigator.pushReplacementNamed(context, '/login'),
-          child: const NewLoginScreen(),
+          child: const LoginScreen(),
         ),
         '/success': (context) => const RegistrationSuccessScreen(),
         '/main': (context) => const MainAppScreen(),
@@ -98,7 +104,7 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Title
-              Text(
+              const Text(
                 'TALOWA',
                 style: TextStyle(
                   fontSize: 32,
@@ -110,7 +116,7 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Subtitle
-              Text(
+              const Text(
                 'Telangana Assigned Land Owners\nWelfare Association',
                 style: TextStyle(
                   fontSize: 18,
@@ -190,7 +196,7 @@ class LandingScreen extends StatelessWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.talowaGreen,
-                    side: BorderSide(color: AppTheme.talowaGreen, width: 2),
+                    side: const BorderSide(color: AppTheme.talowaGreen, width: 2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -205,7 +211,7 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Info text
-              Text(
+              const Text(
                 'Existing users: Login with your mobile number and PIN.\nNew users: Register to join the movement.',
                 style: TextStyle(fontSize: 14, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,
@@ -249,7 +255,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              Text(
+              const Text(
                 'Registration Successful!',
                 style: TextStyle(
                   fontSize: 24,
@@ -261,7 +267,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              Text(
+              const Text(
                 'Welcome to TALOWA! Your account has been created with a proper TAL referral code.',
                 style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,
@@ -337,12 +343,12 @@ class MainAppScreen extends StatelessWidget {
                   color: AppTheme.talowaGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(60),
                 ),
-                child: Icon(Icons.home, size: 80, color: AppTheme.talowaGreen),
+                child: const Icon(Icons.home, size: 80, color: AppTheme.talowaGreen),
               ),
 
               const SizedBox(height: 40),
 
-              Text(
+              const Text(
                 'Welcome to TALOWA!',
                 style: TextStyle(
                   fontSize: 24,
@@ -354,7 +360,7 @@ class MainAppScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              Text(
+              const Text(
                 'You have successfully logged in. All fixes have been applied.',
                 style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
                 textAlign: TextAlign.center,

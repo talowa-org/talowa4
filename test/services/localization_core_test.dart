@@ -202,7 +202,7 @@ void main() {
       });
 
       test('should handle transcription results', () async {
-        final mockAudioPath = 'test_audio.wav';
+        const mockAudioPath = 'test_audio.wav';
         
         final transcriptionResult = await VoiceTranscriptionService.transcribeVoiceMessage(
           audioFilePath: mockAudioPath,

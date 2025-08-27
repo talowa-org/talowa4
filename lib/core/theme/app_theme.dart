@@ -121,18 +121,18 @@ class AppTheme {
       ),
       
       // Bottom Navigation Bar Theme
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: cardBackground,
         selectedItemColor: talowaGreen,
         unselectedItemColor: secondaryText,
         type: BottomNavigationBarType.fixed,
         elevation: elevationMedium,
-        selectedLabelStyle: const TextStyle(
+        selectedLabelStyle: TextStyle(
           fontFamily: 'NotoSansTelugu',
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: const TextStyle(
+        unselectedLabelStyle: TextStyle(
           fontFamily: 'NotoSansTelugu',
           fontSize: 12,
           fontWeight: FontWeight.normal,
@@ -140,7 +140,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: const CardThemeData(
+      cardTheme: const CardTheme(
         color: cardBackground,
         elevation: elevationLow,
         shape: RoundedRectangleBorder(

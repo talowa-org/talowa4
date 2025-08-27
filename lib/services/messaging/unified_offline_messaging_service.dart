@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../models/message_model.dart';
-import '../../models/messaging/conversation_model.dart';
 import '../auth_service.dart';
 import 'offline_messaging_service.dart';
 import 'message_queue_service.dart';

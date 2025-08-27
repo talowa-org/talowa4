@@ -164,11 +164,11 @@ void main() {
 
     group('Validation Result', () {
       test('should create validation result correctly', () {
-        final validResult = ValidationResult(isValid: true, errors: []);
+        final validResult = const ValidationResult(isValid: true, errors: []);
         expect(validResult.isValid, isTrue);
         expect(validResult.errors, isEmpty);
 
-        final invalidResult = ValidationResult(
+        final invalidResult = const ValidationResult(
           isValid: false, 
           errors: ['Error 1', 'Error 2']
         );
@@ -282,7 +282,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Registration failed';
-        final exception = RegistrationException(message);
+        final exception = const RegistrationException(message);
 
         expect(exception.code, equals('REGISTRATION_FAILED'));
         expect(exception.context, isNull);

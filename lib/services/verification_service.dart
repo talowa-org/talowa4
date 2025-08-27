@@ -148,7 +148,7 @@ class VerificationService {
     
     // This test verifies the implementation exists
     // In a real app, this would test actual navigation
-    final hasCustomLeading = true; // We implemented custom leading button
+    const hasCustomLeading = true; // We implemented custom leading button
     
     debugPrint('Back button test: ${hasCustomLeading ? 'PASS' : 'FAIL'}');
     

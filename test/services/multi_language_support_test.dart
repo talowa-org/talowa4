@@ -296,7 +296,7 @@ void main() {
 
       test('should handle voice transcription workflow', () async {
         // This would test with actual audio files in a real implementation
-        final mockAudioPath = 'test_audio.wav';
+        const mockAudioPath = 'test_audio.wav';
         
         final transcriptionResult = await VoiceTranscriptionService.transcribeVoiceMessage(
           audioFilePath: mockAudioPath,

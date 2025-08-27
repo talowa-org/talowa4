@@ -54,7 +54,7 @@ void main() {
           print('Created $currentConnections connections (${(currentConnections / targetConnections * 100).toStringAsFixed(1)}%)');
           
           // Brief pause between batches to prevent overwhelming
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
         }
         
         stopwatch.stop();
@@ -104,7 +104,7 @@ void main() {
         final reconnectionEvents = <ReconnectionEvent>[];
         
         // Monitor connections for stability
-        final monitoringTimer = Timer.periodic(Duration(seconds: 30), (timer) async {
+        final monitoringTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
           for (int i = 0; i < connections.length; i++) {
             final connection = connections[i];
             
@@ -173,14 +173,14 @@ void main() {
         final startTime = DateTime.now();
         
         // Message sending loop
-        final sendingTimer = Timer.periodic(Duration(milliseconds: 1), (timer) async {
+        final sendingTimer = Timer.periodic(const Duration(milliseconds: 1), (timer) async {
           if (DateTime.now().difference(startTime) >= testDuration) {
             timer.cancel();
             return;
           }
           
           // Send batch of messages to achieve target throughput
-          final batchSize = targetThroughput ~/ 1000; // Adjust based on timer frequency
+          const batchSize = targetThroughput ~/ 1000; // Adjust based on timer frequency
           final sendTasks = <Future<SentMessage>>[];
           
           for (int i = 0; i < batchSize; i++) {
@@ -199,7 +199,7 @@ void main() {
         });
         
         // Wait for test completion
-        await Future.delayed(testDuration + Duration(seconds: 30)); // Extra time for delivery
+        await Future.delayed(testDuration + const Duration(seconds: 30)); // Extra time for delivery
         
         // Collect delivery confirmations
         for (final sentMessage in sentMessages) {
@@ -376,12 +376,12 @@ void main() {
           final result = await testEnv.initiateVoiceCall(
             callerId: 'stress_caller_$i',
             calleeId: 'stress_callee_$i',
-            duration: Duration(minutes: 2),
+            duration: const Duration(minutes: 2),
           );
           stressCallResults.add(result);
           
           // Stagger call initiation
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
         }
         
         // Analyze quality degradation

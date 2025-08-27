@@ -32,7 +32,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
   bool _isCompleting = false;
 
   final List<TrainingModule> _modules = [
-    TrainingModule(
+    const TrainingModule(
       id: 'group_creation',
       title: 'Creating and Managing Groups',
       description: 'Learn how to create groups and organize your community',
@@ -69,7 +69,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
         ),
       ],
     ),
-    TrainingModule(
+    const TrainingModule(
       id: 'member_management',
       title: 'Managing Group Members',
       description: 'Add, remove, and manage members effectively',
@@ -108,7 +108,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
         ),
       ],
     ),
-    TrainingModule(
+    const TrainingModule(
       id: 'communication',
       title: 'Effective Communication',
       description: 'Best practices for group communication and broadcasting',
@@ -149,7 +149,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
         ),
       ],
     ),
-    TrainingModule(
+    const TrainingModule(
       id: 'privacy_security',
       title: 'Privacy and Security',
       description: 'Protecting your community and sensitive information',

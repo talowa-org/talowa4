@@ -179,7 +179,7 @@ String calculateRole(int directReferrals, int teamSize) {
 /// Generate a unique referral code
 String generateReferralCode() {
   final timestamp = DateTime.now().millisecondsSinceEpoch;
-  final chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   final random = timestamp % 1000000;
   
   String code = 'TAL';

@@ -36,7 +36,7 @@ void main() {
         imageUrls: ['https://example.com/image1.jpg'],
         documentUrls: ['https://example.com/document1.pdf'],
         hashtags: ['hashtag'],
-        targeting: GeographicTargeting(
+        targeting: const GeographicTargeting(
           state: 'Telangana',
           district: 'Hyderabad',
           village: 'Test Village',

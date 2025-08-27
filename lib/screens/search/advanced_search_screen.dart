@@ -452,7 +452,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen>
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.star, size: 14, color: Colors.orange),
+                const Icon(Icons.star, size: 14, color: Colors.orange),
                 const SizedBox(width: 4),
                 Text(
                   '${(recommendation.score * 100).round()}% match',

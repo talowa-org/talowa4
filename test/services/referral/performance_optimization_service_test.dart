@@ -50,11 +50,11 @@ void main() {
         final result1 = await PerformanceOptimizationService.getCachedData(
           'expiry_test',
           fetchFunction,
-          cacheDuration: Duration(milliseconds: 1),
+          cacheDuration: const Duration(milliseconds: 1),
         );
         
         // Wait for cache to expire
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
         
         // Second call should fetch fresh data
         final result2 = await PerformanceOptimizationService.getCachedData(
@@ -72,7 +72,7 @@ void main() {
         
         Future<String> fetchFunction() async {
           callCount++;
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
           return 'test_data_$callCount';
         }
         
@@ -220,7 +220,7 @@ void main() {
     group('Performance Monitoring', () {
       test('should monitor query performance', () async {
         Future<String> testQuery() async {
-          await Future.delayed(Duration(milliseconds: 50));
+          await Future.delayed(const Duration(milliseconds: 50));
           return 'query_result';
         }
         
@@ -287,11 +287,11 @@ void main() {
         await PerformanceOptimizationService.getCachedData(
           'cleanup_test',
           () async => 'test_data',
-          cacheDuration: Duration(milliseconds: 1),
+          cacheDuration: const Duration(milliseconds: 1),
         );
         
         // Wait for expiration
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
         
         // Cleanup expired entries
         PerformanceOptimizationService.cleanupExpiredEntries();
@@ -324,7 +324,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test performance error';
-        final exception = PerformanceOptimizationException(message);
+        final exception = const PerformanceOptimizationException(message);
 
         expect(exception.code, equals('PERFORMANCE_OPTIMIZATION_FAILED'));
         expect(exception.context, isNull);
@@ -335,12 +335,12 @@ void main() {
       test('should detect expired entries correctly', () {
         final expiredEntry = CacheEntry(
           'test_data',
-          DateTime.now().subtract(Duration(minutes: 1)),
+          DateTime.now().subtract(const Duration(minutes: 1)),
         );
         
         final validEntry = CacheEntry(
           'test_data',
-          DateTime.now().add(Duration(minutes: 1)),
+          DateTime.now().add(const Duration(minutes: 1)),
         );
         
         expect(expiredEntry.isExpired, isTrue);

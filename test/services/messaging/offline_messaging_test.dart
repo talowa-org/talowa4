@@ -2,7 +2,6 @@
 // Tests Task 8: Create offline messaging and synchronization
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:talowa/services/messaging/offline_messaging_service.dart';
 import 'package:talowa/services/messaging/message_queue_service.dart';
@@ -10,7 +9,6 @@ import 'package:talowa/services/messaging/message_sync_service.dart';
 import 'package:talowa/services/messaging/message_conflict_resolver.dart';
 import 'package:talowa/services/messaging/message_compression_service.dart';
 import 'package:talowa/services/messaging/unified_offline_messaging_service.dart';
-import 'package:talowa/models/message_model.dart';
 
 void main() {
   group('Offline Messaging Service Tests', () {

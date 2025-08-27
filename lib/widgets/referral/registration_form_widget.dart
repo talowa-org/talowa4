@@ -76,15 +76,15 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.link, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.link, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text('Referral code auto-filled: $referralCode'),
               ),
             ],
           ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -201,13 +201,13 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Registration successful!'),
-                SizedBox(height: 4),
+                const Text('Registration successful!'),
+                const SizedBox(height: 4),
                 Text('Your referral code: ${result.referralCode}'),
               ],
             ),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 5),
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -248,11 +248,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
             'Personal Information',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _fullNameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Full Name *',
               border: OutlineInputBorder(),
             ),
@@ -266,11 +266,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _phoneController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Phone Number *',
               border: OutlineInputBorder(),
               prefixText: '+91 ',
@@ -290,11 +290,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _emailController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Email *',
               border: OutlineInputBorder(),
             ),
@@ -309,13 +309,13 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
               labelText: 'Password *',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                 onPressed: () {
@@ -336,13 +336,13 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _confirmPasswordController,
             decoration: InputDecoration(
               labelText: 'Confirm Password *',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
                 onPressed: () {
@@ -363,31 +363,31 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           // Address Section
           Text(
             'Address Information',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: _houseNoController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'House No.',
                     border: OutlineInputBorder(),
                   ),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: TextFormField(
                   controller: _streetController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Street',
                     border: OutlineInputBorder(),
                   ),
@@ -395,11 +395,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _villageCityController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Village/City *',
               border: OutlineInputBorder(),
             ),
@@ -410,14 +410,14 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               return null;
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: _mandalController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Mandal *',
                     border: OutlineInputBorder(),
                   ),
@@ -429,11 +429,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
                   },
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: TextFormField(
                   controller: _districtController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'District *',
                     border: OutlineInputBorder(),
                   ),
@@ -447,14 +447,14 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: _stateController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'State *',
                     border: OutlineInputBorder(),
                   ),
@@ -466,11 +466,11 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
                   },
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: TextFormField(
                   controller: _pincodeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Pincode *',
                     border: OutlineInputBorder(),
                   ),
@@ -492,22 +492,22 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               ),
             ],
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           // Referral Code Section
           Text(
             'Referral Code (Optional)',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           TextFormField(
             controller: _referralCodeController,
             decoration: InputDecoration(
               labelText: 'Referral Code',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               suffixIcon: _isValidatingReferralCode
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 20,
                       height: 20,
                       child: Padding(
@@ -516,9 +516,9 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
                       ),
                     )
                   : _isReferralCodeValid
-                      ? Icon(Icons.check_circle, color: Colors.green)
+                      ? const Icon(Icons.check_circle, color: Colors.green)
                       : _referralCodeError != null
-                          ? Icon(Icons.error, color: Colors.red)
+                          ? const Icon(Icons.error, color: Colors.red)
                           : null,
               errorText: _referralCodeError,
             ),
@@ -536,9 +536,9 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
           ),
           
           if (_referrerName != null) ...[
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
                 border: Border.all(color: Colors.green.shade200),
@@ -546,8 +546,8 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
               ),
               child: Row(
                 children: [
-                  Icon(Icons.person, color: Colors.green),
-                  SizedBox(width: 8),
+                  const Icon(Icons.person, color: Colors.green),
+                  const SizedBox(width: 8),
                   Text(
                     'Referred by: $_referrerName',
                     style: TextStyle(
@@ -560,17 +560,17 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
             ),
           ],
           
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           
           ElevatedButton(
             onPressed: _isLoading ? null : _register,
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Theme.of(context).primaryColor,
               foregroundColor: Colors.white,
             ),
             child: _isLoading
-                ? Row(
+                ? const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
@@ -585,7 +585,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget>
                       Text('Registering...'),
                     ],
                   )
-                : Text(
+                : const Text(
                     'Register',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),

@@ -174,7 +174,7 @@ class HelpDocumentationService {
   List<HelpCategory> _createHelpCategories() {
     return [
       // Messaging Help Category
-      HelpCategory(
+      const HelpCategory(
         id: 'messaging',
         title: 'Messaging & Communication',
         description: 'Learn how to use TALOWA messaging features',
@@ -254,7 +254,7 @@ class HelpDocumentationService {
       ),
 
       // Voice Calling Help Category
-      HelpCategory(
+      const HelpCategory(
         id: 'calling',
         title: 'Voice Calling',
         description: 'Make secure voice calls through TALOWA',
@@ -313,7 +313,7 @@ class HelpDocumentationService {
       ),
 
       // Group Management Help Category (for coordinators)
-      HelpCategory(
+      const HelpCategory(
         id: 'group_management',
         title: 'Group Management',
         description: 'Coordinator tools for managing groups and communities',
@@ -400,7 +400,7 @@ class HelpDocumentationService {
       ),
 
       // General Help Category
-      HelpCategory(
+      const HelpCategory(
         id: 'general',
         title: 'General Help',
         description: 'Common questions and basic app usage',

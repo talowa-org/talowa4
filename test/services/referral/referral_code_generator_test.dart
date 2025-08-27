@@ -61,7 +61,7 @@ void main() {
       test('should calculate total possible combinations correctly', () {
         const allowedCharsLength = 31; // Length of ALLOWED_CHARS
         const codeLength = 6;
-        final expected = 887503681; // 31^6
+        const expected = 887503681; // 31^6
         
         expect(ReferralCodeGenerator.totalPossibleCombinations, equals(expected));
       });
@@ -96,7 +96,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test error';
-        final exception = ReferralCodeGenerationException(message);
+        final exception = const ReferralCodeGenerationException(message);
         
         expect(exception.code, equals('CODE_GENERATION_FAILED'));
         expect(exception.context, isNull);
@@ -137,13 +137,13 @@ void main() {
       });
 
       test('should handle special characters in seed', () {
-        final specialSeed = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
+        const specialSeed = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
         final code = ReferralCodeGenerator.generateTestCode(specialSeed);
         expect(ReferralCodeGenerator.isValidFormat(code), isTrue);
       });
 
       test('should handle unicode characters in seed', () {
-        final unicodeSeed = '🎉🚀💡🌟⭐';
+        const unicodeSeed = '🎉🚀💡🌟⭐';
         final code = ReferralCodeGenerator.generateTestCode(unicodeSeed);
         expect(ReferralCodeGenerator.isValidFormat(code), isTrue);
       });

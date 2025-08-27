@@ -570,7 +570,7 @@ class ComprehensiveValidator {
           rethrow;
         } else {
           _logExecution('🔄 Retrying $taskName in 2 seconds...');
-          await Future.delayed(Duration(seconds: 2));
+          await Future.delayed(const Duration(seconds: 2));
         }
       }
     }

@@ -69,7 +69,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -86,15 +86,15 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
-            SizedBox(height: 16),
-            Text('Error loading dashboard'),
-            SizedBox(height: 8),
-            Text(_error!, style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 16),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text('Error loading dashboard'),
+            const SizedBox(height: 8),
+            Text(_error!, style: const TextStyle(color: Colors.grey)),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadDashboardData,
-              child: Text('Retry'),
+              child: const Text('Retry'),
             ),
           ],
         ),
@@ -104,7 +104,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
       child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             // Header with referral code
@@ -130,7 +130,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -143,7 +143,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             'Your Referral Code',
             style: TextStyle(
               color: Colors.white,
@@ -151,9 +151,9 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -161,7 +161,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 8,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -178,7 +178,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                     fontFamily: 'monospace',
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 IconButton(
                   onPressed: () => _copyReferralCode(referralCode),
                   icon: Icon(Icons.copy, color: Theme.of(context).primaryColor),
@@ -187,7 +187,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               ],
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -231,10 +231,10 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
             iconSize: 24,
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -248,7 +248,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final userStats = _userStats?['user'] ?? {};
     
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Expanded(
@@ -260,7 +260,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               color: Colors.blue,
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: _buildStatCard(
               title: 'Team Size',
@@ -286,14 +286,14 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(icon, color: color, size: 24),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
@@ -306,7 +306,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               value,
               style: TextStyle(
@@ -315,7 +315,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 color: color,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               subtitle,
               style: TextStyle(
@@ -336,19 +336,19 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final progress = roleStatus['progress'];
     
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.trending_up, color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 8),
+                const Text(
                   'Role Progression',
                   style: TextStyle(
                     fontSize: 18,
@@ -357,11 +357,11 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Current role
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -379,15 +379,15 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
             ),
             
             if (nextRole != null) ...[
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Next Role: ${_formatRoleName(nextRole['role'])}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               
               if (progress != null) ...[
                 // Direct referrals progress
@@ -397,7 +397,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                   required: progress['directReferrals']['required'],
                   progress: progress['directReferrals']['progress'],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 // Team size progress
                 _buildProgressBar(
@@ -408,9 +408,9 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 ),
               ],
             ] else ...[
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.amber.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -418,8 +418,8 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.star, color: Colors.amber),
-                    SizedBox(width: 8),
+                    const Icon(Icons.star, color: Colors.amber),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Congratulations! You\'ve reached the highest role.',
@@ -453,7 +453,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -467,7 +467,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
             ),
           ],
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         LinearProgressIndicator(
           value: progress / 100,
           backgroundColor: Colors.grey[300],
@@ -475,7 +475,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
             progress >= 100 ? Colors.green : Theme.of(context).primaryColor,
           ),
         ),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Text(
           '$progress% complete',
           style: TextStyle(
@@ -490,7 +490,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
   Widget _buildTabSection() {
     return Container(
       height: 400,
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       child: Card(
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -501,7 +501,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               labelColor: Theme.of(context).primaryColor,
               unselectedLabelColor: Colors.grey,
               indicatorColor: Theme.of(context).primaryColor,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Overview'),
                 Tab(text: 'Team'),
                 Tab(text: 'Growth'),
@@ -529,18 +529,18 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final pendingVsActive = _userStats?['pendingVsActive'] ?? {};
     
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Referral Overview',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Activation rates
           if (pendingVsActive.isNotEmpty) ...[
@@ -548,7 +548,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               'Direct Referrals',
               pendingVsActive['directReferrals'] ?? {},
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildActivationRateCard(
               'Team Members',
               pendingVsActive['teamSize'] ?? {},
@@ -566,7 +566,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final rate = data['activationRate'] ?? 0;
     
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(8),
@@ -577,12 +577,12 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -605,7 +605,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Activation Rate: $rate%',
             style: TextStyle(
@@ -620,7 +620,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
   }
 
   Widget _buildTeamTab() {
-    return Center(
+    return const Center(
       child: Text('Team details coming soon...'),
     );
   }
@@ -630,23 +630,23 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final growth = weeklyGrowth['growth'] ?? {};
     
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Weekly Growth',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           _buildGrowthMetric('Direct Referrals', growth['directReferrals'] ?? 0),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _buildGrowthMetric('Team Size', growth['teamSize'] ?? 0),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _buildGrowthMetric('Active Team', growth['activeTeamSize'] ?? 0),
         ],
       ),
@@ -658,7 +658,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final isNegative = growth < 0;
     
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isPositive ? Colors.green.withOpacity(0.1) :
                isNegative ? Colors.red.withOpacity(0.1) :
@@ -675,7 +675,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
                    isNegative ? Colors.red :
                    Colors.grey,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(child: Text(label)),
           Text(
             '${growth > 0 ? '+' : ''}$growth',
@@ -696,11 +696,11 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     final referralCode = userStats['referralCode'] ?? '';
     
     if (referralCode.isEmpty) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
     
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: EnhancedQRWidget(
         referralCode: referralCode,
         userName: userStats['fullName'],
@@ -719,7 +719,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     await Clipboard.setData(ClipboardData(text: code));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
@@ -739,7 +739,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     await Clipboard.setData(ClipboardData(text: link));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
@@ -770,27 +770,27 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'Your QR Code',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               EnhancedQRWidget(
                 referralCode: code,
                 userName: _userStats?['user']?['fullName'],
                 size: 250,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
             ],
           ),

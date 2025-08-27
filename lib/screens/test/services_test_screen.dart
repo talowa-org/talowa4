@@ -37,13 +37,13 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'TALOWA Services Test',
               style: AppTheme.heading1Style,
             ),
             const SizedBox(height: 16),
             
-            Text(
+            const Text(
               'Test the newly implemented services:',
               style: AppTheme.bodyStyle,
             ),
@@ -91,7 +91,7 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
 
             // Results
             if (_testResults.isNotEmpty) ...[
-              Text(
+              const Text(
                 'Test Results:',
                 style: AppTheme.heading3Style,
               ),

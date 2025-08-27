@@ -111,11 +111,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.privacy_tip, color: AppTheme.talowaGreen, size: 32),
-              const SizedBox(width: 12),
-              const Expanded(
+              SizedBox(width: 12),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -142,11 +142,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               color: Colors.blue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(Icons.info, color: Colors.blue, size: 20),
-                const SizedBox(width: 8),
-                const Expanded(
+                SizedBox(width: 8),
+                Expanded(
                   child: Text(
                     'TALOWA follows strict privacy guidelines to protect your personal information.',
                     style: TextStyle(fontSize: 12),
@@ -261,11 +261,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             color: Colors.green.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(Icons.tips_and_updates, color: Colors.green, size: 20),
-              const SizedBox(width: 8),
-              const Expanded(
+              SizedBox(width: 8),
+              Expanded(
                 child: Text(
                   'You can change privacy for individual posts when creating them.',
                   style: TextStyle(fontSize: 12),
@@ -326,21 +326,21 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             color: Colors.red.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Icon(Icons.warning, color: Colors.red, size: 20),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'Important',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              const Text(
+              SizedBox(height: 4),
+              Text(
                 'Data processing consent is required for the app to function properly. Without it, some features may not work.',
                 style: TextStyle(fontSize: 12),
               ),

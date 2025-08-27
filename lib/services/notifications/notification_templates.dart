@@ -35,7 +35,7 @@ class NotificationTemplates {
     switch (type) {
       // Messaging templates
       case NotificationTemplateType.newMessage:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '{{senderName}}',
           body: '{{messagePreview}}',
           notificationType: NotificationType.general,
@@ -44,7 +44,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.groupMessage:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '{{groupName}}',
           body: '{{senderName}}: {{messagePreview}}',
           notificationType: NotificationType.general,
@@ -53,7 +53,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.missedCall:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'Missed Call',
           body: 'Missed call from {{callerName}}',
           notificationType: NotificationType.general,
@@ -63,7 +63,7 @@ class NotificationTemplates {
 
       // Social feed templates
       case NotificationTemplateType.postLike:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'New Like',
           body: '{{likerName}} liked your post',
           notificationType: NotificationType.postLike,
@@ -72,7 +72,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.postComment:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'New Comment',
           body: '{{commenterName}} commented on your post: "{{commentPreview}}"',
           notificationType: NotificationType.postComment,
@@ -81,7 +81,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.postShare:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'Post Shared',
           body: '{{sharerName}} shared your post',
           notificationType: NotificationType.postShare,
@@ -90,7 +90,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.mentionInPost:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'You were mentioned',
           body: '{{mentionerName}} mentioned you in a post',
           notificationType: NotificationType.mentionInPost,
@@ -99,7 +99,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.mentionInComment:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'You were mentioned',
           body: '{{mentionerName}} mentioned you in a comment',
           notificationType: NotificationType.mentionInComment,
@@ -109,7 +109,7 @@ class NotificationTemplates {
 
       // Emergency templates
       case NotificationTemplateType.emergencyAlert:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🚨 EMERGENCY ALERT',
           body: '{{alertMessage}}',
           notificationType: NotificationType.emergency,
@@ -118,7 +118,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.landGrabbingAlert:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '⚠️ Land Grabbing Alert',
           body: 'Land grabbing reported in {{location}}. {{details}}',
           notificationType: NotificationType.landRightsAlert,
@@ -127,7 +127,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.governmentAction:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📢 Government Action Alert',
           body: '{{actionType}} in {{location}}. {{details}}',
           notificationType: NotificationType.emergency,
@@ -137,7 +137,7 @@ class NotificationTemplates {
 
       // Legal templates
       case NotificationTemplateType.courtDateReminder:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '⚖️ Court Date Reminder',
           body: 'Court hearing for {{caseName}} on {{date}} at {{time}}',
           notificationType: NotificationType.courtDateReminder,
@@ -146,7 +146,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.legalUpdate:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📋 Legal Update',
           body: 'Update on {{caseName}}: {{updateDetails}}',
           notificationType: NotificationType.legalUpdate,
@@ -155,7 +155,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.documentExpiry:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📄 Document Expiring',
           body: 'Your {{documentType}} expires on {{expiryDate}}',
           notificationType: NotificationType.documentExpiry,
@@ -165,7 +165,7 @@ class NotificationTemplates {
 
       // Campaign templates
       case NotificationTemplateType.campaignUpdate:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📢 Campaign Update',
           body: '{{campaignName}}: {{updateMessage}}',
           notificationType: NotificationType.campaignUpdate,
@@ -174,7 +174,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.meetingReminder:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📅 Meeting Reminder',
           body: '{{meetingTitle}} starts in {{timeUntil}} at {{location}}',
           notificationType: NotificationType.meetingReminder,
@@ -183,7 +183,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.protestAlert:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '✊ Protest Alert',
           body: 'Protest organized at {{location}} on {{date}}. {{details}}',
           notificationType: NotificationType.campaignUpdate,
@@ -193,7 +193,7 @@ class NotificationTemplates {
 
       // Network templates
       case NotificationTemplateType.newFollower:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: 'New Follower',
           body: '{{followerName}} started following you',
           notificationType: NotificationType.newFollower,
@@ -202,7 +202,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.networkMilestone:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🎉 Network Milestone',
           body: 'Congratulations! You now have {{count}} {{type}} in your network',
           notificationType: NotificationType.networkUpdate,
@@ -211,7 +211,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.teamPromotion:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🎊 Promotion!',
           body: 'Congratulations! You have been promoted to {{newRole}}',
           notificationType: NotificationType.networkUpdate,
@@ -221,7 +221,7 @@ class NotificationTemplates {
 
       // System templates
       case NotificationTemplateType.systemUpdate:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🔄 App Update',
           body: '{{updateMessage}}',
           notificationType: NotificationType.systemUpdate,
@@ -230,7 +230,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.maintenanceAlert:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🔧 Maintenance Alert',
           body: 'Scheduled maintenance from {{startTime}} to {{endTime}}',
           notificationType: NotificationType.systemUpdate,
@@ -239,7 +239,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.securityAlert:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🔒 Security Alert',
           body: '{{alertMessage}}',
           notificationType: NotificationType.systemUpdate,
@@ -249,7 +249,7 @@ class NotificationTemplates {
 
       // Success story templates
       case NotificationTemplateType.successStory:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🎉 Success Story',
           body: '{{title}}: {{summary}}',
           notificationType: NotificationType.successStory,
@@ -258,7 +258,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.pattaReceived:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '🎊 Patta Received!',
           body: '{{farmerName}} received patta for {{landArea}} in {{village}}',
           notificationType: NotificationType.successStory,
@@ -267,7 +267,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.caseWon:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '⚖️ Case Won!',
           body: 'Victory in {{caseName}}! {{details}}',
           notificationType: NotificationType.successStory,
@@ -277,7 +277,7 @@ class NotificationTemplates {
 
       // Announcement templates
       case NotificationTemplateType.generalAnnouncement:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📢 Announcement',
           body: '{{announcementText}}',
           notificationType: NotificationType.announcement,
@@ -286,7 +286,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.coordinatorMessage:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '👤 Message from {{coordinatorName}}',
           body: '{{message}}',
           notificationType: NotificationType.announcement,
@@ -295,7 +295,7 @@ class NotificationTemplates {
         );
 
       case NotificationTemplateType.policyUpdate:
-        return NotificationTemplate(
+        return const NotificationTemplate(
           title: '📋 Policy Update',
           body: 'New policy: {{policyTitle}}. {{summary}}',
           notificationType: NotificationType.announcement,

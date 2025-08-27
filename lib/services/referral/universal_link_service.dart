@@ -279,7 +279,7 @@ class UniversalLinkService {
   static Future<Map<String, dynamic>> getLinkClickStats(String referralCode) async {
     try {
       final now = DateTime.now();
-      final yesterday = now.subtract(Duration(days: 1));
+      final yesterday = now.subtract(const Duration(days: 1));
       
       final query = await _firestore
           .collection('linkClicks')
@@ -319,7 +319,7 @@ class UniversalLinkService {
   static Future<bool> validateConfiguration() async {
     try {
       // Test basic link generation
-      final testCode = 'TAL8K9M2X';
+      const testCode = 'TAL8K9M2X';
       final link = generateReferralLink(testCode);
       final parsedCode = parseReferralCodeFromUrl(link);
       

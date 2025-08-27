@@ -3,12 +3,9 @@
 // Reference: in-app-communication/requirements.md - Requirements 1.2, 8.1, 8.2
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:sqflite/sqflite.dart'; // Not supported on web
-import '../../models/message_model.dart';
-import '../../models/messaging/conversation_model.dart';
 import '../auth_service.dart';
 import 'messaging_service.dart';
 import 'offline_messaging_service.dart';

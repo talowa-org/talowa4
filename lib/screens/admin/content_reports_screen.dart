@@ -460,11 +460,11 @@ class _ReviewReportDialogState extends State<_ReviewReportDialog> {
               DropdownButton<Duration>(
                 value: _duration,
                 hint: const Text('Select duration'),
-                items: [
-                  const DropdownMenuItem(value: Duration(hours: 1), child: Text('1 hour')),
-                  const DropdownMenuItem(value: Duration(hours: 24), child: Text('24 hours')),
-                  const DropdownMenuItem(value: Duration(days: 3), child: Text('3 days')),
-                  const DropdownMenuItem(value: Duration(days: 7), child: Text('7 days')),
+                items: const [
+                  DropdownMenuItem(value: Duration(hours: 1), child: Text('1 hour')),
+                  DropdownMenuItem(value: Duration(hours: 24), child: Text('24 hours')),
+                  DropdownMenuItem(value: Duration(days: 3), child: Text('3 days')),
+                  DropdownMenuItem(value: Duration(days: 7), child: Text('7 days')),
                 ],
                 onChanged: (value) => setState(() => _duration = value),
               ),

@@ -46,7 +46,7 @@ class FeedFilterWidget extends StatelessWidget {
           // Active filters display
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.filter_list,
                 size: 16,
                 color: AppTheme.talowaGreen,

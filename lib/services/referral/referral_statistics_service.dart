@@ -320,7 +320,7 @@ class ReferralStatisticsService {
         
         // Small delay between batches to avoid rate limiting
         if (i + batchSize < userIds.length) {
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
         }
       }
     } catch (e) {

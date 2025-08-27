@@ -382,7 +382,7 @@ class UserRegistrationService {
       // Verify admin configuration
       final isValid = await ReferralConfig.verifyAdminConfiguration();
       if (!isValid) {
-        throw UserRegistrationException(
+        throw const UserRegistrationException(
           'Failed to initialize admin configuration',
           'ADMIN_INIT_FAILED'
         );

@@ -10,6 +10,7 @@ import '../../models/user_model.dart';
 
 import '../../services/database_service.dart';
 import '../../services/referral/referral_code_generator.dart';
+import '../../services/auth_policy.dart';
 import 'payment_screen.dart';
 
 import '../../services/referral/universal_link_service.dart';
@@ -92,13 +93,13 @@ class _IntegratedRegistrationScreenState
         SnackBar(
           content: Row(
             children: [
-              Icon(Icons.link, color: Colors.white),
-              SizedBox(width: 8),
+              const Icon(Icons.link, color: Colors.white),
+              const SizedBox(width: 8),
               Expanded(child: Text('Referral code auto-filled: $referralCode')),
             ],
           ),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -114,9 +115,9 @@ class _IntegratedRegistrationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Join TALOWA Movement',
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -129,7 +130,7 @@ class _IntegratedRegistrationScreenState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppTheme.talowaGreen.withValues(alpha: 0.1), Colors.white],
+            colors: [AppTheme.talowaGreen.withOpacity(0.1), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -320,58 +321,6 @@ class _IntegratedRegistrationScreenState
 
                   const SizedBox(height: 24),
 
-                  // Security Information
-                  _buildSectionTitle('Security Information'),
-                  const SizedBox(height: 16),
-
-                  _buildTextField(
-                    controller: _pinController,
-                    label: 'Create PIN *',
-                    hint: 'Enter 6-digit PIN',
-                    icon: Icons.lock,
-                    obscureText: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(6),
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please create a PIN';
-                      }
-                      if (value.length != 6) {
-                        return 'PIN must be exactly 6 digits';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  _buildTextField(
-                    controller: _confirmPinController,
-                    label: 'Confirm PIN *',
-                    hint: 'Re-enter your PIN',
-                    icon: Icons.lock_outline,
-                    obscureText: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(6),
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your PIN';
-                      }
-                      if (value != _pinController.text) {
-                        return 'PINs do not match';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
                   // Referral Information (Optional)
                   _buildSectionTitle('Referral Information (Optional)'),
                   const SizedBox(height: 16),
@@ -411,14 +360,14 @@ class _IntegratedRegistrationScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+        color: AppTheme.talowaGreen.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.talowaGreen.withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.talowaGreen.withOpacity(0.3)),
       ),
-      child: Column(
+      child: const Column(
         children: [
           Icon(Icons.eco, size: 48, color: AppTheme.talowaGreen),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Welcome to TALOWA',
             style: TextStyle(
@@ -427,7 +376,7 @@ class _IntegratedRegistrationScreenState
               color: AppTheme.talowaGreen,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Join the movement for land rights and rural empowerment',
             style: TextStyle(fontSize: 16, color: AppTheme.secondaryText),
@@ -477,7 +426,7 @@ class _IntegratedRegistrationScreenState
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+          borderSide: const BorderSide(color: AppTheme.talowaGreen, width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -495,14 +444,14 @@ class _IntegratedRegistrationScreenState
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.location_on, color: AppTheme.talowaGreen),
+        prefixIcon: const Icon(Icons.location_on, color: AppTheme.talowaGreen),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppTheme.talowaGreen, width: 2),
+          borderSide: const BorderSide(color: AppTheme.talowaGreen, width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -540,7 +489,7 @@ class _IntegratedRegistrationScreenState
                 _acceptedTerms = !_acceptedTerms;
               });
             },
-            child: Text(
+            child: const Text(
               'I agree to the Terms of Service and Privacy Policy of TALOWA. I understand that this app is for land rights activism and I will use it responsibly.',
               style: TextStyle(fontSize: 14, color: AppTheme.secondaryText),
             ),
@@ -580,7 +529,7 @@ class _IntegratedRegistrationScreenState
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Text(
+        child: const Text(
           'Already have an account? Login here',
           style: TextStyle(
             color: AppTheme.talowaGreen,
@@ -811,7 +760,7 @@ class _IntegratedRegistrationScreenState
 
       // Create email/password credentials for login compatibility
       final fakeEmail = '$phoneNumber@talowa.app';
-      final hashedPin = 'talowa_${pinText}_secure';
+      final hashedPin = passwordFromPin(pinText); // Use consistent PIN hashing
 
       try {
         // Link email/password to the existing phone auth user
@@ -890,6 +839,7 @@ class _IntegratedRegistrationScreenState
           district: _districtController.text.trim(),
           mandal: _mandalController.text.trim(),
           village: _villageController.text.trim(),
+          pinHash: hashedPin, // Pass PIN hash for login verification
         );
         debugPrint('✅ User registry created successfully');
       } catch (e) {

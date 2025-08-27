@@ -346,7 +346,7 @@ class DatabaseOptimizationService {
   Future<void> _setupFirestoreSettings() async {
     try {
       // Configure Firestore settings for optimization
-      final settings = const Settings(
+      const settings = Settings(
         persistenceEnabled: true,
         cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
       );

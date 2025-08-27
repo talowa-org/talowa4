@@ -90,7 +90,7 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
               CircleAvatar(
                 radius: 12,
                 backgroundColor: AppTheme.talowaGreen.withOpacity(0.2),
-                child: Icon(
+                child: const Icon(
                   Icons.person,
                   size: 14,
                   color: AppTheme.talowaGreen,
@@ -217,7 +217,7 @@ class _TypingDotState extends State<_TypingDot>
           child: Container(
             width: 4,
             height: 4,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.talowaGreen,
               shape: BoxShape.circle,
             ),

@@ -283,11 +283,11 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       color: Colors.orange.withOpacity(0.1),
-      child: Row(
+      child: const Row(
         children: [
           Icon(Icons.cloud_off, color: Colors.orange, size: 20),
-          const SizedBox(width: 8),
-          const Expanded(
+          SizedBox(width: 8),
+          Expanded(
             child: Text(
               'You\'re offline. Showing cached content. New posts will sync when online.',
               style: TextStyle(fontSize: 12),
@@ -368,11 +368,11 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
                   bottomRight: Radius.circular(8),
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.sync_problem, color: Colors.orange, size: 16),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'Waiting to sync...',
                     style: TextStyle(fontSize: 12, color: Colors.orange),
                   ),

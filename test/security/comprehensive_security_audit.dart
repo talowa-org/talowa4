@@ -27,7 +27,7 @@ class ComprehensiveSecurityAudit {
 
       group('1. Authentication Security Tests', () {
         test('should prevent brute force attacks on login', () async {
-          final phoneNumber = '+919876543210';
+          const phoneNumber = '+919876543210';
           
           // Attempt multiple failed logins
           for (int i = 0; i < 6; i++) {
@@ -43,7 +43,7 @@ class ComprehensiveSecurityAudit {
               // 6th attempt should be blocked
               expect(result.success, isFalse);
               expect(result.isBlocked, isTrue);
-              expect(result.blockDuration, greaterThan(Duration(minutes: 15)));
+              expect(result.blockDuration, greaterThan(const Duration(minutes: 15)));
             }
           }
         });
@@ -87,7 +87,7 @@ class ComprehensiveSecurityAudit {
           final user = await SecurityTestHelpers.createTestUser();
           
           // Attacker provides session ID
-          final attackerSessionId = 'attacker_controlled_session_123';
+          const attackerSessionId = 'attacker_controlled_session_123';
           
           // System should reject pre-set session IDs
           final result = await authService.loginWithSessionId(
@@ -111,7 +111,7 @@ class ComprehensiveSecurityAudit {
           expect(keyPair.privateKey.length, greaterThanOrEqualTo(512));
           
           // Test AES encryption
-          final plaintext = 'Sensitive land rights information';
+          const plaintext = 'Sensitive land rights information';
           final encrypted = await encryptionService.encryptMessage(
             plaintext,
             keyPair.publicKey,
@@ -131,7 +131,7 @@ class ComprehensiveSecurityAudit {
 
         test('should prevent cryptographic attacks', () async {
           final keyPair = await encryptionService.generateKeyPair('test_user');
-          final plaintext = 'Test message';
+          const plaintext = 'Test message';
 
           // Test against padding oracle attacks
           final encrypted = await encryptionService.encryptMessage(
@@ -164,7 +164,7 @@ class ComprehensiveSecurityAudit {
         });
 
         test('should implement secure key management', () async {
-          final userId = 'test_user_123';
+          const userId = 'test_user_123';
           
           // Generate initial key pair
           final keyPair1 = await encryptionService.generateKeyPair(userId);

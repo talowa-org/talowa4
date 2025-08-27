@@ -190,9 +190,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
                   
                   // Dashboard Grid
-                  Text(
+                  const Text(
                     'Main Services', // Using English directly for now
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -350,9 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(Icons.celebration, color: Colors.orange.shade600),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 "Today's Inspiration",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -375,20 +375,20 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Success Story',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'After 15 years, Rameshwar from Telangana finally got his land patta.',
-                  style: const TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 12),
                 ),
               ],
             ),

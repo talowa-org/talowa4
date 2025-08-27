@@ -95,7 +95,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             color: AppTheme.talowaGreen,
           ),
           const SizedBox(height: 16),

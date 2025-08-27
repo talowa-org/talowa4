@@ -42,7 +42,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
@@ -124,7 +124,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Row(
                 children: [
                   Icon(Icons.download_done, color: Colors.white),
@@ -156,7 +156,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
@@ -187,7 +187,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
@@ -212,7 +212,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                     color: Theme.of(context).primaryColor,
                     size: 32,
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -234,7 +234,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                   ),
                 ],
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
             ],
             
             // QR Code
@@ -254,7 +254,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 8,
-                          offset: Offset(0, 4),
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
@@ -263,8 +263,8 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 16),
+                                const CircularProgressIndicator(),
+                                const SizedBox(height: 16),
                                 Text(
                                   'Generating QR Code...',
                                   style: TextStyle(color: Colors.grey[600]),
@@ -288,11 +288,11 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
               },
             ),
             
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             
             // Referral Code Display
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -313,19 +313,19 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                       fontFamily: 'monospace',
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   IconButton(
                     onPressed: _copyReferralLink,
-                    icon: Icon(Icons.copy, size: 20),
+                    icon: const Icon(Icons.copy, size: 20),
                     tooltip: 'Copy referral link',
-                    constraints: BoxConstraints(minWidth: 32, minHeight: 32),
-                    padding: EdgeInsets.all(4),
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    padding: const EdgeInsets.all(4),
                   ),
                 ],
               ),
             ),
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
             // Action Buttons
             Row(
@@ -335,12 +335,12 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _shareQRCode,
-                      icon: Icon(Icons.share, size: 18),
-                      label: Text('Share'),
+                      icon: const Icon(Icons.share, size: 18),
+                      label: const Text('Share'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -349,16 +349,16 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                   ),
                 
                 if (widget.showShareButton && widget.showDownloadButton)
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                 
                 if (widget.showDownloadButton)
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: _downloadQRCode,
-                      icon: Icon(Icons.download, size: 18),
-                      label: Text('Save'),
+                      icon: const Icon(Icons.download, size: 18),
+                      label: const Text('Save'),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -368,11 +368,11 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
               ],
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Instructions
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(8),
@@ -381,7 +381,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
               child: Row(
                 children: [
                   Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Share this QR code for others to scan and join TALOWA with your referral!',
@@ -404,7 +404,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
     final referralLink = UniversalLinkService.generateReferralLink(widget.referralCode);
     
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: QrImageView(
         data: referralLink,
         version: QrVersions.auto,

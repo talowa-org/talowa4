@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 void main() async {
   print('🧪 TALOWA Registration Flow Validation Suite');

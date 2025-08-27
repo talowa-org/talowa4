@@ -43,7 +43,7 @@ Together we can secure land rights for all! 🏡
   void _copyToClipboard() {
     Clipboard.setData(ClipboardData(text: widget.referralCode));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Row(
           children: [
             Icon(Icons.check_circle, color: Colors.white),
@@ -60,7 +60,7 @@ Together we can secure land rights for all! 🏡
   void _copyLinkToClipboard() {
     Clipboard.setData(ClipboardData(text: _referralLink));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Row(
           children: [
             Icon(Icons.check_circle, color: Colors.white),
@@ -96,7 +96,7 @@ Together we can secure land rights for all! 🏡
     return Card(
       elevation: 4,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -108,7 +108,7 @@ Together we can secure land rights for all! 🏡
                   color: Theme.of(context).primaryColor,
                   size: 28,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,11 +132,11 @@ Together we can secure land rights for all! 🏡
               ],
             ),
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
             // Referral Code Display
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -157,7 +157,7 @@ Together we can secure land rights for all! 🏡
                       fontFamily: 'monospace',
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Share this code with others',
                     style: TextStyle(
@@ -169,7 +169,7 @@ Together we can secure land rights for all! 🏡
               ),
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Action Buttons
             Row(
@@ -178,14 +178,14 @@ Together we can secure land rights for all! 🏡
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: _copyToClipboard,
-                      icon: Icon(Icons.copy),
-                      label: Text('Copy Code'),
+                      icon: const Icon(Icons.copy),
+                      label: const Text('Copy Code'),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                 ],
                 
                 if (widget.showQRCode) ...[
@@ -195,21 +195,21 @@ Together we can secure land rights for all! 🏡
                       icon: Icon(_showQR ? Icons.qr_code : Icons.qr_code_2),
                       label: Text(_showQR ? 'Hide QR' : 'Show QR'),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                 ],
                 
                 if (widget.showShareButton)
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _shareReferral,
-                      icon: Icon(Icons.share),
-                      label: Text('Share'),
+                      icon: const Icon(Icons.share),
+                      label: const Text('Share'),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Colors.white,
                       ),
@@ -220,9 +220,9 @@ Together we can secure land rights for all! 🏡
             
             // QR Code Section
             if (_showQR) ...[
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -236,9 +236,9 @@ Together we can secure land rights for all! 🏡
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Container(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -252,7 +252,7 @@ Together we can secure land rights for all! 🏡
                         errorCorrectionLevel: QrErrorCorrectLevel.M,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
                       'Scan to join with your referral code',
                       style: TextStyle(
@@ -261,14 +261,14 @@ Together we can secure land rights for all! 🏡
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: _copyLinkToClipboard,
-                      icon: Icon(Icons.link, size: 16),
-                      label: Text('Copy Link'),
+                      icon: const Icon(Icons.link, size: 16),
+                      label: const Text('Copy Link'),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        textStyle: TextStyle(fontSize: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        textStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                   ],
@@ -277,9 +277,9 @@ Together we can secure land rights for all! 🏡
             ],
             
             // Referral Stats Preview (if available)
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(8),
@@ -295,11 +295,11 @@ Together we can secure land rights for all! 🏡
               ),
             ),
             
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             
             // Help Text
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(8),
@@ -308,7 +308,7 @@ Together we can secure land rights for all! 🏡
               child: Row(
                 children: [
                   Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Share your referral code to invite others and build your team. You\'ll earn rewards when they join!',
@@ -331,7 +331,7 @@ Together we can secure land rights for all! 🏡
     return Column(
       children: [
         Icon(icon, color: Theme.of(context).primaryColor, size: 20),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(

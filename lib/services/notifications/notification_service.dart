@@ -344,7 +344,7 @@ class NotificationService {
         presentSound: true,
       );
       
-      final details = NotificationDetails(
+      final details = const NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );

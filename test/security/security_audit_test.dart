@@ -33,7 +33,7 @@ void main() {
     group('Encryption Security Audit', () {
       test('AES-256 encryption implementation validation', () async {
         // Test AES-256-GCM encryption strength
-        final testData = 'Sensitive land rights information';
+        const testData = 'Sensitive land rights information';
         final key = securityUtils.generateSecureKey(256);
         
         final encrypted = await encryptionService.encryptWithAES256(testData, key);
@@ -63,7 +63,7 @@ void main() {
         expect(keyPair.privateKey.length, greaterThan(1500)); // RSA-4096 private key size
         
         // Test key exchange simulation
-        final message = 'Secret AES key for secure communication';
+        const message = 'Secret AES key for secure communication';
         final encrypted = await encryptionService.encryptWithRSA(message, keyPair.publicKey);
         final decrypted = await encryptionService.decryptWithRSA(encrypted, keyPair.privateKey);
         
@@ -77,14 +77,14 @@ void main() {
       });
 
       test('End-to-end encryption key rotation', () async {
-        final userId1 = 'user1';
-        final userId2 = 'user2';
+        const userId1 = 'user1';
+        const userId2 = 'user2';
         
         // Initial key exchange
         await encryptionService.initializeUserKeys(userId1);
         await encryptionService.initializeUserKeys(userId2);
         
-        final message1 = 'Message before key rotation';
+        const message1 = 'Message before key rotation';
         final encrypted1 = await encryptionService.encryptMessage(message1, userId1, userId2);
         
         // Rotate keys
@@ -92,7 +92,7 @@ void main() {
         await encryptionService.rotateUserKeys(userId2);
         
         // Test with new keys
-        final message2 = 'Message after key rotation';
+        const message2 = 'Message after key rotation';
         final encrypted2 = await encryptionService.encryptMessage(message2, userId1, userId2);
         
         // Verify both messages can be decrypted with appropriate keys
@@ -144,7 +144,7 @@ void main() {
 
     group('Authentication Security Audit', () {
       test('JWT token security validation', () async {
-        final userId = 'test_user_123';
+        const userId = 'test_user_123';
         final token = await authService.generateJWTToken(userId, {
           'role': 'member',
           'permissions': ['messaging', 'voice_calling'],
@@ -171,7 +171,7 @@ void main() {
       });
 
       test('Rate limiting security', () async {
-        final userId = 'rate_limit_test_user';
+        const userId = 'rate_limit_test_user';
         
         // Test message rate limiting (60 messages/minute)
         final messageTasks = <Future<bool>>[];
@@ -201,7 +201,7 @@ void main() {
       });
 
       test('Session management security', () async {
-        final userId = 'session_test_user';
+        const userId = 'session_test_user';
         
         // Create session
         final sessionId = await authService.createSession(userId);
@@ -212,8 +212,8 @@ void main() {
         expect(sessionValid, isTrue);
         
         // Test session timeout
-        await authService.setSessionTimeout(sessionId, Duration(milliseconds: 100));
-        await Future.delayed(Duration(milliseconds: 200));
+        await authService.setSessionTimeout(sessionId, const Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 200));
         
         final expiredSessionValid = await authService.validateSession(sessionId);
         expect(expiredSessionValid, isFalse);
@@ -237,7 +237,7 @@ void main() {
       });
 
       test('Biometric authentication security', () async {
-        final userId = 'biometric_test_user';
+        const userId = 'biometric_test_user';
         
         // Test biometric enrollment
         final biometricData = securityUtils.generateMockBiometricData();
@@ -370,8 +370,8 @@ void main() {
 
     group('Anonymous Messaging Security Audit', () {
       test('Identity protection validation', () async {
-        final reporterId = 'anonymous_reporter_123';
-        final coordinatorId = 'coordinator_456';
+        const reporterId = 'anonymous_reporter_123';
+        const coordinatorId = 'coordinator_456';
         
         // Send anonymous report
         final reportResult = await anonymousService.sendAnonymousReport(
@@ -400,8 +400,8 @@ void main() {
       });
 
       test('Proxy routing security', () async {
-        final reporterId = 'proxy_test_reporter';
-        final coordinatorId = 'proxy_test_coordinator';
+        const reporterId = 'proxy_test_reporter';
+        const coordinatorId = 'proxy_test_coordinator';
         
         // Send message through proxy
         final proxyResult = await anonymousService.sendThroughProxy(
@@ -426,8 +426,8 @@ void main() {
       });
 
       test('Anonymous response security', () async {
-        final caseId = 'anonymous_case_123';
-        final coordinatorId = 'response_coordinator';
+        const caseId = 'anonymous_case_123';
+        const coordinatorId = 'response_coordinator';
         
         // Coordinator sends response to anonymous report
         final responseResult = await anonymousService.sendAnonymousResponse(
@@ -551,7 +551,7 @@ void main() {
       });
 
       test('Data access logging and auditing', () async {
-        final userId = 'audit_test_user';
+        const userId = 'audit_test_user';
         final sensitiveOperations = [
           'view_user_profile',
           'access_messages',
@@ -579,16 +579,16 @@ void main() {
       });
 
       test('Data retention and deletion', () async {
-        final testUserId = 'retention_test_user';
+        const testUserId = 'retention_test_user';
         
         // Create test data with different retention periods
         final shortRetentionData = await securityUtils.createDataWithRetention(
-          testUserId, 'short_term', Duration(days: 1));
+          testUserId, 'short_term', const Duration(days: 1));
         final longRetentionData = await securityUtils.createDataWithRetention(
-          testUserId, 'long_term', Duration(days: 365));
+          testUserId, 'long_term', const Duration(days: 365));
         
         // Fast-forward time simulation
-        await securityUtils.simulateTimePassage(Duration(days: 2));
+        await securityUtils.simulateTimePassage(const Duration(days: 2));
         
         // Run retention cleanup
         await securityUtils.runRetentionCleanup();

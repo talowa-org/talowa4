@@ -290,7 +290,7 @@ class AnalyticsReportingService {
     try {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
-      final yesterday = today.subtract(Duration(days: 1));
+      final yesterday = today.subtract(const Duration(days: 1));
       final thisWeek = today.subtract(Duration(days: now.weekday - 1));
       final thisMonth = DateTime(now.year, now.month, 1);
       
@@ -429,7 +429,7 @@ class AnalyticsReportingService {
   }) async {
     try {
       final conversionRates = await getReferralConversionRates(
-        startDate: startDate ?? DateTime.now().subtract(Duration(days: 30)),
+        startDate: startDate ?? DateTime.now().subtract(const Duration(days: 30)),
         endDate: endDate ?? DateTime.now(),
       );
       

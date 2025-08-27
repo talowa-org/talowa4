@@ -293,7 +293,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
         ),
         child: Text(
           '#$hashtag',
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.talowaGreen,
             fontWeight: FontWeight.w500,
           ),
@@ -310,7 +310,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
           color: AppTheme.talowaGreen.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.tag,
           color: AppTheme.talowaGreen,
           size: 20,
@@ -341,7 +341,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
               width: 4,
               height: 4,
               margin: const EdgeInsets.only(top: 8, right: 8),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.talowaGreen,
                 shape: BoxShape.circle,
               ),

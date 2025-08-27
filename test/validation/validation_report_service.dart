@@ -371,7 +371,7 @@ class ValidationReportService {
       debugPrint('📝 Saving report to $fileName (${content.length} characters)');
       
       // Simulate file write delay
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       
       debugPrint('✅ Report saved successfully to $fileName');
       
