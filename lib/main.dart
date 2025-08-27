@@ -24,6 +24,7 @@ import 'services/data_population_service.dart';
 import 'services/remote_config_service.dart';
 import 'services/bootstrap_service.dart';
 import 'services/notifications/notification_service.dart';
+import 'services/referral/universal_link_service.dart';
 import 'providers/localization_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
@@ -87,11 +88,57 @@ void main() async {
     }
   }
 
+  // Initialize Universal Link Service for referral code handling
+  try {
+    await UniversalLinkService.initialize();
+    debugPrint('✅ Universal Link Service initialized');
+  } catch (e) {
+    debugPrint('⚠️ Failed to initialize Universal Link Service: $e');
+  }
+
   runApp(const TalowaApp());
 }
 
-class TalowaApp extends StatelessWidget {
+class TalowaApp extends StatefulWidget {
   const TalowaApp({super.key});
+
+  @override
+  State<TalowaApp> createState() => _TalowaAppState();
+}
+
+class _TalowaAppState extends State<TalowaApp> {
+  @override
+  void initState() {
+    super.initState();
+    _handleInitialReferralCode();
+  }
+
+  Future<void> _handleInitialReferralCode() async {
+    // Handle referral codes from URL on app startup
+    if (kIsWeb) {
+      try {
+        final currentUrl = Uri.base;
+        final referralCode = currentUrl.queryParameters['ref'];
+        if (referralCode != null && referralCode.trim().isNotEmpty) {
+          final cleanCode = referralCode.trim().toUpperCase();
+          debugPrint('🔗 App started with referral code: $cleanCode');
+          
+          // Store the referral code for later use (don't consume it here)
+          UniversalLinkService.setPendingReferralCode(cleanCode);
+          
+          // Navigate directly to registration if we have a referral code
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              debugPrint('🚀 Navigating to registration with referral code: $cleanCode');
+              Navigator.of(context).pushNamed('/register');
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('⚠️ Error handling initial referral code: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

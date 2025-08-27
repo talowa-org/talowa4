@@ -1,84 +1,52 @@
-// firestore.rules
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function signedIn() { return request.auth != null; }
-    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
-
-    // Users own their profile
+    
+    function signedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    
+    // Users collection - allow users to read/write their own data but block referral field writes
     match /users/{uid} {
       allow read: if isOwner(uid);
-      allow create, update, delete: if isOwner(uid);
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid) && !('referral' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if false;
     }
-
-    // Unique phone → points to one uid only. Create once by the owner.
-    match /phones/{e164} {
-      allow create: if signedIn()
-                    && !exists(/databases/$(database)/documents/phones/$(e164))
-                    && request.resource.data.uid == request.auth.uid;
-      allow read: if signedIn() && resource.data.uid == request.auth.uid;
-      allow update: if false;
-      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
-    }
-
-    // User registry - phone number based lookup (used by app)
-    // Allow unauthenticated reads for login verification
+    
+    // User registry - allow unauthenticated reads for login verification
     match /user_registry/{phoneNumber} {
-      allow read: if true; // Allow unauthenticated reads for login
+      allow read: if true; // Login verification needs this
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
       allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
-
-    // Legacy registries collection (keeping for compatibility)
-    match /registries/{uid} {
-      allow read: if isOwner(uid);
-      allow create, update, delete: if isOwner(uid);
-    }
-
-    // Referral codes - users can create their own codes during registration
+    
+    // Referral codes - restricted access, managed by Cloud Functions
     match /referralCodes/{code} {
-      allow read: if true;
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
-      allow update: if signedIn() && resource.data.uid == request.auth.uid;
-      allow delete: if false; // Referral codes are permanent
+      allow read: if signedIn(); // Users can read codes for validation
+      allow write: if false; // Only Cloud Functions can write
     }
-
-    // Referral relationships - users can create their own referral records
-    match /referral_relationships/{id} {
-      allow read: if signedIn();
-      allow create: if signedIn();
-      allow update, delete: if false; // Immutable once created
+    
+    // Referral relationships - managed by Cloud Functions
+    match /referrals/{referrerUid}/direct/{refereeUid} {
+      allow read: if signedIn() && (request.auth.uid == referrerUid || request.auth.uid == refereeUid);
+      allow write: if false; // Only Cloud Functions can write
     }
-
-    // Performance metrics - allow users to log their own metrics
-    match /performance_metrics/{id} {
-      allow create: if signedIn();
-      allow read, update, delete: if false;
+    
+    // Phone registry for login verification
+    match /phones/{phoneNumber} {
+      allow read: if true; // Needed for login verification
+      allow write: if false; // Only Cloud Functions can write
     }
-
-    // Land records - users can manage their own land records
-    match /land_records/{id} {
-      allow read, write: if signedIn() && resource.data.ownerId == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+    
+    // Other collections - default permissions
+    match /{document=**} {
+      allow read, write: if signedIn() && request.auth.uid == resource.data.uid;
     }
-
-    // Messages - users can send and receive messages
-    match /messages/{id} {
-      allow read: if signedIn() && (resource.data.senderId == request.auth.uid || resource.data.recipientId == request.auth.uid);
-      allow create: if signedIn() && request.resource.data.senderId == request.auth.uid;
-      allow update: if signedIn() && resource.data.senderId == request.auth.uid;
-      allow delete: if false; // Messages are immutable
-    }
-
-    // Public read-only content (tune for your app)
-    match /posts/{id} { allow read: if true; allow write: if false; }
-    match /stories/{id} { allow read: if true; allow write: if false; }
-
-    // Geographic hierarchy - read-only for users
-    match /states/{id} { allow read: if true; allow write: if false; }
-
-    // Deny everything else by default
-    match /{document=**} { allow read, write: if false; }
   }
 }

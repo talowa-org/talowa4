@@ -16,6 +16,7 @@ import '../../services/auth_policy.dart';
 import '../../services/backend.dart';
 
 import '../../services/referral/universal_link_service.dart';
+import '../../services/referral/cloud_referral_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/referral/deep_link_handler.dart';
 
@@ -71,10 +72,32 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
   void initState() {
     super.initState();
 
-    // Check for pending referral code from deep link
-    final pendingCode = UniversalLinkService.getPendingReferralCode();
-    if (pendingCode != null) {
-      _setReferralCode(pendingCode);
+    // Initialize Universal Link Service for this screen
+    _initializeReferralCodeHandling();
+  }
+
+  Future<void> _initializeReferralCodeHandling() async {
+    try {
+      // Check for pending referral code from deep link
+      final pendingCode = UniversalLinkService.getPendingReferralCode();
+      if (pendingCode != null) {
+        debugPrint('📋 Auto-filling referral code from deep link: $pendingCode');
+        _setReferralCode(pendingCode);
+        return;
+      }
+
+      // Also check URL directly in case the service missed it
+      if (kIsWeb) {
+        final currentUrl = Uri.base;
+        final urlCode = currentUrl.queryParameters['ref'];
+        if (urlCode != null && urlCode.trim().isNotEmpty) {
+          final cleanCode = urlCode.trim().toUpperCase();
+          debugPrint('📋 Auto-filling referral code from URL: $cleanCode');
+          _setReferralCode(cleanCode);
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Error initializing referral code handling: $e');
     }
   }
 
@@ -104,9 +127,35 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
   }
 
   void _setReferralCode(String referralCode) {
-    setState(() {
-      _referralCodeController.text = referralCode;
-    });
+    if (mounted) {
+      setState(() {
+        _referralCodeController.text = referralCode;
+      });
+      
+      // Show user that referral code was auto-filled
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.link, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Referral code auto-filled: $referralCode'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -594,7 +643,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         return;
       }
 
-      final phoneNumber = AuthPolicy.normalizePhoneE164(phoneText);
+      final phoneNumber = normalizePhoneE164(phoneText);
       debugPrint('Starting registration for: $phoneNumber');
 
       // Check if phone number is already registered using Backend service
@@ -624,8 +673,8 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
       debugPrint('Starting Firebase Auth and Backend registration...');
 
       // Step 1: Create Firebase Auth account with alias email
-      final aliasEmail = AuthPolicy.phoneToAliasEmail(phoneNumber);
-      final pinHash = AuthPolicy.hashPin(pinText);
+      final aliasEmail = phoneToAliasEmail(phoneNumber);
+      final pinHash = hashPin(pinText);
       
       debugPrint('Creating Firebase Auth user with email: $aliasEmail');
       
@@ -657,18 +706,46 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         'district': districtText,
         'mandal': mandalText,
         'village': villageText,
-        'referralChain': {
-          'referredBy': referralCode,
-          'referralCode': null, // can be filled later
-        },
-        'directReferrals': 0,
-        'teamSize': 0,
         'createdAt': now,
         'updatedAt': now,
         'membershipPaid': kIsWeb, // Simulate payment on web
         'paymentCompletedAt': kIsWeb ? now : null,
         'paymentTransactionId': kIsWeb ? 'web_simulation_${DateTime.now().millisecondsSinceEpoch}' : null,
       }, SetOptions(merge: true));
+
+      // Step 3: Generate user's own referral code
+      String? userReferralCode;
+      try {
+        userReferralCode = await CloudReferralService.reserveReferralCode();
+        debugPrint('Generated referral code for user: $userReferralCode');
+      } catch (e) {
+        debugPrint('Failed to generate referral code: $e');
+        // Continue registration even if referral code generation fails
+      }
+
+      // Step 4: Apply referral code if provided (non-blocking)
+      if (referralCode != null && referralCode.isNotEmpty) {
+        try {
+          if (CloudReferralService.isValidCodeFormat(referralCode)) {
+            final referrerUid = await CloudReferralService.applyReferralCode(referralCode);
+            debugPrint('Successfully applied referral code $referralCode, referrer: $referrerUid');
+            
+            // Show success message for referral
+            _showSuccessMessage('Referral code applied successfully!');
+          } else {
+            debugPrint('Invalid referral code format: $referralCode');
+            _showWarningMessage('Invalid referral code format, continuing registration...');
+          }
+        } catch (e) {
+          debugPrint('Failed to apply referral code: $e');
+          // Show warning but don't fail registration
+          if (e is ReferralException) {
+            _showWarningMessage('Referral code issue: ${e.message}');
+          } else {
+            _showWarningMessage('Could not apply referral code, continuing registration...');
+          }
+        }
+      }
 
       // Unique phone binding (only if not already bound)
       final phoneRef = db.collection('phones').doc(phoneNumber);
@@ -745,6 +822,34 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
     } catch (e) {
       debugPrint('Failed to show success message: $e');
       debugPrint('Original success message: $message');
+    }
+  }
+
+  void _showWarningMessage(String message) {
+    try {
+      if (mounted && context.mounted) {
+        final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+        if (scaffoldMessenger != null) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.warning, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(message)),
+                ],
+              ),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        } else {
+          debugPrint('Warning message (no ScaffoldMessenger): $message');
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to show warning message: $e');
+      debugPrint('Original warning message: $message');
     }
   }
 

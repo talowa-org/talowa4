@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Referral Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .test-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .success { 
+            background: rgba(76, 175, 80, 0.2); 
+            border: 1px solid #4CAF50; 
+        }
+        .info { 
+            background: rgba(33, 150, 243, 0.2); 
+            border: 1px solid #2196F3; 
+        }
+        .warning { 
+            background: rgba(255, 193, 7, 0.2); 
+            border: 1px solid #FFC107; 
+        }
+        h1 { text-align: center; margin-bottom: 30px; }
+        h2 { color: #FFD700; }
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Referral Auto-Fill Fix Test</h1>
+    
+    <div class="test-card">
+        <h2>🎯 What Was Fixed</h2>
+        <div class="status success">
+            <strong>Problem:</strong> The referral code was being consumed (cleared) by the main app before the registration screen could use it.
+            <br><br>
+            <strong>Solution:</strong> Modified the system so the referral code persists until it's actually used in the registration form.
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🧪 Test the Fix</h2>
+        <p>Click these test links to verify the referral auto-fill is now working:</p>
+        
+        <a href="https://talowa.web.app/?ref=FIXTEST1" class="test-button" target="_blank">
+            🔗 Test Link 1: FIXTEST1
+        </a>
+        
+        <a href="https://talowa.web.app/?ref=FIXTEST2" class="test-button" target="_blank">
+            🔗 Test Link 2: FIXTEST2
+        </a>
+        
+        <a href="https://talowa.web.app/?ref=FIXTEST3" class="test-button" target="_blank">
+            🔗 Test Link 3: FIXTEST3
+        </a>
+    </div>
+
+    <div class="test-card">
+        <h2>✅ Expected Behavior (After Fix)</h2>
+        <div class="step">
+            <strong>Step 1:</strong> Click test link → Opens TALOWA app
+        </div>
+        <div class="step">
+            <strong>Step 2:</strong> App detects referral code from URL
+        </div>
+        <div class="step">
+            <strong>Step 3:</strong> App automatically navigates to registration screen
+        </div>
+        <div class="step">
+            <strong>Step 4:</strong> "Referred by" field is auto-filled with the referral code
+        </div>
+        <div class="step">
+            <strong>Step 5:</strong> Green notification appears: "Referral code auto-filled: [CODE]"
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🔍 Debug Instructions</h2>
+        <div class="status info">
+            <strong>To see what's happening behind the scenes:</strong>
+            <ol>
+                <li>Click a test link above</li>
+                <li>Press <strong>F12</strong> to open browser developer tools</li>
+                <li>Go to the <strong>Console</strong> tab</li>
+                <li>Look for these debug messages:
+                    <div class="debug-info">
+🔗 App started with referral code: [CODE]<br>
+🚀 Navigating to registration with referral code: [CODE]<br>
+📋 Auto-filling referral code from deep link: [CODE]<br>
+✅ Found referral code in URL: [CODE]
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🔧 Technical Changes Made</h2>
+        <div class="status warning">
+            <strong>Changes in this fix:</strong>
+            <ul>
+                <li><strong>UniversalLinkService:</strong> Modified <code>getPendingReferralCode()</code> to NOT clear the code immediately</li>
+                <li><strong>Registration Screen:</strong> Now explicitly clears the pending code after using it</li>
+                <li><strong>Main App:</strong> Added better debug logging for navigation</li>
+                <li><strong>Flow:</strong> Referral code now persists from URL detection → navigation → registration form auto-fill</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🚨 If It's Still Not Working</h2>
+        <div class="status warning">
+            <strong>Troubleshooting steps:</strong>
+            <ol>
+                <li>Clear browser cache and cookies</li>
+                <li>Try in an incognito/private browser window</li>
+                <li>Check browser console for any error messages</li>
+                <li>Verify the URL contains the referral parameter</li>
+                <li>Try refreshing the page after clicking the link</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Add some visual feedback
+        document.querySelectorAll('.test-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.background = 'linear-gradient(45deg, #FF6B6B, #FF5252)';
+                this.textContent = '🚀 Opening...';
+                setTimeout(() => {
+                    this.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+                    this.textContent = this.textContent.replace('🚀 Opening...', '🔗 Test Link');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

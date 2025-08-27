@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test TALOWA Referral Fixes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-link {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #1976d2;
+            font-weight: bold;
+        }
+        .test-link:hover {
+            background: #bbdefb;
+        }
+        .instructions {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        .code {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test TALOWA Referral System Fixes</h1>
+        <p>Test the two main fixes that were implemented:</p>
+        
+        <h3>✅ Fix 1: Auto-fill referral code from URL</h3>
+        <p>Click these links to test if the referral code auto-fills in the registration form:</p>
+        
+        <a href="https://talowa.web.app/?ref=TAL123ABC" class="test-link" target="_blank">
+            🔗 Test Link 1: https://talowa.web.app/?ref=TAL123ABC
+        </a>
+        
+        <a href="https://talowa.web.app/join?ref=TAL456DEF" class="test-link" target="_blank">
+            🔗 Test Link 2: https://talowa.web.app/join?ref=TAL456DEF
+        </a>
+        
+        <a href="https://talowa.web.app/join/TAL789GHI" class="test-link" target="_blank">
+            🔗 Test Link 3: https://talowa.web.app/join/TAL789GHI
+        </a>
+        
+        <div class="instructions">
+            <h4>📋 What to Check:</h4>
+            <ol>
+                <li>Click any test link above</li>
+                <li>Go to the registration screen</li>
+                <li>Look for the "Referred by" field</li>
+                <li>It should be automatically filled with the referral code</li>
+                <li>You should see a green notification saying "Referral code auto-filled"</li>
+            </ol>
+        </div>
+        
+        <h3>✅ Fix 2: Automatic referral processing during registration</h3>
+        <p>When you complete registration with a referral code, it should automatically:</p>
+        
+        <div class="instructions success">
+            <h4>🎯 Expected Behavior:</h4>
+            <ul>
+                <li>✅ Apply the referral code automatically</li>
+                <li>✅ Update the referrer's statistics (directCount +1)</li>
+                <li>✅ Create referral relationship documents</li>
+                <li>✅ Show success message if referral code is valid</li>
+                <li>✅ Continue registration even if referral code fails</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 Technical Details</h2>
+        
+        <h3>What Was Fixed:</h3>
+        
+        <h4>1. URL Parameter Extraction</h4>
+        <ul>
+            <li>✅ Added Universal Link Service initialization in <code>main.dart</code></li>
+            <li>✅ Enhanced URL parsing to detect <code>?ref=CODE</code> parameters</li>
+            <li>✅ Added debug logging to track referral code detection</li>
+            <li>✅ Support for multiple URL formats: <code>?ref=CODE</code>, <code>/join?ref=CODE</code>, <code>/join/CODE</code></li>
+        </ul>
+        
+        <h4>2. Registration Form Auto-fill</h4>
+        <ul>
+            <li>✅ Enhanced <code>initState()</code> in registration screen</li>
+            <li>✅ Added direct URL checking as backup</li>
+            <li>✅ Improved user feedback with snackbar notifications</li>
+            <li>✅ Added proper error handling and debugging</li>
+        </ul>
+        
+        <h4>3. Cloud Function Integration</h4>
+        <ul>
+            <li>✅ Fixed function names to match deployed functions</li>
+            <li>✅ Updated <code>reserveReferralCode</code> to use <code>ensureReferralCode</code></li>
+            <li>✅ Updated <code>applyReferralCode</code> to use <code>processReferral</code></li>
+            <li>✅ Enhanced error handling and user feedback</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Manual Testing Steps</h2>
+        
+        <div class="instructions">
+            <h4>Complete Test Scenario:</h4>
+            <ol>
+                <li><strong>Generate a referral link:</strong>
+                    <ul>
+                        <li>Register a user (User A)</li>
+                        <li>Get their referral code (should be auto-generated)</li>
+                        <li>Create a link: <code>https://talowa.web.app/?ref=THEIR_CODE</code></li>
+                    </ul>
+                </li>
+                
+                <li><strong>Test the referral link:</strong>
+                    <ul>
+                        <li>Open the link in a new browser/incognito window</li>
+                        <li>Go to registration</li>
+                        <li>Verify referral code is auto-filled</li>
+                        <li>Complete registration (User B)</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Verify the results:</strong>
+                    <ul>
+                        <li>Check User A's referral stats (should show +1 direct referral)</li>
+                        <li>Check Firestore for referral relationship documents</li>
+                        <li>Verify User B shows User A as their referrer</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔍 Debugging</h2>
+        
+        <p>If something isn't working, check the browser console for debug messages:</p>
+        
+        <div class="instructions">
+            <h4>Expected Console Messages:</h4>
+            <ul>
+                <li><code>🔗 Checking URL for referral code: ...</code></li>
+                <li><code>✅ Found referral code in URL: TAL123ABC</code></li>
+                <li><code>📋 Auto-filling referral code from deep link: TAL123ABC</code></li>
+                <li><code>Applying referral code: TAL123ABC</code></li>
+                <li><code>Referral code applied successfully, referrer: ...</code></li>
+            </ul>
+        </div>
+        
+        <p>Press <strong>F12</strong> to open developer tools and check the Console tab.</p>
+    </div>
+
+    <div class="container">
+        <h2>🎉 Success Indicators</h2>
+        
+        <div class="instructions success">
+            <h4>You'll know it's working when:</h4>
+            <ul>
+                <li>✅ Referral codes auto-fill from URLs</li>
+                <li>✅ Green notification appears: "Referral code auto-filled"</li>
+                <li>✅ Registration completes successfully with referral code</li>
+                <li>✅ Referrer's stats update automatically</li>
+                <li>✅ No manual intervention needed - it "just works"!</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

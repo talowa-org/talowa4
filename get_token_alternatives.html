@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALOWA - Get Token (Multiple Methods)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .method {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .method.recommended {
+            border-color: #4caf50;
+            background: #f8fff8;
+        }
+        .method h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .method.recommended h3 {
+            color: #4caf50;
+        }
+        .btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #1565c0;
+        }
+        .btn.success {
+            background: #4caf50;
+        }
+        .btn.success:hover {
+            background: #45a049;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            position: relative;
+            overflow-x: auto;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        .token-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .credentials-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .credentials-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 TALOWA Token Generator - Multiple Methods</h1>
+        <p>Choose the method that works best for you to get an authentication token:</p>
+    </div>
+
+    <!-- Method 1: Test Account Creation -->
+    <div class="container">
+        <div class="method recommended">
+            <h3>✅ Method 1: Create Test Account (Recommended)</h3>
+            <p>Create a new test account specifically for testing the referral system.</p>
+            
+            <div class="credentials-form">
+                <h4>Create New Test Account:</h4>
+                <input type="email" id="testEmail" placeholder="test-email@example.com" value="test-talowa@gmail.com">
+                <input type="password" id="testPassword" placeholder="Test password (min 6 chars)" value="test123456">
+                <button class="btn success" onclick="createTestAccount()">Create Test Account</button>
+            </div>
+            
+            <div id="testAccountResult"></div>
+        </div>
+    </div>
+
+    <!-- Method 2: Anonymous Login -->
+    <div class="container">
+        <div class="method">
+            <h3>👤 Method 2: Anonymous Authentication</h3>
+            <p>Create an anonymous session for testing (no credentials needed).</p>
+            
+            <button class="btn" onclick="loginAnonymously()">Create Anonymous Session</button>
+            <div id="anonymousResult"></div>
+        </div>
+    </div>
+
+    <!-- Method 3: Existing Account -->
+    <div class="container">
+        <div class="method">
+            <h3>🔐 Method 3: Use Existing Account</h3>
+            <p>Login with your existing TALOWA account credentials.</p>
+            
+            <div class="credentials-form">
+                <h4>Your TALOWA Account:</h4>
+                <input type="email" id="existingEmail" placeholder="your-email@example.com">
+                <input type="password" id="existingPassword" placeholder="Your password">
+                <button class="btn" onclick="loginWithExisting()">Login with Existing Account</button>
+            </div>
+            
+            <div id="existingResult"></div>
+        </div>
+    </div>
+
+    <!-- Method 4: Flutter App Console -->
+    <div class="container">
+        <div class="method">
+            <h3>📱 Method 4: From Your Flutter App</h3>
+            <p>Get the token directly from your running Flutter app.</p>
+            
+            <div class="status info">
+                <strong>Steps:</strong><br>
+                1. Open your TALOWA Flutter app<br>
+                2. Login with your account<br>
+                3. Open browser developer console (F12)<br>
+                4. Run this JavaScript code:
+            </div>
+            
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode('flutterCode')">Copy</button>
+                <div id="flutterCode">
+// Run this in your Flutter app's browser console
+if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+    firebase.auth().currentUser.getIdToken().then(token => {
+        console.log('🔑 Your ID Token:');
+        console.log(token);
+        alert('Token copied to console! Check the console tab.');
+    }).catch(error => {
+        console.error('Error getting token:', error);
+    });
+} else {
+    console.log('Firebase not available or user not logged in');
+    console.log('Make sure you are logged into your TALOWA app');
+}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Token Display Section -->
+    <div class="container" id="tokenSection" style="display: none;">
+        <h3>🎯 Your Authentication Token:</h3>
+        <div id="tokenDisplay" class="token-display"></div>
+        
+        <button class="btn success" onclick="copyToken()">📋 Copy Token</button>
+        <button class="btn" onclick="testToken()">🧪 Test Token</button>
+        
+        <h4>🔧 Test Commands:</h4>
+        <div class="code-block">
+            <button class="copy-btn" onclick="copyCode('windowsCmd')">Copy</button>
+            <div id="windowsCmd">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkqk0UpmgGCabHRSQK3V9oH7Dxb5sa9Vk",
+            authDomain: "talowa.firebaseapp.com",
+            projectId: "talowa",
+            storageBucket: "talowa.firebasestorage.app",
+            messagingSenderId: "132354679195",
+            appId: "1:132354679195:web:abcdefghijklmnop"
+        };
+
+        // Initialize Firebase
+        let app, auth, currentToken = null;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            
+            // Check auth state
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    showSuccess('✅ User authenticated successfully!');
+                    getAndDisplayToken(user);
+                }
+            });
+            
+        } catch (error) {
+            showError(`❌ Firebase initialization failed: ${error.message}`);
+        }
+
+        // Global functions
+        window.createTestAccount = async () => {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password', 'testAccountResult');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters', 'testAccountResult');
+                return;
+            }
+            
+            try {
+                showInfo('Creating test account...', 'testAccountResult');
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                showSuccess(`✅ Test account created successfully! UID: ${userCredential.user.uid}`, 'testAccountResult');
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    // Try to login instead
+                    try {
+                        showInfo('Email exists, trying to login...', 'testAccountResult');
+                        await signInWithEmailAndPassword(auth, email, password);
+                        showSuccess('✅ Logged in with existing account!', 'testAccountResult');
+                    } catch (loginError) {
+                        showError(`❌ Login failed: ${loginError.message}`, 'testAccountResult');
+                    }
+                } else {
+                    showError(`❌ Account creation failed: ${error.message}`, 'testAccountResult');
+                }
+            }
+        };
+
+        window.loginAnonymously = async () => {
+            try {
+                showInfo('Creating anonymous session...', 'anonymousResult');
+                const userCredential = await signInAnonymously(auth);
+                showSuccess(`✅ Anonymous session created! UID: ${userCredential.user.uid}`, 'anonymousResult');
+            } catch (error) {
+                showError(`❌ Anonymous login failed: ${error.message}`, 'anonymousResult');
+            }
+        };
+
+        window.loginWithExisting = async () => {
+            const email = document.getElementById('existingEmail').value;
+            const password = document.getElementById('existingPassword').value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password', 'existingResult');
+                return;
+            }
+            
+            try {
+                showInfo('Logging in...', 'existingResult');
+                await signInWithEmailAndPassword(auth, email, password);
+                showSuccess('✅ Logged in successfully!', 'existingResult');
+            } catch (error) {
+                showError(`❌ Login failed: ${error.message}`, 'existingResult');
+            }
+        };
+
+        window.copyToken = () => {
+            if (currentToken) {
+                navigator.clipboard.writeText(currentToken).then(() => {
+                    showSuccess('✅ Token copied to clipboard!');
+                });
+            }
+        };
+
+        window.copyCode = (elementId) => {
+            const code = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showSuccess('✅ Code copied to clipboard!');
+            });
+        };
+
+        window.testToken = async () => {
+            if (!currentToken) return;
+            
+            try {
+                showInfo('Testing token with reserveReferralCode...');
+                const response = await fetch('https://us-central1-talowa.cloudfunctions.net/reserveReferralCode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: '{}'
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    showSuccess(`✅ Token works! Got referral code: ${result.code || 'Success'}`);
+                } else {
+                    showError(`❌ Token test failed: ${result.error || response.statusText}`);
+                }
+            } catch (error) {
+                showError(`❌ Token test error: ${error.message}`);
+            }
+        };
+
+        async function getAndDisplayToken(user) {
+            try {
+                const token = await user.getIdToken();
+                currentToken = token;
+                
+                document.getElementById('tokenDisplay').textContent = token;
+                document.getElementById('tokenSection').style.display = 'block';
+                
+                // Update test command
+                document.getElementById('windowsCmd').textContent = 
+                    `test_referral_functions.bat talowa "${token}"`;
+                
+            } catch (error) {
+                showError(`❌ Failed to get token: ${error.message}`);
+            }
+        }
+
+        function showSuccess(message, elementId = null) {
+            showStatus(message, 'success', elementId);
+        }
+
+        function showError(message, elementId = null) {
+            showStatus(message, 'error', elementId);
+        }
+
+        function showInfo(message, elementId = null) {
+            showStatus(message, 'info', elementId);
+        }
+
+        function showStatus(message, type, elementId = null) {
+            const element = elementId ? document.getElementById(elementId) : document.body;
+            
+            if (elementId) {
+                element.innerHTML = `<div class="status ${type}">${message}</div>`;
+            } else {
+                // Show temporary status at top
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `status ${type}`;
+                statusDiv.textContent = message;
+                statusDiv.style.position = 'fixed';
+                statusDiv.style.top = '20px';
+                statusDiv.style.right = '20px';
+                statusDiv.style.zIndex = '1000';
+                statusDiv.style.maxWidth = '300px';
+                
+                document.body.appendChild(statusDiv);
+                
+                setTimeout(() => {
+                    if (statusDiv.parentNode) {
+                        statusDiv.parentNode.removeChild(statusDiv);
+                    }
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

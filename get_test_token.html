@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALOWA - Get Test Token</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .status.loading {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .token-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #1565c0;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .command-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 TALOWA Test Token Generator</h1>
+            <p>Get Firebase Auth ID Token for testing referral functions</p>
+        </div>
+
+        <div id="status" class="status loading">
+            🔄 Initializing Firebase...
+        </div>
+
+        <div id="userInfo" style="display: none;"></div>
+        
+        <div id="tokenSection" style="display: none;">
+            <h3>🎯 Your ID Token:</h3>
+            <div id="tokenDisplay" class="token-display"></div>
+            
+            <button class="btn" onclick="copyToken()">📋 Copy Token</button>
+            <button class="btn" onclick="refreshToken()">🔄 Refresh Token</button>
+            
+            <h3>🧪 Test Commands:</h3>
+            <div class="command-box">
+                <button class="copy-btn" onclick="copyCommand('windows')">Copy</button>
+                <div id="windowsCommand">Loading...</div>
+            </div>
+            
+            <div class="command-box">
+                <button class="copy-btn" onclick="copyCommand('linux')">Copy</button>
+                <div id="linuxCommand">Loading...</div>
+            </div>
+        </div>
+
+        <div id="loginSection">
+            <h3>🔐 Login Options:</h3>
+            <button class="btn" onclick="loginWithEmail()">📧 Login with Email</button>
+            <button class="btn" onclick="loginWithPhone()">📱 Login with Phone</button>
+            <button class="btn" onclick="loginAnonymously()">👤 Anonymous Login</button>
+        </div>
+
+        <div id="manualLogin" style="display: none;">
+            <h3>📧 Email Login:</h3>
+            <input type="email" id="email" placeholder="Enter email" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
+            <input type="password" id="password" placeholder="Enter password" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
+            <button class="btn" onclick="doEmailLogin()">🔑 Login</button>
+            <button class="btn" onclick="hideManualLogin()" style="background: #666;">❌ Cancel</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration - auto-detected from your project
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkqk0UpmgGCabHRSQK3V9oH7Dxb5sa9Vk",
+            authDomain: "talowa.firebaseapp.com",
+            projectId: "talowa",
+            storageBucket: "talowa.firebasestorage.app",
+            messagingSenderId: "132354679195",
+            appId: "1:132354679195:web:abcdefghijklmnop"
+        };
+
+        // Initialize Firebase
+        let app, auth, currentToken = null;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            
+            // Check auth state
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    showUserInfo(user);
+                    getAndDisplayToken(user);
+                } else {
+                    showStatus('🔐 Please login to get your ID token', 'error');
+                    document.getElementById('loginSection').style.display = 'block';
+                    document.getElementById('tokenSection').style.display = 'none';
+                    document.getElementById('userInfo').style.display = 'none';
+                }
+            });
+            
+            showStatus('✅ Firebase initialized successfully', 'success');
+            
+        } catch (error) {
+            showStatus(`❌ Firebase initialization failed: ${error.message}`, 'error');
+            console.error('Firebase init error:', error);
+        }
+
+        // Global functions
+        window.loginWithEmail = () => {
+            document.getElementById('manualLogin').style.display = 'block';
+            document.getElementById('email').focus();
+        };
+
+        window.hideManualLogin = () => {
+            document.getElementById('manualLogin').style.display = 'none';
+        };
+
+        window.doEmailLogin = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showStatus('❌ Please enter both email and password', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('🔄 Logging in...', 'loading');
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById('manualLogin').style.display = 'none';
+            } catch (error) {
+                showStatus(`❌ Login failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.loginAnonymously = async () => {
+            try {
+                showStatus('🔄 Creating anonymous session...', 'loading');
+                await signInAnonymously(auth);
+            } catch (error) {
+                showStatus(`❌ Anonymous login failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.refreshToken = async () => {
+            if (auth.currentUser) {
+                await getAndDisplayToken(auth.currentUser, true);
+            }
+        };
+
+        window.copyToken = () => {
+            if (currentToken) {
+                navigator.clipboard.writeText(currentToken).then(() => {
+                    showStatus('✅ Token copied to clipboard!', 'success');
+                });
+            }
+        };
+
+        window.copyCommand = (type) => {
+            const command = document.getElementById(type === 'windows' ? 'windowsCommand' : 'linuxCommand').textContent;
+            navigator.clipboard.writeText(command).then(() => {
+                showStatus(`✅ ${type} command copied to clipboard!`, 'success');
+            });
+        };
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function showUserInfo(user) {
+            const userInfoEl = document.getElementById('userInfo');
+            userInfoEl.innerHTML = `
+                <div class="user-info">
+                    <h3>👤 Logged in as:</h3>
+                    <p><strong>UID:</strong> ${user.uid}</p>
+                    <p><strong>Email:</strong> ${user.email || 'Anonymous'}</p>
+                    <p><strong>Phone:</strong> ${user.phoneNumber || 'Not set'}</p>
+                </div>
+            `;
+            userInfoEl.style.display = 'block';
+            document.getElementById('loginSection').style.display = 'none';
+        }
+
+        async function getAndDisplayToken(user, force = false) {
+            try {
+                showStatus('🔄 Getting ID token...', 'loading');
+                
+                const token = await user.getIdToken(force);
+                currentToken = token;
+                
+                document.getElementById('tokenDisplay').textContent = token;
+                document.getElementById('tokenSection').style.display = 'block';
+                
+                // Update test commands
+                const projectId = firebaseConfig.projectId;
+                document.getElementById('windowsCommand').textContent = 
+                    `test_referral_functions.bat ${projectId} "${token}"`;
+                document.getElementById('linuxCommand').textContent = 
+                    `./test_referral_functions.sh ${projectId} "${token}"`;
+                
+                showStatus('✅ ID token generated successfully!', 'success');
+                
+            } catch (error) {
+                showStatus(`❌ Failed to get ID token: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

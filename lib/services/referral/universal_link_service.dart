@@ -71,13 +71,18 @@ class UniversalLinkService {
       try {
         // Get current URL and check for referral parameters
         final currentUrl = Uri.base;
+        debugPrint('🔗 Checking URL for referral code: ${currentUrl.toString()}');
+        
         final referralCode = _extractReferralCode(currentUrl);
         
         if (referralCode != null) {
+          debugPrint('✅ Found referral code in URL: $referralCode');
           await _handleReferralLink(referralCode);
+        } else {
+          debugPrint('ℹ️ No referral code found in URL');
         }
       } catch (e) {
-        debugPrint('Failed to handle web initial link: $e');
+        debugPrint('❌ Failed to handle web initial link: $e');
       }
     }
   }
@@ -100,20 +105,38 @@ class UniversalLinkService {
   
   /// Extract referral code from URI
   static String? _extractReferralCode(Uri uri) {
-    // Check query parameters
+    debugPrint('🔍 Extracting referral code from URI: ${uri.toString()}');
+    debugPrint('🔍 Query parameters: ${uri.queryParameters}');
+    debugPrint('🔍 Path segments: ${uri.pathSegments}');
+    
+    // Check query parameters first (most common: ?ref=CODE)
     final referralCode = uri.queryParameters[REFERRAL_PARAM];
     if (referralCode != null && referralCode.trim().isNotEmpty) {
-      return referralCode.trim().toUpperCase();
+      final cleanCode = referralCode.trim().toUpperCase();
+      debugPrint('✅ Found referral code in query params: $cleanCode');
+      return cleanCode;
     }
 
-    // Check path segments for referral code
+    // Check path segments for referral code (/join/CODE)
     if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'join') {
       final code = uri.pathSegments[1].trim();
       if (code.isNotEmpty) {
-        return code.toUpperCase();
+        final cleanCode = code.toUpperCase();
+        debugPrint('✅ Found referral code in path: $cleanCode');
+        return cleanCode;
       }
     }
 
+    // Check for any path that might contain a referral code
+    for (final segment in uri.pathSegments) {
+      if (segment.startsWith('TAL') && segment.length >= 6) {
+        final cleanCode = segment.trim().toUpperCase();
+        debugPrint('✅ Found referral code in path segment: $cleanCode');
+        return cleanCode;
+      }
+    }
+
+    debugPrint('❌ No referral code found in URI');
     return null;
   }
   
@@ -225,8 +248,13 @@ class UniversalLinkService {
   }
   
   /// Get pending referral code (from deep link)
-  /// Note: This clears the pending code after retrieval (one-time use)
+  /// Note: This does NOT clear the pending code - use clearPendingReferralCode() to clear it
   static String? getPendingReferralCode() {
+    return _pendingReferralCode;
+  }
+
+  /// Get pending referral code and clear it (one-time use)
+  static String? consumePendingReferralCode() {
     final code = _pendingReferralCode;
     _pendingReferralCode = null; // Clear after retrieval
     return code;

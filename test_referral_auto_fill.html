@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test TALOWA Referral Auto-Fill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f8ff;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 15px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        .test-link:hover {
+            background: #45a049;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .success-indicator {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .code {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 3px 6px;
+            border-radius: 3px;
+            color: #e83e8c;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test TALOWA Referral Auto-Fill</h1>
+        <p>Click the button below to test if referral codes auto-fill properly:</p>
+        
+        <a href="https://talowa.web.app/?ref=TAL123TEST" class="test-link" target="_blank">
+            🔗 Test Referral Link
+        </a>
+        
+        <div class="instructions">
+            <h3>📋 What Should Happen:</h3>
+            <ol>
+                <li><strong>Click the test link above</strong></li>
+                <li><strong>App should open and go directly to registration</strong></li>
+                <li><strong>Look for "Referred by" field</strong></li>
+                <li><strong>It should show: <span class="code">TAL123TEST</span></strong></li>
+                <li><strong>You should see a green notification</strong></li>
+            </ol>
+        </div>
+        
+        <div class="success-indicator">
+            <h4>✅ Success Indicators:</h4>
+            <ul>
+                <li>App navigates directly to registration screen</li>
+                <li>Referral field shows: <strong>TAL123TEST</strong></li>
+                <li>Green notification: "Referral code auto-filled: TAL123TEST"</li>
+                <li>Browser console shows debug messages</li>
+            </ul>
+        </div>
+        
+        <div class="instructions">
+            <h3>🔍 Debug Information:</h3>
+            <p>If it's not working, press <strong>F12</strong> to open developer tools and check the Console tab for these messages:</p>
+            <ul>
+                <li><code>🔗 App started with referral code: TAL123TEST</code></li>
+                <li><code>📋 Auto-filling referral code from deep link: TAL123TEST</code></li>
+                <li><code>✅ Found referral code in URL: TAL123TEST</code></li>
+            </ul>
+        </div>
+        
+        <p><strong>Try different referral codes:</strong></p>
+        <a href="https://talowa.web.app/?ref=TAL456ABC" class="test-link" target="_blank">
+            Test TAL456ABC
+        </a>
+        <a href="https://talowa.web.app/?ref=TAL789XYZ" class="test-link" target="_blank">
+            Test TAL789XYZ
+        </a>
+    </div>
+
+    <script>
+        // Add some JavaScript to help with testing
+        console.log('🧪 Referral Auto-Fill Test Page Loaded');
+        console.log('Click the test links above to verify referral code auto-fill');
+        
+        // Log when links are clicked
+        document.querySelectorAll('.test-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const url = this.href;
+                const code = new URL(url).searchParams.get('ref');
+                console.log(`🔗 Testing referral link with code: ${code}`);
+                console.log(`🔗 Full URL: ${url}`);
+            });
+        });
+    </script>
+</body>
+</html>

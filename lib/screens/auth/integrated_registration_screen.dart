@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
@@ -76,10 +77,34 @@ class _IntegratedRegistrationScreenState
       _phoneController.text = cleanPhone;
     }
 
-    // Check for pending referral code from deep link
-    final pendingCode = UniversalLinkService.getPendingReferralCode();
-    if (pendingCode != null) {
-      _setReferralCode(pendingCode);
+    // Initialize referral code handling
+    _initializeReferralCodeHandling();
+  }
+
+  Future<void> _initializeReferralCodeHandling() async {
+    try {
+      // Check for pending referral code from deep link (don't consume it yet)
+      final pendingCode = UniversalLinkService.getPendingReferralCode();
+      if (pendingCode != null) {
+        debugPrint('📋 Auto-filling referral code from deep link: $pendingCode');
+        _setReferralCode(pendingCode);
+        // Clear the pending code since we've used it
+        UniversalLinkService.clearPendingReferralCode();
+        return;
+      }
+
+      // Also check URL directly in case the service missed it
+      if (kIsWeb) {
+        final currentUrl = Uri.base;
+        final urlCode = currentUrl.queryParameters['ref'];
+        if (urlCode != null && urlCode.trim().isNotEmpty) {
+          final cleanCode = urlCode.trim().toUpperCase();
+          debugPrint('📋 Auto-filling referral code from URL: $cleanCode');
+          _setReferralCode(cleanCode);
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Error initializing referral code handling: $e');
     }
   }
 
@@ -106,9 +131,35 @@ class _IntegratedRegistrationScreenState
   }
 
   void _setReferralCode(String referralCode) {
-    setState(() {
-      _referralCodeController.text = referralCode;
-    });
+    if (mounted) {
+      setState(() {
+        _referralCodeController.text = referralCode;
+      });
+      
+      // Show user that referral code was auto-filled
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.link, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Referral code auto-filled: $referralCode'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
   }
 
   @override
