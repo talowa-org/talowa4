@@ -691,10 +691,11 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
       final now = FieldValue.serverTimestamp();
       final db = FirebaseFirestore.instance;
 
-      // Write user profile
+      // Write user profile (without referral code initially - will be added by Cloud Function)
       await db.collection('users').doc(uid).set({
         'fullName': nameText,
         'phone': phoneNumber,
+        'phoneE164': phoneNumber, // Ensure Cloud Functions can find phone number
         'email': aliasEmail,
         'active': true,
         'role': 'member',
@@ -709,7 +710,27 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         'paymentTransactionId': kIsWeb ? 'web_simulation_${DateTime.now().millisecondsSinceEpoch}' : null,
       }, SetOptions(merge: true));
 
-      // Step 3: Generate user's own referral code
+      // Write user_registry (without referral code initially - will be added by Cloud Function)
+      await db.collection('user_registry').doc(phoneNumber).set({
+        'uid': uid,
+        'phoneNumber': phoneNumber,
+        'email': aliasEmail,
+        'fullName': nameText,
+        'role': 'member',
+        'state': _selectedState,
+        'district': districtText,
+        'mandal': mandalText,
+        'village': villageText,
+        'isActive': true,
+        'membershipPaid': kIsWeb,
+        'createdAt': now,
+        'lastLoginAt': now,
+        'directReferrals': 0,
+        'teamSize': 0,
+        'pinHash': pinHash,
+      }, SetOptions(merge: true));
+
+      // Step 3: Generate user's own referral code using Cloud Functions
       String? userReferralCode;
       try {
         userReferralCode = await CloudReferralService.reserveReferralCode();
@@ -752,15 +773,7 @@ class _RealUserRegistrationScreenState extends State<RealUserRegistrationScreen>
         throw Exception('This phone is already registered to another account.');
       }
 
-      // Registry doc your app expects
-      await db.collection('registries').doc(uid).set({
-        'uid': uid,
-        'phone': phoneNumber,
-        'email': aliasEmail,
-        'membershipPaid': kIsWeb,
-        'createdAt': now,
-        'updatedAt': now,
-      }, SetOptions(merge: true));
+      // Note: user_registry is already created above, no need for separate registries collection
 
       _showSuccessMessage('Registration successful! Welcome to TALOWA!');
 

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'referral/referral_code_generator.dart';
 
 class ReferralCodeCacheService {
   static const String _cacheKey = 'myReferralCode';
@@ -43,7 +44,7 @@ class ReferralCodeCacheService {
       await _loadFromLocalStorage();
 
       // If the provided code is better than cached, use it
-      if (referralCode.startsWith('TAL') && referralCode != 'TAL---') {
+      if (ReferralCodeGenerator.hasValidTALPrefix(referralCode) && referralCode != 'TAL---') {
         await _updateCache(referralCode);
       } else {
         // Fetch from server to get the real code

@@ -33,10 +33,23 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
 // functions/src/index.ts
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 admin.initializeApp();
+// Export referral system functions
+var referral_system_1 = require("./referral-system");
+Object.defineProperty(exports, "processReferral", { enumerable: true, get: function () { return referral_system_1.processReferral; } });
+Object.defineProperty(exports, "autoPromoteUser", { enumerable: true, get: function () { return referral_system_1.autoPromoteUser; } });
+Object.defineProperty(exports, "fixOrphanedUsers", { enumerable: true, get: function () { return referral_system_1.fixOrphanedUsers; } });
+Object.defineProperty(exports, "ensureReferralCode", { enumerable: true, get: function () { return referral_system_1.ensureReferralCode; } });
+Object.defineProperty(exports, "fixReferralCodeConsistency", { enumerable: true, get: function () { return referral_system_1.fixReferralCodeConsistency; } });
+Object.defineProperty(exports, "bulkFixReferralConsistency", { enumerable: true, get: function () { return referral_system_1.bulkFixReferralConsistency; } });
+Object.defineProperty(exports, "getMyReferralStats", { enumerable: true, get: function () { return referral_system_1.getMyReferralStats; } });
+Object.defineProperty(exports, "registerUserProfile", { enumerable: true, get: function () { return referral_system_1.registerUserProfile; } });
+Object.defineProperty(exports, "checkPhone", { enumerable: true, get: function () { return referral_system_1.checkPhone; } });
+Object.defineProperty(exports, "createUserRegistry", { enumerable: true, get: function () { return referral_system_1.createUserRegistry; } });
 // Export existing functions (if any)
 // Add your production-ready functions here
 //# sourceMappingURL=index.js.map

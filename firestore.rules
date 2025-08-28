@@ -44,9 +44,54 @@ service cloud.firestore {
       allow write: if false; // Only Cloud Functions can write
     }
     
-    // Other collections - default permissions
+    // Daily motivations - allow read for all authenticated users
+    match /dailyMotivations/{docId} {
+      allow read: if signedIn();
+      allow write: if false; // Only admin/cloud functions can write
+    }
+    
+    // Hashtags - allow read for all authenticated users
+    match /hashtags/{docId} {
+      allow read: if signedIn();
+      allow write: if false; // Only admin/cloud functions can write
+    }
+    
+    // Analytics - allow read for authenticated users
+    match /analytics/{docId} {
+      allow read: if signedIn();
+      allow write: if false; // Only admin/cloud functions can write
+    }
+    
+    // Stories - allow read for authenticated users, write for own stories
+    match /stories/{storyId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+    
+    // Posts - allow read for authenticated users, write for own posts
+    match /posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+    
+    // Admin collections - restricted access
+    match /admin/{document=**} {
+      allow read, write: if signedIn() && 
+        (request.auth.token.email == 'admin@talowa.org' || 
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']); // Replace with actual admin UIDs
+    }
+    
+    // Other collections - default permissions for user-owned data
     match /{document=**} {
-      allow read, write: if signedIn() && request.auth.uid == resource.data.uid;
+      allow read: if signedIn();
+      allow write: if signedIn() && 
+        (request.resource.data.keys().hasAny(['uid', 'userId', 'authorId']) == false ||
+         request.resource.data.uid == request.auth.uid ||
+         request.resource.data.userId == request.auth.uid ||
+         request.resource.data.authorId == request.auth.uid);
     }
   }
 }

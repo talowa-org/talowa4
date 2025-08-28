@@ -5,7 +5,18 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 // Export referral system functions
-export { processReferral, autoPromoteUser, fixOrphanedUsers } from './referral-system';
+export { 
+  processReferral, 
+  autoPromoteUser, 
+  fixOrphanedUsers,
+  ensureReferralCode,
+  fixReferralCodeConsistency,
+  bulkFixReferralConsistency,
+  getMyReferralStats,
+  registerUserProfile,
+  checkPhone,
+  createUserRegistry
+} from './referral-system';
 
 // Export existing functions (if any)
 // Add your production-ready functions here

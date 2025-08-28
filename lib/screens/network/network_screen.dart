@@ -39,6 +39,7 @@ class _NetworkScreenState extends State<NetworkScreen> {
           title: const Text('My Network'),
           backgroundColor: AppTheme.talowaGreen,
           foregroundColor: Colors.white,
+          automaticallyImplyLeading: false, // Remove back button for logged out users
         ),
         body: const Center(
           child: Text('Please log in to view your network'),
@@ -46,52 +47,55 @@ class _NetworkScreenState extends State<NetworkScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Network',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          // Smart back navigation for network tab
+          _handleNetworkBackNavigation();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'My Network',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
+          backgroundColor: AppTheme.talowaGreen,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false, // Remove back button since this is a tab
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.person_add),
+              onPressed: _showInviteDialog,
+              tooltip: 'Invite People',
+            ),
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareReferralCode,
+              tooltip: 'Share Referral Code',
+            ),
+          ],
         ),
-        backgroundColor: AppTheme.talowaGreen,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Navigate back within app, don't logout
-            Navigator.of(context).maybePop();
+        body: SimplifiedReferralDashboard(
+          userId: user.uid,
+          onRefresh: () {
+            // Refresh the referral code cache
+            ReferralCodeCacheService.refresh(user.uid);
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            onPressed: _showInviteDialog,
-            tooltip: 'Invite People',
-          ),
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: _shareReferralCode,
-            tooltip: 'Share Referral Code',
-          ),
-        ],
-      ),
-      body: SimplifiedReferralDashboard(
-        userId: user.uid,
-        onRefresh: () {
-          // Refresh the referral code cache
-          ReferralCodeCacheService.refresh(user.uid);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showInviteDialog,
-        backgroundColor: AppTheme.talowaGreen,
-        foregroundColor: Colors.white,
-        tooltip: 'Invite People',
-        heroTag: "network_invite",
-        child: const Icon(Icons.person_add),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showInviteDialog,
+          backgroundColor: AppTheme.talowaGreen,
+          foregroundColor: Colors.white,
+          tooltip: 'Invite People',
+          heroTag: "network_invite",
+          child: const Icon(Icons.person_add),
+        ),
       ),
     );
   }
@@ -129,5 +133,26 @@ class _NetworkScreenState extends State<NetworkScreen> {
         backgroundColor: Colors.blue,
       ),
     );
+  }
+
+  /// Handle smart back navigation for network screen
+  void _handleNetworkBackNavigation() {
+    // Check if there's a screen in the navigation stack
+    if (Navigator.of(context).canPop()) {
+      // There's a screen to go back to (like referral details, sharing screen, etc.)
+      Navigator.of(context).pop();
+      debugPrint('🔙 Network: Navigated back in stack');
+    } else {
+      // No stack, we're at the main network tab - go to home
+      // This will be handled by the main navigation screen
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🏠 Press back again to go to Home'),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.blue,
+        ),
+      );
+      debugPrint('🔙 Network: At main network screen, suggesting home navigation');
+    }
   }
 }

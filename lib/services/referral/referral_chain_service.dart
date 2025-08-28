@@ -3,15 +3,14 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import '../database_service.dart';
-import '../../models/user_model.dart';
 import '../../core/constants/app_constants.dart';
+import 'cloud_functions_service.dart';
 
 class ReferralChainService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   /// Process referral chain when a new user registers
-  /// Adapted from BSS processReferral function
+  /// Now uses Cloud Functions for automatic processing
   static Future<void> processNewUserReferral({
     required String newUserId,
     required String? referralCode,
@@ -20,24 +19,8 @@ class ReferralChainService {
       debugPrint('🔍 Processing referral for new user: $newUserId');
       debugPrint('   Referral code: ${referralCode ?? "null"}');
 
-      // Handle orphan users - assign to admin if no referrer
-      String? finalReferralCode = referralCode;
-      if (finalReferralCode == null || finalReferralCode.trim().isEmpty) {
-        debugPrint('❌ User has no referral code. Assigning to admin.');
-        finalReferralCode = 'TALADMIN'; // Use Talowa admin code
-        
-        // Update the new user's document with admin referral code
-        await _firestore.collection('users').doc(newUserId).update({
-          'referredBy': finalReferralCode,
-        });
-        debugPrint('✅ Assigned user to admin with code: $finalReferralCode');
-      }
-
-      // Process the referral chain
-      await _updateReferralChain(
-        newUserId: newUserId,
-        referralCode: finalReferralCode,
-      );
+      // Use Cloud Functions for referral processing and auto-promotion
+      await CloudFunctionsService.processReferralAndPromote(newUserId);
 
     } catch (e) {
       debugPrint('❌ Error processing referral chain: $e');

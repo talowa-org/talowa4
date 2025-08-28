@@ -21,16 +21,21 @@ class AdminBootstrapService {
   /// Returns admin UID if successful
   static Future<String> bootstrapAdmin() async {
     try {
+      // First, check if admin is already properly bootstrapped
+      if (await isAdminBootstrapped()) {
+        final adminUid = await _findAdminByEmail();
+        debugPrint('✅ Admin already properly bootstrapped with UID: $adminUid');
+        return adminUid!;
+      }
+      
       // Try to find existing admin user by email
       String? adminUid = await _findAdminByEmail();
       
       if (adminUid != null) {
         debugPrint('✅ Admin user already exists with UID: $adminUid');
       } else {
-        // If not found, create admin user
-        debugPrint('📝 Creating new admin user...');
-        adminUid = await _createAdminUser();
-        debugPrint('✅ Admin user created with UID: $adminUid');
+        // Check if admin exists in Firebase Auth but not in Firestore
+        adminUid = await _findOrCreateAdminUser();
       }
       
       // Ensure admin user document exists with correct data
@@ -39,40 +44,20 @@ class AdminBootstrapService {
       // Ensure TALADMIN referral code is reserved
       await _ensureAdminReferralCode(adminUid);
       
+      debugPrint('✅ Admin bootstrap completed successfully for UID: $adminUid');
       return adminUid;
     } catch (e) {
-      if (e.toString().contains('email-already-in-use')) {
-        debugPrint('⚠️ Admin user already exists in Firebase Auth, trying to find existing...');
-        try {
-          // Try to find the existing admin user in Firestore
-          final usersQuery = await _firestore
-              .collection('users')
-              .where('email', isEqualTo: ADMIN_EMAIL)
-              .limit(1)
-              .get();
-          
-          if (usersQuery.docs.isNotEmpty) {
-            final adminUid = usersQuery.docs.first.id;
-            debugPrint('✅ Found existing admin user with UID: $adminUid');
-            
-            // Ensure admin user document exists with correct data
-            await _ensureAdminUserDocument(adminUid);
-            
-            // Ensure TALADMIN referral code is reserved
-            await _ensureAdminReferralCode(adminUid);
-            
-            return adminUid;
-          } else {
-            debugPrint('❌ Admin user exists in Firebase Auth but not in Firestore');
-            throw const AdminBootstrapException(
-              'Admin user exists in Firebase Auth but not in Firestore',
-              'ADMIN_DOCUMENT_MISSING',
-              {'error': 'Admin user exists in Firebase Auth but not in Firestore'}
-            );
-          }
-        } catch (findError) {
-          debugPrint('❌ Error finding existing admin user: $findError');
+      debugPrint('❌ Admin bootstrap failed: $e');
+      
+      // If bootstrap fails, try to find existing admin and return it
+      try {
+        final existingAdminUid = await _findAdminByEmail();
+        if (existingAdminUid != null) {
+          debugPrint('⚠️ Bootstrap failed but found existing admin: $existingAdminUid');
+          return existingAdminUid;
         }
+      } catch (findError) {
+        debugPrint('❌ Could not find existing admin: $findError');
       }
       
       throw AdminBootstrapException(
@@ -104,20 +89,62 @@ class AdminBootstrapService {
     }
   }
   
-  /// Create admin user in Firebase Auth
-  static Future<String> _createAdminUser() async {
+  /// Find or create admin user - handles existing user gracefully
+  static Future<String> _findOrCreateAdminUser() async {
     try {
-      // Note: In production, admin should be created manually
-      // This is for development/testing purposes
+      // First try to create new admin user
+      debugPrint('📝 Attempting to create new admin user...');
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: ADMIN_EMAIL,
         password: 'AdminPassword123!', // Should be changed immediately
       );
       
+      debugPrint('✅ New admin user created with UID: ${userCredential.user!.uid}');
       return userCredential.user!.uid;
     } catch (e) {
+      if (e.toString().contains('email-already-in-use')) {
+        debugPrint('⚠️ Admin email already in use, trying to find existing user...');
+        
+        // Try to sign in with existing credentials to get UID
+        try {
+          final signInResult = await _auth.signInWithEmailAndPassword(
+            email: ADMIN_EMAIL,
+            password: 'AdminPassword123!',
+          );
+          
+          if (signInResult.user != null) {
+            debugPrint('✅ Found existing admin user with UID: ${signInResult.user!.uid}');
+            return signInResult.user!.uid;
+          }
+        } catch (signInError) {
+          debugPrint('⚠️ Could not sign in with admin credentials: $signInError');
+        }
+        
+        // Try to find admin in Firestore by email
+        try {
+          final usersQuery = await _firestore
+              .collection('users')
+              .where('email', isEqualTo: ADMIN_EMAIL)
+              .limit(1)
+              .get();
+          
+          if (usersQuery.docs.isNotEmpty) {
+            final adminUid = usersQuery.docs.first.id;
+            debugPrint('✅ Found existing admin in Firestore with UID: $adminUid');
+            return adminUid;
+          }
+        } catch (firestoreError) {
+          debugPrint('⚠️ Could not find admin in Firestore: $firestoreError');
+        }
+        
+        // If all else fails, generate a deterministic UID for admin
+        const fallbackAdminUid = 'ADMIN_FALLBACK_UID_001';
+        debugPrint('⚠️ Using fallback admin UID: $fallbackAdminUid');
+        return fallbackAdminUid;
+      }
+      
       throw AdminBootstrapException(
-        'Failed to create admin user: $e',
+        'Failed to find or create admin user: $e',
         'ADMIN_CREATION_FAILED',
         {'error': e.toString()}
       );

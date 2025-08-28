@@ -27,7 +27,7 @@ class StoryRing extends StatelessWidget {
             ? LinearGradient(
                 colors: [
                   AppTheme.talowaGreen,
-                  AppTheme.talowaGreen.withOpacity(0.7),
+                  AppTheme.talowaGreen.withValues(alpha: 0.7),
                   Colors.orange,
                 ],
                 begin: Alignment.topLeft,

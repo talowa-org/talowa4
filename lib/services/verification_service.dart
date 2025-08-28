@@ -116,7 +116,7 @@ class VerificationService {
       
       // Check if code is immediately available
       final cachedCode = ReferralCodeCacheService.currentCode;
-      final isImmediate = cachedCode != 'TAL---' && cachedCode.startsWith('TAL');
+      final isImmediate = cachedCode != 'TAL---' && ReferralCodeGenerator.hasValidTALPrefix(cachedCode);
       
       // Clean up
       await _firestore.collection('users').doc(testUid).delete();

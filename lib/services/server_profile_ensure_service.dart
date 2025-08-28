@@ -49,7 +49,7 @@ class ServerProfileEnsureService {
       
       // Ensure referral code exists
       String referralCode = userData['referralCode'] as String? ?? '';
-      if (referralCode.isEmpty || !referralCode.startsWith('TAL')) {
+      if (referralCode.isEmpty || !ReferralCodeGenerator.hasValidTALPrefix(referralCode)) {
         referralCode = await ReferralCodeGenerator.ensureReferralCode(uid);
         updates['referralCode'] = referralCode;
       }
@@ -113,7 +113,7 @@ class ServerProfileEnsureService {
         final userData = userDoc.data()!;
         final existingCode = userData['referralCode'] as String?;
         
-        if (existingCode != null && existingCode.startsWith('TAL')) {
+        if (existingCode != null && ReferralCodeGenerator.hasValidTALPrefix(existingCode)) {
           return existingCode;
         }
       }
@@ -174,7 +174,7 @@ class ServerProfileEnsureService {
       
       // Validate referral code format
       final referralCode = userData['referralCode'] as String?;
-      if (referralCode == null || !referralCode.startsWith('TAL')) {
+      if (referralCode == null || !ReferralCodeGenerator.hasValidTALPrefix(referralCode)) {
         debugPrint('Invalid referral code format: $referralCode');
         return false;
       }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 // import 'package:uni_links/uni_links.dart';  // Not supported on web
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'referral_lookup_service.dart';
+import 'referral_code_generator.dart';
 
 /// Exception thrown when universal link handling fails
 class UniversalLinkException implements Exception {
@@ -129,7 +130,7 @@ class UniversalLinkService {
 
     // Check for any path that might contain a referral code
     for (final segment in uri.pathSegments) {
-      if (segment.startsWith('TAL') && segment.length >= 6) {
+      if (ReferralCodeGenerator.hasValidTALPrefix(segment) && segment.length >= 6) {
         final cleanCode = segment.trim().toUpperCase();
         debugPrint('✅ Found referral code in path segment: $cleanCode');
         return cleanCode;

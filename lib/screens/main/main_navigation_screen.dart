@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/onboarding_service.dart';
+import '../../services/navigation/smart_back_navigation_service.dart';
 import '../home/home_screen.dart';
 import '../feed/feed_screen.dart';
 import '../messages/messages_screen.dart';
@@ -142,11 +143,45 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _handleSmartBackNavigation();
+        }
+      },
+      child: GestureDetector(
+        // Comprehensive swipe protection to prevent logout
+        onHorizontalDragStart: (details) {
+          // Consume the gesture to prevent it from propagating
+          debugPrint('🛡️ Horizontal drag start blocked');
+        },
+        onHorizontalDragUpdate: (details) {
+          // Consume the gesture to prevent it from propagating
+          debugPrint('🛡️ Horizontal drag update blocked');
+        },
+        onHorizontalDragEnd: (details) {
+          // Consume the gesture to prevent it from propagating
+          debugPrint('🛡️ Horizontal drag end blocked');
+        },
+        onPanStart: (details) {
+          // Also block pan gestures that could cause navigation
+          debugPrint('🛡️ Pan gesture start blocked');
+        },
+        onPanUpdate: (details) {
+          // Block pan updates
+          debugPrint('🛡️ Pan gesture update blocked');
+        },
+        onPanEnd: (details) {
+          // Block pan end
+          debugPrint('🛡️ Pan gesture end blocked');
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          body: IndexedStack(
+            index: _currentIndex,
+            children: _screens,
+          ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           boxShadow: [
@@ -180,6 +215,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             fontSize: 12,
             fontWeight: FontWeight.normal,
           ),
+        ),
+      ),
         ),
       ),
     );
@@ -220,6 +257,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     //   'tab_index': index,
     //   'timestamp': DateTime.now().toIso8601String(),
     // });
+  }
+
+  /// Handle smart back navigation using the centralized service
+  void _handleSmartBackNavigation() {
+    SmartBackNavigationService.handleMainNavigationBack(
+      context,
+      _currentIndex,
+      (newIndex) => setState(() => _currentIndex = newIndex),
+      _provideFeedback,
+    );
   }
 }
 

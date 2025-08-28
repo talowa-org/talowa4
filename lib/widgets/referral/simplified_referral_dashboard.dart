@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/referral/referral_code_generator.dart';
+import '../../services/referral/stats_refresh_service.dart';
+import '../../services/referral/referral_sharing_service.dart';
 
 /// Simplified referral dashboard widget
 class SimplifiedReferralDashboard extends StatefulWidget {
@@ -36,6 +37,13 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         _error = null;
       });
 
+      // Check if stats need updating and refresh if necessary
+      final needsUpdate = await StatsRefreshService.needsStatsUpdate(widget.userId);
+      if (needsUpdate) {
+        debugPrint('🔄 Stats need updating, refreshing...');
+        await StatsRefreshService.refreshUserStats(widget.userId);
+      }
+
       // Get user data directly from Firestore
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -50,23 +58,26 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
       
       // Ensure user has a referral code
       String referralCode = userData['referralCode'] as String? ?? '';
-      if (referralCode.isEmpty || !referralCode.startsWith('TAL')) {
+      if (referralCode.isEmpty || !ReferralCodeGenerator.hasValidTALPrefix(referralCode)) {
         // Generate a new referral code
         referralCode = await ReferralCodeGenerator.ensureReferralCode(widget.userId);
       }
 
-      // Get referral statistics
-      final directReferrals = await _getDirectReferrals(referralCode);
-      final teamSize = await _getTeamSize(widget.userId);
+      // Get referral statistics from user document (updated fields)
+      final directReferrals = userData['directReferrals'] as int? ?? 0;
+      final teamReferrals = userData['teamReferrals'] as int? ?? userData['teamSize'] as int? ?? 0;
+      final currentRole = userData['role'] as String? ?? 'Member';
+      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
 
       final status = {
         'userId': widget.userId,
         'referralCode': referralCode,
         'activeDirectReferrals': directReferrals,
-        'activeTeamSize': teamSize,
-        'currentRole': userData['currentRole'] ?? 'member',
-        'membershipPaid': true, // Always true in simplified system
-        'roleProgression': _calculateRoleProgression(directReferrals, teamSize, userData['currentRole'] ?? 'member'),
+        'activeTeamSize': teamReferrals,
+        'currentRole': currentRole,
+        'currentRoleLevel': currentRoleLevel,
+        'membershipPaid': userData['membershipPaid'] ?? false,
+        'roleProgression': _calculateRoleProgression(directReferrals, teamReferrals, currentRole),
       };
       
       setState(() {
@@ -106,33 +117,81 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
   }
 
   Map<String, dynamic>? _calculateRoleProgression(int directReferrals, int teamSize, String currentRole) {
-    // Simple role progression logic
-    final roles = ['member', 'activist', 'organizer', 'team_leader', 'coordinator'];
+    // Updated to use Talowa's complete 9-level role system
+    final roles = [
+      'Member',
+      'Active Member', 
+      'Team Leader',
+      'Area Coordinator',
+      'Mandal Coordinator',
+      'Constituency Coordinator',
+      'District Coordinator',
+      'Zonal Coordinator',
+      'State Coordinator'
+    ];
+    
     final requirements = [
-      {'directReferrals': 0, 'teamSize': 0},
-      {'directReferrals': 2, 'teamSize': 5},
-      {'directReferrals': 5, 'teamSize': 15},
-      {'directReferrals': 10, 'teamSize': 50},
-      {'directReferrals': 20, 'teamSize': 150},
+      {'directReferrals': 0, 'teamSize': 0},           // Member
+      {'directReferrals': 10, 'teamSize': 10},         // Active Member
+      {'directReferrals': 20, 'teamSize': 100},        // Team Leader
+      {'directReferrals': 40, 'teamSize': 700},        // Area Coordinator
+      {'directReferrals': 80, 'teamSize': 6000},       // Mandal Coordinator
+      {'directReferrals': 160, 'teamSize': 50000},     // Constituency Coordinator
+      {'directReferrals': 320, 'teamSize': 500000},    // District Coordinator
+      {'directReferrals': 500, 'teamSize': 1000000},   // Zonal Coordinator
+      {'directReferrals': 1000, 'teamSize': 3000000},  // State Coordinator
     ];
 
-    final currentIndex = roles.indexOf(currentRole);
-    if (currentIndex == -1 || currentIndex >= roles.length - 1) {
-      return null; // Already at highest role or invalid role
+    // Find current role index (case insensitive)
+    int currentIndex = -1;
+    for (int i = 0; i < roles.length; i++) {
+      if (roles[i].toLowerCase().replaceAll(' ', '_') == currentRole.toLowerCase() ||
+          roles[i].toLowerCase() == currentRole.toLowerCase()) {
+        currentIndex = i;
+        break;
+      }
+    }
+    
+    // Default to Member if role not found
+    if (currentIndex == -1) {
+      currentIndex = 0;
     }
 
-    final nextRoleIndex = currentIndex + 1;
-    final nextRole = roles[nextRoleIndex];
-    final nextRequirements = requirements[nextRoleIndex];
+    // Check if already at highest role
+    if (currentIndex >= roles.length - 1) {
+      return null; // Already at highest role
+    }
 
-    final directProgress = ((directReferrals / nextRequirements['directReferrals']!) * 100).clamp(0, 100);
-    final teamProgress = ((teamSize / nextRequirements['teamSize']!) * 100).clamp(0, 100);
-    final overallProgress = ((directProgress + teamProgress) / 2).round();
+    // Find the highest eligible role based on current stats
+    int eligibleIndex = currentIndex;
+    for (int i = currentIndex + 1; i < roles.length; i++) {
+      final req = requirements[i];
+      if (directReferrals >= req['directReferrals']! && teamSize >= req['teamSize']!) {
+        eligibleIndex = i;
+      } else {
+        break; // Stop at first unmet requirement
+      }
+    }
+
+    // If eligible for promotion, show that role, otherwise show next role
+    final targetIndex = eligibleIndex > currentIndex ? eligibleIndex : currentIndex + 1;
+    final nextRole = roles[targetIndex];
+    final nextRequirements = requirements[targetIndex];
+
+    final directProgress = nextRequirements['directReferrals']! > 0 
+        ? ((directReferrals / nextRequirements['directReferrals']!) * 100).clamp(0, 100)
+        : 100.0;
+    final teamProgress = nextRequirements['teamSize']! > 0
+        ? ((teamSize / nextRequirements['teamSize']!) * 100).clamp(0, 100)
+        : 100.0;
+    
+    // Overall progress is the minimum of both requirements (both must be met)
+    final overallProgress = (directProgress * teamProgress / 100).clamp(0, 100).round();
 
     return {
       'nextRole': {
-        'role': nextRole,
-        'name': _formatRole(nextRole),
+        'role': nextRole.toLowerCase().replaceAll(' ', '_'),
+        'name': nextRole,
       },
       'progress': {
         'directReferrals': {
@@ -147,40 +206,52 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         },
         'overallProgress': overallProgress,
       },
+      'readyForPromotion': eligibleIndex > currentIndex,
     };
   }
 
   Future<void> _copyReferralCode() async {
     if (_referralStatus?['referralCode'] != null) {
-      await Clipboard.setData(ClipboardData(text: _referralStatus!['referralCode']));
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Referral code copied to clipboard!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      await ReferralSharingService.copyReferralCode(
+        _referralStatus!['referralCode'],
+        context,
+      );
     }
   }
 
   Future<void> _shareReferralLink() async {
     if (_referralStatus?['referralCode'] != null) {
-      final referralCode = _referralStatus!['referralCode'];
-      final referralLink = 'https://talowa.web.app/join?ref=$referralCode';
-      
-      await Clipboard.setData(ClipboardData(text: referralLink));
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Referral link copied to clipboard!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      await ReferralSharingService.shareReferralLink(
+        _referralStatus!['referralCode'],
+        userName: _getUserName(),
+      );
     }
+  }
+
+  Future<void> _showSharingOptions() async {
+    if (_referralStatus?['referralCode'] != null) {
+      await ReferralSharingService.showSharingOptions(
+        context,
+        _referralStatus!['referralCode'],
+        userName: _getUserName(),
+      );
+    }
+  }
+
+  Future<void> _showQRCode() async {
+    if (_referralStatus?['referralCode'] != null) {
+      await ReferralSharingService.showQRCodeDialog(
+        context,
+        _referralStatus!['referralCode'],
+        userName: _getUserName(),
+      );
+    }
+  }
+
+  String? _getUserName() {
+    // Try to get user name from Firebase Auth or user data
+    // For now, return null - can be enhanced later
+    return null;
   }
 
   @override
@@ -359,19 +430,57 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _shareReferralLink,
+                    onPressed: _showSharingOptions,
                     icon: const Icon(Icons.share),
-                    label: const Text('Share Link'),
+                    label: const Text('Share'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Show QR code
-                    },
+                    onPressed: _showQRCode,
                     icon: const Icon(Icons.qr_code),
                     label: const Text('QR Code'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.green,
+                      side: const BorderSide(color: Colors.green),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _shareReferralLink,
+                    icon: const Icon(Icons.send, size: 18),
+                    label: const Text('Quick Share'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      if (_referralStatus?['referralCode'] != null) {
+                        await ReferralSharingService.copyReferralLink(
+                          _referralStatus!['referralCode'],
+                          context,
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.link, size: 18),
+                    label: const Text('Copy Link'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                    ),
                   ),
                 ),
               ],
@@ -457,10 +566,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
 
   Widget _buildRoleProgressCard() {
     final roleProgression = _referralStatus!['roleProgression'];
-    if (roleProgression == null) return const SizedBox.shrink();
-
-    final nextRole = roleProgression['nextRole'];
-    if (nextRole == null) {
+    if (roleProgression == null) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -480,7 +586,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               ),
               const SizedBox(height: 8),
               Text(
-                'You have reached the highest role in the system.',
+                'You have reached the highest role: State Coordinator',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -490,7 +596,9 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
       );
     }
 
+    final nextRole = roleProgression['nextRole'];
     final progress = roleProgression['progress'];
+    final readyForPromotion = roleProgression['readyForPromotion'] ?? false;
     final directProgress = progress?['directReferrals']?['progress'] ?? 0;
     final teamProgress = progress?['teamSize']?['progress'] ?? 0;
     final overallProgress = progress?['overallProgress'] ?? 0;
@@ -501,12 +609,61 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Next Role: ${_formatRole(nextRole['role'])}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Next Role: ${nextRole['name']}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (readyForPromotion)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'READY!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
             ),
+            if (readyForPromotion) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.celebration, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Congratulations! You qualify for promotion. The system will automatically update your role.',
+                        style: TextStyle(
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             _buildProgressItem(
               'Direct Referrals',
@@ -526,6 +683,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               'Overall Progress: $overallProgress%',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: overallProgress >= 100 ? Colors.green : null,
               ),
             ),
             const SizedBox(height: 8),
@@ -571,9 +729,14 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () {
+            onPressed: () async {
+              setState(() => _isLoading = true);
+              
+              // Force refresh stats using the service
+              await StatsRefreshService.forceRefreshStats(widget.userId);
+              
               widget.onRefresh?.call();
-              _loadReferralStatus();
+              await _loadReferralStatus();
             },
             icon: const Icon(Icons.refresh),
             label: const Text('Refresh Statistics'),
