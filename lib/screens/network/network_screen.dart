@@ -2,15 +2,12 @@
 // Shows user's referral network and team management
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/referral_code_cache_service.dart';
 import '../../services/referral/comprehensive_stats_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
-import '../../widgets/referral/realtime_stats_widget.dart';
-import '../../widgets/network/network_stats_card.dart';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});
@@ -226,27 +223,12 @@ class _NetworkScreenState extends State<NetworkScreen> {
 
     final user = AuthService.currentUser!;
     
+    // Use only the SimplifiedReferralDashboard to avoid duplication
     return RefreshIndicator(
       onRefresh: _refreshNetwork,
-      child: Column(
-        children: [
-          // Network stats header
-          if (_networkData != null)
-            NetworkStatsCard(
-              totalTeamSize: _networkData!['teamSize'] ?? 0,
-              directReferrals: _networkData!['directReferrals'] ?? 0,
-              monthlyGrowth: _calculateMonthlyGrowth(),
-              currentRole: _networkData!['currentRole'] ?? 'Member',
-            ),
-          
-          // Referral dashboard
-          Expanded(
-            child: SimplifiedReferralDashboard(
-              userId: user.uid,
-              onRefresh: _refreshNetwork,
-            ),
-          ),
-        ],
+      child: SimplifiedReferralDashboard(
+        userId: user.uid,
+        onRefresh: _refreshNetwork,
       ),
     );
   }

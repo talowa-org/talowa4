@@ -38,6 +38,9 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         _error = null;
       });
 
+      // Force update stats first to ensure accuracy
+      await ComprehensiveStatsService.updateUserStats(widget.userId);
+
       // Get comprehensive stats (this will auto-update if needed)
       final statsResult = await ComprehensiveStatsService.getStatsSummary(widget.userId);
       
@@ -244,7 +247,14 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Loading your network...'),
+          ],
+        ),
       );
     }
 
@@ -264,10 +274,13 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            Text(
-              _error!,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                _error!,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -281,30 +294,51 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
 
     if (_referralStatus == null) {
       return const Center(
-        child: Text('No referral data available'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.network_check, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('No referral data available'),
+          ],
+        ),
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _loadReferralStatus,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildReferralCodeCard(),
-            const SizedBox(height: 16),
-            _buildStatsCards(),
-            const SizedBox(height: 16),
-            _buildRoleProgressCard(),
-            const SizedBox(height: 16),
-            _buildActionButtons(),
-          ],
-        ),
-      ),
+    // Wrap with StreamBuilder for real-time updates
+    return StreamBuilder<Map<String, dynamic>>(
+      stream: ComprehensiveStatsService.streamUserStats(widget.userId),
+      builder: (context, snapshot) {
+        // Update local data if stream has new data
+        if (snapshot.hasData && _referralStatus != null) {
+          final streamData = snapshot.data!;
+          _referralStatus!['activeDirectReferrals'] = streamData['directReferrals'] ?? 0;
+          _referralStatus!['activeTeamSize'] = streamData['teamSize'] ?? 0;
+          _referralStatus!['currentRole'] = streamData['currentRole'] ?? 'Member';
+        }
+
+        return RefreshIndicator(
+          onRefresh: _loadReferralStatus,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 16),
+                _buildReferralCodeCard(),
+                const SizedBox(height: 16),
+                _buildStatsCards(),
+                const SizedBox(height: 16),
+                _buildRoleProgressCard(),
+                const SizedBox(height: 16),
+                _buildActionButtons(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -479,36 +513,59 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
 
   Widget _buildStatsCards() {
     final directReferrals = _referralStatus!['activeDirectReferrals'] ?? 0;
-    final teamSize = _referralStatus!['activeTeamSize'] ?? 0;
+    final totalTeamSize = _referralStatus!['activeTeamSize'] ?? 0;
     final currentRole = _referralStatus!['currentRole'] ?? 'member';
 
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _buildStatCard(
-            title: 'Direct Referrals',
-            value: directReferrals.toString(),
-            icon: Icons.person_add,
-            color: Colors.blue,
-          ),
+        // First row - Direct vs Total Team
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                title: 'Direct Referrals',
+                value: directReferrals.toString(),
+                subtitle: 'People you invited',
+                icon: Icons.person_add,
+                color: Colors.blue,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildStatCard(
+                title: 'Total Team Size',
+                value: totalTeamSize.toString(),
+                subtitle: 'All levels combined',
+                icon: Icons.groups,
+                color: Colors.orange,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            title: 'Team Size',
-            value: teamSize.toString(),
-            icon: Icons.groups,
-            color: Colors.orange,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            title: 'Role',
-            value: _formatRole(currentRole),
-            icon: Icons.star,
-            color: Colors.purple,
-          ),
+        const SizedBox(height: 12),
+        // Second row - Role and Network Depth
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                title: 'Current Role',
+                value: _formatRole(currentRole),
+                subtitle: 'Your rank',
+                icon: Icons.star,
+                color: Colors.purple,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildStatCard(
+                title: 'Network Depth',
+                value: _calculateNetworkDepth(directReferrals, totalTeamSize),
+                subtitle: 'Levels deep',
+                icon: Icons.account_tree,
+                color: Colors.green,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -519,6 +576,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
     required String value,
     required IconData icon,
     required Color color,
+    String? subtitle,
   }) {
     return Card(
       child: Padding(
@@ -541,13 +599,39 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             const SizedBox(height: 4),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  String _calculateNetworkDepth(int directReferrals, int totalTeamSize) {
+    if (directReferrals == 0) return '0';
+    if (totalTeamSize <= directReferrals) return '1';
+    
+    // Estimate network depth based on team size vs direct referrals
+    // This is an approximation since we don't have exact level data
+    final indirectReferrals = totalTeamSize - directReferrals;
+    if (indirectReferrals <= directReferrals * 2) return '2';
+    if (indirectReferrals <= directReferrals * 5) return '3';
+    if (indirectReferrals <= directReferrals * 10) return '4';
+    return '5+';
   }
 
   Widget _buildRoleProgressCard() {
