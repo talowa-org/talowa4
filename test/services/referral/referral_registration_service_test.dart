@@ -202,6 +202,8 @@ void main() {
           ),
           directReferrals: 0,
           teamSize: 0,
+          teamReferrals: 0, // Added missing required parameter
+          currentRoleLevel: 1, // Added missing required parameter
           membershipPaid: false,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -247,6 +249,8 @@ void main() {
           ),
           directReferrals: 0,
           teamSize: 0,
+          teamReferrals: 0, // Added missing required parameter
+          currentRoleLevel: 1, // Added missing required parameter
           membershipPaid: false,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),

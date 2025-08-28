@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'lib/firebase_options.dart';
 import 'lib/services/auth_service.dart';
-import 'lib/models/address.dart';
+import 'lib/models/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

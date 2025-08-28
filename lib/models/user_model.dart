@@ -171,6 +171,11 @@ class UserModel {
   // Add profileImageUrl getter for compatibility
   String? get profileImageUrl => null; // Can be added later if needed
 
+  // Add backward compatibility getters
+  String get uid => id; // uid is same as id
+  String get phone => phoneNumber; // phone is same as phoneNumber
+  String get status => isActive ? 'active' : 'inactive'; // status based on isActive
+
   // Create copy with updated fields
   UserModel copyWith({
     String? phoneNumber,
