@@ -131,15 +131,15 @@ class ReferralTrackingService {
       // Update direct referral count for immediate referrer
       if (userId == referralChain.last) {
         batch.update(userRef, {
-          'activeDirectReferrals': FieldValue.increment(1),
-          'directReferrals': FieldValue.arrayUnion([newUserId]),
+          'directReferrals': FieldValue.increment(1),
+          'directReferralsList': FieldValue.arrayUnion([newUserId]),
         });
       }
       
-      // Update team size for all in chain
+      // Update team size for all in chain (using UserModel field names)
       batch.update(userRef, {
-        'activeTeamSize': FieldValue.increment(1),
-        'totalTeamSize': FieldValue.increment(1),
+        'teamSize': FieldValue.increment(1),
+        'teamReferrals': FieldValue.increment(1),
         'lastTeamUpdate': FieldValue.serverTimestamp(),
       });
     }
@@ -152,8 +152,8 @@ class ReferralTrackingService {
       final userData = userDoc.data();
       if (userData == null) continue;
       
-      final directReferrals = userData['activeDirectReferrals'] as int? ?? 0;
-      final teamSize = userData['activeTeamSize'] as int? ?? 0;
+      final directReferrals = userData['directReferrals'] as int? ?? 0;
+      final teamSize = userData['teamSize'] as int? ?? 0;
       final currentRole = userData['currentRole'] as String? ?? 'member';
       final location = userData['address'] as Map<String, dynamic>?;
       final isUrban = location?['type'] == 'urban';
@@ -266,12 +266,13 @@ class ReferralTrackingService {
       
       final userData = userDoc.data()!;
       return {
-        'directReferrals': userData['activeDirectReferrals'] ?? 0,
-        'totalTeamSize': userData['activeTeamSize'] ?? 0,
-        'currentRole': userData['currentRole'] ?? 'member',
+        'directReferrals': userData['directReferrals'] ?? 0,
+        'totalTeamSize': userData['teamSize'] ?? 0,
+        'teamReferrals': userData['teamReferrals'] ?? userData['teamSize'] ?? 0,
+        'currentRole': userData['role'] ?? 'member',
         'referralCode': userData['referralCode'],
         'referralChain': userData['referralChain'] ?? [],
-        'membershipPaid': true, // Always true in simplified system
+        'membershipPaid': userData['membershipPaid'] ?? true,
       };
     } catch (e) {
       throw ReferralTrackingException(

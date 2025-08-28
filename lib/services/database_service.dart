@@ -37,6 +37,7 @@ class DatabaseService {
     String? mandal,
     String? village,
     String? pinHash, // Add PIN hash parameter for login verification
+    String? referralCode, // Use existing referral code instead of generating new one
   }) async {
     try {
       // Check if registry already exists to prevent duplicates
@@ -50,8 +51,9 @@ class DatabaseService {
         return;
       }
 
-      // Generate proper TAL referral code
-      final referralCode = await ReferralCodeGenerator.generateUniqueCode();
+      // Use provided referral code or generate new one if not provided
+      final finalReferralCode = referralCode ?? await ReferralCodeGenerator.generateUniqueCode();
+      debugPrint('Using referral code for registry: $finalReferralCode');
 
       await _firestore
           .collection(AppConstants.collectionUserRegistry)
@@ -68,7 +70,7 @@ class DatabaseService {
             'isActive': true,
             'createdAt': FieldValue.serverTimestamp(),
             'lastLoginAt': FieldValue.serverTimestamp(),
-            'referralCode': referralCode,
+            'referralCode': finalReferralCode,
             'directReferrals': 0,
             'teamSize': 0,
             'membershipPaid': false,

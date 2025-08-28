@@ -893,6 +893,7 @@ class _IntegratedRegistrationScreenState
           mandal: _mandalController.text.trim(),
           village: _villageController.text.trim(),
           pinHash: hashedPin, // Pass PIN hash for login verification
+          referralCode: newReferralCode, // Pass the already generated referral code
         );
         debugPrint('✅ User registry created successfully');
       } catch (e) {

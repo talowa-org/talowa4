@@ -5,6 +5,8 @@ import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/referral_code_cache_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
+import '../../widgets/referral/realtime_stats_widget.dart';
+import '../../widgets/network/network_stats_card.dart';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});
@@ -81,12 +83,29 @@ class _NetworkScreenState extends State<NetworkScreen> {
             ),
           ],
         ),
-        body: SimplifiedReferralDashboard(
-          userId: user.uid,
-          onRefresh: () {
-            // Refresh the referral code cache
-            ReferralCodeCacheService.refresh(user.uid);
-          },
+        body: Column(
+          children: [
+            // Real-time stats header
+            RealtimeStatsWidget(
+              userId: user.uid,
+              builder: (stats) => NetworkStatsCard(
+                totalTeamSize: stats['teamSize'] ?? 0,
+                directReferrals: stats['directReferrals'] ?? 0,
+                monthlyGrowth: 0, // TODO: Calculate monthly growth
+                currentRole: stats['currentRole'] ?? 'Member',
+              ),
+            ),
+            // Referral dashboard
+            Expanded(
+              child: SimplifiedReferralDashboard(
+                userId: user.uid,
+                onRefresh: () {
+                  // Refresh the referral code cache
+                  ReferralCodeCacheService.refresh(user.uid);
+                },
+              ),
+            ),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _showInviteDialog,

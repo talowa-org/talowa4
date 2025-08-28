@@ -26,22 +26,42 @@ class ReferralStatisticsService {
   /// Update all statistics for a user
   static Future<Map<String, dynamic>> updateUserStatistics(String userId) async {
     try {
-      final stats = await ReferralChainService.getChainStatistics(userId);
+      final stats = await ReferralChainService.getReferralStats(userId);
+      
+      // Calculate additional stats by querying Firestore directly
+      final directReferralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: stats['referralCode'])
+          .get();
+      
+      final teamSizeQuery = await _firestore
+          .collection('users')
+          .where('referralChain', arrayContains: userId)
+          .get();
+      
+      final actualDirectReferrals = directReferralsQuery.docs.length;
+      final actualTeamSize = teamSizeQuery.docs.length;
       
       // Update user document with latest statistics
       await _firestore.collection('users').doc(userId).update({
-        'directReferrals': stats['directReferrals'],
-        'activeDirectReferrals': stats['activeDirectReferrals'],
-        'teamSize': stats['teamSize'],
-        'activeTeamSize': stats['activeTeamSize'],
-        'chainDepth': stats['chainDepth'],
+        'directReferrals': actualDirectReferrals,
+        'teamSize': actualTeamSize,
+        'teamReferrals': actualTeamSize, // Keep both for compatibility
         'lastStatsUpdate': FieldValue.serverTimestamp(),
       });
       
-      // Record statistics history
-      await _recordStatisticsHistory(userId, stats);
+      final updatedStats = {
+        'directReferrals': actualDirectReferrals,
+        'teamSize': actualTeamSize,
+        'teamReferrals': actualTeamSize,
+        'currentRole': stats['role'],
+        'calculatedAt': DateTime.now().toIso8601String(),
+      };
       
-      return stats;
+      // Record statistics history
+      await _recordStatisticsHistory(userId, updatedStats);
+      
+      return updatedStats;
     } catch (e) {
       throw ReferralStatisticsException(
         'Failed to update user statistics: $e',
@@ -57,16 +77,14 @@ class ReferralStatisticsService {
       await _firestore.collection('referralStatisticsHistory').add({
         'userId': userId,
         'directReferrals': stats['directReferrals'],
-        'activeDirectReferrals': stats['activeDirectReferrals'],
         'teamSize': stats['teamSize'],
-        'activeTeamSize': stats['activeTeamSize'],
-        'chainDepth': stats['chainDepth'],
+        'teamReferrals': stats['teamReferrals'],
         'timestamp': FieldValue.serverTimestamp(),
         'calculatedAt': stats['calculatedAt'],
       });
     } catch (e) {
       // Don't fail the main operation for history recording
-      print('Warning: Failed to record statistics history: $e');
+      debugPrint('Warning: Failed to record statistics history: $e');
     }
   }
   
@@ -86,13 +104,12 @@ class ReferralStatisticsService {
       final stats = {
         'userId': userId,
         'directReferrals': userData['directReferrals'] ?? 0,
-        'activeDirectReferrals': userData['activeDirectReferrals'] ?? 0,
         'teamSize': userData['teamSize'] ?? 0,
-        'activeTeamSize': userData['activeTeamSize'] ?? 0,
-        'chainDepth': userData['chainDepth'] ?? 0,
+        'teamReferrals': userData['teamReferrals'] ?? userData['teamSize'] ?? 0,
         'lastStatsUpdate': userData['lastStatsUpdate'],
-        'currentRole': userData['currentRole'] ?? 'member',
+        'currentRole': userData['role'] ?? 'member',
         'membershipPaid': userData['membershipPaid'] ?? false,
+        'referralCode': userData['referralCode'] ?? '',
       };
       
       if (includeHistory) {
@@ -132,13 +149,33 @@ class ReferralStatisticsService {
   /// Calculate statistics for pending vs active referrals
   static Future<Map<String, dynamic>> calculatePendingVsActiveStats(String userId) async {
     try {
-      final directReferrals = await ReferralChainService.getDirectReferrals(userId);
+      // Get user's referral code first
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        throw ReferralStatisticsException('User not found', 'USER_NOT_FOUND');
+      }
+      
+      final referralCode = userDoc.data()!['referralCode'] as String? ?? '';
+      
+      // Get direct referrals
+      final directReferralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: referralCode)
+          .get();
+      
+      final directReferrals = directReferralsQuery.docs.map((doc) => doc.data()).toList();
       
       final pending = directReferrals.where((user) => user['membershipPaid'] != true).length;
       final active = directReferrals.where((user) => user['membershipPaid'] == true).length;
       
-      final teamSize = await ReferralChainService.calculateTeamSize(userId);
-      final activeTeamSize = await ReferralChainService.calculateActiveTeamSize(userId);
+      // Get team size
+      final teamSizeQuery = await _firestore
+          .collection('users')
+          .where('referralChain', arrayContains: userId)
+          .get();
+      
+      final teamSize = teamSizeQuery.docs.length;
+      final activeTeamSize = teamSizeQuery.docs.where((doc) => doc.data()['membershipPaid'] == true).length;
       final pendingTeamSize = teamSize - activeTeamSize;
       
       return {
@@ -187,7 +224,6 @@ class ReferralStatisticsService {
       
       final directGrowth = (currentStats['directReferrals'] as int) - (initialStats['directReferrals'] as int? ?? 0);
       final teamGrowth = (currentStats['teamSize'] as int) - (initialStats['teamSize'] as int? ?? 0);
-      final activeTeamGrowth = (currentStats['activeTeamSize'] as int) - (initialStats['activeTeamSize'] as int? ?? 0);
       
       return {
         'period': '$days days',
@@ -196,12 +232,10 @@ class ReferralStatisticsService {
         'growth': {
           'directReferrals': directGrowth,
           'teamSize': teamGrowth,
-          'activeTeamSize': activeTeamGrowth,
         },
         'current': {
           'directReferrals': currentStats['directReferrals'],
           'teamSize': currentStats['teamSize'],
-          'activeTeamSize': currentStats['activeTeamSize'],
         },
         'dataPoints': history.length,
         'calculatedAt': DateTime.now().toIso8601String(),
@@ -232,8 +266,10 @@ class ReferralStatisticsService {
       // Only include users with membership paid
       query = query.where('membershipPaid', isEqualTo: true);
       
-      // Sort by specified field
-      query = query.orderBy(sortBy, descending: true).limit(limit);
+      // Sort by specified field (ensure field exists)
+      final validSortFields = ['directReferrals', 'teamSize', 'teamReferrals'];
+      final actualSortBy = validSortFields.contains(sortBy) ? sortBy : 'teamSize';
+      query = query.orderBy(actualSortBy, descending: true).limit(limit);
       
       final results = await query.get();
       
@@ -242,11 +278,10 @@ class ReferralStatisticsService {
         return {
           'userId': doc.id,
           'fullName': data['fullName'],
-          'currentRole': data['currentRole'] ?? 'member',
+          'currentRole': data['role'] ?? 'member',
           'directReferrals': data['directReferrals'] ?? 0,
-          'activeDirectReferrals': data['activeDirectReferrals'] ?? 0,
           'teamSize': data['teamSize'] ?? 0,
-          'activeTeamSize': data['activeTeamSize'] ?? 0,
+          'teamReferrals': data['teamReferrals'] ?? data['teamSize'] ?? 0,
           'lastStatsUpdate': data['lastStatsUpdate'],
         };
       }).toList();
@@ -275,19 +310,19 @@ class ReferralStatisticsService {
       
       // Calculate total referrals
       int totalReferrals = 0;
-      int totalActiveReferrals = 0;
+      int totalTeamSize = 0;
       
       for (final doc in totalUsersQuery.docs) {
         final data = doc.data();
         totalReferrals += (data['directReferrals'] as int? ?? 0);
-        totalActiveReferrals += (data['activeDirectReferrals'] as int? ?? 0);
+        totalTeamSize += (data['teamSize'] as int? ?? 0);
       }
       
       // Calculate role distribution
       final roleDistribution = <String, int>{};
       for (final doc in paidUsersQuery.docs) {
         final data = doc.data();
-        final role = data['currentRole'] as String? ?? 'member';
+        final role = data['role'] as String? ?? 'member';
         roleDistribution[role] = (roleDistribution[role] ?? 0) + 1;
       }
       
@@ -297,8 +332,8 @@ class ReferralStatisticsService {
         'pendingUsers': totalUsers - paidUsers,
         'conversionRate': totalUsers > 0 ? (paidUsers / totalUsers * 100).round() : 0,
         'totalReferrals': totalReferrals,
-        'totalActiveReferrals': totalActiveReferrals,
-        'averageReferralsPerUser': paidUsers > 0 ? (totalActiveReferrals / paidUsers).round() : 0,
+        'totalTeamSize': totalTeamSize,
+        'averageReferralsPerUser': paidUsers > 0 ? (totalReferrals / paidUsers).round() : 0,
         'roleDistribution': roleDistribution,
         'calculatedAt': DateTime.now().toIso8601String(),
       };
@@ -316,7 +351,15 @@ class ReferralStatisticsService {
       // Process in batches to avoid overwhelming Firestore
       for (int i = 0; i < userIds.length; i += batchSize) {
         final batchUserIds = userIds.skip(i).take(batchSize).toList();
-        await ReferralChainService.batchUpdateStatistics(batchUserIds);
+        
+        // Update each user's statistics
+        for (final userId in batchUserIds) {
+          try {
+            await updateUserStatistics(userId);
+          } catch (e) {
+            debugPrint('Warning: Failed to update stats for user $userId: $e');
+          }
+        }
         
         // Small delay between batches to avoid rate limiting
         if (i + batchSize < userIds.length) {

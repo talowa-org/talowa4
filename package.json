@@ -1,0 +1,25 @@
+{
+  "name": "talowa-referral-consistency-fix",
+  "version": "1.0.0",
+  "description": "Scripts to fix referral code data consistency issues in TALOWA Firebase database",
+  "type": "module",
+  "scripts": {
+    "quick-check": "node quick_consistency_check.js",
+    "fix-consistency": "node fix_referral_data_consistency.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  },
+  "keywords": [
+    "firebase",
+    "referral",
+    "consistency",
+    "talowa"
+  ],
+  "author": "TALOWA Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

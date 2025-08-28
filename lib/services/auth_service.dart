@@ -109,8 +109,8 @@ class AuthService {
       final existingProfile = await DatabaseService.getUserProfile(user.uid);
 
       if (existingProfile == null) {
-        // Create client-safe user profile with only allowed fields
-        await _createClientUserProfile(
+        // Create client-safe user profile with only allowed fields and get referral code
+        final generatedReferralCode = await _createClientUserProfile(
           uid: user.uid,
           fullName: fullName,
           email: email,
@@ -118,7 +118,7 @@ class AuthService {
           address: address,
         );
 
-        // Create user registry entry
+        // Create user registry entry with the same referral code
         await DatabaseService.createUserRegistry(
           phoneNumber: normalizedPhone,
           uid: user.uid,
@@ -128,6 +128,7 @@ class AuthService {
           district: address.district,
           mandal: address.mandal,
           village: address.villageCity,
+          referralCode: generatedReferralCode, // Pass the already generated referral code
         );
       } else {
         debugPrint('User profile already exists for UID: ${user.uid}');
@@ -405,7 +406,8 @@ class AuthService {
   }
 
   /// Create client-safe user profile with only allowed fields
-  static Future<void> _createClientUserProfile({
+  /// Returns the generated referral code for consistency
+  static Future<String> _createClientUserProfile({
     required String uid,
     required String fullName,
     required String email,
@@ -456,6 +458,8 @@ class AuthService {
       debugPrint(
         'User profile created successfully with referralCode: $referralCode',
       );
+      
+      return referralCode; // Return the generated referral code
     } catch (e) {
       debugPrint('Failed to create user profile: $e');
       throw Exception('Failed to create user profile: $e');

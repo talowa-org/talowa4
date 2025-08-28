@@ -14,8 +14,8 @@ class NetworkStatsCard extends StatelessWidget {
     super.key,
     required this.totalTeamSize,
     required this.directReferrals,
-    required this.monthlyGrowth,
-    required this.currentRole,
+    this.monthlyGrowth = 0,
+    this.currentRole = 'Member',
   });
 
   @override
@@ -93,9 +93,9 @@ class NetworkStatsCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppTheme.spacingMedium),
       margin: const EdgeInsets.all(AppTheme.spacingSmall),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

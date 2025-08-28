@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/referral/referral_code_generator.dart';
 import '../../services/referral/stats_refresh_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
+import '../../services/referral/comprehensive_stats_service.dart';
 
 /// Simplified referral dashboard widget
 class SimplifiedReferralDashboard extends StatefulWidget {
@@ -37,47 +38,32 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         _error = null;
       });
 
-      // Check if stats need updating and refresh if necessary
-      final needsUpdate = await StatsRefreshService.needsStatsUpdate(widget.userId);
-      if (needsUpdate) {
-        debugPrint('🔄 Stats need updating, refreshing...');
-        await StatsRefreshService.refreshUserStats(widget.userId);
-      }
-
-      // Get user data directly from Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .get();
-
-      if (!userDoc.exists) {
-        throw Exception('User not found');
-      }
-
-      final userData = userDoc.data()!;
+      // Get comprehensive stats (this will auto-update if needed)
+      final statsResult = await ComprehensiveStatsService.getStatsSummary(widget.userId);
       
+      if (statsResult.containsKey('error')) {
+        throw Exception(statsResult['error']);
+      }
+
+      final currentStats = statsResult['current'] as Map<String, dynamic>;
+      final roleProgression = statsResult['roleProgression'];
+
       // Ensure user has a referral code
-      String referralCode = userData['referralCode'] as String? ?? '';
+      String referralCode = currentStats['referralCode'] as String? ?? '';
       if (referralCode.isEmpty || !ReferralCodeGenerator.hasValidTALPrefix(referralCode)) {
         // Generate a new referral code
         referralCode = await ReferralCodeGenerator.ensureReferralCode(widget.userId);
       }
 
-      // Get referral statistics from user document (updated fields)
-      final directReferrals = userData['directReferrals'] as int? ?? 0;
-      final teamReferrals = userData['teamReferrals'] as int? ?? userData['teamSize'] as int? ?? 0;
-      final currentRole = userData['role'] as String? ?? 'Member';
-      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
-
       final status = {
         'userId': widget.userId,
         'referralCode': referralCode,
-        'activeDirectReferrals': directReferrals,
-        'activeTeamSize': teamReferrals,
-        'currentRole': currentRole,
-        'currentRoleLevel': currentRoleLevel,
-        'membershipPaid': userData['membershipPaid'] ?? false,
-        'roleProgression': _calculateRoleProgression(directReferrals, teamReferrals, currentRole),
+        'activeDirectReferrals': currentStats['directReferrals'] ?? 0,
+        'activeTeamSize': currentStats['teamSize'] ?? 0,
+        'currentRole': currentStats['currentRole'] ?? 'Member',
+        'currentRoleLevel': 1, // Will be calculated from role
+        'membershipPaid': true, // Assume paid for now
+        'roleProgression': roleProgression,
       };
       
       setState(() {
@@ -732,8 +718,8 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             onPressed: () async {
               setState(() => _isLoading = true);
               
-              // Force refresh stats using the service
-              await StatsRefreshService.forceRefreshStats(widget.userId);
+              // Force refresh stats using comprehensive service
+              await ComprehensiveStatsService.updateUserStats(widget.userId);
               
               widget.onRefresh?.call();
               await _loadReferralStatus();
