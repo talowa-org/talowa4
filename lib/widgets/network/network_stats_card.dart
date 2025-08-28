@@ -93,9 +93,9 @@ class NetworkStatsCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppTheme.spacingMedium),
       margin: const EdgeInsets.all(AppTheme.spacingSmall),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

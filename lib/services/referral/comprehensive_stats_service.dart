@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import '../network_error_handler.dart';
 
 /// Comprehensive service to ensure all referral statistics are accurate and up-to-date
 class ComprehensiveStatsService {
