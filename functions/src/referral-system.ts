@@ -15,10 +15,16 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Talowa Role Thresholds (simplified from BSS's 9 levels to 3 levels)
+// Talowa Role Thresholds (Complete 9-level hierarchy)
 const TALOWA_ROLE_THRESHOLDS = [
-  { level: 3, name: "Leader", direct: 0, team: 50 },
-  { level: 2, name: "Volunteer", direct: 5, team: 0 },
+  { level: 9, name: "State Coordinator", direct: 1000, team: 3000000 },
+  { level: 8, name: "Zonal Coordinator", direct: 500, team: 1000000 },
+  { level: 7, name: "District Coordinator", direct: 320, team: 500000 },
+  { level: 6, name: "Constituency Coordinator", direct: 160, team: 50000 },
+  { level: 5, name: "Mandal Coordinator", direct: 80, team: 6000 },
+  { level: 4, name: "Area Coordinator", direct: 40, team: 700 },
+  { level: 3, name: "Team Leader", direct: 20, team: 100 },
+  { level: 2, name: "Active Member", direct: 10, team: 10 },
   { level: 1, name: "Member", direct: 0, team: 0 },
 ];
 
@@ -150,13 +156,13 @@ export const autoPromoteUser = onDocumentUpdated("users/{userId}", async (event)
 
   let newRole = { level: 1, name: "Member" }; // Default role
 
-  // Find the highest eligible role
+  // Find the highest eligible role (thresholds are in descending order)
   for (const role of TALOWA_ROLE_THRESHOLDS) {
     const meetsDirect = directReferrals >= role.direct;
     const meetsTeam = teamReferrals >= role.team;
 
-    // Check if user meets requirements for this role
-    if (meetsDirect && meetsTeam) {
+    // Check if user meets requirements for this role and it's higher than current
+    if (meetsDirect && meetsTeam && role.level > currentRoleLevel) {
       newRole = role;
       break; // Found the highest eligible role
     }

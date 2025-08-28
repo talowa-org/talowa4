@@ -232,22 +232,31 @@ class RoleProgressCard extends StatelessWidget {
       );
     }
 
-    // Calculate progress
-    double progress = 0.0;
-    String progressText = '';
+    // Calculate progress based on both direct and team requirements
+    double directProgress = nextRole.directReferralsNeeded > 0 
+        ? (directReferrals / nextRole.directReferralsNeeded).clamp(0.0, 1.0)
+        : 1.0;
+    
+    double teamProgress = nextRole.teamReferralsNeeded > 0 
+        ? (teamReferrals / nextRole.teamReferralsNeeded).clamp(0.0, 1.0)
+        : 1.0;
 
-    if (nextRole.directReferralsNeeded > 0) {
-      progress = (directReferrals / nextRole.directReferralsNeeded).clamp(0.0, 1.0);
-      final needed = (nextRole.directReferralsNeeded - directReferrals).clamp(0, double.infinity).toInt();
-      progressText = needed > 0 
-          ? 'Need $needed more direct referrals'
-          : 'Ready for promotion!';
-    } else if (nextRole.teamReferralsNeeded > 0) {
-      progress = (teamReferrals / nextRole.teamReferralsNeeded).clamp(0.0, 1.0);
-      final needed = (nextRole.teamReferralsNeeded - teamReferrals).clamp(0, double.infinity).toInt();
-      progressText = needed > 0 
-          ? 'Need $needed more team members'
-          : 'Ready for promotion!';
+    // Overall progress is the minimum of both requirements
+    double progress = (directProgress * teamProgress).clamp(0.0, 1.0);
+    
+    // Generate progress text based on what's needed
+    String progressText = '';
+    final directNeeded = (nextRole.directReferralsNeeded - directReferrals).clamp(0, double.infinity).toInt();
+    final teamNeeded = (nextRole.teamReferralsNeeded - teamReferrals).clamp(0, double.infinity).toInt();
+
+    if (directNeeded > 0 && teamNeeded > 0) {
+      progressText = 'Need $directNeeded direct & $teamNeeded team members';
+    } else if (directNeeded > 0) {
+      progressText = 'Need $directNeeded more direct referrals';
+    } else if (teamNeeded > 0) {
+      progressText = 'Need $teamNeeded more team members';
+    } else {
+      progressText = 'Ready for promotion to ${nextRole.name}!';
     }
 
     return Card(

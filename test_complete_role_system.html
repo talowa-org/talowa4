@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Complete Talowa Role System Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .role-hierarchy {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .role-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .role-level {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .role-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        .role-requirements {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .test-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; }
+        h2 { color: #FFD700; margin-bottom: 15px; }
+        .highlight { background: rgba(255, 215, 0, 0.2); padding: 2px 6px; border-radius: 4px; }
+        .stats-example {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .promotion-path {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .promotion-arrow {
+            font-size: 24px;
+            margin: 0 10px;
+            color: #FFD700;
+        }
+        .level-badge {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏆 Complete Talowa Role System</h1>
+    
+    <div class="test-container">
+        <h2>🎯 Updated Role Hierarchy (9 Levels)</h2>
+        <p>The referral system now uses Talowa's complete 9-level role hierarchy with accurate promotion thresholds:</p>
+        
+        <div class="role-hierarchy">
+            <div class="role-card">
+                <div class="role-level">Level 1</div>
+                <div class="role-name">Member</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Default starting role<br>
+                    <strong>Direct:</strong> 0 | <strong>Team:</strong> 0
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 2</div>
+                <div class="role-name">Active Member</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> First promotion<br>
+                    <strong>Direct:</strong> 10 | <strong>Team:</strong> 10
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 3</div>
+                <div class="role-name">Team Leader</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Lead a team<br>
+                    <strong>Direct:</strong> 20 | <strong>Team:</strong> 100
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 4</div>
+                <div class="role-name">Area Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Coordinate area<br>
+                    <strong>Direct:</strong> 40 | <strong>Team:</strong> 700
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 5</div>
+                <div class="role-name">Mandal Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Mandal leadership<br>
+                    <strong>Direct:</strong> 80 | <strong>Team:</strong> 6,000
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 6</div>
+                <div class="role-name">Constituency Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Constituency level<br>
+                    <strong>Direct:</strong> 160 | <strong>Team:</strong> 50,000
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 7</div>
+                <div class="role-name">District Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> District leadership<br>
+                    <strong>Direct:</strong> 320 | <strong>Team:</strong> 500,000
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 8</div>
+                <div class="role-name">Zonal Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Multi-district zone<br>
+                    <strong>Direct:</strong> 500 | <strong>Team:</strong> 1,000,000
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-level">Level 9</div>
+                <div class="role-name">State Coordinator</div>
+                <div class="role-requirements">
+                    <strong>Requirements:</strong> Highest achievable<br>
+                    <strong>Direct:</strong> 1,000 | <strong>Team:</strong> 3,000,000
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>🚀 Test the Updated System</h2>
+        <p>Click these test links to verify the complete role system is working:</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://talowa.web.app/?ref=ROLE1TEST" class="test-button">
+                🔗 Test Complete Role System 1
+            </a>
+            
+            <a href="https://talowa.web.app/?ref=ROLE2TEST" class="test-button">
+                🔗 Test Complete Role System 2
+            </a>
+            
+            <a href="https://talowa.web.app/?ref=ROLE3TEST" class="test-button">
+                🔗 Test Complete Role System 3
+            </a>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>📈 Promotion Path Example</h2>
+        <div class="promotion-path">
+            <div class="level-badge">Member</div>
+            <div class="promotion-arrow">→</div>
+            <div class="level-badge">Active Member</div>
+            <div class="promotion-arrow">→</div>
+            <div class="level-badge">Team Leader</div>
+            <div class="promotion-arrow">→</div>
+            <div class="level-badge">Area Coordinator</div>
+            <div class="promotion-arrow">→</div>
+            <div class="level-badge">State Coordinator</div>
+        </div>
+        
+        <div class="stats-example">
+            <strong>Example Promotion Scenario:</strong><br>
+            User starts as <span class="highlight">Member</span> (Level 1)<br>
+            → Gets 10 direct + 10 team → Auto-promoted to <span class="highlight">Active Member</span><br>
+            → Gets 20 direct + 100 team → Auto-promoted to <span class="highlight">Team Leader</span><br>
+            → Gets 40 direct + 700 team → Auto-promoted to <span class="highlight">Area Coordinator</span><br>
+            → And so on up to State Coordinator...
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>🔧 Technical Implementation</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div>
+                <h3>✅ Updated Components</h3>
+                <ul>
+                    <li><strong>RoleModel:</strong> 9-level hierarchy defined</li>
+                    <li><strong>Cloud Functions:</strong> Complete role thresholds</li>
+                    <li><strong>ReferralChainService:</strong> Updated promotion logic</li>
+                    <li><strong>Stats Widgets:</strong> Enhanced progress calculation</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3>🎯 Key Features</h3>
+                <ul>
+                    <li><strong>Dual Requirements:</strong> Both direct AND team needed</li>
+                    <li><strong>Automatic Promotions:</strong> Real-time role updates</li>
+                    <li><strong>Progress Tracking:</strong> Shows what's needed next</li>
+                    <li><strong>Scalable Growth:</strong> From 10 to 3 million team</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>📊 What to Expect</h2>
+        <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px;">
+            <h3>🔍 During Testing:</h3>
+            <ol>
+                <li><strong>Registration:</strong> New users start as "Member" (Level 1)</li>
+                <li><strong>Referral Processing:</strong> Cloud Functions update entire upline</li>
+                <li><strong>Role Checking:</strong> System evaluates promotion eligibility</li>
+                <li><strong>Auto-Promotion:</strong> Users promoted when thresholds met</li>
+                <li><strong>Notifications:</strong> Users notified of role changes</li>
+            </ol>
+            
+            <h3>🎯 Success Indicators:</h3>
+            <ul>
+                <li>✅ Referral codes auto-fill correctly</li>
+                <li>✅ Stats update in real-time</li>
+                <li>✅ Role promotions happen automatically</li>
+                <li>✅ Progress bars show accurate requirements</li>
+                <li>✅ No orphan users (all assigned to admin)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-container" style="text-align: center;">
+        <h2>🏆 Complete Role System: DEPLOYED</h2>
+        <p style="font-size: 1.2em; margin: 20px 0;">
+            Talowa's complete 9-level role hierarchy is now live with automatic promotions!
+        </p>
+        <p style="opacity: 0.8;">
+            <strong>Live URL:</strong> https://talowa.web.app<br>
+            <strong>Updated:</strong> August 28, 2025<br>
+            <strong>Status:</strong> ✅ Complete 9-Level System Active
+        </p>
+    </div>
+
+    <script>
+        // Add visual feedback for test buttons
+        document.querySelectorAll('.test-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.background = 'linear-gradient(45deg, #FF6B6B, #FF5252)';
+                this.innerHTML = '🚀 Testing Complete Role System...';
+                setTimeout(() => {
+                    this.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+                    this.innerHTML = this.innerHTML.replace('🚀 Testing Complete Role System...', '🔗 Test Complete Role System');
+                }, 3000);
+            });
+        });
+
+        // Add animation to role cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.role-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

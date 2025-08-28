@@ -21,7 +21,7 @@ class RoleModel {
   });
 }
 
-// Talowa Role Definitions (Simplified from BSS's 9 levels to 3 levels)
+// Talowa Role Definitions (Complete 9-level hierarchy)
 class TalowaRoles {
   static const List<RoleModel> roles = [
     RoleModel(
@@ -42,19 +42,67 @@ class TalowaRoles {
     ),
     RoleModel(
       level: 2,
-      name: 'Volunteer',
-      icon: Icons.star,
-      directReferralsNeeded: 5, // Need 5 direct referrals
-      teamReferralsNeeded: 0,
-      color: Colors.orange,
+      name: 'Active Member',
+      icon: Icons.person_outline,
+      directReferralsNeeded: 10,
+      teamReferralsNeeded: 10,
+      color: Colors.lightBlue,
     ),
     RoleModel(
       level: 3,
-      name: 'Leader',
+      name: 'Team Leader',
       icon: Icons.groups,
-      directReferralsNeeded: 0,
-      teamReferralsNeeded: 50, // Need 50 team members
+      directReferralsNeeded: 20,
+      teamReferralsNeeded: 100,
       color: Colors.green,
+    ),
+    RoleModel(
+      level: 4,
+      name: 'Area Coordinator',
+      icon: Icons.location_city,
+      directReferralsNeeded: 40,
+      teamReferralsNeeded: 700,
+      color: Colors.orange,
+    ),
+    RoleModel(
+      level: 5,
+      name: 'Mandal Coordinator',
+      icon: Icons.account_balance,
+      directReferralsNeeded: 80,
+      teamReferralsNeeded: 6000,
+      color: Colors.deepOrange,
+    ),
+    RoleModel(
+      level: 6,
+      name: 'Constituency Coordinator',
+      icon: Icons.business,
+      directReferralsNeeded: 160,
+      teamReferralsNeeded: 50000,
+      color: Colors.red,
+    ),
+    RoleModel(
+      level: 7,
+      name: 'District Coordinator',
+      icon: Icons.domain,
+      directReferralsNeeded: 320,
+      teamReferralsNeeded: 500000,
+      color: Colors.indigo,
+    ),
+    RoleModel(
+      level: 8,
+      name: 'Zonal Coordinator',
+      icon: Icons.public,
+      directReferralsNeeded: 500,
+      teamReferralsNeeded: 1000000,
+      color: Colors.deepPurple,
+    ),
+    RoleModel(
+      level: 9,
+      name: 'State Coordinator',
+      icon: Icons.flag,
+      directReferralsNeeded: 1000,
+      teamReferralsNeeded: 3000000,
+      color: Colors.amber,
     ),
   ];
 

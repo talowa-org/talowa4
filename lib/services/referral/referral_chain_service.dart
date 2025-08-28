@@ -133,20 +133,37 @@ class ReferralChainService {
       // Skip admin users
       if (currentRoleLevel == 0) return;
 
-      // Determine the highest eligible role
+      // Determine the highest eligible role using Talowa's complete hierarchy
       int newRoleLevel = currentRoleLevel;
       String newRoleName = userData['role'] as String? ?? AppConstants.roleMember;
 
-      // Check for Volunteer promotion (5 direct referrals)
-      if (currentRoleLevel < 2 && directReferrals >= 5) {
-        newRoleLevel = 2;
-        newRoleName = 'Volunteer';
-      }
+      // Define Talowa role thresholds (in descending order for highest eligible role)
+      final roleThresholds = [
+        {'level': 9, 'name': 'State Coordinator', 'direct': 1000, 'team': 3000000},
+        {'level': 8, 'name': 'Zonal Coordinator', 'direct': 500, 'team': 1000000},
+        {'level': 7, 'name': 'District Coordinator', 'direct': 320, 'team': 500000},
+        {'level': 6, 'name': 'Constituency Coordinator', 'direct': 160, 'team': 50000},
+        {'level': 5, 'name': 'Mandal Coordinator', 'direct': 80, 'team': 6000},
+        {'level': 4, 'name': 'Area Coordinator', 'direct': 40, 'team': 700},
+        {'level': 3, 'name': 'Team Leader', 'direct': 20, 'team': 100},
+        {'level': 2, 'name': 'Active Member', 'direct': 10, 'team': 10},
+        {'level': 1, 'name': 'Member', 'direct': 0, 'team': 0},
+      ];
 
-      // Check for Leader promotion (50 team referrals)
-      if (currentRoleLevel < 3 && teamReferrals >= 50) {
-        newRoleLevel = 3;
-        newRoleName = 'Leader';
+      // Find the highest eligible role
+      for (final role in roleThresholds) {
+        final directRequired = role['direct'] as int;
+        final teamRequired = role['team'] as int;
+        final roleLevel = role['level'] as int;
+        
+        final meetsDirect = directReferrals >= directRequired;
+        final meetsTeam = teamReferrals >= teamRequired;
+
+        if (meetsDirect && meetsTeam && roleLevel > currentRoleLevel) {
+          newRoleLevel = roleLevel;
+          newRoleName = role['name'] as String;
+          break; // Found the highest eligible role
+        }
       }
 
       // Update role if promotion is warranted
