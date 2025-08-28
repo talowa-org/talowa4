@@ -322,7 +322,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test analytics error';
-        final exception = const AnalyticsReportingException(message);
+        const exception = AnalyticsReportingException(message);
 
         expect(exception.code, equals('ANALYTICS_REPORTING_FAILED'));
         expect(exception.context, isNull);

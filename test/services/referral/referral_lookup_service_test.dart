@@ -347,7 +347,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test error';
-        final exception = const InvalidReferralCodeException(message);
+        const exception = InvalidReferralCodeException(message);
         
         expect(exception.code, equals('INVALID_REFERRAL_CODE'));
         expect(exception.context, isNull);

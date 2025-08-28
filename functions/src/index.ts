@@ -4,5 +4,8 @@ import * as admin from 'firebase-admin';
 // Initialize Firebase Admin SDK
 admin.initializeApp();
 
+// Export referral system functions
+export { processReferral, autoPromoteUser, fixOrphanedUsers } from './referral-system';
+
 // Export existing functions (if any)
 // Add your production-ready functions here

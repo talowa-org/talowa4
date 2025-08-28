@@ -513,7 +513,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test monitoring error';
-        final exception = const MonitoringException(message);
+        const exception = MonitoringException(message);
 
         expect(exception.code, equals('MONITORING_FAILED'));
         expect(exception.context, isNull);

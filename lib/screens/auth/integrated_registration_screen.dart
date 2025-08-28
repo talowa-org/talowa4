@@ -865,6 +865,8 @@ class _IntegratedRegistrationScreenState
             address: userAddress,
             directReferrals: 0,
             teamSize: 0,
+            teamReferrals: 0, // New field for BSS compatibility
+            currentRoleLevel: 1, // Start as Member (level 1)
             membershipPaid: false,
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),

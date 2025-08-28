@@ -360,7 +360,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test fraud prevention error';
-        final exception = const FraudPreventionException(message);
+        const exception = FraudPreventionException(message);
 
         expect(exception.code, equals('FRAUD_PREVENTION_FAILED'));
         expect(exception.context, isNull);

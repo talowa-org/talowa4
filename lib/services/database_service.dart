@@ -8,6 +8,7 @@ import '../models/user_model.dart';
 import '../models/land_record_model.dart';
 import 'referral/referral_code_generator.dart';
 import '../models/message_model.dart';
+import 'referral/referral_chain_service.dart';
 
 class DatabaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -93,10 +94,24 @@ class DatabaseService {
         return;
       }
 
+      // Create the user profile
       await _firestore
           .collection(AppConstants.collectionUsers)
           .doc(user.id)
           .set(user.toFirestore());
+
+      // Process referral chain after user creation (BSS integration)
+      try {
+        await ReferralChainService.processNewUserReferral(
+          newUserId: user.id,
+          referralCode: user.referredBy,
+        );
+        debugPrint('✅ Referral chain processed for user: ${user.fullName}');
+      } catch (e) {
+        debugPrint('⚠️ Referral chain processing failed (non-critical): $e');
+        // Don't throw - user creation should succeed even if referral processing fails
+      }
+
     } catch (e) {
       debugPrint('Error creating user profile: $e');
       throw Exception('Failed to create user profile');

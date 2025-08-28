@@ -356,7 +356,7 @@ void main() {
 
       test('should fail validation for incomplete village targeting', () {
         // Arrange
-        final targeting = const GeographicTargeting(
+        const targeting = GeographicTargeting(
           village: 'रामपुर',
           // Missing mandal, district, state
           scope: TargetingScope.village,
@@ -386,7 +386,7 @@ void main() {
 
       test('should fail validation for invalid radius', () {
         // Arrange
-        final targeting = const GeographicTargeting(
+        const targeting = GeographicTargeting(
           centerPoint: GeoPoint(23.3441, 85.3096),
           radiusKm: 1500.0, // Exceeds 1000km limit
           scope: TargetingScope.radius,
@@ -402,7 +402,7 @@ void main() {
 
       test('should fail validation for missing radius data', () {
         // Arrange
-        final targeting = const GeographicTargeting(
+        const targeting = GeographicTargeting(
           // Missing centerPoint and radiusKm
           scope: TargetingScope.radius,
         );

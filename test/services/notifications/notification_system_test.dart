@@ -223,7 +223,7 @@ void main() {
 
     group('NotificationModel', () {
       test('should create notification from remote message', () {
-        final remoteMessage = const RemoteMessage(
+        const remoteMessage = RemoteMessage(
           messageId: 'msg_123',
           notification: RemoteNotification(
             title: 'Test Title',

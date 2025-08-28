@@ -420,7 +420,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test recognition error';
-        final exception = const RecognitionRetentionException(message);
+        const exception = RecognitionRetentionException(message);
 
         expect(exception.code, equals('RECOGNITION_RETENTION_FAILED'));
         expect(exception.context, isNull);

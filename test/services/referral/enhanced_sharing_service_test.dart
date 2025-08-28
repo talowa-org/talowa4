@@ -141,7 +141,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test sharing error';
-        final exception = const SharingException(message);
+        const exception = SharingException(message);
 
         expect(exception.code, equals('SHARING_FAILED'));
         expect(exception.context, isNull);

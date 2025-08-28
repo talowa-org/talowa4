@@ -96,7 +96,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test error';
-        final exception = const ReferralCodeGenerationException(message);
+        const exception = ReferralCodeGenerationException(message);
         
         expect(exception.code, equals('CODE_GENERATION_FAILED'));
         expect(exception.context, isNull);

@@ -324,7 +324,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test performance error';
-        final exception = const PerformanceOptimizationException(message);
+        const exception = PerformanceOptimizationException(message);
 
         expect(exception.code, equals('PERFORMANCE_OPTIMIZATION_FAILED'));
         expect(exception.context, isNull);

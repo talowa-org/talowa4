@@ -249,7 +249,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test payment error';
-        final exception = const PaymentIntegrationException(message);
+        const exception = PaymentIntegrationException(message);
 
         expect(exception.code, equals('PAYMENT_INTEGRATION_FAILED'));
         expect(exception.context, isNull);

@@ -338,7 +338,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test notification error';
-        final exception = const NotificationCommunicationException(message);
+        const exception = NotificationCommunicationException(message);
 
         expect(exception.code, equals('NOTIFICATION_COMMUNICATION_FAILED'));
         expect(exception.context, isNull);

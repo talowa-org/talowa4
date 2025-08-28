@@ -68,7 +68,7 @@ class ReferralCodeGenerator {
 
         // If we're on the last attempt, use simple fallback without scary logs
         if (attempts >= MAX_ATTEMPTS) {
-          final simpleCode = '${PREFIX}${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+          final simpleCode = '$PREFIX${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
           debugPrint('⚠️ Using simple fallback code: $simpleCode');
           return simpleCode;
         }
@@ -76,7 +76,7 @@ class ReferralCodeGenerator {
     }
 
     // Final simple fallback
-    final finalCode = '${PREFIX}${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    final finalCode = '$PREFIX${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
     debugPrint('⚠️ Using final fallback code: $finalCode');
     return finalCode;
   }
@@ -240,7 +240,7 @@ class ReferralCodeGenerator {
       // Get current user UID for Firestore rules compliance
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
-        throw ReferralCodeGenerationException(
+        throw const ReferralCodeGenerationException(
           'User must be authenticated to reserve referral code',
           'USER_NOT_AUTHENTICATED'
         );

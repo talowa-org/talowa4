@@ -7,11 +7,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
-import '../../models/user_model.dart';
 import '../../models/address.dart' as address_model;
-import '../../services/unified_auth_service.dart';
-import '../../services/database_service.dart';
-import '../../services/web_payment_service.dart';
 import '../../services/auth_policy.dart';
 import '../../services/backend.dart';
 

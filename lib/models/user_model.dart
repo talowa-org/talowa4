@@ -15,7 +15,9 @@ class UserModel {
   final String? referredBy;
   final Address address;
   final int directReferrals;
-  final int teamSize;
+  final int teamSize; // This will be renamed to teamReferrals for consistency with BSS
+  final int teamReferrals; // New field for BSS compatibility
+  final int currentRoleLevel; // New field for role level tracking
   final bool membershipPaid;
   final String? paymentTransactionId;
   final DateTime createdAt;
@@ -37,6 +39,8 @@ class UserModel {
     required this.address,
     required this.directReferrals,
     required this.teamSize,
+    required this.teamReferrals,
+    required this.currentRoleLevel,
     required this.membershipPaid,
     this.paymentTransactionId,
     required this.createdAt,
@@ -63,6 +67,8 @@ class UserModel {
       address: Address.fromMap(data['address'] ?? {}),
       directReferrals: data['directReferrals'] ?? 0,
       teamSize: data['teamSize'] ?? 0,
+      teamReferrals: data['teamReferrals'] ?? data['teamSize'] ?? 0, // Use teamSize as fallback
+      currentRoleLevel: data['currentRoleLevel'] ?? 1, // Default to Member level
       membershipPaid: data['membershipPaid'] ?? false,
       paymentTransactionId: data['paymentTransactionId'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -87,6 +93,8 @@ class UserModel {
       'address': address.toMap(),
       'directReferrals': directReferrals,
       'teamSize': teamSize,
+      'teamReferrals': teamReferrals,
+      'currentRoleLevel': currentRoleLevel,
       'membershipPaid': membershipPaid,
       'paymentTransactionId': paymentTransactionId,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -114,6 +122,8 @@ class UserModel {
       'address': address.toMap(),
       'directReferrals': directReferrals,
       'teamSize': teamSize,
+      'teamReferrals': teamReferrals,
+      'currentRoleLevel': currentRoleLevel,
       'membershipPaid': membershipPaid,
       'paymentTransactionId': paymentTransactionId,
       'createdAt': createdAt.toIso8601String(),
@@ -138,6 +148,8 @@ class UserModel {
       address: Address.fromMap(Map<String, dynamic>.from(map['address'] ?? {})),
       directReferrals: map['directReferrals'] ?? 0,
       teamSize: map['teamSize'] ?? 0,
+      teamReferrals: map['teamReferrals'] ?? map['teamSize'] ?? 0,
+      currentRoleLevel: map['currentRoleLevel'] ?? 1,
       membershipPaid: map['membershipPaid'] ?? false,
       paymentTransactionId: map['paymentTransactionId'],
       createdAt: DateTime.parse(
@@ -171,6 +183,8 @@ class UserModel {
     Address? address,
     int? directReferrals,
     int? teamSize,
+    int? teamReferrals,
+    int? currentRoleLevel,
     bool? membershipPaid,
     String? paymentTransactionId,
     DateTime? updatedAt,
@@ -190,6 +204,8 @@ class UserModel {
       address: address ?? this.address,
       directReferrals: directReferrals ?? this.directReferrals,
       teamSize: teamSize ?? this.teamSize,
+      teamReferrals: teamReferrals ?? this.teamReferrals,
+      currentRoleLevel: currentRoleLevel ?? this.currentRoleLevel,
       membershipPaid: membershipPaid ?? this.membershipPaid,
       paymentTransactionId: paymentTransactionId ?? this.paymentTransactionId,
       createdAt: createdAt,

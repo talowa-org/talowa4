@@ -358,7 +358,7 @@ void main() {
 
       test('should use default code when not provided', () {
         const message = 'Test chain error';
-        final exception = const ReferralChainException(message);
+        const exception = ReferralChainException(message);
 
         expect(exception.code, equals('REFERRAL_CHAIN_FAILED'));
         expect(exception.context, isNull);

@@ -136,7 +136,7 @@ Future<void> testLoginAuthentication() async {
 
   // Test that both AuthService and HybridAuthService use same PIN hashing
   const testPin = '123456';
-  final hashedPin = 'talowa_${testPin}_secure';
+  const hashedPin = 'talowa_${testPin}_secure';
 
   // Verify both services use the same hashing
   print('   📋 Verified: AuthService uses PIN hashing: $hashedPin');

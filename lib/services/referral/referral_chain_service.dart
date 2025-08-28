@@ -1,287 +1,295 @@
+// Referral Chain Service for Talowa
+// Implements BSS webapp referral chain logic in Flutter
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import '../database_service.dart';
+import '../../models/user_model.dart';
+import '../../core/constants/app_constants.dart';
 
-/// Exception thrown when referral chain operations fail
-class ReferralChainException implements Exception {
-  final String message;
-  final String code;
-  final Map<String, dynamic>? context;
-  
-  const ReferralChainException(this.message, [this.code = 'REFERRAL_CHAIN_FAILED', this.context]);
-  
-  @override
-  String toString() => 'ReferralChainException: $message';
-}
-
-/// Service for managing referral chains and calculating statistics
 class ReferralChainService {
-  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
-  /// For testing purposes - allows injection of fake firestore
-  static void setFirestoreInstance(FirebaseFirestore firestore) {
-    _firestore = firestore;
+  /// Process referral chain when a new user registers
+  /// Adapted from BSS processReferral function
+  static Future<void> processNewUserReferral({
+    required String newUserId,
+    required String? referralCode,
+  }) async {
+    try {
+      debugPrint('🔍 Processing referral for new user: $newUserId');
+      debugPrint('   Referral code: ${referralCode ?? "null"}');
+
+      // Handle orphan users - assign to admin if no referrer
+      String? finalReferralCode = referralCode;
+      if (finalReferralCode == null || finalReferralCode.trim().isEmpty) {
+        debugPrint('❌ User has no referral code. Assigning to admin.');
+        finalReferralCode = 'TALADMIN'; // Use Talowa admin code
+        
+        // Update the new user's document with admin referral code
+        await _firestore.collection('users').doc(newUserId).update({
+          'referredBy': finalReferralCode,
+        });
+        debugPrint('✅ Assigned user to admin with code: $finalReferralCode');
+      }
+
+      // Process the referral chain
+      await _updateReferralChain(
+        newUserId: newUserId,
+        referralCode: finalReferralCode,
+      );
+
+    } catch (e) {
+      debugPrint('❌ Error processing referral chain: $e');
+      // Don't throw - registration should succeed even if referral processing fails
+    }
   }
-  
-  /// Get direct referrals for a user
-  static Future<List<Map<String, dynamic>>> getDirectReferrals(String userId) async {
+
+  /// Update referral chain statistics
+  /// Adapted from BSS referral chain traversal logic
+  static Future<void> _updateReferralChain({
+    required String newUserId,
+    required String referralCode,
+  }) async {
+    debugPrint('🔗 Updating referral chain for code: $referralCode');
+
+    String? currentReferrerCode = referralCode;
+    bool isDirectReferral = true;
+    final WriteBatch batch = _firestore.batch();
+
+    try {
+      // Traverse up the referral chain
+      while (currentReferrerCode != null && currentReferrerCode.isNotEmpty) {
+        debugPrint('   Processing referrer code: $currentReferrerCode');
+
+        // Find the referrer by referral code
+        final referrerQuery = await _firestore
+            .collection('users')
+            .where('referralCode', isEqualTo: currentReferrerCode)
+            .limit(1)
+            .get();
+
+        if (referrerQuery.docs.isEmpty) {
+          debugPrint('⚠️ Referrer with code $currentReferrerCode not found. Stopping chain.');
+          break;
+        }
+
+        final referrerDoc = referrerQuery.docs.first;
+        final referrerData = referrerDoc.data();
+        final referrerDocRef = referrerDoc.reference;
+
+        debugPrint('   Found referrer: ${referrerData['fullName']} (${referrerDoc.id})');
+
+        if (isDirectReferral) {
+          // First person in chain gets both direct and team referral credit
+          batch.update(referrerDocRef, {
+            'directReferrals': FieldValue.increment(1),
+            'teamReferrals': FieldValue.increment(1),
+            'lastStatsUpdate': FieldValue.serverTimestamp(),
+          });
+          debugPrint('   ✅ Credited direct referral to ${referrerData['fullName']}');
+          isDirectReferral = false;
+        } else {
+          // Upline members only get team referral credit
+          batch.update(referrerDocRef, {
+            'teamReferrals': FieldValue.increment(1),
+            'lastStatsUpdate': FieldValue.serverTimestamp(),
+          });
+          debugPrint('   ✅ Credited team referral to ${referrerData['fullName']}');
+        }
+
+        // Stop if we reach admin (admin has no upline)
+        if (currentReferrerCode == 'TALADMIN') {
+          debugPrint('   🛑 Reached admin. Stopping chain traversal.');
+          break;
+        }
+
+        // Move to next person up the chain
+        currentReferrerCode = referrerData['referredBy'] as String?;
+      }
+
+      // Commit all updates in a single batch
+      await batch.commit();
+      debugPrint('✅ Successfully updated referral chain');
+
+    } catch (e) {
+      debugPrint('❌ Error updating referral chain: $e');
+      throw e;
+    }
+  }
+
+  /// Check and process role promotion for a user
+  /// This will be called by Cloud Functions when stats are updated
+  static Future<void> checkRolePromotion(String userId) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) {
-        return [];
-      }
-      
+      if (!userDoc.exists) return;
+
       final userData = userDoc.data()!;
-      final referralCode = userData['referralCode'] as String?;
-      
-      if (referralCode == null) {
-        return [];
+      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
+      final directReferrals = userData['directReferrals'] as int? ?? 0;
+      final teamReferrals = userData['teamReferrals'] as int? ?? 0;
+
+      // Skip admin users
+      if (currentRoleLevel == 0) return;
+
+      // Determine the highest eligible role
+      int newRoleLevel = currentRoleLevel;
+      String newRoleName = userData['role'] as String? ?? AppConstants.roleMember;
+
+      // Check for Volunteer promotion (5 direct referrals)
+      if (currentRoleLevel < 2 && directReferrals >= 5) {
+        newRoleLevel = 2;
+        newRoleName = 'Volunteer';
       }
-      
-      final query = await _firestore
-          .collection('users')
-          .where('referredBy', isEqualTo: referralCode)
-          .get();
-      
-      return query.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'fullName': data['fullName'] ?? 'Unknown',
-          'membershipPaid': data['membershipPaid'] ?? false,
-          'isActive': data['isActive'] ?? true,
-          'createdAt': data['createdAt'],
-          'referralCode': data['referralCode'],
-        };
-      }).toList();
-    } catch (e) {
-      throw ReferralChainException(
-        'Failed to get direct referrals for user $userId: $e',
-        'DIRECT_REFERRALS_FAILED',
-        {'userId': userId}
-      );
-    }
-  }
-  
-  /// Calculate team size (all downline users)
-  static Future<int> calculateTeamSize(String userId) async {
-    try {
-      final query = await _firestore
-          .collection('users')
-          .where('referralChain', arrayContains: userId)
-          .get();
-      
-      return query.docs.length;
-    } catch (e) {
-      throw ReferralChainException(
-        'Failed to calculate team size for user $userId: $e',
-        'TEAM_SIZE_CALCULATION_FAILED',
-        {'userId': userId}
-      );
-    }
-  }
-  
-  /// Calculate active team size (paid members only)
-  static Future<int> calculateActiveTeamSize(String userId) async {
-    try {
-      final query = await _firestore
-          .collection('users')
-          .where('referralChain', arrayContains: userId)
-          .where('membershipPaid', isEqualTo: true)
-          .get();
-      
-      return query.docs.length;
-    } catch (e) {
-      throw ReferralChainException(
-        'Failed to calculate active team size for user $userId: $e',
-        'ACTIVE_TEAM_SIZE_CALCULATION_FAILED',
-        {'userId': userId}
-      );
-    }
-  }
-  
-  /// Get chain statistics for a user
-  static Future<Map<String, dynamic>> getChainStatistics(String userId) async {
-    try {
-      final directReferrals = await getDirectReferrals(userId);
-      final teamSize = await calculateTeamSize(userId);
-      final activeTeamSize = await calculateActiveTeamSize(userId);
-      
-      final activeDirectReferrals = directReferrals
-          .where((user) => user['membershipPaid'] == true)
-          .length;
-      
-      // Calculate chain depth
-      final chainDepth = await _calculateChainDepth(userId);
-      
-      return {
-        'directReferrals': directReferrals.length,
-        'activeDirectReferrals': activeDirectReferrals,
-        'teamSize': teamSize,
-        'activeTeamSize': activeTeamSize,
-        'chainDepth': chainDepth,
-        'calculatedAt': DateTime.now().toIso8601String(),
-      };
-    } catch (e) {
-      throw ReferralChainException(
-        'Failed to get chain statistics for user $userId: $e',
-        'CHAIN_STATISTICS_FAILED',
-        {'userId': userId}
-      );
-    }
-  }
-  
-  /// Calculate the maximum depth of the referral chain
-  static Future<int> _calculateChainDepth(String userId) async {
-    try {
-      int maxDepth = 0;
-      
-      // Get all users in the chain
-      final query = await _firestore
-          .collection('users')
-          .where('referralChain', arrayContains: userId)
-          .get();
-      
-      for (final doc in query.docs) {
-        final data = doc.data();
-        final chain = List<String>.from(data['referralChain'] ?? []);
+
+      // Check for Leader promotion (50 team referrals)
+      if (currentRoleLevel < 3 && teamReferrals >= 50) {
+        newRoleLevel = 3;
+        newRoleName = 'Leader';
+      }
+
+      // Update role if promotion is warranted
+      if (newRoleLevel > currentRoleLevel) {
+        await userDoc.reference.update({
+          'role': newRoleName,
+          'currentRoleLevel': newRoleLevel,
+          'lastRoleUpdate': FieldValue.serverTimestamp(),
+        });
+
+        debugPrint('🎉 Promoted user ${userData['fullName']} to $newRoleName (level $newRoleLevel)');
         
-        // Find the position of current user in the chain
-        final userIndex = chain.indexOf(userId);
-        if (userIndex != -1) {
-          final depth = chain.length - userIndex;
-          if (depth > maxDepth) {
-            maxDepth = depth;
-          }
+        // TODO: Send promotion notification
+        await _sendPromotionNotification(userId, newRoleName);
+      }
+
+    } catch (e) {
+      debugPrint('❌ Error checking role promotion: $e');
+    }
+  }
+
+  /// Send promotion notification (placeholder)
+  static Future<void> _sendPromotionNotification(String userId, String newRole) async {
+    try {
+      // Add notification to user's notifications collection
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'type': 'promotion',
+        'title': 'Congratulations! 🎉',
+        'message': 'You have been promoted to $newRole!',
+        'read': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint('📧 Promotion notification sent for $newRole');
+    } catch (e) {
+      debugPrint('⚠️ Failed to send promotion notification: $e');
+    }
+  }
+
+  /// Fix orphaned users (assign them to admin)
+  /// Adapted from BSS fix-orphans functionality
+  static Future<int> fixOrphanedUsers() async {
+    try {
+      debugPrint('🔧 Starting orphan user fix...');
+
+      // Find users with no referrer
+      final orphanQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isNull: true)
+          .get();
+
+      if (orphanQuery.docs.isEmpty) {
+        debugPrint('✅ No orphaned users found');
+        return 0;
+      }
+
+      final WriteBatch batch = _firestore.batch();
+      int updateCount = 0;
+
+      for (final doc in orphanQuery.docs) {
+        final userData = doc.data();
+        
+        // Skip admin users
+        if (userData['role'] == 'Admin' || userData['referralCode'] == 'TALADMIN') {
+          continue;
         }
-      }
-      
-      return maxDepth;
-    } catch (e) {
-      return 0; // Return 0 if calculation fails
-    }
-  }
-  
-  /// Batch update statistics for multiple users
-  static Future<void> batchUpdateStatistics(List<String> userIds) async {
-    try {
-      final batch = _firestore.batch();
-      
-      for (final userId in userIds) {
-        final stats = await getChainStatistics(userId);
-        
-        final userRef = _firestore.collection('users').doc(userId);
-        batch.update(userRef, {
-          'directReferrals': stats['directReferrals'],
-          'activeDirectReferrals': stats['activeDirectReferrals'],
-          'teamSize': stats['teamSize'],
-          'activeTeamSize': stats['activeTeamSize'],
-          'chainDepth': stats['chainDepth'],
+
+        // Assign to admin
+        batch.update(doc.reference, {
+          'referredBy': 'TALADMIN',
           'lastStatsUpdate': FieldValue.serverTimestamp(),
         });
+        
+        updateCount++;
+        debugPrint('   Assigning ${userData['fullName']} to admin');
       }
-      
-      await batch.commit();
+
+      if (updateCount > 0) {
+        await batch.commit();
+        debugPrint('✅ Fixed $updateCount orphaned users');
+      }
+
+      return updateCount;
+
     } catch (e) {
-      throw ReferralChainException(
-        'Failed to batch update statistics: $e',
-        'BATCH_UPDATE_FAILED',
-        {'userIds': userIds}
-      );
+      debugPrint('❌ Error fixing orphaned users: $e');
+      return 0;
     }
   }
-  
-  /// Get referral chain for a user (upline)
-  static Future<List<Map<String, dynamic>>> getReferralChain(String userId) async {
+
+  /// Get referral statistics for a user
+  static Future<Map<String, dynamic>> getReferralStats(String userId) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) {
-        return [];
+        return {
+          'directReferrals': 0,
+          'teamReferrals': 0,
+          'currentRoleLevel': 1,
+          'role': AppConstants.roleMember,
+        };
       }
-      
+
       final userData = userDoc.data()!;
-      final chain = List<String>.from(userData['referralChain'] ?? []);
-      
-      final chainUsers = <Map<String, dynamic>>[];
-      
-      for (final chainUserId in chain) {
-        final chainUserDoc = await _firestore.collection('users').doc(chainUserId).get();
-        if (chainUserDoc.exists) {
-          final chainUserData = chainUserDoc.data()!;
-          chainUsers.add({
-            'id': chainUserId,
-            'fullName': chainUserData['fullName'] ?? 'Unknown',
-            'currentRole': chainUserData['currentRole'] ?? 'member',
-            'referralCode': chainUserData['referralCode'],
-          });
-        }
-      }
-      
-      return chainUsers;
+      return {
+        'directReferrals': userData['directReferrals'] ?? 0,
+        'teamReferrals': userData['teamReferrals'] ?? 0,
+        'currentRoleLevel': userData['currentRoleLevel'] ?? 1,
+        'role': userData['role'] ?? AppConstants.roleMember,
+        'referralCode': userData['referralCode'] ?? '',
+        'referredBy': userData['referredBy'],
+      };
+
     } catch (e) {
-      throw ReferralChainException(
-        'Failed to get referral chain for user $userId: $e',
-        'REFERRAL_CHAIN_RETRIEVAL_FAILED',
-        {'userId': userId}
-      );
+      debugPrint('❌ Error getting referral stats: $e');
+      return {
+        'directReferrals': 0,
+        'teamReferrals': 0,
+        'currentRoleLevel': 1,
+        'role': AppConstants.roleMember,
+      };
     }
   }
-  
-  /// Get all downline users for a user
-  static Future<List<Map<String, dynamic>>> getDownlineUsers(String userId, {int? maxDepth}) async {
+
+  /// Validate referral code exists and is active
+  static Future<bool> validateReferralCode(String referralCode) async {
     try {
-      Query query = _firestore
+      if (referralCode.trim().isEmpty) return false;
+
+      final query = await _firestore
           .collection('users')
-          .where('referralChain', arrayContains: userId);
-      
-      final results = await query.get();
-      
-      final downlineUsers = <Map<String, dynamic>>[];
-      
-      for (final doc in results.docs) {
-        final data = doc.data() as Map<String, dynamic>;
-        final chain = List<String>.from(data['referralChain'] ?? []);
-        
-        // Calculate depth from current user
-        final userIndex = chain.indexOf(userId);
-        if (userIndex != -1) {
-          final depth = chain.length - userIndex;
-          
-          // Apply max depth filter if specified
-          if (maxDepth != null && depth > maxDepth) {
-            continue;
-          }
-          
-          downlineUsers.add({
-            'id': doc.id,
-            'fullName': data['fullName'] ?? 'Unknown',
-            'currentRole': data['currentRole'] ?? 'member',
-            'membershipPaid': data['membershipPaid'] ?? false,
-            'depth': depth,
-            'referralCode': data['referralCode'],
-            'createdAt': data['createdAt'],
-          });
-        }
-      }
-      
-      // Sort by depth and then by creation date
-      downlineUsers.sort((a, b) {
-        final depthComparison = (a['depth'] as int).compareTo(b['depth'] as int);
-        if (depthComparison != 0) return depthComparison;
-        
-        final aDate = a['createdAt'] as Timestamp?;
-        final bDate = b['createdAt'] as Timestamp?;
-        if (aDate != null && bDate != null) {
-          return bDate.compareTo(aDate); // Newest first
-        }
-        return 0;
-      });
-      
-      return downlineUsers;
+          .where('referralCode', isEqualTo: referralCode.trim().toUpperCase())
+          .limit(1)
+          .get();
+
+      return query.docs.isNotEmpty;
     } catch (e) {
-      throw ReferralChainException(
-        'Failed to get downline users for user $userId: $e',
-        'DOWNLINE_USERS_FAILED',
-        {'userId': userId, 'maxDepth': maxDepth}
-      );
+      debugPrint('❌ Error validating referral code: $e');
+      return false;
     }
   }
 }

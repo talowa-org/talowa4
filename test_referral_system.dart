@@ -196,7 +196,7 @@ Future<void> testLinkGeneration() async {
   print('\n🔗 Test 5: Link Generation');
   print('--------------------------');
   
-  final testCode = 'TAL1234567';
+  const testCode = 'TAL1234567';
   
   // Test regular link
   final regularLink = CloudReferralService.generateReferralLink(testCode);
