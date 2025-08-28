@@ -98,9 +98,11 @@ class AuthService {
         // Update existing user's password for PIN-based login
         try {
           await user.updatePassword(_hashPin(pin));
-          debugPrint('Updated existing user password for PIN-based login');
+          // Updated existing user password for PIN-based login
         } catch (e) {
-          debugPrint('Warning: Could not update user password: $e');
+          if (kDebugMode) {
+            debugPrint('Warning: Could not update user password: $e');
+          }
           // Continue with registration even if password update fails
         }
       }
@@ -131,7 +133,7 @@ class AuthService {
           referralCode: generatedReferralCode, // Pass the already generated referral code
         );
       } else {
-        debugPrint('User profile already exists for UID: ${user.uid}');
+        // User profile already exists
       }
 
       // Get the created user profile

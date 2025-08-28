@@ -78,7 +78,9 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
           }
         });
       } catch (e) {
-        debugPrint('Error analyzing harassment pattern: $e');
+        if (kDebugMode) {
+          debugPrint('Error analyzing harassment pattern: $e');
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 // AI Assistant Widget for TALOWA
 // Implements ChatGPT-style interface with voice + text input
 // Voice + Text interface in local languages
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -267,7 +268,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
   void _logClientAnalytics(String query, AIResponse response, bool isVoice, int latencyMs) {
     try {
       // Lightweight client-side analytics logging
-      debugPrint('AI Analytics: Query processed in ${latencyMs}ms, confidence: ${response.confidence}, actions: ${response.actions.length}');
+      if (kDebugMode) {
+        debugPrint('AI Analytics: Query processed in ${latencyMs}ms, confidence: ${response.confidence}, actions: ${response.actions.length}');
+      }
       
       // Could extend this to log to Firebase Analytics or other services
       // FirebaseAnalytics.instance.logEvent(name: 'ai_query_processed', parameters: {
@@ -279,13 +282,17 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       //   'response_length': response.text.length,
       // });
     } catch (e) {
-      debugPrint('Error logging client analytics: $e');
+      if (kDebugMode) {
+        debugPrint('Error logging client analytics: $e');
+      }
     }
   }
 
   void _logErrorAnalytics(String query, String error, bool isVoice, int latencyMs) {
     try {
-      debugPrint('AI Error Analytics: Query failed in ${latencyMs}ms, error: $error');
+      if (kDebugMode) {
+        debugPrint('AI Error Analytics: Query failed in ${latencyMs}ms, error: $error');
+      }
       
       // Could extend this to log errors to crash reporting services
       // FirebaseCrashlytics.instance.recordError(error, null, information: [
@@ -295,7 +302,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
       //   'Latency: ${latencyMs}ms',
       // ]);
     } catch (e) {
-      debugPrint('Error logging error analytics: $e');
+      if (kDebugMode) {
+        debugPrint('Error logging error analytics: $e');
+      }
     }
   }
 
@@ -325,7 +334,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     if (route == null || route.trim().isEmpty) return;
 
     try {
-      debugPrint('AI navigation request: $route');
+      if (kDebugMode) {
+        debugPrint('AI navigation request: $route');
+      }
 
       switch (route) {
         case '/home':
@@ -394,7 +405,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           });
       }
     } catch (e) {
-      debugPrint('Navigation failed for $route: $e');
+      if (kDebugMode) {
+        debugPrint('Navigation failed for $route: $e');
+      }
       _showNavigationFeedback('Could not navigate. Please try again.');
     }
   }
@@ -405,7 +418,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
     final mainNavState = context.findAncestorStateOfType<State>();
     if (mainNavState != null && mainNavState.widget.runtimeType.toString() == '_MainNavigationScreenState') {
       // Use reflection or callback to update tab
-      debugPrint('Attempting to navigate to tab $tabIndex');
+      if (kDebugMode) {
+        debugPrint('Attempting to navigate to tab $tabIndex');
+      }
     }
   }
 
@@ -433,7 +448,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         );
       }
     } catch (e) {
-      debugPrint('Call launch failed for $phone: $e');
+      if (kDebugMode) {
+        debugPrint('Call launch failed for $phone: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not open dialer.')),
@@ -457,7 +474,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
         _showShareFeedback('Content shared successfully!');
       }
     } catch (e) {
-      debugPrint('System share failed, falling back to clipboard: $e');
+      if (kDebugMode) {
+        debugPrint('System share failed, falling back to clipboard: $e');
+      }
       
       // Fallback to clipboard
       try {
@@ -466,7 +485,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
           _showShareFeedback('Copied to clipboard - you can paste it anywhere!');
         }
       } catch (clipboardError) {
-        debugPrint('Clipboard fallback failed: $clipboardError');
+        if (kDebugMode) {
+          debugPrint('Clipboard fallback failed: $clipboardError');
+        }
         if (mounted) {
           _showShareFeedback('Could not share content. Please try again.');
         }
@@ -513,13 +534,19 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget>
               _suggestionsHidden = false;
             }
           });
-          debugPrint('Updated suggestions: ${normalized.length} items');
+          if (kDebugMode) {
+            debugPrint('Updated suggestions: ${normalized.length} items');
+          }
         }
       } else {
-        debugPrint('Invalid suggestions format received: ${raw.runtimeType}');
+        if (kDebugMode) {
+          debugPrint('Invalid suggestions format received: ${raw.runtimeType}');
+        }
       }
     } catch (e) {
-      debugPrint('Error handling suggestions: $e');
+      if (kDebugMode) {
+        debugPrint('Error handling suggestions: $e');
+      }
       // Don't crash the UI if suggestions fail
     }
   }

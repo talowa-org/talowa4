@@ -50,7 +50,6 @@ class UniversalLinkService {
       if (!kIsWeb) {
         // Mobile platform initialization would go here
         // For now, we'll handle web-specific initialization
-        debugPrint('Universal links not supported on web platform');
       } else {
         // Web platform - check URL parameters
         await _handleWebInitialLink();

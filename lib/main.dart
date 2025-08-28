@@ -40,7 +40,7 @@ void main() async {
   
   // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  debugPrint('✅ Firebase initialized successfully');
+  // Firebase initialized successfully
 
   // Initialize localization service
   // await LocalizationService.initialize();
@@ -65,7 +65,9 @@ void main() async {
   try {
     await BootstrapService.bootstrap();
   } catch (e) {
-    debugPrint('⚠️ Bootstrap failed, but app will continue: $e');
+    if (kDebugMode) {
+      debugPrint('Bootstrap failed, but app will continue: $e');
+    }
     // Don't let bootstrap failures prevent app startup
   }
 
@@ -84,16 +86,20 @@ void main() async {
     try {
       await NotificationService.initialize();
     } catch (e) {
-      debugPrint('Failed to initialize notification system: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to initialize notification system: $e');
+      }
     }
   }
 
   // Initialize Universal Link Service for referral code handling
   try {
     await UniversalLinkService.initialize();
-    debugPrint('✅ Universal Link Service initialized');
+    // Universal Link Service initialized
   } catch (e) {
-    debugPrint('⚠️ Failed to initialize Universal Link Service: $e');
+    if (kDebugMode) {
+      debugPrint('Failed to initialize Universal Link Service: $e');
+    }
   }
 
   runApp(const TalowaApp());
@@ -121,7 +127,7 @@ class _TalowaAppState extends State<TalowaApp> {
         final referralCode = currentUrl.queryParameters['ref'];
         if (referralCode != null && referralCode.trim().isNotEmpty) {
           final cleanCode = referralCode.trim().toUpperCase();
-          debugPrint('🔗 App started with referral code: $cleanCode');
+          // App started with referral code - stored for registration
           
           // Store the referral code for later use (don't consume it here)
           UniversalLinkService.setPendingReferralCode(cleanCode);
@@ -129,13 +135,15 @@ class _TalowaAppState extends State<TalowaApp> {
           // Navigate directly to registration if we have a referral code
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              debugPrint('🚀 Navigating to registration with referral code: $cleanCode');
+              // Navigating to registration with referral code
               Navigator.of(context).pushNamed('/register');
             }
           });
         }
       } catch (e) {
-        debugPrint('⚠️ Error handling initial referral code: $e');
+        if (kDebugMode) {
+          debugPrint('Error handling initial referral code: $e');
+        }
       }
     }
   }

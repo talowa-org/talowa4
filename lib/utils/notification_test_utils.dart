@@ -10,7 +10,9 @@ class NotificationTestUtils {
   /// Send test notification for different scenarios
   static Future<void> sendTestNotification(NotificationTemplateType templateType) async {
     try {
-      debugPrint('NotificationTestUtils: Sending test notification: $templateType');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Sending test notification: $templateType');
+      }
 
       Map<String, dynamic> testData;
       
@@ -87,9 +89,13 @@ class NotificationTestUtils {
       // Show the notification locally
       await NotificationService.showLocalNotification(notification);
 
-      debugPrint('NotificationTestUtils: Test notification sent successfully');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Test notification sent successfully');
+      }
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error sending test notification: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error sending test notification: $e');
+      }
       rethrow;
     }
   }
@@ -97,7 +103,9 @@ class NotificationTestUtils {
   /// Send multiple test notifications to test batching
   static Future<void> sendBatchTestNotifications() async {
     try {
-      debugPrint('NotificationTestUtils: Sending batch test notifications');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Sending batch test notifications');
+      }
 
       // Send multiple like notifications to test batching
       for (int i = 0; i < 5; i++) {
@@ -111,9 +119,13 @@ class NotificationTestUtils {
         await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      debugPrint('NotificationTestUtils: Batch test notifications sent');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Batch test notifications sent');
+      }
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error sending batch test notifications: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error sending batch test notifications: $e');
+      }
       rethrow;
     }
   }
@@ -121,13 +133,19 @@ class NotificationTestUtils {
   /// Test emergency notification (should bypass batching and quiet hours)
   static Future<void> sendEmergencyTest() async {
     try {
-      debugPrint('NotificationTestUtils: Sending emergency test notification');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Sending emergency test notification');
+      }
 
       await sendTestNotification(NotificationTemplateType.emergencyAlert);
 
-      debugPrint('NotificationTestUtils: Emergency test notification sent');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Emergency test notification sent');
+      }
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error sending emergency test: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error sending emergency test: $e');
+      }
       rethrow;
     }
   }
@@ -135,7 +153,9 @@ class NotificationTestUtils {
   /// Test quiet hours functionality
   static Future<void> testQuietHours() async {
     try {
-      debugPrint('NotificationTestUtils: Testing quiet hours functionality');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Testing quiet hours functionality');
+      }
 
       // Send low priority notification (should be batched during quiet hours)
       await sendTestNotification(NotificationTemplateType.postLike);
@@ -146,9 +166,13 @@ class NotificationTestUtils {
       // Send emergency notification (should always bypass quiet hours)
       await sendTestNotification(NotificationTemplateType.emergencyAlert);
 
-      debugPrint('NotificationTestUtils: Quiet hours test completed');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Quiet hours test completed');
+      }
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error testing quiet hours: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error testing quiet hours: $e');
+      }
       rethrow;
     }
   }
@@ -170,7 +194,9 @@ class NotificationTestUtils {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error getting system statistics: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error getting system statistics: $e');
+      }
       return {
         'error': e.toString(),
         'timestamp': DateTime.now().toIso8601String(),
@@ -206,11 +232,15 @@ class NotificationTestUtils {
         results['templateSystemWorking'] = false;
       }
 
-      debugPrint('NotificationTestUtils: System validation completed');
-      debugPrint('Results: $results');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: System validation completed');
+        debugPrint('Results: $results');
+      }
 
     } catch (e) {
-      debugPrint('NotificationTestUtils: Error validating system setup: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationTestUtils: Error validating system setup: $e');
+      }
       results['validationError'] = true;
     }
 
@@ -219,8 +249,6 @@ class NotificationTestUtils {
 
   /// Create sample notifications for different scenarios
   static List<NotificationModel> createSampleNotifications() {
-    final now = DateTime.now();
-    
     return [
       // Emergency notification
       NotificationTemplates.createFromTemplate(

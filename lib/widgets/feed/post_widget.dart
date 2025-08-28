@@ -882,17 +882,14 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
 
   void _reportPost() {
     // TODO: Implement report functionality
-    debugPrint('Reporting post: ${widget.post.id}');
   }
 
   void _hidePost() {
     // TODO: Implement hide functionality
-    debugPrint('Hiding post: ${widget.post.id}');
   }
 
   void _copyPostLink() {
     // TODO: Implement copy link functionality
-    debugPrint('Copying link for post: ${widget.post.id}');
   }
 
   void _onHashtagTap(String hashtag) {
@@ -906,7 +903,6 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
 
   void _onMentionTap(String username) {
     // Navigate to user profile
-    debugPrint('Tapped mention: $username');
     // TODO: Implement user profile navigation
     // Navigator.pushNamed(context, '/profile', arguments: username);
   }

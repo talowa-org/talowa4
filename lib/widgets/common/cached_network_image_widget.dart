@@ -1,6 +1,7 @@
 // Cached Network Image Widget for TALOWA
 // Implements Task 21: Performance optimization - Efficient Image Loading
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/performance/performance_optimization_service.dart';
@@ -339,7 +340,9 @@ class _ProgressiveImageWidgetState extends State<ProgressiveImageWidget> {
         });
       }
     }).catchError((error) {
-      debugPrint('Error preloading full image: $error');
+      if (kDebugMode) {
+        debugPrint('Error preloading full image: $error');
+      }
     });
   }
 }

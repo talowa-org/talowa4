@@ -9,12 +9,9 @@ class StatsRefreshService {
   /// Refresh stats for a user and check for promotions
   static Future<Map<String, dynamic>?> refreshUserStats(String userId) async {
     try {
-      debugPrint('🔄 Refreshing stats for user: $userId');
-
       // Get current user data
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) {
-        debugPrint('❌ User not found: $userId');
         return null;
       }
 
@@ -39,9 +36,6 @@ class StatsRefreshService {
         'promotionResult': promotionResult,
       };
 
-      debugPrint('✅ Stats refreshed for user: $userId');
-      debugPrint('   Direct: ${stats['directReferrals']}, Team: ${stats['teamReferrals']}, Role: ${stats['currentRole']}');
-
       return stats;
 
     } catch (e) {
@@ -53,8 +47,6 @@ class StatsRefreshService {
   /// Force refresh stats by recalculating from referral relationships
   static Future<Map<String, dynamic>?> forceRefreshStats(String userId) async {
     try {
-      debugPrint('🔄 Force refreshing stats for user: $userId');
-
       // Get user's referral code
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) return null;
@@ -63,7 +55,6 @@ class StatsRefreshService {
       final referralCode = userData['referralCode'] as String?;
       
       if (referralCode == null || referralCode.isEmpty) {
-        debugPrint('❌ User has no referral code');
         return null;
       }
 
@@ -111,9 +102,6 @@ class StatsRefreshService {
         'recalculated': true,
       };
 
-      debugPrint('✅ Force refresh completed for user: $userId');
-      debugPrint('   Direct: ${stats['directReferrals']}, Team: ${stats['teamReferrals']}, Role: ${stats['currentRole']}');
-
       return stats;
 
     } catch (e) {
@@ -149,20 +137,15 @@ class StatsRefreshService {
   /// Batch refresh stats for multiple users
   static Future<void> batchRefreshStats(List<String> userIds) async {
     try {
-      debugPrint('🔄 Batch refreshing stats for ${userIds.length} users');
-
       for (final userId in userIds) {
         try {
           await refreshUserStats(userId);
           // Small delay to avoid overwhelming the system
           await Future.delayed(const Duration(milliseconds: 100));
         } catch (e) {
-          debugPrint('⚠️ Failed to refresh stats for user $userId: $e');
           // Continue with other users
         }
       }
-
-      debugPrint('✅ Batch refresh completed');
 
     } catch (e) {
       debugPrint('❌ Error in batch refresh: $e');

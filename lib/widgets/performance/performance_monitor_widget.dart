@@ -347,13 +347,17 @@ class _PerformanceBenchmarkWidgetState extends State<PerformanceBenchmarkWidget>
         _benchmarkResult = '${widget.testName}: ${_stopwatch.elapsedMilliseconds}ms';
       });
       
-      debugPrint(_benchmarkResult);
+      if (kDebugMode) {
+        debugPrint(_benchmarkResult);
+      }
     } catch (e) {
       _stopwatch.stop();
       setState(() {
         _benchmarkResult = '${widget.testName}: Error - $e';
       });
-      debugPrint(_benchmarkResult);
+      if (kDebugMode) {
+        debugPrint(_benchmarkResult);
+      }
     }
   }
 

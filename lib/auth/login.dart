@@ -1,4 +1,5 @@
 // lib/login.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/unified_auth_service.dart';
 
@@ -29,9 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
         throw Exception('PIN must be 6 digits');
       }
 
-      debugPrint('=== LOGIN ATTEMPT ===');
-      debugPrint('Phone: $phoneRaw');
-      debugPrint('PIN: ${pin.length} digits');
+      // Login attempt - sensitive data not logged for security
 
       // Use UnifiedAuthService for consistent login
       final result = await UnifiedAuthService.loginUser(
@@ -42,14 +41,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (result.success) {
-        debugPrint('✅ Login successful');
         Navigator.of(context).pushReplacementNamed('/main');
       } else {
-        debugPrint('❌ Login failed: ${result.message}');
         setState(() { _error = result.message; });
       }
     } catch (e) {
-      debugPrint('❌ Login error: $e');
+      if (kDebugMode) {
+        debugPrint('Login error: $e');
+      }
       setState(() { _error = e.toString(); });
     } finally {
       if (mounted) setState(() { _busy = false; });

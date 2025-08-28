@@ -498,13 +498,14 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
     try {
       // TODO: Implement comment submission to Firestore
       // This would typically call a service method to create the comment
-      debugPrint('Submitting comment: $content for post: ${widget.postId}');
       
       // Simulate API call
       await Future.delayed(const Duration(seconds: 1));
       
     } catch (e) {
-      debugPrint('Error submitting comment: $e');
+      if (kDebugMode) {
+        debugPrint('Error submitting comment: $e');
+      }
       // Show error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -525,7 +526,6 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
 
   void _likeComment(String commentId) {
     // TODO: Implement comment liking
-    debugPrint('Liking comment: $commentId');
   }
 
   void _replyToComment(CommentModel comment) {
@@ -537,15 +537,12 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
     switch (action) {
       case 'report':
         // TODO: Implement comment reporting
-        debugPrint('Reporting comment: ${comment.id}');
         break;
       case 'edit':
         // TODO: Implement comment editing
-        debugPrint('Editing comment: ${comment.id}');
         break;
       case 'delete':
         // TODO: Implement comment deletion
-        debugPrint('Deleting comment: ${comment.id}');
         break;
     }
   }

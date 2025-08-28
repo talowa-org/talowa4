@@ -166,7 +166,9 @@ class _VoiceAssistantWidgetState extends State<VoiceAssistantWidget>
       widget.onQueryReceived(input);
       
     } catch (e) {
-      debugPrint('Error processing voice input: $e');
+      if (kDebugMode) {
+        debugPrint('Error processing voice input: $e');
+      }
       await _speak(_getErrorMessage());
     } finally {
       setState(() {

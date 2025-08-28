@@ -44,7 +44,6 @@ class ReferralCodeGenerator {
 
         // Validate format before checking uniqueness
         if (!_validateCodeFormat(code)) {
-          debugPrint('⚠️  Generated invalid format code: $code, retrying...');
           attempts++;
           continue;
         }
@@ -54,16 +53,13 @@ class ReferralCodeGenerator {
         if (isUnique) {
           try {
             await _reserveCode(code);
-            debugPrint('✅ Generated and reserved unique referral code: $code');
             return code;
           } catch (e) {
-            debugPrint('⚠️  Failed to reserve code $code: $e, but returning it anyway');
             return code; // Return the code even if reservation fails
           }
         }
         attempts++;
       } catch (e) {
-        debugPrint('⚠️  Error in generation attempt ${attempts + 1}: $e');
         attempts++;
 
         // If we're on the last attempt, use Crockford Base32 fallback (not timestamp)

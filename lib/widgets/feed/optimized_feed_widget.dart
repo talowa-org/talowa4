@@ -254,7 +254,9 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
       setState(() {
         _isLoading = false;
       });
-      debugPrint('Error loading initial posts: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading initial posts: $e');
+      }
     }
   }
 
@@ -290,7 +292,9 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
       setState(() {
         _isLoadingMore = false;
       });
-      debugPrint('Error loading more posts: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading more posts: $e');
+      }
     }
   }
 
@@ -313,7 +317,9 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
         pageSize: widget.pageSize,
       );
     } catch (e) {
-      debugPrint('Error preloading next batch: $e');
+      if (kDebugMode) {
+        debugPrint('Error preloading next batch: $e');
+      }
     }
   }
 }

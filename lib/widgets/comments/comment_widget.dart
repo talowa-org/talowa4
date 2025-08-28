@@ -348,16 +348,13 @@ class _CommentWidgetState extends State<CommentWidget> with TickerProviderStateM
 
   void _likeReply(CommentModel reply) {
     // TODO: Implement reply like functionality
-    debugPrint('Liking reply: ${reply.id}');
   }
 
   void _openUserProfile(String userId) {
     // TODO: Navigate to user profile
-    debugPrint('Opening profile for user: $userId');
   }
 
   void _reportReply(CommentModel reply) {
     // TODO: Implement reply reporting
-    debugPrint('Reporting reply: ${reply.id}');
   }
 }

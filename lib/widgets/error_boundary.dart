@@ -159,8 +159,10 @@ class GlobalErrorHandler {
     // Handle Flutter framework errors
     FlutterError.onError = (FlutterErrorDetails details) {
       // Log the error
-      debugPrint('🚨 Flutter Error: ${details.exception}');
-      debugPrint('Stack trace: ${details.stack}');
+      if (kDebugMode) {
+        debugPrint('🚨 Flutter Error: ${details.exception}');
+        debugPrint('Stack trace: ${details.stack}');
+      }
       
       // In debug mode, show the red screen
       if (kDebugMode) {
@@ -170,8 +172,10 @@ class GlobalErrorHandler {
 
     // Handle errors outside of Flutter framework
     PlatformDispatcher.instance.onError = (error, stack) {
-      debugPrint('🚨 Platform Error: $error');
-      debugPrint('Stack trace: $stack');
+      if (kDebugMode) {
+        debugPrint('🚨 Platform Error: $error');
+        debugPrint('Stack trace: $stack');
+      }
       return true; // Handled
     };
   }

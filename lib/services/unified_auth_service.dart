@@ -40,7 +40,9 @@ class UnifiedAuthService {
           .get();
       return doc.exists;
     } catch (e) {
-      debugPrint('Error checking phone registration: $e');
+      if (kDebugMode) {
+        debugPrint('Error checking phone registration: $e');
+      }
       return false;
     }
   }
@@ -79,8 +81,6 @@ class UnifiedAuthService {
     final normalizedPhone = _normalizePhoneNumber(phoneNumber);
 
     try {
-      debugPrint('Starting registration for: $normalizedPhone');
-
       // Check if phone is already registered
       final isRegistered = await isPhoneRegistered(normalizedPhone);
       if (isRegistered) {
@@ -94,8 +94,6 @@ class UnifiedAuthService {
       // Create alias email for Firebase Auth
       final email = aliasEmailForPhone(normalizedPhone);
       final hashedPin = _hashPin(pin);
-
-      debugPrint('Creating Firebase Auth user with email: $email');
 
       // Create Firebase Auth user
       final userCredential = await _auth.createUserWithEmailAndPassword(
@@ -112,13 +110,11 @@ class UnifiedAuthService {
       }
 
       final user = userCredential.user!;
-      debugPrint('Firebase Auth user created with UID: ${user.uid}');
 
       // Generate referral code immediately to ensure consistency
       String userReferralCode;
       try {
         userReferralCode = await ReferralCodeGenerator.generateUniqueCode();
-        debugPrint('Generated referral code: $userReferralCode');
       } catch (e) {
         debugPrint('Failed to generate referral code: $e');
         // Use fallback code generation
@@ -151,7 +147,6 @@ class UnifiedAuthService {
         };
 
         await _firestore.collection('users').doc(user.uid).set(userProfileData);
-        debugPrint('User profile created successfully');
       } catch (e) {
         debugPrint('Failed to create user profile: $e');
         // Rollback Firebase Auth user
@@ -187,7 +182,6 @@ class UnifiedAuthService {
           'membershipPaid': false,
           'pinHash': hashedPin, // Store PIN hash for login verification
         });
-        debugPrint('User registry created successfully');
       } catch (e) {
         debugPrint('Failed to create user registry: $e');
         // Don't rollback as profile is already created
@@ -204,9 +198,6 @@ class UnifiedAuthService {
         );
       }
 
-      final duration = DateTime.now().difference(startTime).inMilliseconds;
-      debugPrint('User registration completed in ${duration}ms');
-
       return AuthResult(
         success: true,
         message: 'Registration successful',
@@ -214,9 +205,6 @@ class UnifiedAuthService {
       );
     } catch (e) {
       debugPrint('Registration error: $e');
-      final duration = DateTime.now().difference(startTime).inMilliseconds;
-      debugPrint('User registration failed in ${duration}ms: $e');
-
       return AuthResult(
         success: false,
         message: 'Registration failed: ${e.toString()}',
@@ -234,11 +222,6 @@ class UnifiedAuthService {
     final normalizedPhone = _normalizePhoneNumber(phoneNumber);
 
     try {
-      debugPrint('=== LOGIN ATTEMPT ===');
-      debugPrint('Phone: $normalizedPhone');
-      debugPrint('PIN: ${pin.length} digits');
-      debugPrint('Time: ${DateTime.now()}');
-
       // Check rate limiting
       if (!_canAttemptLogin(normalizedPhone)) {
         return const AuthResult(
@@ -254,7 +237,6 @@ class UnifiedAuthService {
       // Check if phone is registered
       final isRegistered = await isPhoneRegistered(normalizedPhone);
       if (!isRegistered) {
-        debugPrint('Phone number not registered: $normalizedPhone');
         return const AuthResult(
           success: false,
           message: 'Phone number not registered. Please register first.',
@@ -269,7 +251,6 @@ class UnifiedAuthService {
           .get();
 
       if (!registryDoc.exists) {
-        debugPrint('User registry not found for: $normalizedPhone');
         return const AuthResult(
           success: false,
           message: 'Phone number not registered. Please register first.',
@@ -281,8 +262,6 @@ class UnifiedAuthService {
       final uid = registryData['uid'] as String;
       final storedPinHash = registryData['pinHash'] as String?;
       
-      debugPrint('Found UID in registry: $uid');
-
       // Verify PIN hash from registry (no authentication needed)
       if (storedPinHash == null) {
         debugPrint('PIN hash not found in registry for: $normalizedPhone');
@@ -295,7 +274,6 @@ class UnifiedAuthService {
 
       final inputPinHash = _hashPin(pin);
       if (storedPinHash != inputPinHash) {
-        debugPrint('PIN hash mismatch for phone: $normalizedPhone');
         return const AuthResult(
           success: false,
           message: 'Invalid PIN. Please check your PIN and try again.',
@@ -311,7 +289,6 @@ class UnifiedAuthService {
       );
 
       if (userCredential.user == null) {
-        debugPrint('Firebase Auth sign in failed for UID: $uid');
         return const AuthResult(
           success: false,
           message: 'Authentication failed. Please try again.',
@@ -322,7 +299,6 @@ class UnifiedAuthService {
       // Now that user is authenticated, get user profile
       final userProfile = await _getUserProfile(uid);
       if (userProfile == null) {
-        debugPrint('User profile not found after authentication: $uid');
         return const AuthResult(
           success: false,
           message: 'User profile not found. Please contact support.',
@@ -343,10 +319,6 @@ class UnifiedAuthService {
         // Non-critical error, continue with login
       }
 
-      final duration = DateTime.now().difference(startTime).inMilliseconds;
-      debugPrint('Login successful in ${duration}ms');
-      debugPrint('User: ${userCredential.user!.uid}');
-
       return AuthResult(
         success: true,
         message: 'Login successful',
@@ -354,9 +326,6 @@ class UnifiedAuthService {
       );
     } catch (e) {
       debugPrint('Login error: $e');
-      final duration = DateTime.now().difference(startTime).inMilliseconds;
-      debugPrint('Login failed in ${duration}ms: $e');
-
       return AuthResult(
         success: false,
         message: 'Login failed: ${e.toString()}',

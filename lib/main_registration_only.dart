@@ -7,20 +7,21 @@ import 'screens/auth/real_user_registration_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  debugPrint('TALOWA Registration Test - Web Only');
-  debugPrint('Platform: ${kIsWeb ? "Web" : "Mobile"}');
+  // TALOWA Registration Test - Web Only
 
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('✅ Firebase initialized successfully for web');
+    // Firebase initialized successfully for web
   } catch (e) {
-    debugPrint('❌ Firebase initialization failed: $e');
+    if (kDebugMode) {
+      debugPrint('Firebase initialization failed: $e');
+    }
     // Continue without Firebase - app should still work for basic functionality
   }
 
-  debugPrint('🚀 Starting TALOWA Registration Test...');
+  // Starting TALOWA Registration Test
 
   runApp(const TalowaRegistrationTestApp());
 }

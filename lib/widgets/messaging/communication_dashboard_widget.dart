@@ -116,7 +116,9 @@ class _CommunicationDashboardWidgetState extends State<CommunicationDashboardWid
         _isLoading = false;
         _error = e.toString();
       });
-      debugPrint('Error loading dashboard data: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading dashboard data: $e');
+      }
     }
   }
 

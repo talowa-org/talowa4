@@ -14,26 +14,27 @@ void main() async {
   // Initialize global error handling
   GlobalErrorHandler.initialize();
 
-  debugPrint('TALOWA Phase 2: Registration + Login (Fixed Version)');
-  debugPrint('Platform: ${kIsWeb ? "Web" : "Mobile"}');
+  // TALOWA Phase 2: Registration + Login (Fixed Version)
 
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('✅ Firebase initialized successfully for web');
+    // Firebase initialized successfully for web
     
     // Set Firebase Auth persistence for web
     if (kIsWeb) {
       await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
-      debugPrint('✅ Firebase Auth persistence set to LOCAL for web');
+      // Firebase Auth persistence set to LOCAL for web
     }
   } catch (e) {
-    debugPrint('❌ Firebase initialization failed: $e');
+    if (kDebugMode) {
+      debugPrint('Firebase initialization failed: $e');
+    }
     // Continue without Firebase - app should still work for basic functionality
   }
 
-  debugPrint('🚀 Starting TALOWA Phase 2 - Fixed Version...');
+  // Starting TALOWA Phase 2 - Fixed Version
 
   runApp(const TalowaFixedApp());
 }

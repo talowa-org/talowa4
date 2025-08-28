@@ -35,9 +35,13 @@ class LocalDatabase {
         onUpgrade: _onUpgrade,
       );
       
-      debugPrint('Local database initialized at: $path');
+      if (kDebugMode) {
+        debugPrint('Local database initialized at: $path');
+      }
     } catch (e) {
-      debugPrint('Error initializing local database: $e');
+      if (kDebugMode) {
+        debugPrint('Error initializing local database: $e');
+      }
       rethrow;
     }
   }
@@ -153,9 +157,13 @@ class LocalDatabase {
       await db.execute('CREATE INDEX idx_sync_queue_status ON sync_queue (status)');
       await db.execute('CREATE INDEX idx_sync_queue_created_at ON sync_queue (created_at)');
 
-      debugPrint('Database tables created successfully');
+      if (kDebugMode) {
+        debugPrint('Database tables created successfully');
+      }
     } catch (e) {
-      debugPrint('Error creating database tables: $e');
+      if (kDebugMode) {
+        debugPrint('Error creating database tables: $e');
+      }
       rethrow;
     }
   }
@@ -163,7 +171,9 @@ class LocalDatabase {
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database schema upgrades here
-    debugPrint('Upgrading database from version $oldVersion to $newVersion');
+    if (kDebugMode) {
+      debugPrint('Upgrading database from version $oldVersion to $newVersion');
+    }
   }
 
   /// Get database instance
@@ -180,7 +190,9 @@ class LocalDatabase {
       final db = await database;
       await db.insertOrReplace('posts', _postToMap(post));
     } catch (e) {
-      debugPrint('Error inserting/updating post: $e');
+      if (kDebugMode) {
+        debugPrint('Error inserting/updating post: $e');
+      }
       rethrow;
     }
   }
@@ -191,7 +203,9 @@ class LocalDatabase {
       final db = await database;
       await db.insert('posts', _postToMap(post));
     } catch (e) {
-      debugPrint('Error inserting post: $e');
+      if (kDebugMode) {
+        debugPrint('Error inserting post: $e');
+      }
       rethrow;
     }
   }
@@ -207,7 +221,9 @@ class LocalDatabase {
         whereArgs: [postId],
       );
     } catch (e) {
-      debugPrint('Error updating post: $e');
+      if (kDebugMode) {
+        debugPrint('Error updating post: $e');
+      }
       rethrow;
     }
   }
@@ -255,7 +271,9 @@ class LocalDatabase {
 
       return result.map((map) => _postFromMap(map)).toList();
     } catch (e) {
-      debugPrint('Error getting posts: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting posts: $e');
+      }
       return [];
     }
   }
@@ -297,7 +315,9 @@ class LocalDatabase {
         whereArgs: [postId],
       );
     } catch (e) {
-      debugPrint('Error updating post engagement: $e');
+      if (kDebugMode) {
+        debugPrint('Error updating post engagement: $e');
+      }
     }
   }
 
@@ -307,7 +327,9 @@ class LocalDatabase {
       final db = await database;
       await db.insert('comments', _commentToMap(comment));
     } catch (e) {
-      debugPrint('Error inserting comment: $e');
+      if (kDebugMode) {
+        debugPrint('Error inserting comment: $e');
+      }
       rethrow;
     }
   }
@@ -323,7 +345,9 @@ class LocalDatabase {
         whereArgs: [commentId],
       );
     } catch (e) {
-      debugPrint('Error updating comment: $e');
+      if (kDebugMode) {
+        debugPrint('Error updating comment: $e');
+      }
       rethrow;
     }
   }
@@ -341,7 +365,9 @@ class LocalDatabase {
 
       return result.map((map) => _commentFromMap(map)).toList();
     } catch (e) {
-      debugPrint('Error getting comments: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting comments: $e');
+      }
       return [];
     }
   }
@@ -352,7 +378,9 @@ class LocalDatabase {
       final db = await database;
       await db.insert('sync_queue', _syncItemToMap(item));
     } catch (e) {
-      debugPrint('Error inserting sync item: $e');
+      if (kDebugMode) {
+        debugPrint('Error inserting sync item: $e');
+      }
       rethrow;
     }
   }
@@ -368,7 +396,9 @@ class LocalDatabase {
         whereArgs: [itemId],
       );
     } catch (e) {
-      debugPrint('Error updating sync item: $e');
+      if (kDebugMode) {
+        debugPrint('Error updating sync item: $e');
+      }
       rethrow;
     }
   }
@@ -386,7 +416,9 @@ class LocalDatabase {
 
       return result.map((map) => _syncItemFromMap(map)).toList();
     } catch (e) {
-      debugPrint('Error getting pending sync items: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting pending sync items: $e');
+      }
       return [];
     }
   }
@@ -417,7 +449,9 @@ class LocalDatabase {
         'failed': failedResult.first['count'] as int,
       };
     } catch (e) {
-      debugPrint('Error getting sync stats: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting sync stats: $e');
+      }
       return {};
     }
   }
@@ -456,9 +490,13 @@ class LocalDatabase {
         whereArgs: [cutoffTimestamp],
       );
       
-      debugPrint('Cleared old cache data');
+      if (kDebugMode) {
+        debugPrint('Cleared old cache data');
+      }
     } catch (e) {
-      debugPrint('Error clearing old cache: $e');
+      if (kDebugMode) {
+        debugPrint('Error clearing old cache: $e');
+      }
     }
   }
 
@@ -487,7 +525,9 @@ class LocalDatabase {
         'database_size_mb': (dbSize / (1024 * 1024)).toStringAsFixed(2),
       };
     } catch (e) {
-      debugPrint('Error getting storage usage: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting storage usage: $e');
+      }
       return {};
     }
   }

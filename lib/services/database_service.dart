@@ -47,13 +47,11 @@ class DatabaseService {
           .get();
 
       if (existingDoc.exists) {
-        debugPrint('User registry already exists for phone: $phoneNumber');
         return;
       }
 
       // Use provided referral code or generate new one if not provided
       final finalReferralCode = referralCode ?? await ReferralCodeGenerator.generateUniqueCode();
-      debugPrint('Using referral code for registry: $finalReferralCode');
 
       await _firestore
           .collection(AppConstants.collectionUserRegistry)

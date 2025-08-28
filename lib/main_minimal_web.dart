@@ -7,16 +7,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   if (kIsWeb) {
-    debugPrint('Running on web platform');
+    // Running on web platform
   }
   
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('Firebase initialized successfully for web');
+    // Firebase initialized successfully for web
   } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+    if (kDebugMode) {
+      debugPrint('Firebase initialization failed: $e');
+    }
   }
 
   runApp(const MinimalTalowaApp());

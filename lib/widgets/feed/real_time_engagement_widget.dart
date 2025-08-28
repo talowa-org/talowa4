@@ -307,7 +307,9 @@ class _RealTimeEngagementWidgetState extends State<RealTimeEngagementWidget>
       setState(() {
         _isLiked = !_isLiked;
       });
-      debugPrint('Error liking post: $e');
+      if (kDebugMode) {
+        debugPrint('Error liking post: $e');
+      }
     } finally {
       setState(() {
         _isAnimating = false;
@@ -334,7 +336,9 @@ class _RealTimeEngagementWidgetState extends State<RealTimeEngagementWidget>
         _isShared = true;
       });
     } catch (e) {
-      debugPrint('Error sharing post: $e');
+      if (kDebugMode) {
+        debugPrint('Error sharing post: $e');
+      }
     } finally {
       setState(() {
         _isAnimating = false;

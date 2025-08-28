@@ -1,4 +1,5 @@
 // Message Search Widget for TALOWA Messaging
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/message_model.dart';
@@ -381,7 +382,9 @@ class _MessageSearchWidgetState extends State<MessageSearchWidget> {
         _searchResults = [];
         _isSearching = false;
       });
-      debugPrint('Search error: $e');
+      if (kDebugMode) {
+        debugPrint('Search error: $e');
+      }
     }
   }
 
@@ -414,7 +417,9 @@ class _MessageSearchWidgetState extends State<MessageSearchWidget> {
           ));
         }
       } catch (e) {
-        debugPrint('Error searching conversation ${conversation.id}: $e');
+        if (kDebugMode) {
+          debugPrint('Error searching conversation ${conversation.id}: $e');
+        }
       }
     }
 
