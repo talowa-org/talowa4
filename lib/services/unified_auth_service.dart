@@ -6,6 +6,7 @@ import '../models/user_model.dart';
 import '../models/address.dart' as address_model;
 import 'referral/referral_code_generator.dart';
 import 'auth_policy.dart';
+import 'registration_state_service.dart';
 
 /// Unified Authentication Service for TALOWA
 /// Fixes all authentication issues with consistent logic
@@ -34,11 +35,9 @@ class UnifiedAuthService {
   /// Check if phone number is already registered
   static Future<bool> isPhoneRegistered(String phoneNumber) async {
     try {
-      final doc = await _firestore
-          .collection('user_registry')
-          .doc(phoneNumber)
-          .get();
-      return doc.exists;
+      final normalizedPhone = _normalizePhoneNumber(phoneNumber);
+      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(normalizedPhone);
+      return registrationStatus.isAlreadyRegistered;
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error checking phone registration: $e');
@@ -81,12 +80,12 @@ class UnifiedAuthService {
     final normalizedPhone = _normalizePhoneNumber(phoneNumber);
 
     try {
-      // Check if phone is already registered
-      final isRegistered = await isPhoneRegistered(normalizedPhone);
-      if (isRegistered) {
-        return const AuthResult(
+      // Check registration status using the new service
+      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(normalizedPhone);
+      if (registrationStatus.isAlreadyRegistered) {
+        return AuthResult(
           success: false,
-          message: 'This mobile number is already registered. Please login instead.',
+          message: registrationStatus.message,
           errorCode: 'phone-already-exists',
         );
       }

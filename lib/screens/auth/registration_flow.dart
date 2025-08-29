@@ -5,12 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../services/auth_policy.dart';
+import '../../services/registration_state_service.dart';
 
 enum StepStage { phone, otp, form, paying, done }
 
 class RegistrationFlow extends StatefulWidget {
   final String? prefilledReferral;
-  const RegistrationFlow({super.key, this.prefilledReferral});
+  final String? prefilledPhone;
+  
+  const RegistrationFlow({super.key, this.prefilledReferral, this.prefilledPhone});
 
   @override
   State<RegistrationFlow> createState() => _RegistrationFlowState();
@@ -58,11 +61,33 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
   void initState() {
     super.initState();
     referralCtrl.text = widget.prefilledReferral ?? '';
+    phoneCtrl.text = widget.prefilledPhone ?? '';
+    
+    // If phone is prefilled, check if we can skip OTP
+    if (widget.prefilledPhone != null) {
+      _checkInitialRegistrationStatus();
+    }
+    
     if (!kIsWeb) {
       _razorpay = Razorpay();
       _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
       _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
       _razorpay!.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    }
+  }
+
+  Future<void> _checkInitialRegistrationStatus() async {
+    if (widget.prefilledPhone == null) return;
+    
+    try {
+      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(widget.prefilledPhone!);
+      if (registrationStatus.isOtpVerified) {
+        // Skip to form if OTP already verified
+        setState(() => stage = StepStage.form);
+      }
+    } catch (e) {
+      // If check fails, continue with normal flow
+      debugPrint('Error checking initial registration status: $e');
     }
   }
 
@@ -87,13 +112,36 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
       _snack('Enter mobile number');
       return;
     }
+    
     setState(() => busy = true);
+    
     try {
+      // First check registration status
+      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(phone);
+      
+      if (registrationStatus.isAlreadyRegistered) {
+        _snack(registrationStatus.message);
+        setState(() => busy = false);
+        return;
+      }
+      
+      if (registrationStatus.isOtpVerified) {
+        // Phone already verified, skip OTP and go to form
+        _snack(registrationStatus.message);
+        setState(() => stage = StepStage.form);
+        setState(() => busy = false);
+        return;
+      }
+      
+      // Need to send OTP
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phone,
         verificationCompleted: (cred) async {
-          await FirebaseAuth.instance.signInWithCredential(cred);
-          setState(() => stage = StepStage.form);
+          final user = await FirebaseAuth.instance.signInWithCredential(cred);
+          if (user.user != null) {
+            await RegistrationStateService.markPhoneAsVerified(phone, user.user!.uid);
+            setState(() => stage = StepStage.form);
+          }
         },
         verificationFailed: (e) => _snack(e.message ?? 'OTP failed'),
         codeSent: (id, _) {
@@ -103,6 +151,8 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
         codeAutoRetrievalTimeout: (id) => _verificationId = id,
         timeout: const Duration(seconds: 60),
       );
+    } catch (e) {
+      _snack('Error: ${e.toString()}');
     } finally {
       setState(() => busy = false);
     }
@@ -120,8 +170,14 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
         verificationId: _verificationId!,
         smsCode: code,
       );
-      await FirebaseAuth.instance.signInWithCredential(cred);
-      setState(() => stage = StepStage.form);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(cred);
+      
+      if (userCredential.user != null) {
+        // Mark phone as verified for future registrations
+        final phone = phoneCtrl.text.trim();
+        await RegistrationStateService.markPhoneAsVerified(phone, userCredential.user!.uid);
+        setState(() => stage = StepStage.form);
+      }
     } on FirebaseAuthException catch (e) {
       _snack(e.message ?? 'Invalid OTP');
     } finally {
@@ -260,6 +316,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     final aliasEmail = aliasEmailForPhone(phoneE164);
     final pinHashHex = passwordFromPin(pinCtrl.text.trim()); // sha256(PIN)
 
+    // Save user profile
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'uid': uid,
       'fullName': nameCtrl.text.trim(),
@@ -282,6 +339,27 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
         'paidAt': FieldValue.serverTimestamp(),
       },
     }, SetOptions(merge: true));
+
+    // Create user registry entry to prevent duplicate registrations
+    await FirebaseFirestore.instance.collection('user_registry').doc(phoneE164).set({
+      'uid': uid,
+      'phoneNumber': phoneE164,
+      'email': aliasEmail,
+      'fullName': nameCtrl.text.trim(),
+      'role': 'Member',
+      'state': stateVal,
+      'district': districtVal,
+      'mandal': mandalVal,
+      'village': villageCtrl.text.trim(),
+      'isActive': true,
+      'membershipPaid': paymentStatus == 'success',
+      'createdAt': FieldValue.serverTimestamp(),
+      'lastLoginAt': FieldValue.serverTimestamp(),
+      'pinHash': pinHashHex,
+    });
+
+    // Clear phone verification since registration is complete
+    await RegistrationStateService.clearPhoneVerification(phoneE164);
   }
 
   // ------------ UI ------------

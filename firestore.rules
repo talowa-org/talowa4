@@ -44,6 +44,14 @@ service cloud.firestore {
       allow write: if false; // Only Cloud Functions can write
     }
     
+    // Phone verifications - temporary storage for OTP verification state
+    match /phone_verifications/{phoneNumber} {
+      allow read: if true; // Needed for registration flow
+      allow create: if true; // Allow creation during OTP verification
+      allow update: if true; // Allow updates during verification process
+      allow delete: if true; // Allow cleanup after registration
+    }
+    
     // Daily motivations - allow read for all authenticated users
     match /dailyMotivations/{docId} {
       allow read: if signedIn();

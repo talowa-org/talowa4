@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_policy.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? prefilledPhone;
+  
+  const LoginScreen({super.key, this.prefilledPhone});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,6 +16,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final pinCtrl = TextEditingController();
   bool loading = false;
   bool obscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.prefilledPhone != null) {
+      phoneCtrl.text = widget.prefilledPhone!;
+    }
+  }
 
   @override
   void dispose() {
