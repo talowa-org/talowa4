@@ -12,7 +12,7 @@ import '../../models/user_model.dart';
 import '../../services/database_service.dart';
 import '../../services/referral/referral_code_generator.dart';
 import '../../services/auth_policy.dart';
-import 'payment_screen.dart';
+// Removed payment_screen.dart import - using inline payment simulation
 
 import '../../services/referral/universal_link_service.dart';
 
@@ -917,17 +917,8 @@ class _IntegratedRegistrationScreenState
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
         try {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentScreen(
-                phoneNumber: phoneNumber,
-                fullName: _nameController.text.trim(),
-                email: '$phoneNumber@talowa.app',
-                referralCode: finalReferralCode,
-              ),
-            ),
-          );
+          // Payment simulation for web - direct navigation to main app
+          _showPaymentSimulationDialog(context);
         } catch (e) {
           debugPrint('⚠️ Payment screen navigation failed: $e');
           // Fallback: Navigate directly to main app
@@ -1019,5 +1010,35 @@ class _IntegratedRegistrationScreenState
     _districtController.dispose();
     _referralCodeController.dispose();
     super.dispose();
+  }
+
+  void _showPaymentSimulationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Payment Simulation'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.payment, size: 48, color: Colors.green),
+              SizedBox(height: 16),
+              Text('Payment simulation for web development'),
+              Text('Registration completed successfully!'),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, '/main');
+              },
+              child: const Text('Continue to App'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
