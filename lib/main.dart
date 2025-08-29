@@ -176,7 +176,6 @@ class _TalowaAppState extends State<TalowaApp> {
             home: const WelcomeScreen(),
             routes: {
               '/welcome': (context) => const WelcomeScreen(),
-              '/login': (context) => const LoginScreen(),
               '/mobile-entry': (context) => const MobileEntryScreen(),
               '/register': (context) => const IntegratedRegistrationScreen(),
               '/main': (context) => const MainNavigationScreen(),
@@ -185,8 +184,14 @@ class _TalowaAppState extends State<TalowaApp> {
               '/land/records': (context) => const LandRecordsListScreen(),
               '/land/add': (context) => const LandRecordFormScreen(),
             },
-            // onGenerateRoute for dynamic detail/edit routes
+            // onGenerateRoute for dynamic routes with arguments
             onGenerateRoute: (settings) {
+              if (settings.name == '/login') {
+                final prefilledPhone = settings.arguments as String?;
+                return MaterialPageRoute(
+                  builder: (_) => LoginScreen(prefilledPhone: prefilledPhone),
+                );
+              }
               if (settings.name == '/land/detail') {
                 final id = settings.arguments as String;
                 return MaterialPageRoute(

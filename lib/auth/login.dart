@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../services/unified_auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? prefilledPhone;
+  const LoginScreen({super.key, this.prefilledPhone});
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -14,6 +15,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _pinCtrl = TextEditingController();
   bool _busy = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prefill phone number if provided
+    if (widget.prefilledPhone != null) {
+      _phoneCtrl.text = widget.prefilledPhone!;
+    }
+  }
 
   Future<void> _login() async {
     setState(() { _busy = true; _error = null; });

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
+import '../../services/registration_state_service.dart';
 import 'integrated_registration_screen.dart';
 
 class MobileEntryScreen extends StatefulWidget {
@@ -77,8 +78,39 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
         throw Exception('Invalid phone number format');
       }
 
-      // Show OTP dialog immediately and start verification
-      _showOtpDialog(phoneNumber);
+      // 🎯 NEW ROUTING LOGIC: Check registration status first
+      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(phoneNumber);
+
+      if (registrationStatus.isAlreadyRegistered) {
+        // 🔄 FIX 2: Registered User → Redirect to login with prefilled phone
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pushReplacementNamed(
+          context, 
+          '/login',
+          arguments: phoneNumber, // Pass phone number for prefilling
+        );
+        return;
+      }
+
+      if (registrationStatus.isOtpVerified) {
+        // 🔄 FIX 1: Returning User → Skip OTP, go directly to registration form
+        setState(() {
+          _isLoading = false;
+        });
+        _navigateToRegistrationForm(phoneNumber);
+        return;
+      }
+
+      if (registrationStatus.needsOtpVerification) {
+        // 📱 New User → Show OTP dialog and start verification
+        _showOtpDialog(phoneNumber);
+        return;
+      }
+
+      // Error case
+      throw Exception(registrationStatus.message);
     } catch (e) {
       setState(() {
         _errorMessage = 'Error: ${e.toString()}';
