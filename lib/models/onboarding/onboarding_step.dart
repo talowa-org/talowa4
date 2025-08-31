@@ -79,7 +79,7 @@ class OnboardingStep {
       title: json['title'] as String,
       description: json['description'] as String,
       content: json['content'] as String,
-      iconData: IconData(json['iconData'] as int, fontFamily: 'MaterialIcons'),
+      iconData: const IconData(0xe88a, fontFamily: 'MaterialIcons'), // Default to info icon
       actionText: json['actionText'] as String,
       isInteractive: json['isInteractive'] as bool? ?? false,
       imageAsset: json['imageAsset'] as String?,

@@ -4,6 +4,7 @@ import '../../services/admin/admin_dashboard_service.dart';
 import 'content_reports_screen.dart';
 import 'moderation_actions_screen.dart';
 import 'conversation_monitoring_screen.dart';
+import 'admin_pin_change_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -252,6 +253,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Icons.download,
               Colors.green,
               _exportModerationData,
+            ),
+            _buildActionButton(
+              'Change PIN',
+              Icons.security,
+              Colors.purple,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminPinChangeScreen()),
+              ),
             ),
           ],
         ),

@@ -7,10 +7,14 @@ import '../../core/constants/app_constants.dart';
 import '../../widgets/more/profile_summary_card.dart';
 import '../../widgets/more/feature_section_card.dart';
 import '../../widgets/common/loading_widget.dart';
+import '../../widgets/more/hidden_admin_access.dart';
+import '../../widgets/more/admin_access_widget.dart';
+import '../../widgets/more/dev_admin_button.dart';
 import '../settings/language_settings_screen.dart';
 import '../help/help_center_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../onboarding/coordinator_training_screen.dart';
+import '../admin/admin_login_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -65,6 +69,13 @@ class _MoreScreenState extends State<MoreScreen> {
             onPressed: () => Navigator.pushNamed(context, '/ai-test'),
             tooltip: 'AI Test',
           ),
+          // Hidden admin access button (long press)
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onPressed: () {}, // Regular tap does nothing
+            onLongPress: _showAdminAccessDialog,
+            tooltip: 'More Options (Long press for admin)',
+          ),
         ],
       ),
       body: _isLoading
@@ -82,6 +93,9 @@ class _MoreScreenState extends State<MoreScreen> {
                     ),
 
                   const SizedBox(height: AppTheme.spacingLarge),
+
+                  // Admin Access (shows only for admin/coordinator users)
+                  const AdminAccessWidget(),
 
                   // Cases & Land Records Section
                   FeatureSectionCard(
@@ -275,6 +289,9 @@ class _MoreScreenState extends State<MoreScreen> {
 
                   // App Version and Legal
                   _buildAppInfoSection(),
+
+                  // Development Admin Button (only shows in debug mode)
+                  const DevAdminButton(),
                 ],
               ),
             ),
@@ -287,36 +304,38 @@ class _MoreScreenState extends State<MoreScreen> {
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         child: Column(
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.eco,
-                  color: AppTheme.talowaGreen,
-                  size: 32,
-                ),
-                const SizedBox(width: AppTheme.spacingMedium),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppConstants.appName,
-                        style: AppTheme.heading2Style.copyWith(
-                          color: AppTheme.talowaGreen,
-                        ),
-                      ),
-                      const Text(
-                        AppConstants.appFullName,
-                        style: AppTheme.captionStyle,
-                      ),
-                      const Text(
-                        'Version ${AppConstants.appVersion}',
-                        style: AppTheme.captionStyle,
-                      ),
-                    ],
+            HiddenAdminAccess(
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.eco,
+                    color: AppTheme.talowaGreen,
+                    size: 32,
                   ),
-                ),
-              ],
+                  const SizedBox(width: AppTheme.spacingMedium),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppConstants.appName,
+                          style: AppTheme.heading2Style.copyWith(
+                            color: AppTheme.talowaGreen,
+                          ),
+                        ),
+                        const Text(
+                          AppConstants.appFullName,
+                          style: AppTheme.captionStyle,
+                        ),
+                        const Text(
+                          'Version ${AppConstants.appVersion}',
+                          style: AppTheme.captionStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: AppTheme.spacingMedium),
             const Divider(),
@@ -883,6 +902,46 @@ class _MoreScreenState extends State<MoreScreen> {
 
   void _openLicenses() {
     debugPrint('Opening licenses');
+  }
+
+  void _showAdminAccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.admin_panel_settings, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Admin Access'),
+          ],
+        ),
+        content: const Text(
+          'Access the admin dashboard for system management and moderation.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdminLoginScreen(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[800],
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Admin Login'),
+          ),
+        ],
+      ),
+    );
   }
 
   // Tutorial Methods

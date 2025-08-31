@@ -98,7 +98,7 @@ class HelpCategory {
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
-      iconData: IconData(json['iconData'] as int, fontFamily: 'MaterialIcons'),
+      iconData: Icons.help, // Use constant icon
       articles: (json['articles'] as List<dynamic>)
           .map((articleJson) => HelpArticle.fromJson(articleJson as Map<String, dynamic>))
           .toList(),

@@ -54,11 +54,13 @@ class _ContentReportsScreenState extends State<ContentReportsScreen> {
                   if (_selectedStatus != null)
                     FilterChip(
                       label: Text('Status: ${_selectedStatus!.displayName}'),
+                      onSelected: (bool value) {},
                       onDeleted: () => setState(() => _selectedStatus = null),
                     ),
                   if (_selectedType != null)
                     FilterChip(
                       label: Text('Type: ${_selectedType!.displayName}'),
+                      onSelected: (bool value) {},
                       onDeleted: () => setState(() => _selectedType = null),
                     ),
                 ],

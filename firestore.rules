@@ -92,6 +92,11 @@ service cloud.firestore {
          request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']); // Replace with actual admin UIDs
     }
     
+    // Admin configuration - allow read/write for admin authentication
+    match /admin_config/{document} {
+      allow read, write: if true; // Allow access for admin authentication system
+    }
+    
     // Other collections - default permissions for user-owned data
     match /{document=**} {
       allow read: if signedIn();
