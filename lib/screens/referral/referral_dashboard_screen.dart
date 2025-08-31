@@ -105,22 +105,39 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Referrals',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: AppTheme.talowaGreen,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: _loadReferralStats,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _handleBackNavigation();
+        }
+      },
+      child: GestureDetector(
+        // Block swipe gestures
+        onHorizontalDragStart: (details) => _showSwipeProtectionMessage(),
+        onPanStart: (details) => _showSwipeProtectionMessage(),
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'My Referrals',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: AppTheme.talowaGreen,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            leading: Navigator.of(context).canPop() ? IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: _handleBackNavigation,
+            ) : null,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                onPressed: _loadReferralStats,
+              ),
+            ],
           ),
-        ],
-      ),
-      body: Container(
+          body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -131,7 +148,9 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
             ],
           ),
         ),
-        child: _buildBody(),
+            child: _buildBody(),
+          ),
+        ),
       ),
     );
   }
@@ -462,6 +481,49 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
       return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
     } else {
       return 'Just now';
+    }
+  }
+
+  void _handleBackNavigation() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.info, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('You are already on the main screen. Use bottom navigation to switch tabs.'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _showSwipeProtectionMessage() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.swipe, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('Swipe navigation is disabled to prevent accidental logout'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 }

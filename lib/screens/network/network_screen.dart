@@ -150,11 +150,6 @@ class _NetworkScreenState extends State<NetworkScreen> {
               onPressed: _showInviteDialog,
               tooltip: 'Invite People',
             ),
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: _shareReferralCode,
-              tooltip: 'Share Referral Code',
-            ),
           ],
         ),
         body: _buildBody(),

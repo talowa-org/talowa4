@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -16,7 +18,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome => 'Welcome to TALOWA';
 
   @override
-  String get welcomeMessage => 'Join the movement for land rights and social justice';
+  String get welcomeMessage =>
+      'Join the movement for land rights and social justice';
 
   @override
   String get login => 'Login';

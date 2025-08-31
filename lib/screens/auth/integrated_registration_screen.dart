@@ -12,6 +12,7 @@ import '../../models/user_model.dart';
 import '../../services/database_service.dart';
 import '../../services/referral/referral_code_generator.dart';
 import '../../services/auth_policy.dart';
+import '../../services/registration_state_service.dart';
 // Removed payment_screen.dart import - using inline payment simulation
 
 import '../../services/referral/universal_link_service.dart';
@@ -194,6 +195,33 @@ class _IntegratedRegistrationScreenState
                 children: [
                   // Welcome Message
                   _buildWelcomeSection(),
+                  
+                  // Returning user message
+                  if (widget.phoneNumber != null)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.blue.shade600),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Welcome back! Your phone number is already verified. Please complete your registration below.',
+                              style: TextStyle(
+                                color: Colors.blue.shade700,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
                   const SizedBox(height: 32),
 
@@ -219,31 +247,42 @@ class _IntegratedRegistrationScreenState
 
                   const SizedBox(height: 16),
 
-                  _buildTextField(
-                    controller: _phoneController,
-                    label: widget.phoneNumber != null
-                        ? 'Mobile Number * (Verified)'
-                        : 'Mobile Number *',
-                    hint: '9876543210',
-                    icon: Icons.phone,
-                    keyboardType: TextInputType.phone,
-                    readOnly: widget.phoneNumber != null,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your mobile number';
-                      }
-                      if (value.length != 10) {
-                        return 'Mobile number must be 10 digits';
-                      }
-                      if (!value.startsWith(RegExp(r'[6-9]'))) {
-                        return 'Please enter a valid Indian mobile number';
-                      }
-                      return null;
-                    },
+                  Container(
+                    decoration: widget.phoneNumber != null
+                        ? BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.green.shade200),
+                          )
+                        : null,
+                    child: _buildTextField(
+                      controller: _phoneController,
+                      label: widget.phoneNumber != null
+                          ? 'Mobile Number * (✓ Verified)'
+                          : 'Mobile Number *',
+                      hint: '9876543210',
+                      icon: widget.phoneNumber != null 
+                          ? Icons.phone_android 
+                          : Icons.phone,
+                      keyboardType: TextInputType.phone,
+                      readOnly: widget.phoneNumber != null,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your mobile number';
+                        }
+                        if (value.length != 10) {
+                          return 'Mobile number must be 10 digits';
+                        }
+                        if (!value.startsWith(RegExp(r'[6-9]'))) {
+                          return 'Please enter a valid Indian mobile number';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -802,9 +841,27 @@ class _IntegratedRegistrationScreenState
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         debugPrint('❌ No authenticated user found');
-        _showErrorMessage('Authentication error. Please restart registration.');
-        // Navigate back to mobile entry
-        Navigator.pushReplacementNamed(context, '/mobile-entry');
+        
+        // 🔧 CRITICAL FIX: Clean up phone verification if user was deleted
+        if (widget.phoneNumber != null) {
+          try {
+            await RegistrationStateService.clearPhoneVerification(phoneNumber);
+            debugPrint('✅ Cleaned up phone verification for deleted user');
+          } catch (e) {
+            debugPrint('⚠️ Could not clean up phone verification: $e');
+          }
+        }
+        
+        _showErrorMessage(
+          'Your session has expired or was invalidated. Please verify your phone number again.',
+        );
+        
+        // Navigate back to mobile entry with a delay to show the message
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/mobile-entry');
+          }
+        });
         return;
       }
       debugPrint('✅ Found authenticated user: ${currentUser.uid}');
@@ -827,6 +884,17 @@ class _IntegratedRegistrationScreenState
       } catch (e) {
         debugPrint('⚠️ Could not link email/password credentials: $e');
         // Continue with registration - PIN will be stored in Firestore
+      }
+
+      // Clear phone verification state since registration is completing
+      if (widget.phoneNumber != null) {
+        try {
+          await RegistrationStateService.clearPhoneVerification(phoneNumber);
+          debugPrint('✅ Cleared phone verification state for completed registration');
+        } catch (e) {
+          debugPrint('⚠️ Could not clear phone verification state: $e');
+          // Non-critical, continue with registration
+        }
       }
 
       // Create user profile and registry for the existing Firebase Auth user
@@ -867,7 +935,7 @@ class _IntegratedRegistrationScreenState
             teamSize: 0,
             teamReferrals: 0, // New field for BSS compatibility
             currentRoleLevel: 1, // Start as Member (level 1)
-            membershipPaid: false,
+            membershipPaid: true, // App is now free for all users
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
             preferences: UserPreferences.defaultPreferences(),
@@ -913,17 +981,10 @@ class _IntegratedRegistrationScreenState
         'Registration successful! Your referral code: $finalReferralCode',
       );
 
-      // Navigate to payment screen after a short delay
+      // Navigate directly to main app (no payment required)
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) {
-        try {
-          // Payment simulation for web - direct navigation to main app
-          _showPaymentSimulationDialog(context);
-        } catch (e) {
-          debugPrint('⚠️ Payment screen navigation failed: $e');
-          // Fallback: Navigate directly to main app
-          Navigator.pushReplacementNamed(context, '/main');
-        }
+        Navigator.pushReplacementNamed(context, '/main');
       }
     } catch (e, stackTrace) {
       debugPrint('Registration error: $e');
@@ -1012,33 +1073,5 @@ class _IntegratedRegistrationScreenState
     super.dispose();
   }
 
-  void _showPaymentSimulationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Payment Simulation'),
-          content: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.payment, size: 48, color: Colors.green),
-              SizedBox(height: 16),
-              Text('Payment simulation for web development'),
-              Text('Registration completed successfully!'),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, '/main');
-              },
-              child: const Text('Continue to App'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 }

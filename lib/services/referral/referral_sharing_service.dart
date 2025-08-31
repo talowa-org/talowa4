@@ -22,6 +22,29 @@ class ReferralSharingService {
     return generateReferralLink(referralCode);
   }
 
+  /// Generate custom professional message for sharing
+  static String _generateCustomMessage(String referralCode, String link, String? userName) {
+    return '''
+🌾 Join TALOWA - Land Rights Movement! 🌾
+
+Hi! I'm inviting you to join TALOWA, a powerful platform that helps farmers and land owners protect their rights.
+
+🔗 Use my referral code:
+$referralCode
+
+With TALOWA, you can:
+🤝 Connect with other farmers and activists
+📰 Stay informed about land rights issues
+🆘 Get emergency help when needed
+
+Together we can fight for our land rights! 💪
+
+Join here: $link
+
+#TALOWA #LandRights #FarmersUnity
+''';
+  }
+
   /// Copy referral code to clipboard
   static Future<void> copyReferralCode(String referralCode, BuildContext context) async {
     try {
@@ -65,18 +88,151 @@ class ReferralSharingService {
   static Future<void> shareReferralLink(String referralCode, {String? userName}) async {
     try {
       final link = generateReferralLink(referralCode);
-      final message = userName != null 
-          ? 'Join me on Talowa! Use my referral code: $referralCode\n\n$link'
-          : 'Join Talowa using my referral code: $referralCode\n\n$link';
+      final message = _generateCustomMessage(referralCode, link, userName);
       
+      // Try native sharing first
+      try {
+        await Share.share(
+          message,
+          subject: 'Join Talowa - Political Engagement Platform',
+        );
+        debugPrint('Share completed successfully');
+      } catch (shareError) {
+        debugPrint('Native sharing failed: $shareError');
+        
+        // Fallback for web: Use Web Share API or copy to clipboard
+        if (html.window.navigator.share != null) {
+          // Use Web Share API if available
+          try {
+            await html.window.navigator.share({
+              'title': 'Join Talowa - Political Engagement Platform',
+              'text': message,
+              'url': link,
+            });
+            debugPrint('Web Share API completed successfully');
+          } catch (webShareError) {
+            debugPrint('Web Share API failed: $webShareError');
+            // Final fallback: copy to clipboard
+            await _fallbackCopyToClipboard(message);
+          }
+        } else {
+          // Web Share API not available, copy to clipboard
+          await _fallbackCopyToClipboard(message);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error sharing referral link: $e');
+      // Final fallback: copy to clipboard
+      await _fallbackCopyToClipboard('Join Talowa using referral code: $referralCode\n\n${generateReferralLink(referralCode)}');
+    }
+  }
+
+  /// Fallback method to copy message to clipboard when sharing fails
+  static Future<void> _fallbackCopyToClipboard(String message) async {
+    try {
+      await Clipboard.setData(ClipboardData(text: message));
+      debugPrint('Fallback: Message copied to clipboard');
+      
+      // Show a notification that it was copied
+      // Note: This would need a BuildContext to show SnackBar
+      // For now, just log it
+      debugPrint('Message copied to clipboard as fallback');
+    } catch (clipboardError) {
+      debugPrint('Clipboard fallback also failed: $clipboardError');
+    }
+  }
+
+  /// Share with fallback dialog for better user experience
+  static Future<void> _shareWithFallback(BuildContext context, String referralCode, {String? userName}) async {
+    final link = generateReferralLink(referralCode);
+    final message = _generateCustomMessage(referralCode, link, userName);
+    
+    try {
+      // Try native sharing first
       await Share.share(
         message,
         subject: 'Join Talowa - Political Engagement Platform',
       );
-      
       debugPrint('Share completed successfully');
-    } catch (e) {
-      debugPrint('Error sharing referral link: $e');
+    } catch (shareError) {
+      debugPrint('Native sharing failed: $shareError');
+      
+      // Show fallback dialog with options
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.share, color: Colors.orange),
+                SizedBox(width: 8),
+                Text('Share Referral'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Choose how to share your referral:'),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: SelectableText(
+                    message,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await copyReferralLink(referralCode, context);
+                          Navigator.pop(dialogContext);
+                        },
+                        icon: const Icon(Icons.copy),
+                        label: const Text('Copy Message'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          Navigator.pop(dialogContext);
+                          await shareViaWhatsApp(referralCode, userName: userName);
+                        },
+                        icon: const Icon(Icons.chat),
+                        label: const Text('WhatsApp'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green,
+                          side: const BorderSide(color: Colors.green),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -84,11 +240,7 @@ class ReferralSharingService {
   static Future<void> shareViaWhatsApp(String referralCode, {String? userName}) async {
     try {
       final link = generateReferralLink(referralCode);
-      
-      // Create a clean, simple message that works well with WhatsApp
-      final message = userName != null 
-          ? 'Hi! Join me on Talowa using my referral code: $referralCode\n\n$link'
-          : 'Join Talowa using referral code: $referralCode\n\n$link';
+      final message = _generateCustomMessage(referralCode, link, userName);
       
       debugPrint('Original message: $message');
       
@@ -144,9 +296,7 @@ class ReferralSharingService {
   static Future<void> shareViaTelegram(String referralCode, {String? userName}) async {
     try {
       final link = generateReferralLink(referralCode);
-      final message = userName != null 
-          ? 'Join me on Talowa! Use my referral code: $referralCode'
-          : 'Join Talowa using my referral code: $referralCode';
+      final message = _generateCustomMessage(referralCode, link, userName);
       
       // Use proper URL encoding for Telegram
       final encodedUrl = Uri.encodeQueryComponent(link);
@@ -445,9 +595,9 @@ class ReferralSharingService {
                     icon: Icons.share,
                     label: 'Share',
                     color: Colors.orange,
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
-                      shareReferralLink(referralCode, userName: userName);
+                      await _shareWithFallback(context, referralCode, userName: userName);
                     },
                   ),
                   _buildSharingOption(

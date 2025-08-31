@@ -39,13 +39,8 @@ class ComprehensiveStatsService {
 
       final directReferrals = directReferralsQuery.docs.length;
 
-      // Calculate team size (users who have this user in their referral chain)
-      final teamSizeQuery = await _firestore
-          .collection('users')
-          .where('referralChain', arrayContains: userId)
-          .get();
-
-      final teamSize = teamSizeQuery.docs.length;
+      // Calculate team size recursively (all users in the referral tree)
+      final teamSize = await _calculateTeamSizeRecursively(referralCode, userId);
 
       // Update user document with calculated stats
       await userDoc.reference.update({
@@ -254,7 +249,8 @@ class ComprehensiveStatsService {
         ? ((teamSize / teamRequired) * 100).clamp(0, 100)
         : 100.0;
 
-    final overallProgress = (directProgress * teamProgress / 100).clamp(0, 100).round();
+    // Overall progress is the minimum of both requirements since BOTH must be met
+    final overallProgress = (directProgress < teamProgress ? directProgress : teamProgress).round();
 
     return {
       'nextRole': {
@@ -306,5 +302,231 @@ class ComprehensiveStatsService {
         'realtime': true,
       };
     });
+  }
+
+  /// Calculate team size recursively by traversing the referral tree
+  static Future<int> _calculateTeamSizeRecursively(String referralCode, String userId, [Set<String>? visited]) async {
+    visited ??= <String>{};
+    
+    // Prevent infinite loops
+    if (visited.contains(userId)) {
+      return 0;
+    }
+    visited.add(userId);
+
+    try {
+      // Get all users who were directly referred by this referral code
+      final directReferralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: referralCode)
+          .get();
+
+      int totalTeamSize = directReferralsQuery.docs.length; // Start with direct referrals
+
+      // For each direct referral, recursively calculate their team size
+      for (final doc in directReferralsQuery.docs) {
+        final referredUserData = doc.data();
+        final referredUserCode = referredUserData['referralCode'] as String? ?? '';
+        
+        if (referredUserCode.isNotEmpty && !visited.contains(doc.id)) {
+          final subTeamSize = await _calculateTeamSizeRecursively(referredUserCode, doc.id, visited);
+          totalTeamSize += subTeamSize;
+        }
+      }
+
+      return totalTeamSize;
+    } catch (e) {
+      debugPrint('❌ Error calculating team size for $referralCode: $e');
+      return 0;
+    }
+  }
+
+  /// Stream recent referral activities for notifications
+  static Stream<List<Map<String, dynamic>>> streamRecentReferrals(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .asyncMap((userSnapshot) async {
+      if (!userSnapshot.exists) return [];
+
+      final userData = userSnapshot.data()!;
+      final referralCode = userData['referralCode'] as String? ?? '';
+      
+      if (referralCode.isEmpty) return [];
+
+      // Get recent users who joined with this referral code (last 24 hours)
+      final yesterday = DateTime.now().subtract(const Duration(hours: 24));
+      
+      final recentReferralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: referralCode)
+          .where('createdAt', isGreaterThan: Timestamp.fromDate(yesterday))
+          .orderBy('createdAt', descending: true)
+          .limit(10)
+          .get();
+
+      return recentReferralsQuery.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'userId': doc.id,
+          'fullName': data['fullName'] ?? 'New Member',
+          'joinedAt': data['createdAt'],
+          'referralCode': referralCode,
+        };
+      }).toList();
+    });
+  }
+
+  /// Get referral history for a user
+  static Future<List<Map<String, dynamic>>> getReferralHistory(String userId) async {
+    try {
+      // Get user's referral code
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return [];
+      }
+
+      final userData = userDoc.data()!;
+      final referralCode = userData['referralCode'] as String? ?? '';
+      
+      if (referralCode.isEmpty) {
+        return [];
+      }
+
+      // Get all users who joined with this referral code
+      final referralsQuery = await _firestore
+          .collection('users')
+          .where('referredBy', isEqualTo: referralCode)
+          .orderBy('createdAt', descending: true)
+          .limit(50) // Limit to last 50 referrals
+          .get();
+
+      final referralHistory = <Map<String, dynamic>>[];
+
+      for (final doc in referralsQuery.docs) {
+        final data = doc.data();
+        final joinedAt = (data['createdAt'] as Timestamp?)?.toDate();
+        
+        referralHistory.add({
+          'userId': doc.id,
+          'fullName': data['fullName'] ?? 'Unknown User',
+          'phoneE164': data['phoneE164'] ?? '',
+          'joinedAt': joinedAt,
+          'currentRole': data['role'] ?? 'Member',
+          'isActive': data['active'] ?? true,
+          'membershipPaid': data['membershipPaid'] ?? false,
+          'location': {
+            'state': data['state'] ?? '',
+            'district': data['district'] ?? '',
+            'mandal': data['mandal'] ?? '',
+            'village': data['village'] ?? '',
+          },
+        });
+      }
+
+      return referralHistory;
+    } catch (e) {
+      debugPrint('❌ Error getting referral history: $e');
+      return [];
+    }
+  }
+
+  /// Get referral statistics summary
+  static Future<Map<String, dynamic>> getReferralStatistics(String userId) async {
+    try {
+      final history = await getReferralHistory(userId);
+      
+      if (history.isEmpty) {
+        return {
+          'totalReferrals': 0,
+          'activeReferrals': 0,
+          'paidMembers': 0,
+          'recentReferrals': 0,
+          'topLocations': <String>[],
+          'monthlyGrowth': <Map<String, dynamic>>[],
+        };
+      }
+
+      final now = DateTime.now();
+      final lastMonth = now.subtract(const Duration(days: 30));
+      final lastWeek = now.subtract(const Duration(days: 7));
+
+      // Calculate statistics
+      final totalReferrals = history.length;
+      final activeReferrals = history.where((r) => r['isActive'] == true).length;
+      final paidMembers = history.where((r) => r['membershipPaid'] == true).length;
+      final recentReferrals = history.where((r) {
+        final joinedAt = r['joinedAt'] as DateTime?;
+        return joinedAt != null && joinedAt.isAfter(lastWeek);
+      }).length;
+
+      // Top locations
+      final locationCounts = <String, int>{};
+      for (final referral in history) {
+        final location = referral['location'] as Map<String, dynamic>;
+        final state = location['state'] as String? ?? '';
+        final district = location['district'] as String? ?? '';
+        
+        if (state.isNotEmpty) {
+          final locationKey = district.isNotEmpty ? '$district, $state' : state;
+          locationCounts[locationKey] = (locationCounts[locationKey] ?? 0) + 1;
+        }
+      }
+
+      final topLocations = locationCounts.entries
+          .toList()
+          ..sort((a, b) => b.value.compareTo(a.value))
+          ..take(5);
+
+      // Monthly growth (last 6 months)
+      final monthlyGrowth = <Map<String, dynamic>>[];
+      for (int i = 5; i >= 0; i--) {
+        final monthStart = DateTime(now.year, now.month - i, 1);
+        final monthEnd = DateTime(now.year, now.month - i + 1, 0);
+        
+        final monthlyCount = history.where((r) {
+          final joinedAt = r['joinedAt'] as DateTime?;
+          return joinedAt != null && 
+                 joinedAt.isAfter(monthStart) && 
+                 joinedAt.isBefore(monthEnd.add(const Duration(days: 1)));
+        }).length;
+
+        monthlyGrowth.add({
+          'month': '${monthStart.year}-${monthStart.month.toString().padLeft(2, '0')}',
+          'count': monthlyCount,
+          'monthName': _getMonthName(monthStart.month),
+        });
+      }
+
+      return {
+        'totalReferrals': totalReferrals,
+        'activeReferrals': activeReferrals,
+        'paidMembers': paidMembers,
+        'recentReferrals': recentReferrals,
+        'topLocations': topLocations.map((e) => e.key).toList(),
+        'monthlyGrowth': monthlyGrowth,
+        'conversionRate': totalReferrals > 0 ? (paidMembers / totalReferrals * 100).round() : 0,
+      };
+    } catch (e) {
+      debugPrint('❌ Error getting referral statistics: $e');
+      return {
+        'totalReferrals': 0,
+        'activeReferrals': 0,
+        'paidMembers': 0,
+        'recentReferrals': 0,
+        'topLocations': <String>[],
+        'monthlyGrowth': <Map<String, dynamic>>[],
+        'conversionRate': 0,
+      };
+    }
+  }
+
+  static String _getMonthName(int month) {
+    const months = [
+      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month];
   }
 }

@@ -140,7 +140,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: cardBackground,
         elevation: elevationLow,
         shape: RoundedRectangleBorder(

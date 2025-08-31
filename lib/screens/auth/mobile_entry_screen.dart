@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/registration_state_service.dart';
+import '../../auth/login.dart';
 import 'integrated_registration_screen.dart';
 
 class MobileEntryScreen extends StatefulWidget {
@@ -79,28 +80,84 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
       }
 
       // 🎯 NEW ROUTING LOGIC: Check registration status first
-      final registrationStatus = await RegistrationStateService.checkRegistrationStatus(phoneNumber);
+      final registrationStatus =
+          await RegistrationStateService.checkRegistrationStatus(phoneNumber);
 
       if (registrationStatus.isAlreadyRegistered) {
         // 🔄 FIX 2: Registered User → Redirect to login with prefilled phone
         setState(() {
           _isLoading = false;
         });
-        Navigator.pushReplacementNamed(
-          context, 
-          '/login',
-          arguments: phoneNumber, // Pass phone number for prefilling
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(prefilledPhone: phoneNumber),
+          ),
         );
         return;
       }
 
       if (registrationStatus.isOtpVerified) {
-        // 🔄 FIX 1: Returning User → Skip OTP, go directly to registration form
-        setState(() {
-          _isLoading = false;
-        });
-        _navigateToRegistrationForm(phoneNumber);
-        return;
+        // � ENHANCED tFIX: Double-check Firebase Auth user exists before proceeding
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null && currentUser.uid == registrationStatus.uid) {
+          // User is authenticated and matches, proceed to form
+          setState(() {
+            _isLoading = false;
+          });
+
+          // Show user-friendly message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                          'Phone already verified! Proceeding to registration form.'),
+                    ),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+
+          _navigateToRegistrationForm(phoneNumber);
+          return;
+        } else {
+          // Firebase Auth user doesn't exist or doesn't match
+          // This should have been cleaned up by checkRegistrationStatus, but let's handle it
+          debugPrint(
+              '⚠️ Mismatch detected: Phone verified but no valid Firebase Auth user');
+
+          // Clean up the verification and proceed with fresh OTP
+          await RegistrationStateService.clearPhoneVerification(phoneNumber);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.info, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                          'Verification expired. Please verify your phone number again.'),
+                    ),
+                  ],
+                ),
+                backgroundColor: Colors.orange,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+
+          // Continue with fresh OTP verification
+        }
       }
 
       if (registrationStatus.needsOtpVerification) {
@@ -138,11 +195,21 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
                 phoneNumber: phoneNumber,
                 verificationCompleted: (PhoneAuthCredential credential) async {
                   try {
-                    await FirebaseAuth.instance.signInWithCredential(
+                    final userCredential =
+                        await FirebaseAuth.instance.signInWithCredential(
                       credential,
                     );
-                    Navigator.of(dialogContext).pop();
-                    _navigateToRegistrationForm(phoneNumber);
+
+                    // Mark phone as verified for returning user flow
+                    if (userCredential.user != null) {
+                      await RegistrationStateService.markPhoneAsVerified(
+                          phoneNumber, userCredential.user!.uid);
+                    }
+
+                    if (mounted) {
+                      Navigator.of(dialogContext).pop();
+                      _navigateToRegistrationForm(phoneNumber);
+                    }
                   } catch (e) {
                     setDialogState(() {
                       otpError = 'Auto-verification failed: ${e.toString()}';
@@ -224,14 +291,24 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
                         try {
                           PhoneAuthCredential credential =
                               PhoneAuthProvider.credential(
-                                verificationId: verificationId,
-                                smsCode: otpCode,
-                              );
-                          await FirebaseAuth.instance.signInWithCredential(
+                            verificationId: verificationId,
+                            smsCode: otpCode,
+                          );
+                          final userCredential =
+                              await FirebaseAuth.instance.signInWithCredential(
                             credential,
                           );
-                          Navigator.of(dialogContext).pop();
-                          _navigateToRegistrationForm(phoneNumber);
+
+                          // Mark phone as verified for returning user flow
+                          if (userCredential.user != null) {
+                            await RegistrationStateService.markPhoneAsVerified(
+                                phoneNumber, userCredential.user!.uid);
+                          }
+
+                          if (mounted) {
+                            Navigator.of(dialogContext).pop();
+                            _navigateToRegistrationForm(phoneNumber);
+                          }
                         } catch (e) {
                           setDialogState(() {
                             otpError = 'Invalid OTP. Please try again.';
@@ -271,13 +348,18 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
       _isLoading = false;
     });
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            IntegratedRegistrationScreen(phoneNumber: phoneNumber),
-      ),
-    );
+    // Add a small delay to let the user see the success message
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                IntegratedRegistrationScreen(phoneNumber: phoneNumber),
+          ),
+        );
+      }
+    });
   }
 
   @override

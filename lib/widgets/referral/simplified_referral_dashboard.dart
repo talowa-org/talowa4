@@ -327,6 +327,8 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               children: [
                 _buildHeader(),
                 const SizedBox(height: 16),
+                _buildRecentReferralNotifications(),
+                const SizedBox(height: 16),
                 _buildReferralCodeCard(),
                 const SizedBox(height: 16),
                 _buildStatsCards(),
@@ -473,38 +475,6 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: _shareReferralLink,
-                    icon: const Icon(Icons.send, size: 18),
-                    label: const Text('Quick Share'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: () async {
-                      if (_referralStatus?['referralCode'] != null) {
-                        await ReferralSharingService.copyReferralLink(
-                          _referralStatus!['referralCode'],
-                          context,
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.link, size: 18),
-                    label: const Text('Copy Link'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -518,7 +488,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
 
     return Column(
       children: [
-        // First row - Direct vs Total Team
+        // First row - Direct vs Team Size
         Row(
           children: [
             Expanded(
@@ -533,9 +503,9 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
-                title: 'Total Team Size',
+                title: 'Team Size',
                 value: totalTeamSize.toString(),
-                subtitle: 'All levels combined',
+                subtitle: 'All levels including direct',
                 icon: Icons.groups,
                 color: Colors.orange,
               ),
@@ -667,11 +637,11 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
     }
 
     final nextRole = roleProgression['nextRole'];
-    final progress = roleProgression['progress'];
+    final requirements = roleProgression['requirements'];
     final readyForPromotion = roleProgression['readyForPromotion'] ?? false;
-    final directProgress = progress?['directReferrals']?['progress'] ?? 0;
-    final teamProgress = progress?['teamSize']?['progress'] ?? 0;
-    final overallProgress = progress?['overallProgress'] ?? 0;
+    final directProgress = requirements?['directReferrals']?['progress'] ?? 0;
+    final teamProgress = requirements?['teamSize']?['progress'] ?? 0;
+    final overallProgress = roleProgression['overallProgress'] ?? 0;
 
     return Card(
       child: Padding(
@@ -713,9 +683,9 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -723,7 +693,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Congratulations! You qualify for promotion. The system will automatically update your role.',
+                        'Congratulations! You qualify for promotion and will be notified when new members join with your referral code.',
                         style: TextStyle(
                           color: Colors.green[700],
                           fontWeight: FontWeight.w500,
@@ -737,15 +707,15 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             const SizedBox(height: 16),
             _buildProgressItem(
               'Direct Referrals',
-              progress?['directReferrals']?['current'] ?? 0,
-              progress?['directReferrals']?['required'] ?? 0,
+              requirements?['directReferrals']?['current'] ?? 0,
+              requirements?['directReferrals']?['required'] ?? 0,
               directProgress,
             ),
             const SizedBox(height: 12),
             _buildProgressItem(
               'Team Size',
-              progress?['teamSize']?['current'] ?? 0,
-              progress?['teamSize']?['required'] ?? 0,
+              requirements?['teamSize']?['current'] ?? 0,
+              requirements?['teamSize']?['required'] ?? 0,
               teamProgress,
             ),
             const SizedBox(height: 16),
@@ -796,48 +766,351 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
   Widget _buildActionButtons() {
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () async {
-              setState(() => _isLoading = true);
-              
-              // Force refresh stats using comprehensive service
-              await ComprehensiveStatsService.updateUserStats(widget.userId);
-              
-              widget.onRefresh?.call();
-              await _loadReferralStatus();
-            },
-            icon: const Icon(Icons.refresh),
-            label: const Text('Refresh Statistics'),
-          ),
-        ),
-        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () {
                   // TODO: Show referral history
+                  _showReferralHistory();
                 },
                 icon: const Icon(Icons.history),
                 label: const Text('History'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Show leaderboard
-                },
-                icon: const Icon(Icons.leaderboard),
-                label: const Text('Leaderboard'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.green,
+                  side: const BorderSide(color: Colors.green),
+                ),
               ),
             ),
           ],
         ),
       ],
     );
+  }
+
+  Widget _buildRecentReferralNotifications() {
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: ComprehensiveStatsService.streamRecentReferrals(widget.userId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final recentReferrals = snapshot.data!;
+        
+        return Card(
+          color: Colors.green.withValues(alpha: 0.1),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.celebration, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Recent Referrals',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ...recentReferrals.take(3).map((referral) {
+                  final joinedAt = (referral['joinedAt'] as Timestamp?)?.toDate();
+                  final timeAgo = joinedAt != null 
+                      ? _formatTimeAgo(DateTime.now().difference(joinedAt))
+                      : 'Recently';
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '${referral['fullName']} joined your network',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Text(
+                          timeAgo,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                if (recentReferrals.length > 3) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '+${recentReferrals.length - 3} more joined recently',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatTimeAgo(Duration difference) {
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else {
+      return '${difference.inDays}d ago';
+    }
+  }
+
+  void _showReferralHistory() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.8,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.history, color: Colors.green),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Referral History',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const Divider(),
+              Expanded(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: ComprehensiveStatsService.getReferralHistory(widget.userId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Loading referral history...'),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                            const SizedBox(height: 16),
+                            Text('Error: ${snapshot.error}'),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _showReferralHistory(); // Retry
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final history = snapshot.data ?? [];
+
+                    if (history.isEmpty) {
+                      return const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.people_outline, size: 64, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text(
+                              'No Referrals Yet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Start sharing your referral code to build your network!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        // Statistics Summary
+                        FutureBuilder<Map<String, dynamic>>(
+                          future: ComprehensiveStatsService.getReferralStatistics(widget.userId),
+                          builder: (context, statsSnapshot) {
+                            if (statsSnapshot.hasData) {
+                              final stats = statsSnapshot.data!;
+                              return Container(
+                                padding: const EdgeInsets.all(16),
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _buildStatItem('Total', stats['totalReferrals'].toString()),
+                                    _buildStatItem('Active', stats['activeReferrals'].toString()),
+                                    _buildStatItem('Paid', stats['paidMembers'].toString()),
+                                    _buildStatItem('Recent', stats['recentReferrals'].toString()),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                        // Referral List
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: history.length,
+                            itemBuilder: (context, index) {
+                              final referral = history[index];
+                              final joinedAt = referral['joinedAt'] as DateTime?;
+                              final location = referral['location'] as Map<String, dynamic>;
+                              
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: referral['isActive'] ? Colors.green : Colors.grey,
+                                    child: Text(
+                                      (referral['fullName'] as String).isNotEmpty 
+                                          ? (referral['fullName'] as String)[0].toUpperCase()
+                                          : 'U',
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    referral['fullName'] ?? 'Unknown User',
+                                    style: const TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Role: ${referral['currentRole']}'),
+                                      if (location['district']?.isNotEmpty == true)
+                                        Text('Location: ${location['district']}, ${location['state']}'),
+                                      if (joinedAt != null)
+                                        Text('Joined: ${_formatDate(joinedAt)}'),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (referral['membershipPaid'] == true)
+                                        const Icon(Icons.verified, color: Colors.green, size: 16),
+                                      if (referral['isActive'] == true)
+                                        const Icon(Icons.circle, color: Colors.green, size: 8)
+                                      else
+                                        const Icon(Icons.circle, color: Colors.grey, size: 8),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      return '${(difference.inDays / 7).floor()} weeks ago';
+    } else if (difference.inDays < 365) {
+      return '${(difference.inDays / 30).floor()} months ago';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
   }
 
   String _formatRole(String role) {

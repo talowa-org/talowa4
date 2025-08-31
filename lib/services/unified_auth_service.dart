@@ -133,7 +133,7 @@ class UnifiedAuthService {
           'language': 'en',
           'locale': 'en_US',
           'referralCode': userReferralCode, // Generated immediately
-          'membershipPaid': false,
+          'membershipPaid': true, // App is now free for all users
           'status': 'active',
           'role': 'member',
           'createdAt': FieldValue.serverTimestamp(),
@@ -178,7 +178,7 @@ class UnifiedAuthService {
           'referralCode': userReferralCode, // Same code as users collection
           'directReferrals': 0,
           'teamSize': 0,
-          'membershipPaid': false,
+          'membershipPaid': true, // App is now free for all users
           'pinHash': hashedPin, // Store PIN hash for login verification
         });
       } catch (e) {

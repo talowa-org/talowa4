@@ -46,35 +46,51 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy Settings'),
-        backgroundColor: AppTheme.talowaGreen,
-        foregroundColor: Colors.white,
-        actions: [
-          if (_isSaving)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _handleBackNavigation();
+        }
+      },
+      child: GestureDetector(
+        onHorizontalDragStart: (details) => _showSwipeProtectionMessage(),
+        onPanStart: (details) => _showSwipeProtectionMessage(),
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Privacy Settings'),
+            backgroundColor: AppTheme.talowaGreen,
+            foregroundColor: Colors.white,
+            automaticallyImplyLeading: false,
+            leading: Navigator.of(context).canPop() ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: _handleBackNavigation,
+            ) : null,
+            actions: [
+              if (_isSaving)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                )
+              else
+                TextButton(
+                  onPressed: _savePreferences,
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _savePreferences,
-              child: const Text(
-                'Save',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-        ],
-      ),
-      body: _isLoading
+            ],
+          ),
+          body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -97,6 +113,8 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                 ],
               ),
             ),
+        ),
+      ),
     );
   }
 
@@ -633,5 +651,48 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Privacy activity feature coming soon')),
     );
+  }
+
+  void _handleBackNavigation() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.info, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('You are already on the main screen. Use bottom navigation to switch tabs.'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _showSwipeProtectionMessage() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.swipe, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text('Swipe navigation is disabled to prevent accidental logout'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }

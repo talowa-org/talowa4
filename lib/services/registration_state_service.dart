@@ -43,6 +43,7 @@ class RegistrationStateService {
         final data = verificationDoc.data()!;
         final isVerified = data['verified'] as bool? ?? false;
         final verifiedAt = data['verifiedAt'] as Timestamp?;
+        final tempUid = data['tempUid'] as String?;
         
         if (isVerified && verifiedAt != null) {
           // Check if verification is still valid (24 hours)
@@ -51,14 +52,37 @@ class RegistrationStateService {
           final hoursSinceVerification = now.difference(verificationTime).inHours;
           
           if (hoursSinceVerification < 24) {
-            return RegistrationStatus(
-              status: 'otp_verified',
-              message: 'Phone number already verified. Proceeding to registration form.',
-              canProceedToForm: true,
-              uid: data['tempUid'] as String?,
-            );
+            // 🔧 CRITICAL FIX: Validate that the Firebase Auth user still exists
+            if (tempUid != null) {
+              final isValidUser = await _validateFirebaseAuthUser(tempUid);
+              if (isValidUser) {
+                // User is currently authenticated and matches
+                return RegistrationStatus(
+                  status: 'otp_verified',
+                  message: 'Phone number already verified. Proceeding to registration form.',
+                  canProceedToForm: true,
+                  uid: tempUid,
+                );
+              } else {
+                // User is not authenticated or was deleted from Firebase Auth
+                debugPrint('🧹 Firebase Auth user deleted/invalid, cleaning up phone verification for: $normalizedPhone');
+                await _firestore
+                    .collection('phone_verifications')
+                    .doc(normalizedPhone)
+                    .delete();
+                debugPrint('✅ Cleaned up orphaned phone verification');
+              }
+            } else {
+              // No tempUid stored, clean up invalid verification
+              debugPrint('🧹 No tempUid in verification record, cleaning up');
+              await _firestore
+                  .collection('phone_verifications')
+                  .doc(normalizedPhone)
+                  .delete();
+            }
           } else {
             // Verification expired, need to verify again
+            debugPrint('⏰ Phone verification expired, cleaning up');
             await _firestore
                 .collection('phone_verifications')
                 .doc(normalizedPhone)
@@ -140,6 +164,62 @@ class RegistrationStateService {
     } catch (e) {
       debugPrint('Error checking current user verification: $e');
       return false;
+    }
+  }
+
+  /// Validate if a Firebase Auth user exists and is accessible
+  static Future<bool> _validateFirebaseAuthUser(String uid) async {
+    try {
+      final currentUser = _auth.currentUser;
+      
+      // Check if current user matches the expected UID
+      if (currentUser != null && currentUser.uid == uid) {
+        return true;
+      }
+      
+      // If no current user or UID mismatch, the user was likely deleted
+      return false;
+    } catch (e) {
+      debugPrint('Error validating Firebase Auth user: $e');
+      return false;
+    }
+  }
+
+  /// Clean up orphaned phone verifications (when Firebase Auth users are deleted)
+  static Future<void> cleanupOrphanedVerifications() async {
+    try {
+      final verificationsQuery = await _firestore
+          .collection('phone_verifications')
+          .get();
+      
+      final batch = _firestore.batch();
+      int cleanedCount = 0;
+      
+      for (final doc in verificationsQuery.docs) {
+        final data = doc.data();
+        final tempUid = data['tempUid'] as String?;
+        
+        if (tempUid != null) {
+          final isValidUser = await _validateFirebaseAuthUser(tempUid);
+          if (!isValidUser) {
+            // Firebase Auth user doesn't exist, clean up verification
+            batch.delete(doc.reference);
+            cleanedCount++;
+            debugPrint('🧹 Cleaning up orphaned verification for phone: ${doc.id}');
+          }
+        } else {
+          // No tempUid, invalid verification
+          batch.delete(doc.reference);
+          cleanedCount++;
+        }
+      }
+      
+      if (cleanedCount > 0) {
+        await batch.commit();
+        debugPrint('✅ Cleaned up $cleanedCount orphaned phone verifications');
+      }
+    } catch (e) {
+      debugPrint('Error cleaning up orphaned verifications: $e');
     }
   }
 
