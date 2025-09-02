@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import '../../services/navigation/navigation_guard_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,28 +49,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : userData == null
-              ? const Center(child: Text('No profile data found'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProfileCard(),
-                      const SizedBox(height: 16),
-                      _buildAddressCard(),
-                      const SizedBox(height: 16),
-                      _buildReferralCard(),
-                    ],
+        appBar: AppBar(
+          title: const Text('My Profile'),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : userData == null
+                ? const Center(child: Text('No profile data found'))
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildProfileCard(),
+                        const SizedBox(height: 16),
+                        _buildAddressCard(),
+                        const SizedBox(height: 16),
+                        _buildReferralCard(),
+                      ],
+                    ),
                   ),
-                ),
+      ),
     );
   }
 

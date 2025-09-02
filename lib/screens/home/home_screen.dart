@@ -3,15 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../../core/theme/app_theme.dart';
 import 'land_screen.dart';
 import 'payments_screen.dart';
 import 'community_screen.dart';
 import 'profile_screen.dart';
-import '../../widgets/ai_assistant/ai_assistant_widget.dart';
+// import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
+// import '../../services/ai_assistant/voice_command_handler.dart';
+// import '../admin/admin_fix_screen.dart';
 // Test imports removed for production
 import '../../services/cultural_service.dart';
 import '../../services/user_role_fix_service.dart';
-import '../../generated/l10n/app_localizations.dart';
+// import '../../services/auth/auth_state_manager.dart';
+// import '../../generated/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -182,22 +186,116 @@ class _HomeScreenState extends State<HomeScreen> {
       isDataCached = false;
     });
     
+    // Clear cache to force fresh data load
+    await _clearCache();
     await _loadFreshData();
   }
-
-  void _handleVoiceQuery(String query) {
-    // Handle voice queries and navigate accordingly
-    final lowerQuery = query.toLowerCase();
-
-    if (lowerQuery.contains('land') || lowerQuery.contains('जमीन') || lowerQuery.contains('भूमि')) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const LandScreen()));
-    } else if (lowerQuery.contains('payment') || lowerQuery.contains('पेमेंट') || lowerQuery.contains('भुगतान')) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentsScreen()));
-    } else if (lowerQuery.contains('community') || lowerQuery.contains('समुदाय') || lowerQuery.contains('लोग')) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const CommunityScreen()));
-    } else if (lowerQuery.contains('profile') || lowerQuery.contains('प्रोफाइल')) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+  
+  /// Clear cached data
+  Future<void> _clearCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('home_user_data');
+      await prefs.remove('home_motivation_data');
+      await prefs.remove('home_cache_timestamp');
+      debugPrint('Cache cleared successfully');
+    } catch (e) {
+      debugPrint('Error clearing cache: $e');
     }
+  }
+
+  void _handleVoiceQuery(String query) async {
+    // TODO: Implement voice command handling
+    debugPrint('Voice query: $query');
+    /*
+    try {
+      final voiceHandler = VoiceCommandHandler();
+      final response = await voiceHandler.processCommand(query);
+      
+      // Show response message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message),
+            backgroundColor: AppTheme.talowaGreen,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+      
+      // Execute action
+      switch (response.action) {
+        case VoiceCommandAction.navigateToLand:
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const LandScreen()));
+          break;
+        case VoiceCommandAction.navigateToPayments:
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentsScreen()));
+          break;
+        case VoiceCommandAction.navigateToCommunity:
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const CommunityScreen()));
+          break;
+        case VoiceCommandAction.navigateToProfile:
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+          break;
+        case VoiceCommandAction.showEmergencyHelp:
+          _showEmergencyDialog();
+          break;
+        case VoiceCommandAction.showMessage:
+        case VoiceCommandAction.showError:
+          // Message already shown via SnackBar
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      debugPrint('Error handling voice query: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('वॉइस कमांड प्रोसेस करने में त्रुटि।'),
+            backgroundColor: AppTheme.emergencyRed,
+          ),
+        );
+      }
+    }
+    */
+  }
+
+  void _showEmergencyDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.emergency, color: AppTheme.emergencyRed),
+              SizedBox(width: 8),
+              Text('इमरजेंसी सहायता'),
+            ],
+          ),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('तुरंत सहायता के लिए:'),
+              SizedBox(height: 8),
+              Text('• पुलिस: 100'),
+              Text('• एम्बुलेंस: 108'),
+              Text('• फायर ब्रिगेड: 101'),
+              Text('• महिला हेल्पलाइन: 1091'),
+              SizedBox(height: 12),
+              Text('या होम स्क्रीन पर इमरजेंसी बटन का उपयोग करें।'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('समझ गया'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Debug method to test data population and fix user roles
@@ -214,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ User roles fixed and data populated successfully!'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.successGreen,
           ),
         );
 
@@ -226,11 +324,87 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ Error fixing data: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.emergencyRed,
           ),
         );
       }
     }
+  }
+
+  // Show logout confirmation dialog
+  Future<bool?> _showLogoutConfirmation() async {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text(
+            'Are you sure you want to logout? You will need to login again to access your account.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.emergencyRed,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Show system actions menu
+  void _showSystemActionsMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'System Actions',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.refresh, color: AppTheme.talowaGreen),
+                title: const Text('Populate Missing Data'),
+                subtitle: const Text('Fix user roles and populate system data'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _testDataPopulation();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.admin_panel_settings, color: Colors.orange),
+                title: const Text('Fix Admin Configuration'),
+                subtitle: const Text('Fix admin role and referral code issues'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  // TODO: Navigate to admin screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Admin functionality coming soon')),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -238,21 +412,29 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
     
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: const Text('Talowa Home'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.talowaGreen,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false, // Remove automatic back button
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context, 
-                  '/', 
-                  (route) => false,
-                );
+              // Show confirmation dialog for explicit logout
+              final shouldLogout = await _showLogoutConfirmation();
+              if (shouldLogout == true) {
+                // Use Firebase Auth for logout
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, 
+                    '/welcome', 
+                    (route) => false,
+                  );
+                }
               }
             },
           ),
@@ -271,13 +453,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Show cache indicator
                     if (isDataCached) _buildCacheIndicator(),
                     
+                    // AI Assistant - Central Feature (Always Visible)
+                    _buildCentralAIAssistant(),
+                    
+                    const SizedBox(height: 24),
+                    
                     // Cultural Greeting
                     _buildGreetingCard(),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // AI Assistant (Collapsible for better performance)
-                    _buildCollapsibleAIAssistant(),
                     
                     const SizedBox(height: 16),
                     
@@ -363,10 +545,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _testDataPopulation,
-        backgroundColor: Colors.green,
-        tooltip: 'Populate Missing Data',
-        child: const Icon(Icons.refresh, color: Colors.white),
+        onPressed: _showSystemActionsMenu,
+        backgroundColor: AppTheme.talowaGreen,
+        tooltip: 'System Actions',
+        child: const Icon(Icons.build, color: Colors.white),
       ),
     );
   }
@@ -399,32 +581,149 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Collapsible AI Assistant for better performance
-  Widget _buildCollapsibleAIAssistant() {
-    return ExpansionTile(
-      title: const Row(
+  /// Central AI Assistant - Always Visible, Voice-First Feature
+  Widget _buildCentralAIAssistant() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.talowaGreen.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.smart_toy, color: Colors.green),
-          SizedBox(width: 8),
-          Text(
-            'AI Assistant',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          // Header with prominent branding
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppTheme.talowaGreen, Color(0xFF2D7D32)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.smart_toy,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'TALOWA AI Assistant',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Your voice-first legal & land rights companion',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mic,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        'Voice-First • English • हिंदी • తెలుగు',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // AI Assistant Widget - Always Expanded
+          // TODO: Add AI Assistant Widget
+          Container(
+            height: 100,
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.blue.shade200),
+            ),
+            child: const Center(
+              child: Text(
+                '🤖 AI Assistant Coming Soon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.blue,
+                ),
+              ),
             ),
           ),
         ],
       ),
-      subtitle: const Text('Tap to expand - Voice & text support'),
-      children: const [
-        Padding(
-          padding: EdgeInsets.all(16.0),
-          child: SizedBox(
-            height: 300, // Reduced from 400px
-            child: AIAssistantWidget(),
-          ),
-        ),
-      ],
     );
   }
 
@@ -437,14 +736,14 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.green.shade400, Colors.green.shade600],
+          colors: [AppTheme.talowaGreen.withValues(alpha: 0.8), AppTheme.talowaGreen],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withValues(alpha: 0.3),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -477,7 +776,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              localizations.member,
+              _getUserRoleDisplay(),
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.white,
@@ -490,21 +789,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Get user role display text
+  String _getUserRoleDisplay() {
+    final role = userData?['role'] as String?;
+    final isAdmin = userData?['isAdmin'] as bool?;
+    final referralCode = userData?['referralCode'] as String?;
+    
+    // Check for admin indicators
+    if (role == 'admin' || 
+        role == 'national_leadership' || 
+        isAdmin == true || 
+        referralCode == 'TALADMIN') {
+      return 'Admin';
+    }
+    
+    // Map other roles to display names
+    switch (role?.toLowerCase()) {
+      case 'regional_coordinator':
+        return 'Regional Coordinator';
+      case 'coordinator':
+        return 'Coordinator';
+      case 'organizer':
+        return 'Organizer';
+      case 'activist':
+        return 'Activist';
+      case 'member':
+      default:
+        return 'Member';
+    }
+  }
+
   Widget _buildMotivationCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.orange.shade50,
+        color: AppTheme.warningOrange.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.shade200),
+        border: Border.all(color: AppTheme.warningOrange.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.celebration, color: Colors.orange.shade600),
+              Icon(Icons.celebration, color: AppTheme.warningOrange),
               const SizedBox(width: 8),
               const Text(
                 "Today's Inspiration",
@@ -520,7 +849,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'United we stand, let us protect our land together.',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.orange.shade700,
+              color: AppTheme.warningOrange.withValues(alpha: 0.8),
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -528,7 +857,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.cardBackground,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Column(
@@ -591,7 +920,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.cardBackground,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
@@ -611,7 +940,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title,
             style: const TextStyle(
               fontSize: 10,
-              color: Colors.grey,
+              color: AppTheme.secondaryText,
             ),
             textAlign: TextAlign.center,
           ),
@@ -653,6 +982,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 Colors.blue,
                 () {
                   // Navigate to legal help
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildEmergencyButton(
+                'Fix Admin Config',
+                Icons.admin_panel_settings,
+                Colors.orange,
+                () async {
+                  // TODO: Navigate to admin screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Admin functionality coming soon')),
+                  );
                 },
               ),
             ),
@@ -719,7 +1066,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -742,7 +1089,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle,
                 style: const TextStyle(
                   fontSize: 11,
-                  color: Colors.grey,
+                  color: AppTheme.secondaryText,
                 ),
                 textAlign: TextAlign.center,
               ),

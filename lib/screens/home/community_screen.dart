@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import '../../services/navigation/navigation_guard_service.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -50,34 +51,43 @@ class _CommunityScreenState extends State<CommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Community'),
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              setState(() => isLoading = true);
-              _loadCommunityMembers();
-            },
-          ),
-        ],
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildStatsCard(),
-                Expanded(child: _buildMembersList()),
-              ],
+        appBar: AppBar(
+          title: const Text('Community'),
+          backgroundColor: Colors.orange,
+          foregroundColor: Colors.white,
+          
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                setState(() => isLoading = true);
+                _loadCommunityMembers();
+              },
             ),
+          ],
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  _buildStatsCard(),
+                  Expanded(child: _buildMembersList()),
+                ],
+              ),
+      ),
     );
   }
 
   Widget _buildStatsCard() {
     final totalMembers = communityMembers.length;
-    final rootAdmins = communityMembers.where((m) => m['role'] == 'Root Administrator').length;
+    // Check for multiple admin role indicators
+    final rootAdmins = communityMembers.where((m) => 
+      m['role'] == 'Root Administrator' || 
+      m['role'] == 'admin' || 
+      m['role'] == 'national_leadership' ||
+      m['referralCode'] == 'TALADMIN' ||
+      m['isAdmin'] == true
+    ).length;
     final regularMembers = totalMembers - rootAdmins;
 
     return Container(
@@ -153,12 +163,16 @@ class _CommunityScreenState extends State<CommunityScreen> {
         final member = communityMembers[index];
         return _buildMemberCard(member);
       },
-    );
   }
 
   Widget _buildMemberCard(Map<String, dynamic> member) {
     final isCurrentUser = member['phone'] == currentUserPhone;
-    final isAdmin = member['role'] == 'Root Administrator';
+    // Check for multiple admin role indicators
+    final isAdmin = member['role'] == 'Root Administrator' || 
+                   member['role'] == 'admin' || 
+                   member['role'] == 'national_leadership' ||
+                   member['referralCode'] == 'TALADMIN' ||
+                   member['isAdmin'] == true;
     final fullName = member['fullName'] as String? ?? 'Unknown';
     final phone = member['phone'] as String? ?? 'N/A';
     final memberId = member['memberId'] as String? ?? 'N/A';

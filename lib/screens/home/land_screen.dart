@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import '../../services/navigation/navigation_guard_service.dart';
 
 class LandScreen extends StatefulWidget {
   const LandScreen({super.key});
@@ -51,22 +52,24 @@ class _LandScreenState extends State<LandScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Land'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _showAddLandDialog,
-          ),
-        ],
+        appBar: AppBar(
+          title: const Text('My Land'),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _showAddLandDialog,
+            ),
+          ],
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : landRecords.isEmpty
+                ? _buildEmptyState()
+                : _buildLandList(),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : landRecords.isEmpty
-              ? _buildEmptyState()
-              : _buildLandList(),
     );
   }
 
@@ -119,7 +122,6 @@ class _LandScreenState extends State<LandScreen> {
         final land = landRecords[index];
         return _buildLandCard(land);
       },
-    );
   }
 
   Widget _buildLandCard(Map<String, dynamic> land) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../../services/payment_service.dart';
+// import '../../services/navigation/navigation_guard_service.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -49,20 +50,22 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Payments'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text('Payments'),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  _buildPaymentStatusCard(),
+                  const SizedBox(height: 16),
+                  Expanded(child: _buildPaymentHistory()),
+                ],
+              ),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildPaymentStatusCard(),
-                const SizedBox(height: 16),
-                Expanded(child: _buildPaymentHistory()),
-              ],
-            ),
     );
   }
 
@@ -70,30 +73,30 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     return Container(
       margin: const EdgeInsets.all(16),
       child: Card(
-        color: hasCompletedPayment ? Colors.green.shade50 : Colors.orange.shade50,
+        color: hasCompletedPayment ? Colors.green.shade50 : Colors.blue.shade50,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Icon(
-                hasCompletedPayment ? Icons.check_circle : Icons.pending,
+                hasCompletedPayment ? Icons.check_circle : Icons.info_outline,
                 size: 48,
-                color: hasCompletedPayment ? Colors.green : Colors.orange,
+                color: hasCompletedPayment ? Colors.green : Colors.blue,
               ),
               const SizedBox(height: 12),
               Text(
-                hasCompletedPayment ? 'Membership Active' : 'Payment Pending',
+                hasCompletedPayment ? 'Membership Active' : 'Membership Optional',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: hasCompletedPayment ? Colors.green : Colors.orange,
+                  color: hasCompletedPayment ? Colors.green : Colors.blue,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 hasCompletedPayment
-                    ? 'Your membership fee has been paid successfully.'
-                    : 'Please complete your membership payment to access all features.',
+                    ? 'Your membership fee has been paid successfully. Thank you for supporting TALOWA!'
+                    : 'Membership payment is optional. You can enjoy all app features regardless of payment status.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.grey),
               ),
@@ -128,7 +131,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         final payment = paymentHistory[index];
         return _buildPaymentCard(payment);
       },
-    );
   }
 
   Widget _buildPaymentCard(Map<String, dynamic> payment) {
