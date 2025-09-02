@@ -69,7 +69,6 @@ class _LandScreenState extends State<LandScreen> {
             : landRecords.isEmpty
                 ? _buildEmptyState()
                 : _buildLandList(),
-      ),
     );
   }
 
@@ -122,6 +121,7 @@ class _LandScreenState extends State<LandScreen> {
         final land = landRecords[index];
         return _buildLandCard(land);
       },
+    );
   }
 
   Widget _buildLandCard(Map<String, dynamic> land) {

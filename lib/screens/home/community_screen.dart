@@ -74,7 +74,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   Expanded(child: _buildMembersList()),
                 ],
               ),
-      ),
     );
   }
 
@@ -163,6 +162,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
         final member = communityMembers[index];
         return _buildMemberCard(member);
       },
+    );
   }
 
   Widget _buildMemberCard(Map<String, dynamic> member) {

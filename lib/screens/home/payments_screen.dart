@@ -65,7 +65,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   Expanded(child: _buildPaymentHistory()),
                 ],
               ),
-      ),
     );
   }
 
@@ -131,6 +130,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         final payment = paymentHistory[index];
         return _buildPaymentCard(payment);
       },
+    );
   }
 
   Widget _buildPaymentCard(Map<String, dynamic> payment) {
