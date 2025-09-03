@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../../services/payment_service.dart';
+import '../../services/razorpay_service.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 // import '../../services/navigation/navigation_guard_service.dart';
 
 class PaymentsScreen extends StatefulWidget {
@@ -99,6 +103,24 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.grey),
               ),
+              if (!hasCompletedPayment) ...[
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _showPaymentDialog,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Support TALOWA (Optional)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -190,6 +212,230 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showPaymentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Support TALOWA'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your support helps us continue our mission to protect land rights and empower communities.',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Suggested contribution: ₹100',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'This is completely optional. All app features remain free regardless of payment.',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Maybe Later'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _processPayment();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Support Now'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _processPayment() async {
+    try {
+      // Get current user data
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        if (mounted) _showErrorDialog('Please log in to make a payment.');
+        return;
+      }
+
+      // Get user data to get phone number and other details
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        if (mounted) _showErrorDialog('User profile not found. Please update your profile.');
+        return;
+      }
+
+      final userData = userDoc.data()!;
+      final phoneNumber = userData['phoneNumber'] as String?;
+      final fullName = userData['fullName'] as String? ?? 'TALOWA User';
+      final email = userData['email'] as String? ?? 'user@talowa.org';
+
+      if (phoneNumber == null) {
+        if (mounted) _showErrorDialog('Phone number not found. Please update your profile.');
+        return;
+      }
+
+      if (kIsWeb) {
+        // For web, use the mock payment service
+        _processWebPayment(user.uid, phoneNumber);
+      } else {
+        // For mobile, use Razorpay
+        _processRazorpayPayment(phoneNumber, fullName, email);
+      }
+    } catch (e) {
+      if (mounted) _showErrorDialog('Payment initialization failed: ${e.toString()}');
+    }
+  }
+
+  void _processWebPayment(String userId, String phoneNumber) async {
+    // Show loading dialog for web
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text('Processing payment...'),
+            ],
+          ),
+        );
+      },
+    );
+
+    try {
+      // Process payment using mock PaymentService for web
+      final result = await PaymentService.processMembershipPayment(
+        userId: userId,
+        phoneNumber: phoneNumber,
+        amount: 100.0, // ₹100 suggested contribution
+      );
+
+      if (mounted) Navigator.of(context).pop(); // Close loading dialog
+
+      if (result.success) {
+        if (mounted) _showSuccessDialog(result.transactionId!);
+        _loadPaymentData(); // Refresh the payment data
+      } else {
+        if (mounted) _showErrorDialog(result.message);
+      }
+    } catch (e) {
+      if (mounted) Navigator.of(context).pop(); // Close loading dialog
+      if (mounted) _showErrorDialog('Payment failed: ${e.toString()}');
+    }
+  }
+
+  void _processRazorpayPayment(String phoneNumber, String fullName, String email) {
+    // Initialize Razorpay
+    RazorpayService.initialize();
+
+    // Process payment using Razorpay
+    RazorpayService.processMembershipPayment(
+      context: context,
+      phoneNumber: phoneNumber,
+      fullName: fullName,
+      email: email,
+      onSuccess: (PaymentSuccessResponse response) {
+        if (mounted) {
+          _showSuccessDialog(response.paymentId ?? 'Unknown');
+          _loadPaymentData(); // Refresh the payment data
+        }
+      },
+      onError: (PaymentFailureResponse response) {
+        if (mounted) {
+          _showErrorDialog('Payment failed: ${response.message ?? 'Unknown error'}');
+        }
+      },
+      onExternalWallet: (ExternalWalletResponse response) {
+        if (mounted) {
+          _showErrorDialog('External wallet payments are not supported yet.');
+        }
+      },
+    );
+  }
+
+  void _showSuccessDialog(String transactionId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green),
+              SizedBox(width: 8),
+              Text('Payment Successful!'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Thank you for supporting TALOWA!'),
+              const SizedBox(height: 8),
+              Text('Transaction ID: $transactionId'),
+              const SizedBox(height: 8),
+              const Text(
+                'Your contribution helps us protect land rights and empower communities.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Great!'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.error, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Payment Failed'),
+            ],
+          ),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

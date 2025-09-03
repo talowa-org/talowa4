@@ -14,6 +14,7 @@ import '../help/help_center_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../onboarding/coordinator_training_screen.dart';
 import '../admin/admin_login_screen.dart';
+import '../home/payments_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -239,6 +240,12 @@ class _MoreScreenState extends State<MoreScreen> {
                         subtitle: 'Police, legal aid, coordinators',
                         icon: Icons.emergency,
                         onTap: _openEmergencyContacts,
+                      ),
+                      FeatureItem(
+                        title: 'Support TALOWA',
+                        subtitle: 'Optional contribution to the movement',
+                        icon: Icons.favorite,
+                        onTap: _supportTalowa,
                       ),
                       FeatureItem(
                         title: 'Contact Support',
@@ -646,6 +653,15 @@ class _MoreScreenState extends State<MoreScreen> {
 
   void _openEmergencyContacts() {
     debugPrint('Opening emergency contacts');
+  }
+
+  void _supportTalowa() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PaymentsScreen(),
+      ),
+    );
   }
 
   void _contactSupport() {
