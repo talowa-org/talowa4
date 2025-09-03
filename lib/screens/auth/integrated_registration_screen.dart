@@ -935,7 +935,7 @@ class _IntegratedRegistrationScreenState
             teamSize: 0,
             teamReferrals: 0, // New field for BSS compatibility
             currentRoleLevel: 1, // Start as Member (level 1)
-            membershipPaid: false, // Payment is optional - app is free for all users
+            membershipPaid: true, // App is now free for all users
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
             preferences: UserPreferences.defaultPreferences(),
