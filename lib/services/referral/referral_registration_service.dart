@@ -116,7 +116,7 @@ class ReferralRegistrationService {
         'activeDirectReferrals': 0,
         'totalTeamSize': 0,
         'activeTeamSize': 0,
-        'membershipPaid': true, // Always true in simplified system
+        'membershipPaid': false, // Payment is optional - app is free for all users
         'paymentTransactionId': null,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),

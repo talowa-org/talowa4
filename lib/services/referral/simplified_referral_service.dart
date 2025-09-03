@@ -68,7 +68,7 @@ class SimplifiedReferralService {
         'activeDirectReferrals': 0,
         'activeTeamSize': 0,
         'totalTeamSize': 0,
-        'membershipPaid': true, // Always true in simplified system
+        'membershipPaid': false, // Payment is optional - app is free for all users
         'isActive': true,
         'currentRole': UserRole.member.toString(),
         'referralSetupCompletedAt': FieldValue.serverTimestamp(),
@@ -134,7 +134,7 @@ class SimplifiedReferralService {
         'roleProgression': roleStatus,
         'statistics': stats,
         'isActive': userData['isActive'] ?? true,
-        'membershipPaid': true, // Always true in simplified system
+        'membershipPaid': userData['membershipPaid'] ?? false, // Use actual payment status
       };
       
     } catch (e) {

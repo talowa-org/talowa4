@@ -158,12 +158,13 @@ class PaymentIntegrationService {
       
       final userData = userDoc.data()!;
       
-      // Check if payment already processed
+      // In free app model, payment is optional and doesn't affect functionality
+      // Check if payment already processed (for duplicate prevention only)
       if (userData['membershipPaid'] == true) {
         return {
-          'referralsActivated': false,
+          'referralsActivated': true, // Referrals are always active in free app model
           'rolePromotions': [],
-          'message': 'Payment already processed',
+          'message': 'Payment already processed - thank you for supporting TALOWA!',
         };
       }
       

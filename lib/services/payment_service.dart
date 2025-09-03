@@ -6,6 +6,9 @@ class PaymentService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   /// Process membership payment
+  /// NOTE: In TALOWA's free app model, this payment is completely optional
+  /// All app features are available regardless of payment status
+  /// Payment is purely for supporting the movement, not for feature access
   /// In a real implementation, this would integrate with payment gateways like Razorpay, Stripe, etc.
   static Future<PaymentResult> processMembershipPayment({
     required String userId,

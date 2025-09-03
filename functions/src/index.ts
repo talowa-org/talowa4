@@ -18,5 +18,18 @@ export {
   createUserRegistry
 } from './referral-system';
 
+// Export admin system functions
+export {
+  assignAdminRole,
+  revokeAdminRole,
+  logAdminAction,
+  flagSuspiciousReferrals,
+  sendAdminAlert,
+  validateAdminAccess,
+  getAdminAuditLogs,
+  moderateContent,
+  bulkModerateUsers
+} from './admin-system';
+
 // Export existing functions (if any)
 // Add your production-ready functions here

@@ -17,6 +17,10 @@ import 'screens/dev/ai_test_screen.dart';
 import 'screens/land_records/land_records_list_screen.dart';
 import 'screens/land_records/land_record_detail_screen.dart';
 import 'screens/land_records/land_record_form_screen.dart';
+import 'screens/admin/admin_login_screen.dart';
+import 'screens/admin/enhanced_admin_dashboard_screen.dart';
+import 'services/admin/enhanced_admin_auth_service.dart';
+import 'widgets/admin/admin_route_guard.dart';
 import 'services/performance_monitor.dart';
 // import 'services/localization_service.dart';
 // import 'services/rtl_support_service.dart';
@@ -188,6 +192,9 @@ class _TalowaAppState extends State<TalowaApp> {
               // Land records
               '/land/records': (context) => const LandRecordsListScreen(),
               '/land/add': (context) => const LandRecordFormScreen(),
+              // Admin routes
+              '/admin': (context) => const AdminRouteGuard(),
+              '/admin/login': (context) => const AdminLoginScreen(),
             },
             // onGenerateRoute for dynamic routes with arguments
             onGenerateRoute: (settings) {

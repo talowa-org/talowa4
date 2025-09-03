@@ -279,19 +279,7 @@ export const fixOrphanedUsers = onCall(async (request) => {
   }
 });
 
-// Referral code generation utilities
-const BASE36_CHARS = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // Crockford Base32 without ambiguous chars
-const REFERRAL_PREFIX = 'TAL';
-
-function generateReferralCode(): string {
-  let code = REFERRAL_PREFIX;
-  // Generate 7-8 base36 chars as per spec
-  const length = Math.random() < 0.5 ? 7 : 8;
-  for (let i = 0; i < length; i++) {
-    code += BASE36_CHARS[Math.floor(Math.random() * BASE36_CHARS.length)];
-  }
-  return code;
-}
+// Referral code generation utilities - using inline generation
 
 function isValidReferralCodeFormat(code: string): boolean {
   if (!code || typeof code !== 'string') return false;
@@ -505,7 +493,7 @@ export const ensureReferralCode = onCall(async (req) => {
     }
 
     // Step 3: Generate new referral code (SINGLE GENERATION POINT)
-    let code: string;
+    let code: string = '';
     let exists = true;
     let attempts = 0;
     const maxAttempts = 10;
@@ -517,31 +505,31 @@ export const ensureReferralCode = onCall(async (req) => {
       attempts++;
     }
 
-    if (attempts >= maxAttempts) {
+    if (attempts >= maxAttempts || !code) {
       throw new Error('FAILED_TO_GENERATE_UNIQUE_CODE');
     }
 
     // Step 4: Atomic write to ALL collections (CONSISTENCY GUARANTEE)
     await db.runTransaction(async (tx) => {
       // Reserve the code
-      tx.set(db.collection('referralCodes').doc(code!), {
+      tx.set(db.collection('referralCodes').doc(code), {
         uid,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
       // Write to user_registry (PRIMARY SOURCE)
       tx.set(registryRef, { 
-        referralCode: code! 
+        referralCode: code 
       }, { merge: true });
 
       // Mirror to users collection
       tx.set(userRef, { 
-        referralCode: code! 
+        referralCode: code 
       }, { merge: true });
     });
 
     logger.info(`Generated and reserved referral code ${code} for user ${uid}`);
-    return { code: code! };
+    return { code };
 
   } catch (error: any) {
     logger.error(`Failed to ensure referral code for user ${uid}:`, error);
