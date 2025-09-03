@@ -117,7 +117,7 @@ class DocumentPreviewWidget extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _getFileTypeColor(fileExtension).withOpacity(0.1),
+                color: _getFileTypeColor(fileExtension).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
@@ -457,7 +457,7 @@ class DocumentUploadPreview extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: _getFileTypeColor(fileExtension).withOpacity(0.1),
+              color: _getFileTypeColor(fileExtension).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Center(

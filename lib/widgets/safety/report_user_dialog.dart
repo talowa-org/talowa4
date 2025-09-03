@@ -234,9 +234,9 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: warningColor.withOpacity(0.1),
+        color: warningColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: warningColor.withOpacity(0.3)),
+        border: Border.all(color: warningColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

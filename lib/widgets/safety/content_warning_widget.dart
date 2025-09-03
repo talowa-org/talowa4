@@ -84,10 +84,10 @@ class _ContentWarningWidgetState extends State<ContentWarningWidget>
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: warningInfo.color.withOpacity(0.1),
+        color: warningInfo.color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: warningInfo.color.withOpacity(0.3),
+          color: warningInfo.color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -119,7 +119,7 @@ class _ContentWarningWidgetState extends State<ContentWarningWidget>
           Text(
             widget.reason,
             style: TextStyle(
-              color: warningInfo.color.withOpacity(0.8),
+              color: warningInfo.color.withValues(alpha: 0.8),
               fontSize: 12,
             ),
           ),
@@ -145,9 +145,9 @@ class _ContentWarningWidgetState extends State<ContentWarningWidget>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -53,7 +53,7 @@ class TrendingTopicsWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -199,7 +199,7 @@ class TrendingTopicsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -239,7 +239,7 @@ class TrendingTopicsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -471,8 +471,8 @@ class TrendingHashtagsWidget extends StatelessWidget {
         ],
       ),
       onPressed: () => onHashtagTap(topic.topic),
-      backgroundColor: Colors.blue.withOpacity(0.1),
-      side: BorderSide(color: Colors.blue.withOpacity(0.3)),
+      backgroundColor: Colors.blue.withValues(alpha: 0.1),
+      side: BorderSide(color: Colors.blue.withValues(alpha: 0.3)),
     );
   }
 }
@@ -545,7 +545,7 @@ class TrendingTopicsGrid extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(

@@ -8,6 +8,8 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'screens/auth/welcome_screen.dart';
 import 'auth/login.dart';
+import 'widgets/auth/auth_wrapper.dart';
+import 'services/auth/auth_state_manager.dart';
 import 'screens/auth/mobile_entry_screen.dart';
 import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
@@ -41,6 +43,9 @@ void main() async {
   // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Firebase initialized successfully
+
+  // Initialize authentication state manager
+  await AuthStateManager.initialize();
 
   // Initialize localization service
   // await LocalizationService.initialize();
@@ -173,7 +178,7 @@ class _TalowaAppState extends State<TalowaApp> {
             supportedLocales: localizationProvider.supportedLocales,
             locale: localizationProvider.currentLocale,
 
-            home: const WelcomeScreen(),
+            home: const AuthWrapper(),
             routes: {
               '/welcome': (context) => const WelcomeScreen(),
               '/mobile-entry': (context) => const MobileEntryScreen(),

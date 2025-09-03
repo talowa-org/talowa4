@@ -18,9 +18,9 @@ class ArticleStepsWidget extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.talowaGreen.withOpacity(0.05),
+        color: AppTheme.talowaGreen.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.talowaGreen.withOpacity(0.2)),
+        border: Border.all(color: AppTheme.talowaGreen.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class ArticleStepsWidget extends StatelessWidget {
                       width: 2,
                       height: 40,
                       margin: const EdgeInsets.symmetric(vertical: 8),
-                      color: AppTheme.talowaGreen.withOpacity(0.3),
+                      color: AppTheme.talowaGreen.withValues(alpha: 0.3),
                     ),
                 ],
               ),

@@ -87,7 +87,7 @@ class AuthorInfoWidget extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: _getRoleColor().withOpacity(0.3),
+          color: _getRoleColor().withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -111,7 +111,7 @@ class AuthorInfoWidget extends StatelessWidget {
   
   Widget _buildDefaultAvatar() {
     return Container(
-      color: _getRoleColor().withOpacity(0.1),
+      color: _getRoleColor().withValues(alpha: 0.1),
       child: Center(
         child: Text(
           authorName.isNotEmpty ? authorName[0].toUpperCase() : '?',
@@ -131,10 +131,10 @@ class AuthorInfoWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: roleInfo['color'].withOpacity(0.1),
+        color: roleInfo['color'].withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: roleInfo['color'].withOpacity(0.3),
+          color: roleInfo['color'].withValues(alpha: 0.3),
           width: 1,
         ),
       ),

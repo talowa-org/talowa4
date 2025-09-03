@@ -31,7 +31,7 @@ class ConversationTileWidget extends StatelessWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: hasUnread ? AppTheme.talowaGreen.withOpacity(0.05) : Colors.transparent,
+          color: hasUnread ? AppTheme.talowaGreen.withValues(alpha: 0.05) : Colors.transparent,
           border: const Border(
             bottom: BorderSide(
               color: Colors.grey,
@@ -205,7 +205,7 @@ class ConversationTileWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Icon(

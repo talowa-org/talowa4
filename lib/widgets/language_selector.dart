@@ -75,8 +75,8 @@ class LanguageSelector extends StatelessWidget {
                           _getLanguageSubtitle(locale),
                           style: TextStyle(
                             color: isSelected 
-                                ? Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
-                                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                ? Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                         trailing: isSelected 

@@ -203,7 +203,7 @@ class _PostSchedulingWidgetState extends State<PostSchedulingWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).primaryColor.withOpacity(0.1)
+              ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
               : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -247,13 +247,13 @@ class _PostSchedulingWidgetState extends State<PostSchedulingWidget> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isInPast
-            ? Colors.red.withOpacity(0.1)
-            : Colors.blue.withOpacity(0.1),
+            ? Colors.red.withValues(alpha: 0.1)
+            : Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isInPast
-              ? Colors.red.withOpacity(0.3)
-              : Colors.blue.withOpacity(0.3),
+              ? Colors.red.withValues(alpha: 0.3)
+              : Colors.blue.withValues(alpha: 0.3),
         ),
       ),
       child: Column(

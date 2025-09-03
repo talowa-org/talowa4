@@ -192,12 +192,12 @@ class _ComprehensiveMediaWidgetState extends State<ComprehensiveMediaWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: enabled 
-            ? Theme.of(context).primaryColor.withOpacity(0.1)
+            ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
             : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: enabled 
-              ? Theme.of(context).primaryColor.withOpacity(0.3)
+              ? Theme.of(context).primaryColor.withValues(alpha: 0.3)
               : Colors.grey.shade300,
           ),
         ),

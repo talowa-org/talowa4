@@ -228,11 +228,7 @@ class _NetworkScreenState extends State<NetworkScreen> {
     );
   }
 
-  int _calculateMonthlyGrowth() {
-    // TODO: Implement actual monthly growth calculation
-    // For now, return a placeholder value
-    return 0;
-  }
+
 
   Future<void> _refreshNetwork() async {
     final user = AuthService.currentUser;
@@ -358,24 +354,7 @@ class _NetworkScreenState extends State<NetworkScreen> {
     );
   }
 
-  void _shareReferralCode() async {
-    final referralCode = _networkData?['referralCode'] ?? '';
-    
-    if (referralCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Referral code not available. Please try refreshing.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
 
-    await ReferralSharingService.showSharingOptions(
-      context,
-      referralCode,
-    );
-  }
 
   /// Handle smart back navigation for network screen
   void _handleNetworkBackNavigation() {

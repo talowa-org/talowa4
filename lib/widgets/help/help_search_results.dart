@@ -130,7 +130,7 @@ class _SearchResultCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.talowaGreen.withOpacity(0.1),
+                        color: AppTheme.talowaGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(
@@ -156,7 +156,7 @@ class _SearchResultCard extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -221,7 +221,7 @@ class _SearchResultCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _getSectionColor(section).withOpacity(0.1),
+                        color: _getSectionColor(section).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(

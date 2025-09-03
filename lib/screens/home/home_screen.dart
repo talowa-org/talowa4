@@ -8,7 +8,7 @@ import 'land_screen.dart';
 import 'payments_screen.dart';
 import 'community_screen.dart';
 import 'profile_screen.dart';
-import '../../widgets/ai_assistant/ai_assistant_widget.dart';
+import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
 // Voice commands are handled directly by AI Assistant widget
 // import '../../services/ai_assistant/voice_command_handler.dart';
 // import '../admin/admin_fix_screen.dart';
@@ -205,8 +205,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Voice queries are handled directly by the AI Assistant widget
-  // No separate voice command handler needed in home screen
+  // Voice and text query handlers for AI Assistant
+  void _handleVoiceQuery(String query) {
+    debugPrint('Voice query received: $query');
+    // Voice queries are processed by the VoiceFirstAIWidget internally
+    // This callback is for additional app-level actions if needed
+  }
+
+  void _handleTextQuery(String query) {
+    debugPrint('Text query received: $query');
+    // Text queries are processed by the VoiceFirstAIWidget internally
+    // This callback is for additional app-level actions if needed
+  }
 
   void _showEmergencyDialog() {
     showDialog(
@@ -659,7 +669,12 @@ class _HomeScreenState extends State<HomeScreen> {
           // AI Assistant Widget - Always Expanded
           Container(
             margin: const EdgeInsets.all(16),
-            child: const AIAssistantWidget(),
+            child: VoiceFirstAIWidget(
+              onVoiceCommand: _handleVoiceQuery,
+              onTextCommand: _handleTextQuery,
+              isCollapsible: true,
+              maxHeight: 280,
+            ),
           ),
         ],
       ),

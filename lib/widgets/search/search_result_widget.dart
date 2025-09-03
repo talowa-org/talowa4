@@ -207,9 +207,9 @@ class SearchResultWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         '$score%',
@@ -269,7 +269,7 @@ class SearchResultWidget extends StatelessWidget {
         spans.add(TextSpan(
           text: text.substring(index, index + term.length),
           style: (style ?? const TextStyle()).copyWith(
-            backgroundColor: Colors.yellow.withOpacity(0.3),
+            backgroundColor: Colors.yellow.withValues(alpha: 0.3),
             fontWeight: FontWeight.bold,
           ),
         ));
@@ -307,11 +307,11 @@ class SearchResultWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
             color: isHighlighted 
-                ? Colors.blue.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.blue.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: isHighlighted 
-                ? Border.all(color: Colors.blue.withOpacity(0.3))
+                ? Border.all(color: Colors.blue.withValues(alpha: 0.3))
                 : null,
           ),
           child: Text(

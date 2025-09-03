@@ -1,70 +1,116 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
+import 'navigation_safety_service.dart';
 
 /// Service for handling smart back navigation throughout the app
 /// Provides consistent back navigation behavior similar to popular apps
+/// Enhanced with safety checks to prevent accidental logout     
 class SmartBackNavigationService {
   
-  /// Handle back navigation with smart logic
-  /// Returns true if navigation was handled, false if default behavior should apply
-  static bool handleBackNavigation(BuildContext context, {
+  /// STRICT RULE: Handle back navigation - NEVER allow logout   
+  /// Always returns true to prevent any default behavior that could cause logout
+  static bool handleBackNavigation(BuildContext context, {       
     int? currentTabIndex,
     VoidCallback? onNavigateToHome,
     String? screenName,
   }) {
-    // Check if there's a screen in the navigation stack
-    if (Navigator.of(context).canPop()) {
-      // There's a screen to go back to - use natural navigation
-      Navigator.of(context).pop();
-      debugPrint('🔙 Smart back ($screenName): Navigated back in stack');
-      return true;
+    try {
+      debugPrint('🔙 Smart back ($screenName): STRICT LOGOUT PREVENTION MODE');
+      
+      // STRICT RULE: Always validate context before any navigation
+      if (!NavigationSafetyService.isNavigationSafe(context)) {  
+        debugPrint('🚨 Smart back ($screenName): Navigation context unsafe - preventing logout');
+        _showSafetyMessage(context, '🚫 Navigation blocked for safety');
+        return true; // ALWAYS prevent default back action       
+      }
+
+      // Check if there's a safe screen in the navigation stack  
+      if (Navigator.of(context).canPop()) {
+        // There's a screen to go back to - use natural navigation (SAFE)
+        Navigator.of(context).pop();
+        debugPrint('🔙 Smart back ($screenName): Safe navigation back in stack');
+        return true; // Handled safely
+      }
+
+      // No stack - handle based on current context (SAFE OPERATIONS ONLY)
+      if (currentTabIndex != null && currentTabIndex != 0 && onNavigateToHome != null) {
+        // Not on home tab - go to home tab (SAFE OPERATION)     
+        onNavigateToHome();
+        _showNavigationFeedback(context, '🏠 Navigated to Home tab', AppTheme.legalBlue);
+        debugPrint('🔙 Smart back ($screenName): Safe switch to Home tab');
+        return true; // Handled safely
+      }
+
+      // On home tab or no tab context - show message (SAFE OPERATION)
+      _showNavigationFeedback(
+        context,
+        '🏠 You are on the ${screenName ?? 'main'} screen. Use bottom navigation or logout button.',
+        AppTheme.talowaGreen,
+        duration: 3,
+      );
+      debugPrint('🔙 Smart back ($screenName): On main screen, showed safe message');
+      return true; // ALWAYS handled to prevent logout
+    } catch (e) {
+      // CRITICAL SAFETY: Any error MUST prevent logout
+      debugPrint('🚨 Smart back ($screenName): Error - PREVENTING LOGOUT: $e');
+      _showSafetyMessage(context, '🚫 Navigation error. Use bottom tabs or logout button.');
+      return true; // ALWAYS prevent default back action on error
     }
-    
-    // No stack - handle based on current context
-    if (currentTabIndex != null && currentTabIndex != 0 && onNavigateToHome != null) {
-      // Not on home tab - go to home tab
-      onNavigateToHome();
-      _showNavigationFeedback(context, 'Navigated to Home', Colors.blue);
-      debugPrint('🔙 Smart back ($screenName): Switched to Home tab');
-      return true;
-    }
-    
-    // On home tab or no tab context - show helpful message
-    _showNavigationFeedback(
-      context, 
-      'You are on the ${screenName ?? 'main'} screen. Use bottom navigation to switch tabs.',
-      Colors.green,
-      duration: 2,
-    );
-    debugPrint('🔙 Smart back ($screenName): Already on main screen, showing message');
-    return true;
   }
   
-  /// Handle back navigation for main navigation screen
+  /// STRICT RULE: Handle main navigation back - NEVER logout
   static void handleMainNavigationBack(
     BuildContext context, 
-    int currentIndex, 
+    int currentIndex,
     Function(int) setCurrentIndex,
     VoidCallback? provideFeedback,
   ) {
-    if (Navigator.of(context).canPop()) {
-      // There's a screen in the stack, go back naturally
-      Navigator.of(context).pop();
-      debugPrint('🔙 Main navigation: Navigated back in stack');
-    } else if (currentIndex != 0) {
-      // Not on home tab, go to home tab
-      setCurrentIndex(0);
-      provideFeedback?.call();
-      _showNavigationFeedback(context, '🏠 Navigated to Home', Colors.blue);
-      debugPrint('🔙 Main navigation: Switched to Home tab');
-    } else {
-      // On home tab with no stack - show helpful message
-      _showNavigationFeedback(
-        context,
-        'You are on the Home screen. Use bottom navigation to switch tabs.',
-        Colors.green,
-        duration: 2,
-      );
-      debugPrint('🔙 Main navigation: Already on Home, showing message');
+    try {
+      debugPrint('🔙 Main navigation: STRICT LOGOUT PREVENTION MODE');
+      
+      // STRICT RULE: Always validate context first
+      if (!context.mounted) {
+        debugPrint('🚨 Main navigation: Context not mounted - preventing logout');
+        return;
+      }
+
+      // Check if there's a safe screen in the stack
+      if (Navigator.of(context).canPop()) {
+        // There's a screen in the stack, go back naturally (SAFE)
+        Navigator.of(context).pop();
+        debugPrint('🔙 Main navigation: Safe navigation back in stack');
+      } else if (currentIndex != 0) {
+        // Not on home tab, go to home tab (SAFE OPERATION)      
+        setCurrentIndex(0);
+        provideFeedback?.call();
+        _showNavigationFeedback(context, '🏠 Navigated to Home tab', AppTheme.legalBlue);
+        debugPrint('🔙 Main navigation: Safe switch to Home tab');
+      } else {
+        // On home tab with no stack - show message (SAFE OPERATION)
+        _showNavigationFeedback(
+          context,
+          '🏠 You are on the Home screen. Use bottom navigation or logout button.',
+          AppTheme.talowaGreen,
+          duration: 3,
+        );
+        debugPrint('🔙 Main navigation: On Home, showed safe message');
+      }
+    } catch (e) {
+      // CRITICAL SAFETY: If anything goes wrong, show message - NEVER logout
+      debugPrint('🚨 Main navigation: Error - PREVENTING LOGOUT: $e');
+      try {
+        if (context.mounted) {
+          _showNavigationFeedback(
+            context,
+            '🚫 Navigation error. Use bottom tabs or logout button.',
+            AppTheme.emergencyRed,
+            duration: 4,
+          );
+        }
+      } catch (fallbackError) {
+        debugPrint('🚨 Main navigation: Even fallback failed - LOGOUT PREVENTED: $fallbackError');
+        // CRITICAL: Do absolutely nothing rather than risk logout
+      }
     }
   }
   
@@ -74,44 +120,91 @@ class SmartBackNavigationService {
     String? screenName,
     VoidCallback? onCustomBack,
   }) {
-    if (onCustomBack != null) {
-      // Custom back behavior provided
-      onCustomBack();
-      debugPrint('🔙 Sub-screen ($screenName): Custom back behavior executed');
-    } else if (Navigator.of(context).canPop()) {
-      // Default back navigation
-      Navigator.of(context).pop();
-      debugPrint('🔙 Sub-screen ($screenName): Navigated back');
-    } else {
-      // No navigation stack - shouldn't happen in sub-screens
-      _showNavigationFeedback(
-        context,
-        'Cannot go back from ${screenName ?? 'this screen'}',
-        Colors.orange,
-      );
-      debugPrint('🔙 Sub-screen ($screenName): No back navigation available');
+    try {
+      // SAFETY CHECK: Validate navigation context
+      if (!NavigationSafetyService.isNavigationSafe(context)) {  
+        debugPrint('🚨 Sub-screen ($screenName): Navigation context unsafe');
+        _showSafetyMessage(context, 'Navigation temporarily unavailable');
+        return;
+      }
+
+      if (onCustomBack != null) {
+        // Custom back behavior provided
+        onCustomBack();
+        debugPrint('🔙 Sub-screen ($screenName): Custom back behavior executed');
+      } else if (Navigator.of(context).canPop()) {
+        // Default back navigation
+        Navigator.of(context).pop();
+        debugPrint('🔙 Sub-screen ($screenName): Navigated back');
+      } else {
+        // No navigation stack - shouldn't happen in sub-screens 
+        _showNavigationFeedback(
+          context,
+          'Cannot go back from ${screenName ?? 'this screen'}',  
+          AppTheme.warningOrange,
+        );
+        debugPrint('🔙 Sub-screen ($screenName): No back navigation available');
+      }
+    } catch (e) {
+      // SAFETY: Handle any navigation errors gracefully
+      debugPrint('🚨 Sub-screen ($screenName): Error in back navigation: $e');
+      _showSafetyMessage(context, 'Navigation error. Please try again.');
     }
   }
   
   /// Show navigation feedback to user
   static void _showNavigationFeedback(
-    BuildContext context, 
-    String message, 
+    BuildContext context,
+    String message,
     Color backgroundColor, {
     int duration = 1,
   }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: duration),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+    try {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: Duration(seconds: duration),
+          backgroundColor: backgroundColor,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      debugPrint('🚨 Failed to show navigation feedback: $e');   
+    }
+  }
+
+  /// Show safety message with warning icon
+  static void _showSafetyMessage(BuildContext context, String message) {
+    try {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(child: Text(message)),
+            ],
+          ),
+          duration: const Duration(seconds: 3),
+          backgroundColor: AppTheme.warningOrange,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('🚨 Failed to show safety message: $e');        
+    }
   }
   
   /// Check if back navigation is available

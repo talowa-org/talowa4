@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/onboarding_service.dart';
 import '../../services/navigation/smart_back_navigation_service.dart';
+import '../../services/navigation/navigation_safety_service.dart';
 import '../home/home_screen.dart';
 import '../feed/feed_screen.dart';
 import '../messages/messages_screen.dart';
@@ -259,13 +260,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     // });
   }
 
-  /// Handle smart back navigation using the centralized service
+  /// Handle smart back navigation using the centralized service with safety checks
   void _handleSmartBackNavigation() {
-    SmartBackNavigationService.handleMainNavigationBack(
+    NavigationSafetyService.handleBackNavigation(
       context,
-      _currentIndex,
-      (newIndex) => setState(() => _currentIndex = newIndex),
-      _provideFeedback,
+      screenName: 'MainNavigation',
+      onBackPressed: () {
+        SmartBackNavigationService.handleMainNavigationBack(
+          context,
+          _currentIndex,
+          (newIndex) => setState(() => _currentIndex = newIndex),
+          _provideFeedback,
+        );
+      },
     );
   }
 }

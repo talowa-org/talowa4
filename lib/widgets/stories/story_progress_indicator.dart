@@ -22,7 +22,7 @@ class StoryProgressIndicator extends StatelessWidget {
             height: 3,
             margin: const EdgeInsets.symmetric(horizontal: 1),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(1.5),
             ),
             child: _buildProgressBar(index),

@@ -35,8 +35,8 @@ class HelpCategoryCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: category.accentColor?.withOpacity(0.1) ?? 
-                         AppTheme.talowaGreen.withOpacity(0.1),
+                  color: category.accentColor?.withValues(alpha: 0.1) ?? 
+                         AppTheme.talowaGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
