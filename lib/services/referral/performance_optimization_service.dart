@@ -239,7 +239,7 @@ class PerformanceOptimizationService {
     final query = await _firestore
         .collection('users')
         .where('referredBy', isEqualTo: userId)
-        .where('membershipPaid', isEqualTo: true)
+        // Free app model: Count all referrals, not just paid ones
         .get();
     
     return query.docs.length;
@@ -310,13 +310,11 @@ class PerformanceOptimizationService {
     
     int activeSize = 0;
     
+    // Free app model: All users are active regardless of payment status
+    activeSize = query.docs.length;
+    
+    // Recursively calculate for each direct referral
     for (final doc in query.docs) {
-      final data = doc.data();
-      if (data['membershipPaid'] == true) {
-        activeSize++;
-      }
-      
-      // Recursively calculate for each direct referral
       activeSize += await _calculateActiveTeamSizeRecursive(
         doc.id,
         visited,

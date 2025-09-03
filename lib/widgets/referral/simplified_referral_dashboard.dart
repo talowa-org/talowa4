@@ -1048,7 +1048,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       if (referral['membershipPaid'] == true)
-                                        const Icon(Icons.verified, color: Colors.green, size: 16),
+                                        const Icon(Icons.favorite, color: Colors.orange, size: 16), // Supporter badge
                                       if (referral['isActive'] == true)
                                         const Icon(Icons.circle, color: Colors.green, size: 8)
                                       else

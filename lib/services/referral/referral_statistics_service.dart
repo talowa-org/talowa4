@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'referral_chain_service.dart';
 
 /// Exception thrown when referral statistics operations fail
@@ -165,8 +166,10 @@ class ReferralStatisticsService {
       
       final directReferrals = directReferralsQuery.docs.map((doc) => doc.data()).toList();
       
-      final pending = directReferrals.where((user) => user['membershipPaid'] != true).length;
-      final active = directReferrals.where((user) => user['membershipPaid'] == true).length;
+      // In free app model, all users are active - no payment restrictions
+      final totalReferrals = directReferrals.length;
+      final active = totalReferrals; // All referrals are active
+      final pending = 0; // No pending users in free app model
       
       // Get team size
       final teamSizeQuery = await _firestore
@@ -175,7 +178,8 @@ class ReferralStatisticsService {
           .get();
       
       final teamSize = teamSizeQuery.docs.length;
-      final activeTeamSize = teamSizeQuery.docs.where((doc) => doc.data()['membershipPaid'] == true).length;
+      // In free app model, all team members are active
+      final activeTeamSize = teamSize; // All team members are active
       final pendingTeamSize = teamSize - activeTeamSize;
       
       return {
@@ -263,8 +267,8 @@ class ReferralStatisticsService {
         query = query.where('currentRole', isEqualTo: roleFilter);
       }
       
-      // Only include users with membership paid
-      query = query.where('membershipPaid', isEqualTo: true);
+      // Free app model: Include all active users in leaderboard
+      // No payment restrictions - all users can appear on leaderboard
       
       // Sort by specified field (ensure field exists)
       final validSortFields = ['directReferrals', 'teamSize', 'teamReferrals'];
@@ -301,12 +305,9 @@ class ReferralStatisticsService {
       final totalUsersQuery = await _firestore.collection('users').get();
       final totalUsers = totalUsersQuery.docs.length;
       
-      // Get paid users
-      final paidUsersQuery = await _firestore
-          .collection('users')
-          .where('membershipPaid', isEqualTo: true)
-          .get();
-      final paidUsers = paidUsersQuery.docs.length;
+      // Free app model: Count all users as supporters (no payment distinction)
+      // In free app model, all users are equal - payment only provides supporter badge
+      final paidUsers = totalUsers; // All users are considered supporters in free model
       
       // Calculate total referrals
       int totalReferrals = 0;
@@ -320,7 +321,7 @@ class ReferralStatisticsService {
       
       // Calculate role distribution
       final roleDistribution = <String, int>{};
-      for (final doc in paidUsersQuery.docs) {
+      for (final doc in totalUsersQuery.docs) {
         final data = doc.data();
         final role = data['role'] as String? ?? 'member';
         roleDistribution[role] = (roleDistribution[role] ?? 0) + 1;

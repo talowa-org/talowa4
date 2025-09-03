@@ -38,9 +38,9 @@ class AnalyticsReportingService {
           .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(endDate))
           .get();
       
+      // Free app model: Count all user registrations as conversions
       final conversions = await _firestore
           .collection('users')
-          .where('membershipPaid', isEqualTo: true)
           .where('registrationDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
           .where('registrationDate', isLessThanOrEqualTo: Timestamp.fromDate(endDate))
           .get();
@@ -544,7 +544,7 @@ class AnalyticsReportingService {
         .collection('users')
         .where('registrationDate', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
         .where('registrationDate', isLessThan: Timestamp.fromDate(end))
-        .where('membershipPaid', isEqualTo: true)
+        // Free app model: Count all registrations, not just paid ones
         .get();
 
     return query.docs.length;
