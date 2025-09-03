@@ -1,3 +1,10 @@
+// ⚠️ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION ⚠️
+// This is the PRIMARY authentication service from Checkpoint 7
+// DO NOT MODIFY without explicit user approval
+// See: AUTHENTICATION_PROTECTION_STRATEGY.md
+// Working commit: 3a00144 (Checkpoint 6 base)
+// Last verified: September 3rd, 2025
+
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

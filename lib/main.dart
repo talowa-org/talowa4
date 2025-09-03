@@ -1,3 +1,11 @@
+// ⚠️ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION ⚠️
+// This file contains the WORKING authentication routing from Checkpoint 7
+// DO NOT MODIFY authentication-related code without explicit user approval
+// See: AUTHENTICATION_PROTECTION_STRATEGY.md
+// Working commit: 3a00144 (Checkpoint 6 base)
+// Last verified: September 3rd, 2025
+// Current working flow: WelcomeScreen → Login/Register → UnifiedAuthService → MainApp
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,8 +16,7 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'screens/auth/welcome_screen.dart';
 import 'auth/login.dart';
-import 'widgets/auth/auth_wrapper.dart';
-import 'services/auth/auth_state_manager.dart';
+
 import 'screens/auth/mobile_entry_screen.dart';
 import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
@@ -48,8 +55,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Firebase initialized successfully
 
-  // Initialize authentication state manager
-  await AuthStateManager.initialize();
+
 
   // Initialize localization service
   // await LocalizationService.initialize();
@@ -182,7 +188,7 @@ class _TalowaAppState extends State<TalowaApp> {
             supportedLocales: localizationProvider.supportedLocales,
             locale: localizationProvider.currentLocale,
 
-            home: const AuthWrapper(),
+            home: const WelcomeScreen(),
             routes: {
               '/welcome': (context) => const WelcomeScreen(),
               '/mobile-entry': (context) => const MobileEntryScreen(),

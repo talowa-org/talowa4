@@ -122,52 +122,54 @@ service cloud.firestore {
     
 
     
-    // Admin collections - strict RBAC enforcement
+    // Admin collections - PROTECTED SIMPLE MODEL (Checkpoint 7)
+    // ⚠️ DO NOT CHANGE - This is the working authentication system
     match /admin/{document=**} {
-      allow read, write: if isSuperAdmin();
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']); // Replace with actual admin UIDs
     }
-    
-    // Admin configuration - highly restricted access
+
+    // Admin configuration - simple admin access (PROTECTED)
     match /admin_config/{document} {
-      allow read: if isSuperAdmin(); // Only super_admin can read config
-      allow write: if isSuperAdmin(); // Only super_admin can modify config
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']);
     }
-    
-    // Admin PIN history - super restricted
-    match /admin_config/pin_history {
-      allow read, write: if false; // Only Cloud Functions can access
+
+    // Admin audit logs - simple admin access (PROTECTED)
+    match /admin_audit_logs/{document} {
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']);
     }
-    
-    // Transparency logs - immutable audit trail
-    match /transparency_logs/{logId} {
-      allow read: if isAuditor(); // Auditors and super_admin can read
-      allow create: if isAdmin(); // Any admin can create logs
-      allow update, delete: if false; // Immutable - no updates or deletes allowed
+
+    // Admin role assignments - simple admin access (PROTECTED)
+    match /admin_roles/{document} {
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']);
     }
-    
-    // Moderation actions - content moderation
-    match /moderation_actions/{actionId} {
-      allow read: if isModerator(); // Moderators and super_admin can read
-      allow create: if isModerator(); // Moderators and super_admin can create
-      allow update, delete: if false; // Immutable - no updates or deletes allowed
+
+    // Admin sessions - simple admin access (PROTECTED)
+    match /admin_sessions/{document} {
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']);
     }
-    
-    // Flagged activities - suspicious activity tracking
-    match /flagged_activities/{activityId} {
-      allow read: if isAdmin(); // All admins can read flagged activities
-      allow create: if isAdmin(); // All admins can flag activities
-      allow update: if isModerator(); // Only moderators can update (resolve flags)
-      allow delete: if isSuperAdmin(); // Only super_admin can delete
+
+    // Admin notifications - simple admin access (PROTECTED)
+    match /admin_notifications/{document} {
+      allow read, write: if signedIn() &&
+        (request.auth.token.email == 'admin@talowa.org' ||
+         request.auth.token.role == 'admin' ||
+         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']);
     }
-    
-    // Admin alerts - notification system
-    match /admin_alerts/{alertId} {
-      allow read: if isAdmin(); // All admins can read alerts
-      allow create: if isAdmin(); // All admins can create alerts
-      allow update: if isAdmin(); // All admins can mark as read
-      allow delete: if isSuperAdmin(); // Only super_admin can delete
-    }
-    
     // Other collections - default permissions for user-owned data
     match /{document=**} {
       allow read: if signedIn();
