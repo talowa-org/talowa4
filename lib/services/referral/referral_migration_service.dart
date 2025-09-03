@@ -81,7 +81,7 @@ class ReferralMigrationService {
     
     // Prepare migration data
     final migrationData = <String, dynamic>{
-      'membershipPaid': true, // Always true in simplified system
+      'membershipPaid': userData['membershipPaid'] ?? false, // Use actual payment status
       'referralStatus': 'active', // Always active in simplified system
       'isActive': userData['isActive'] ?? true,
       'migratedToSimplifiedSystem': true,
@@ -258,7 +258,7 @@ class ReferralMigrationService {
         try {
           await _firestore.collection('users').doc(doc.id).update({
             'referralStatus': 'active',
-            'membershipPaid': true,
+            'membershipPaid': false, // Payment is optional - app is free for all users
           });
           
           fixedUsers++;

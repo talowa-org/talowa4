@@ -65,7 +65,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         'activeTeamSize': currentStats['teamSize'] ?? 0,
         'currentRole': currentStats['currentRole'] ?? 'Member',
         'currentRoleLevel': 1, // Will be calculated from role
-        'membershipPaid': true, // Assume paid for now
+        'membershipPaid': currentStats['membershipPaid'] ?? false, // Use actual payment status
         'roleProgression': roleProgression,
       };
       

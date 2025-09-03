@@ -7,9 +7,8 @@ import '../../core/constants/app_constants.dart';
 import '../../widgets/more/profile_summary_card.dart';
 import '../../widgets/more/feature_section_card.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/more/hidden_admin_access.dart';
 import '../../widgets/more/admin_access_widget.dart';
-import '../../widgets/more/dev_admin_button.dart';
+import '../../routes/admin_route.dart';
 import '../settings/language_settings_screen.dart';
 import '../help/help_center_screen.dart';
 import '../onboarding/onboarding_screen.dart';
@@ -290,8 +289,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   // App Version and Legal
                   _buildAppInfoSection(),
 
-                  // Development Admin Button (only shows in debug mode)
-                  const DevAdminButton(),
+
                 ],
               ),
             ),
@@ -304,38 +302,36 @@ class _MoreScreenState extends State<MoreScreen> {
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         child: Column(
           children: [
-            HiddenAdminAccess(
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.eco,
-                    color: AppTheme.talowaGreen,
-                    size: 32,
+            Row(
+              children: [
+                const Icon(
+                  Icons.eco,
+                  color: AppTheme.talowaGreen,
+                  size: 32,
+                ),
+                const SizedBox(width: AppTheme.spacingMedium),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppConstants.appName,
+                        style: AppTheme.heading2Style.copyWith(
+                          color: AppTheme.talowaGreen,
+                        ),
+                      ),
+                      const Text(
+                        AppConstants.appFullName,
+                        style: AppTheme.captionStyle,
+                      ),
+                      const Text(
+                        'Version ${AppConstants.appVersion}',
+                        style: AppTheme.captionStyle,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: AppTheme.spacingMedium),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppConstants.appName,
-                          style: AppTheme.heading2Style.copyWith(
-                            color: AppTheme.talowaGreen,
-                          ),
-                        ),
-                        const Text(
-                          AppConstants.appFullName,
-                          style: AppTheme.captionStyle,
-                        ),
-                        const Text(
-                          'Version ${AppConstants.appVersion}',
-                          style: AppTheme.captionStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(height: AppTheme.spacingMedium),
             const Divider(),
@@ -916,7 +912,7 @@ class _MoreScreenState extends State<MoreScreen> {
           ],
         ),
         content: const Text(
-          'Access the admin dashboard for system management and moderation.',
+          'Access the secure admin portal with Firebase Authentication and role-based access control.',
         ),
         actions: [
           TextButton(
@@ -926,18 +922,13 @@ class _MoreScreenState extends State<MoreScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AdminLoginScreen(),
-                ),
-              );
+              AdminRoute.navigateToAdmin(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red[800],
               foregroundColor: Colors.white,
             ),
-            child: const Text('Admin Login'),
+            child: const Text('Secure Admin Portal'),
           ),
         ],
       ),

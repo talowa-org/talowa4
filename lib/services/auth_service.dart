@@ -442,7 +442,7 @@ class AuthService {
         'locale': 'en_US',
         'referralCode':
             referralCode, // Include referralCode in initial creation
-        'membershipPaid': true, // App is now free for all users
+        'membershipPaid': false, // Payment is optional - app is free for all users
         'status': 'active', // Set user as active immediately
         'role': 'member', // Default role
         'createdAt': FieldValue.serverTimestamp(),

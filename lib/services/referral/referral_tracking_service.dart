@@ -272,7 +272,7 @@ class ReferralTrackingService {
         'currentRole': userData['role'] ?? 'member',
         'referralCode': userData['referralCode'],
         'referralChain': userData['referralChain'] ?? [],
-        'membershipPaid': userData['membershipPaid'] ?? true,
+        'membershipPaid': userData['membershipPaid'] ?? false, // Use actual payment status
       };
     } catch (e) {
       throw ReferralTrackingException(

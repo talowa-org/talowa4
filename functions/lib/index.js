@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
+exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
 // functions/src/index.ts
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
@@ -50,6 +50,17 @@ Object.defineProperty(exports, "getMyReferralStats", { enumerable: true, get: fu
 Object.defineProperty(exports, "registerUserProfile", { enumerable: true, get: function () { return referral_system_1.registerUserProfile; } });
 Object.defineProperty(exports, "checkPhone", { enumerable: true, get: function () { return referral_system_1.checkPhone; } });
 Object.defineProperty(exports, "createUserRegistry", { enumerable: true, get: function () { return referral_system_1.createUserRegistry; } });
+// Export admin system functions
+var admin_system_1 = require("./admin-system");
+Object.defineProperty(exports, "assignAdminRole", { enumerable: true, get: function () { return admin_system_1.assignAdminRole; } });
+Object.defineProperty(exports, "revokeAdminRole", { enumerable: true, get: function () { return admin_system_1.revokeAdminRole; } });
+Object.defineProperty(exports, "logAdminAction", { enumerable: true, get: function () { return admin_system_1.logAdminAction; } });
+Object.defineProperty(exports, "flagSuspiciousReferrals", { enumerable: true, get: function () { return admin_system_1.flagSuspiciousReferrals; } });
+Object.defineProperty(exports, "sendAdminAlert", { enumerable: true, get: function () { return admin_system_1.sendAdminAlert; } });
+Object.defineProperty(exports, "validateAdminAccess", { enumerable: true, get: function () { return admin_system_1.validateAdminAccess; } });
+Object.defineProperty(exports, "getAdminAuditLogs", { enumerable: true, get: function () { return admin_system_1.getAdminAuditLogs; } });
+Object.defineProperty(exports, "moderateContent", { enumerable: true, get: function () { return admin_system_1.moderateContent; } });
+Object.defineProperty(exports, "bulkModerateUsers", { enumerable: true, get: function () { return admin_system_1.bulkModerateUsers; } });
 // Export existing functions (if any)
 // Add your production-ready functions here
 //# sourceMappingURL=index.js.map

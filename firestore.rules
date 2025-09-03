@@ -11,12 +11,48 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
     
-    // Users collection - allow users to read/write their own data but block referral field writes
+    // Enhanced admin role checking with Custom Claims
+    function isAdmin() {
+      return signedIn() && request.auth.token.role != null && 
+             request.auth.token.role in ['super_admin', 'moderator', 'regional_admin', 'auditor'];
+    }
+    
+    function isSuperAdmin() {
+      return signedIn() && request.auth.token.role == 'super_admin';
+    }
+    
+    function isModerator() {
+      return signedIn() && request.auth.token.role in ['super_admin', 'moderator'];
+    }
+    
+    function isAuditor() {
+      return signedIn() && request.auth.token.role in ['super_admin', 'auditor'];
+    }
+    
+    function isRegionalAdmin() {
+      return signedIn() && request.auth.token.role in ['super_admin', 'regional_admin'];
+    }
+    
+    // Users collection - strict field protection with enhanced security
     match /users/{uid} {
-      allow read: if isOwner(uid);
-      allow create: if isOwner(uid);
-      allow update: if isOwner(uid) && !('referral' in request.resource.data.diff(resource.data).affectedKeys());
-      allow delete: if false;
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) && 
+        // Prevent users from creating accounts with admin roles
+        !('role' in request.resource.data) &&
+        !('adminRole' in request.resource.data) &&
+        !('status' in request.resource.data);
+      allow update: if isOwner(uid) && 
+        // Block modification of protected fields by regular users
+        !('referral' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('role' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('adminRole' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('referralStats' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('status' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('bannedAt' in request.resource.data.diff(resource.data).affectedKeys()) &&
+        !('bannedBy' in request.resource.data.diff(resource.data).affectedKeys());
+      // Allow admins to update user data for moderation
+      allow update: if isAdmin();
+      allow delete: if isSuperAdmin(); // Only super_admin can delete users
     }
     
     // User registry - allow unauthenticated reads for login verification
@@ -84,17 +120,52 @@ service cloud.firestore {
       allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
     }
     
-    // Admin collections - restricted access
+
+    
+    // Admin collections - strict RBAC enforcement
     match /admin/{document=**} {
-      allow read, write: if signedIn() && 
-        (request.auth.token.email == 'admin@talowa.org' || 
-         request.auth.token.role == 'admin' ||
-         request.auth.uid in ['ADMIN_UID_1', 'ADMIN_UID_2']); // Replace with actual admin UIDs
+      allow read, write: if isSuperAdmin();
     }
     
-    // Admin configuration - allow read/write for admin authentication
+    // Admin configuration - highly restricted access
     match /admin_config/{document} {
-      allow read, write: if true; // Allow access for admin authentication system
+      allow read: if isSuperAdmin(); // Only super_admin can read config
+      allow write: if isSuperAdmin(); // Only super_admin can modify config
+    }
+    
+    // Admin PIN history - super restricted
+    match /admin_config/pin_history {
+      allow read, write: if false; // Only Cloud Functions can access
+    }
+    
+    // Transparency logs - immutable audit trail
+    match /transparency_logs/{logId} {
+      allow read: if isAuditor(); // Auditors and super_admin can read
+      allow create: if isAdmin(); // Any admin can create logs
+      allow update, delete: if false; // Immutable - no updates or deletes allowed
+    }
+    
+    // Moderation actions - content moderation
+    match /moderation_actions/{actionId} {
+      allow read: if isModerator(); // Moderators and super_admin can read
+      allow create: if isModerator(); // Moderators and super_admin can create
+      allow update, delete: if false; // Immutable - no updates or deletes allowed
+    }
+    
+    // Flagged activities - suspicious activity tracking
+    match /flagged_activities/{activityId} {
+      allow read: if isAdmin(); // All admins can read flagged activities
+      allow create: if isAdmin(); // All admins can flag activities
+      allow update: if isModerator(); // Only moderators can update (resolve flags)
+      allow delete: if isSuperAdmin(); // Only super_admin can delete
+    }
+    
+    // Admin alerts - notification system
+    match /admin_alerts/{alertId} {
+      allow read: if isAdmin(); // All admins can read alerts
+      allow create: if isAdmin(); // All admins can create alerts
+      allow update: if isAdmin(); // All admins can mark as read
+      allow delete: if isSuperAdmin(); // Only super_admin can delete
     }
     
     // Other collections - default permissions for user-owned data

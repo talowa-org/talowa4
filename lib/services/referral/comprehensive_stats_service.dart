@@ -441,7 +441,7 @@ class ComprehensiveStatsService {
         return {
           'totalReferrals': 0,
           'activeReferrals': 0,
-          'paidMembers': 0,
+          'supporterMembers': 0, // Users who chose to support the movement
           'recentReferrals': 0,
           'topLocations': <String>[],
           'monthlyGrowth': <Map<String, dynamic>>[],
@@ -455,7 +455,7 @@ class ComprehensiveStatsService {
       // Calculate statistics
       final totalReferrals = history.length;
       final activeReferrals = history.where((r) => r['isActive'] == true).length;
-      final paidMembers = history.where((r) => r['membershipPaid'] == true).length;
+      final supporterMembers = history.where((r) => r['membershipPaid'] == true).length; // Users who chose to support
       final recentReferrals = history.where((r) {
         final joinedAt = r['joinedAt'] as DateTime?;
         return joinedAt != null && joinedAt.isAfter(lastWeek);
@@ -502,11 +502,11 @@ class ComprehensiveStatsService {
       return {
         'totalReferrals': totalReferrals,
         'activeReferrals': activeReferrals,
-        'paidMembers': paidMembers,
+        'supporterMembers': supporterMembers, // Users who chose to support the movement
         'recentReferrals': recentReferrals,
         'topLocations': topLocations.map((e) => e.key).toList(),
         'monthlyGrowth': monthlyGrowth,
-        'conversionRate': totalReferrals > 0 ? (paidMembers / totalReferrals * 100).round() : 0,
+        'supportRate': totalReferrals > 0 ? (supporterMembers / totalReferrals * 100).round() : 0, // Percentage who chose to support
       };
     } catch (e) {
       debugPrint('❌ Error getting referral statistics: $e');
