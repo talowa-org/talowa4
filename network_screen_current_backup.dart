@@ -8,7 +8,6 @@ import '../../services/referral_code_cache_service.dart';
 import '../../services/referral/comprehensive_stats_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
-import '../../widgets/common/safe_app_bar.dart';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});
@@ -21,7 +20,6 @@ class _NetworkScreenState extends State<NetworkScreen> {
   bool _isLoading = true;
   String? _error;
   Map<String, dynamic>? _networkData;
-  bool _showAdvancedStats = false;
 
   @override
   void initState() {
@@ -99,9 +97,11 @@ class _NetworkScreenState extends State<NetworkScreen> {
     
     if (user == null) {
       return Scaffold(
-        appBar: const TalowaAppBar(
-          title: 'My Network',
-          screenName: 'Network',
+        appBar: AppBar(
+          title: const Text('My Network'),
+          backgroundColor: AppTheme.talowaGreen,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false,
         ),
         body: const Center(
           child: Column(
@@ -127,23 +127,23 @@ class _NetworkScreenState extends State<NetworkScreen> {
         }
       },
       child: Scaffold(
-        appBar: TalowaAppBar(
-          title: 'My Network',
-          screenName: 'Network',
+        appBar: AppBar(
+          title: const Text(
+            'My Network',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: AppTheme.talowaGreen,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _refreshNetwork,
               tooltip: 'Refresh Network',
-            ),
-            IconButton(
-              icon: Icon(_showAdvancedStats ? Icons.visibility_off : Icons.visibility),
-              onPressed: () {
-                setState(() {
-                  _showAdvancedStats = !_showAdvancedStats;
-                });
-              },
-              tooltip: _showAdvancedStats ? 'Hide Advanced Stats' : 'Show Advanced Stats',
             ),
             IconButton(
               icon: const Icon(Icons.person_add),
