@@ -75,7 +75,7 @@ class _MoreScreenState extends State<MoreScreen> {
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () {}, // Regular tap does nothing
-            onLongPress: _showAdminAccessDialog,
+            onLongPress: null,
             tooltip: 'More Options (Long press for admin)',
           ),
         ],
@@ -97,7 +97,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   const SizedBox(height: AppTheme.spacingLarge),
 
                   // Admin Access (shows only for admin/coordinator users)
-                  const AdminAccessWidget(),
+                  // const AdminAccessWidget(),
 
                   // Cases & Land Records Section
                   FeatureSectionCard(
@@ -632,16 +632,16 @@ class _MoreScreenState extends State<MoreScreen> {
     );
   }
 
-  void _openSecurityCenter() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SecurityScreen(
-          isAdminMode: false, // Regular users get view-only mode
-        ),
-      ),
-    );
-  }
+  // void _openSecurityCenter() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => SecurityScreen(
+  //         isAdminMode: false, // Regular users get view-only mode
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _openLanguageSettings() {
     Navigator.push(
