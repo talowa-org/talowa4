@@ -1,4 +1,4 @@
-// Unit tests for TALOWA Messaging Integration
+﻿// Unit tests for TALOWA Messaging Integration
 // Tests core integration logic without Firebase dependencies
 
 import 'package:flutter_test/flutter_test.dart';

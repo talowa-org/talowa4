@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/land_records_service.dart';
 import '../../models/land_record_model.dart';
 import '../../core/theme/app_theme.dart';
@@ -63,7 +62,7 @@ class _LandRecordFormScreenState extends State<LandRecordFormScreen> {
 
     try {
       if (widget.initial == null) {
-        Position? pos;
+        Map<String, double>? pos;
         try { pos = await service.getCurrentLocation(); } catch (_) {}
         final id = await service.createLandRecord(
           surveyNumber: surveyCtrl.text.trim(),
@@ -75,7 +74,7 @@ class _LandRecordFormScreenState extends State<LandRecordFormScreen> {
           landType: landType,
           pattaStatus: patta,
           description: descCtrl.text.trim().isEmpty ? null : descCtrl.text.trim(),
-          gpsLocation: pos,
+          coordinates: pos,
         );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -174,4 +173,5 @@ class _LandRecordFormScreenState extends State<LandRecordFormScreen> {
     );
   }
 }
+
 

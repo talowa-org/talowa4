@@ -1,4 +1,4 @@
-// Safe App Bar Widget
+﻿// Safe App Bar Widget
 // Enhanced app bar with safety features and consistent styling
 
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// Emergency Broadcast Service Tests
+﻿// Emergency Broadcast Service Tests
 // Task 9: Build emergency broadcast system - Testing
 // Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
 

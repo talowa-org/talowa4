@@ -1,4 +1,4 @@
-// Emergency Service for TALOWA
+﻿// Emergency Service for TALOWA
 // Comprehensive emergency response and incident reporting system
 // Reference: TALOWA_APP_BLUEPRINT.md - Emergency Features
 
@@ -443,7 +443,7 @@ class EmergencyService {
       // Create emergency post in social feed
       await _firestore.collection('feed_posts').add({
         'authorId': incident.reporterId,
-        'title': '🚨 EMERGENCY ALERT',
+        'title': 'ðŸš¨ EMERGENCY ALERT',
         'content': incident.description,
         'category': 'emergency',
         'isEmergency': true,

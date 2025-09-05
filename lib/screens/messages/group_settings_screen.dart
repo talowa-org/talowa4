@@ -1,4 +1,4 @@
-// Group Settings Screen for TALOWA Messaging System
+﻿// Group Settings Screen for TALOWA Messaging System
 // Reference: in-app-communication/requirements.md - Group Settings
 
 import 'package:flutter/material.dart';

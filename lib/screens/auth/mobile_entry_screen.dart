@@ -1,4 +1,4 @@
-// Mobile Number Entry Screen for TALOWA
+﻿// Mobile Number Entry Screen for TALOWA
 // First step in registration: Enter mobile number and request OTP
 
 import 'package:flutter/material.dart';
@@ -79,12 +79,12 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
         throw Exception('Invalid phone number format');
       }
 
-      // 🎯 NEW ROUTING LOGIC: Check registration status first
+      // ðŸŽ¯ NEW ROUTING LOGIC: Check registration status first
       final registrationStatus =
           await RegistrationStateService.checkRegistrationStatus(phoneNumber);
 
       if (registrationStatus.isAlreadyRegistered) {
-        // 🔄 FIX 2: Registered User → Redirect to login with prefilled phone
+        // ðŸ”„ FIX 2: Registered User â†’ Redirect to login with prefilled phone
         setState(() {
           _isLoading = false;
         });
@@ -98,7 +98,7 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
       }
 
       if (registrationStatus.isOtpVerified) {
-        // � ENHANCED tFIX: Double-check Firebase Auth user exists before proceeding
+        // ï¿½ ENHANCED tFIX: Double-check Firebase Auth user exists before proceeding
         final currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser != null && currentUser.uid == registrationStatus.uid) {
           // User is authenticated and matches, proceed to form
@@ -132,7 +132,7 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
           // Firebase Auth user doesn't exist or doesn't match
           // This should have been cleaned up by checkRegistrationStatus, but let's handle it
           debugPrint(
-              '⚠️ Mismatch detected: Phone verified but no valid Firebase Auth user');
+              'âš ï¸ Mismatch detected: Phone verified but no valid Firebase Auth user');
 
           // Clean up the verification and proceed with fresh OTP
           await RegistrationStateService.clearPhoneVerification(phoneNumber);
@@ -161,7 +161,7 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
       }
 
       if (registrationStatus.needsOtpVerification) {
-        // 📱 New User → Show OTP dialog and start verification
+        // ðŸ“± New User â†’ Show OTP dialog and start verification
         _showOtpDialog(phoneNumber);
         return;
       }
@@ -527,3 +527,4 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
     );
   }
 }
+

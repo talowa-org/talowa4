@@ -1,7 +1,8 @@
-// Media Picker Service - Handle file selection for social feed
+﻿// Media Picker Service - Handle file selection for social feed
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -242,6 +243,110 @@ class MediaPickerService {
   static bool isDocumentFile(String filePath) {
     final extension = filePath.split('.').last.toLowerCase();
     return ['pdf', 'doc', 'docx', 'txt', 'rtf'].contains(extension);
+  }
+
+  /// Check if file is a video
+  static bool isVideoFile(String filePath) {
+    final extension = filePath.split('.').last.toLowerCase();
+    return ['mp4', 'mov', 'avi', 'webm', '3gp', 'mkv', 'flv'].contains(extension);
+  }
+
+  /// Pick video from gallery
+  static Future<MediaSelectionResult> pickVideoFromGallery() async {
+    try {
+      // Check permission
+      final hasPermission = await _checkGalleryPermission();
+      if (!hasPermission) {
+        return MediaSelectionResult.error('Gallery permission denied');
+      }
+
+      final XFile? pickedFile = await _imagePicker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(minutes: 10), // 10 minute limit
+      );
+
+      if (pickedFile == null) {
+        return MediaSelectionResult.success([]);
+      }
+
+      return MediaSelectionResult.success([File(pickedFile.path)]);
+    } catch (e) {
+      return MediaSelectionResult.error('Failed to pick video: $e');
+    }
+  }
+
+  /// Pick video from camera
+  static Future<MediaSelectionResult> pickVideoFromCamera() async {
+    try {
+      // Check permission
+      final hasPermission = await _checkCameraPermission();
+      if (!hasPermission) {
+        return MediaSelectionResult.error('Camera permission denied');
+      }
+
+      final XFile? pickedFile = await _imagePicker.pickVideo(
+        source: ImageSource.camera,
+        maxDuration: const Duration(minutes: 5), // 5 minute limit for camera
+      );
+
+      if (pickedFile == null) {
+        return MediaSelectionResult.success([]);
+      }
+
+      return MediaSelectionResult.success([File(pickedFile.path)]);
+    } catch (e) {
+      return MediaSelectionResult.error('Failed to capture video: $e');
+    }
+  }
+
+  /// Show video source selection dialog
+  static Future<MediaSelectionResult> showVideoSourceDialog(BuildContext context) async {
+    final String? source = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Video Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.videocam),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(context).pop('camera');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.video_library),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop('gallery');
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (source == null) {
+      return MediaSelectionResult.success([]);
+    }
+
+    switch (source) {
+      case 'camera':
+        return await pickVideoFromCamera();
+      case 'gallery':
+        return await pickVideoFromGallery();
+      default:
+        return MediaSelectionResult.success([]);
+    }
   }
   
   /// Get human-readable file size

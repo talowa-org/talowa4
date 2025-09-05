@@ -1,4 +1,4 @@
-// Server Profile Ensure Service for TALOWA
+﻿// Server Profile Ensure Service for TALOWA
 // Ensures user profiles have all required server-side fields after registration
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -186,3 +186,4 @@ class ServerProfileEnsureService {
     }
   }
 }
+

@@ -1,4 +1,4 @@
-// Real-time Feed Service - Handle real-time feed updates and synchronization
+﻿// Real-time Feed Service - Handle real-time feed updates and synchronization
 // Part of Task 13: Implement real-time feed updates
 
 import 'dart:async';

@@ -1,4 +1,4 @@
-/// Call quality metrics model
+﻿/// Call quality metrics model
 class CallQuality {
   double averageLatency; // in milliseconds
   double packetLoss; // percentage (0-100)

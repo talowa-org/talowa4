@@ -1,4 +1,4 @@
-// TALOWA Progress Indicator Widget
+﻿// TALOWA Progress Indicator Widget
 // Shows progress through onboarding steps
 
 import 'package:flutter/material.dart';

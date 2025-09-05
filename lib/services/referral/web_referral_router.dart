@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+﻿import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 
 /// Service for handling referral links on web platform
@@ -286,3 +286,4 @@ class WebReferralRouter {
     }
   }
 }
+

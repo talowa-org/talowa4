@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/messaging/backup_recovery_integration_service.dart';
 import '../../services/messaging/data_backup_service.dart';
 import '../../services/messaging/backup_scheduler_service.dart';
@@ -888,7 +888,7 @@ class _BackupRecoveryDashboardState extends State<BackupRecoveryDashboard>
             const Text('Your data has been exported successfully:'),
             const SizedBox(height: 8),
             ...files.map((file) {
-              return Text('• ${file['type']}: ${_formatBytes(file['size'])}');
+              return Text('â€¢ ${file['type']}: ${_formatBytes(file['size'])}');
             }),
           ],
         ),

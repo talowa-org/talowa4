@@ -1,10 +1,12 @@
-// Feed Service for TALOWA
+﻿// Feed Service for TALOWA
 // Fully functional social feed implementation with Firebase
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/social_feed/post_model.dart';
 import '../auth_service.dart';
+import 'enterprise_feed_algorithm_service.dart';
+import '../security/ai_content_moderation_service.dart';
 
 class FeedService {
   static final FeedService _instance = FeedService._internal();
@@ -20,7 +22,10 @@ class FeedService {
   Future<String> createPost({
     required String content,
     String? title,
-    List<String>? mediaUrls,
+    List<String>? mediaUrls, // Legacy support
+    List<String>? imageUrls,
+    List<String>? videoUrls,
+    List<String>? documentUrls,
     List<String>? hashtags,
     PostCategory category = PostCategory.generalDiscussion,
     String? location,
@@ -44,6 +49,23 @@ class FeedService {
       // Extract hashtags from content if not provided
       final extractedHashtags = hashtags ?? _extractHashtags(content);
 
+      // AI Content Moderation - analyze content before creating post
+      final aiModerationService = AIContentModerationService();
+      final moderationResult = await aiModerationService.analyzeContentWithAI(
+        content: content,
+        contentType: 'post',
+        authorId: currentUser.uid,
+        metadata: {'mediaUrls': [...(imageUrls ?? []), ...(videoUrls ?? [])]},
+      );
+
+      // Check if content should be auto-hidden or rejected
+      bool isHidden = false;
+      if (moderationResult.requiresHumanReview || moderationResult.policyViolations.isNotEmpty) {
+        // Auto-hide content that requires review or has violations
+        isHidden = true;
+        debugPrint('Post auto-hidden due to moderation concerns: ${moderationResult.policyViolations.map((v) => v.category).join(", ")}');
+      }
+
       final post = PostModel(
         id: postId,
         authorId: currentUser.uid,
@@ -51,7 +73,10 @@ class FeedService {
         authorRole: userData['role'] ?? 'member',
         title: title,
         content: content,
-        mediaUrls: mediaUrls ?? [],
+        mediaUrls: mediaUrls ?? [], // Legacy support
+        imageUrls: imageUrls ?? [],
+        videoUrls: videoUrls ?? [],
+        documentUrls: documentUrls ?? [],
         hashtags: extractedHashtags,
         category: category,
         location: location ?? userData['address']?['villageCity'] ?? '',
@@ -65,6 +90,8 @@ class FeedService {
       // Save post to Firestore
       await _firestore.collection(_postsCollection).doc(postId).set(post.toFirestore());
 
+      // Content moderation logging is handled internally by the AI service
+
       debugPrint('Post created successfully: $postId');
       return postId;
     } catch (e) {
@@ -73,7 +100,135 @@ class FeedService {
     }
   }
 
-  // Get feed posts with pagination and filters
+  // Update an existing post
+  Future<void> updatePost({
+    required String postId,
+    String? title,
+    String? content,
+    List<String>? mediaUrls, // Legacy support
+    List<String>? imageUrls,
+    List<String>? videoUrls,
+    List<String>? documentUrls,
+    List<String>? hashtags,
+    PostCategory? category,
+    String? location,
+  }) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Get existing post
+      final postDoc = await _firestore.collection(_postsCollection).doc(postId).get();
+      if (!postDoc.exists) {
+        throw Exception('Post not found');
+      }
+
+      final existingPost = PostModel.fromFirestore(postDoc);
+
+      // Check if user is authorized to update this post
+      if (existingPost.authorId != currentUser.uid) {
+        throw Exception('Not authorized to update this post');
+      }
+
+      // Extract hashtags from content if provided
+      final extractedHashtags = hashtags ?? (content != null ? _extractHashtags(content) : null);
+
+      // AI Content Moderation - analyze updated content
+      bool shouldHide = false;
+      if (content != null) {
+        final aiModerationService = AIContentModerationService();
+        final moderationResult = await aiModerationService.analyzeContentWithAI(
+          content: content,
+          contentType: 'post',
+          authorId: currentUser.uid,
+          metadata: {'mediaUrls': [...(imageUrls ?? []), ...(videoUrls ?? [])]},
+        );
+
+        // Check if updated content should be auto-hidden
+        if (moderationResult.requiresHumanReview || moderationResult.policyViolations.isNotEmpty) {
+          shouldHide = true;
+          debugPrint('Post update auto-hidden due to moderation concerns: ${moderationResult.policyViolations.map((v) => v.category).join(", ")}');
+          
+          // Content moderation logging is handled internally by the AI service
+        }
+      }
+
+      // Create update data
+      final updateData = <String, dynamic>{};
+
+      if (title != null) updateData['title'] = title;
+      if (content != null) updateData['content'] = content;
+      if (mediaUrls != null) updateData['mediaUrls'] = mediaUrls;
+      if (imageUrls != null) updateData['imageUrls'] = imageUrls;
+      if (videoUrls != null) updateData['videoUrls'] = videoUrls;
+      if (documentUrls != null) updateData['documentUrls'] = documentUrls;
+      if (extractedHashtags != null) updateData['hashtags'] = extractedHashtags;
+      if (category != null) updateData['category'] = category.value;
+      if (location != null) updateData['location'] = location;
+      
+      // Update hidden status if content was flagged
+      if (shouldHide) {
+        updateData['isHidden'] = true;
+      }
+
+      // Add update timestamp
+      updateData['updatedAt'] = Timestamp.fromDate(DateTime.now());
+
+      // Update post in Firestore
+      await _firestore.collection(_postsCollection).doc(postId).update(updateData);
+
+      debugPrint('Post updated successfully: $postId');
+    } catch (e) {
+      debugPrint('Error updating post: $e');
+      rethrow;
+    }
+  }
+
+  // Get personalized feed posts using enterprise algorithm
+  Future<List<PostModel>> getPersonalizedFeedPosts({
+    int limit = 20,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    try {
+      final currentUserId = AuthService.currentUser?.uid;
+      if (currentUserId == null) {
+        debugPrint('âš ï¸ No authenticated user, returning chronological feed');
+        return await getFeedPosts(limit: limit, lastDocument: lastDocument);
+      }
+
+      debugPrint('ðŸŽ¯ Getting personalized feed for user: $currentUserId');
+      
+      // Use enterprise feed algorithm
+      final enterpriseAlgorithm = EnterpriseFeedAlgorithmService();
+      final personalizedPosts = await enterpriseAlgorithm.getPersonalizedFeed(
+        userId: currentUserId,
+        limit: limit,
+        lastDocument: lastDocument,
+      );
+
+      // Add like status for current user
+      final postsWithLikeStatus = <PostModel>[];
+      for (final post in personalizedPosts) {
+        final likeDoc = await _firestore
+            .collection(_likesCollection)
+            .doc('${post.id}_$currentUserId')
+            .get();
+        postsWithLikeStatus.add(post.copyWith(isLikedByCurrentUser: likeDoc.exists));
+      }
+      
+      debugPrint('âœ… Retrieved ${postsWithLikeStatus.length} personalized posts');
+       return postsWithLikeStatus;
+      
+    } catch (e) {
+      debugPrint('âŒ Error getting personalized feed: $e');
+      // Fallback to regular feed
+      return await getFeedPosts(limit: limit, lastDocument: lastDocument);
+    }
+  }
+
+  // Get feed posts with pagination and filters (legacy method)
   Future<List<PostModel>> getFeedPosts({
     int limit = 20,
     DocumentSnapshot? lastDocument,

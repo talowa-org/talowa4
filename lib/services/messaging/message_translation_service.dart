@@ -1,4 +1,4 @@
-// Message Translation Service for TALOWA
+﻿// Message Translation Service for TALOWA
 // Handles automatic translation of messages in real-time communication
 
 import 'package:flutter/foundation.dart';
@@ -175,65 +175,65 @@ class MessageTranslationService {
     }
     
     // Return original text with language indicator if no translation available
-    return '$text [${sourceLanguage.toUpperCase()}→${targetLanguage.toUpperCase()}]';
+    return '$text [${sourceLanguage.toUpperCase()}â†’${targetLanguage.toUpperCase()}]';
   }
   
   /// Get common phrase translations
   static Map<String, String> _getCommonTranslations() {
     return {
       // English to Hindi
-      'en_hi_hello': 'नमस्ते',
-      'en_hi_thank you': 'धन्यवाद',
-      'en_hi_yes': 'हाँ',
-      'en_hi_no': 'नहीं',
-      'en_hi_help': 'मदद',
-      'en_hi_land issue': 'जमीन की समस्या',
-      'en_hi_legal help': 'कानूनी मदद',
+      'en_hi_hello': 'à¤¨à¤®à¤¸à¥à¤¤à¥‡',
+      'en_hi_thank you': 'à¤§à¤¨à¥à¤¯à¤µà¤¾à¤¦',
+      'en_hi_yes': 'à¤¹à¤¾à¤',
+      'en_hi_no': 'à¤¨à¤¹à¥€à¤‚',
+      'en_hi_help': 'à¤®à¤¦à¤¦',
+      'en_hi_land issue': 'à¤œà¤®à¥€à¤¨ à¤•à¥€ à¤¸à¤®à¤¸à¥à¤¯à¤¾',
+      'en_hi_legal help': 'à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤®à¤¦à¤¦',
       
       // English to Telugu
-      'en_te_hello': 'నమస్కారం',
-      'en_te_thank you': 'ధన్యవాదాలు',
-      'en_te_yes': 'అవును',
-      'en_te_no': 'లేదు',
-      'en_te_help': 'సహాయం',
-      'en_te_land issue': 'భూమి సమస్య',
-      'en_te_legal help': 'న్యాయ సహాయం',
+      'en_te_hello': 'à°¨à°®à°¸à±à°•à°¾à°°à°‚',
+      'en_te_thank you': 'à°§à°¨à±à°¯à°µà°¾à°¦à°¾à°²à±',
+      'en_te_yes': 'à°…à°µà±à°¨à±',
+      'en_te_no': 'à°²à±‡à°¦à±',
+      'en_te_help': 'à°¸à°¹à°¾à°¯à°‚',
+      'en_te_land issue': 'à°­à±‚à°®à°¿ à°¸à°®à°¸à±à°¯',
+      'en_te_legal help': 'à°¨à±à°¯à°¾à°¯ à°¸à°¹à°¾à°¯à°‚',
       
       // English to Urdu
-      'en_ur_hello': 'السلام علیکم',
-      'en_ur_thank you': 'شکریہ',
-      'en_ur_yes': 'ہاں',
-      'en_ur_no': 'نہیں',
-      'en_ur_help': 'مدد',
-      'en_ur_land issue': 'زمین کا مسئلہ',
-      'en_ur_legal help': 'قانونی مدد',
+      'en_ur_hello': 'Ø§Ù„Ø³Ù„Ø§Ù… Ø¹Ù„ÛŒÚ©Ù…',
+      'en_ur_thank you': 'Ø´Ú©Ø±ÛŒÛ',
+      'en_ur_yes': 'ÛØ§Úº',
+      'en_ur_no': 'Ù†ÛÛŒÚº',
+      'en_ur_help': 'Ù…Ø¯Ø¯',
+      'en_ur_land issue': 'Ø²Ù…ÛŒÙ† Ú©Ø§ Ù…Ø³Ø¦Ù„Û',
+      'en_ur_legal help': 'Ù‚Ø§Ù†ÙˆÙ†ÛŒ Ù…Ø¯Ø¯',
       
       // English to Arabic
-      'en_ar_hello': 'السلام عليكم',
-      'en_ar_thank you': 'شكراً',
-      'en_ar_yes': 'نعم',
-      'en_ar_no': 'لا',
-      'en_ar_help': 'مساعدة',
-      'en_ar_land issue': 'قضية أرض',
-      'en_ar_legal help': 'مساعدة قانونية',
+      'en_ar_hello': 'Ø§Ù„Ø³Ù„Ø§Ù… Ø¹Ù„ÙŠÙƒÙ…',
+      'en_ar_thank you': 'Ø´ÙƒØ±Ø§Ù‹',
+      'en_ar_yes': 'Ù†Ø¹Ù…',
+      'en_ar_no': 'Ù„Ø§',
+      'en_ar_help': 'Ù…Ø³Ø§Ø¹Ø¯Ø©',
+      'en_ar_land issue': 'Ù‚Ø¶ÙŠØ© Ø£Ø±Ø¶',
+      'en_ar_legal help': 'Ù…Ø³Ø§Ø¹Ø¯Ø© Ù‚Ø§Ù†ÙˆÙ†ÙŠØ©',
       
       // Hindi to English
-      'hi_en_नमस्ते': 'Hello',
-      'hi_en_धन्यवाद': 'Thank you',
-      'hi_en_हाँ': 'Yes',
-      'hi_en_नहीं': 'No',
-      'hi_en_मदद': 'Help',
-      'hi_en_जमीन की समस्या': 'Land issue',
-      'hi_en_कानूनी मदद': 'Legal help',
+      'hi_en_à¤¨à¤®à¤¸à¥à¤¤à¥‡': 'Hello',
+      'hi_en_à¤§à¤¨à¥à¤¯à¤µà¤¾à¤¦': 'Thank you',
+      'hi_en_à¤¹à¤¾à¤': 'Yes',
+      'hi_en_à¤¨à¤¹à¥€à¤‚': 'No',
+      'hi_en_à¤®à¤¦à¤¦': 'Help',
+      'hi_en_à¤œà¤®à¥€à¤¨ à¤•à¥€ à¤¸à¤®à¤¸à¥à¤¯à¤¾': 'Land issue',
+      'hi_en_à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤®à¤¦à¤¦': 'Legal help',
       
       // Telugu to English
-      'te_en_నమస్కారం': 'Hello',
-      'te_en_ధన్యవాదాలు': 'Thank you',
-      'te_en_అవును': 'Yes',
-      'te_en_లేదు': 'No',
-      'te_en_సహాయం': 'Help',
-      'te_en_భూమి సమస్య': 'Land issue',
-      'te_en_న్యాయ సహాయం': 'Legal help',
+      'te_en_à°¨à°®à°¸à±à°•à°¾à°°à°‚': 'Hello',
+      'te_en_à°§à°¨à±à°¯à°µà°¾à°¦à°¾à°²à±': 'Thank you',
+      'te_en_à°…à°µà±à°¨à±': 'Yes',
+      'te_en_à°²à±‡à°¦à±': 'No',
+      'te_en_à°¸à°¹à°¾à°¯à°‚': 'Help',
+      'te_en_à°­à±‚à°®à°¿ à°¸à°®à°¸à±à°¯': 'Land issue',
+      'te_en_à°¨à±à°¯à°¾à°¯ à°¸à°¹à°¾à°¯à°‚': 'Legal help',
     };
   }
 }

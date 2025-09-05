@@ -1,4 +1,4 @@
-// Authentication Integration Service for TALOWA Messaging
+﻿// Authentication Integration Service for TALOWA Messaging
 // Handles single sign-on and user account synchronization
 // Reference: in-app-communication/tasks.md - Task 11
 

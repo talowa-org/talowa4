@@ -1,4 +1,4 @@
-// Media Service Tests
+﻿// Media Service Tests
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';

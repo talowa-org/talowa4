@@ -1,4 +1,4 @@
-// Land Record Integration Service for TALOWA Messaging System
+﻿// Land Record Integration Service for TALOWA Messaging System
 // Automatically links shared documents to relevant land records
 // Requirements: 4.4, 4.5 - Integrate with land records system and GPS extraction
 

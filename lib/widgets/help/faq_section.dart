@@ -285,3 +285,4 @@ class _FAQSectionState extends State<FAQSection> {
     );
   }
 }
+

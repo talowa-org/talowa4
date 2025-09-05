@@ -1,4 +1,4 @@
-// ⚠️ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION ⚠️
+﻿// âš ï¸ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION âš ï¸
 // This is the PRIMARY authentication service from Checkpoint 7
 // DO NOT MODIFY without explicit user approval
 // See: AUTHENTICATION_PROTECTION_STRATEGY.md
@@ -390,3 +390,4 @@ class AuthResult {
     this.errorCode,
   });
 }
+

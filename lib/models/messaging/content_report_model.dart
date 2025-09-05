@@ -1,4 +1,4 @@
-// Content Report Model for TALOWA Messaging System
+﻿// Content Report Model for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ContentReportModel {

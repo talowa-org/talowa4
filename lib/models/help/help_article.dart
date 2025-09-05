@@ -1,4 +1,4 @@
-// TALOWA Help Article Model
+﻿// TALOWA Help Article Model
 // Represents a single help article with content and metadata
 
 

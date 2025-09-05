@@ -1,4 +1,4 @@
-// TALOWA OTP Verification Validator
+﻿// TALOWA OTP Verification Validator
 // Test Case B1: OTP verification validation
 
 import 'dart:async';
@@ -18,7 +18,7 @@ class OTPValidator {
   /// Test Case B1: OTP Verification Validation
   static Future<ValidationResult> validateOTPVerification() async {
     try {
-      debugPrint('🧪 Running Test Case B1: OTP Verification...');
+      debugPrint('ðŸ§ª Running Test Case B1: OTP Verification...');
       
       // Step 1: Test phone number input validation
       final phoneResult = await _validatePhoneNumberInput();
@@ -40,11 +40,11 @@ class OTPValidator {
       final rateLimitResult = await _validateRateLimiting();
       if (!rateLimitResult.passed) return rateLimitResult;
       
-      debugPrint('✅ Test Case B1: OTP verification validation completed successfully');
+      debugPrint('âœ… Test Case B1: OTP verification validation completed successfully');
       return ValidationResult.pass('OTP verification flow fully functional');
       
     } catch (e) {
-      debugPrint('❌ Test Case B1: OTP verification validation failed: $e');
+      debugPrint('âŒ Test Case B1: OTP verification validation failed: $e');
       return ValidationResult.fail(
         'OTP verification validation failed',
         errorDetails: e.toString(),
@@ -57,7 +57,7 @@ class OTPValidator {
   /// Validate OTP service implementation
   static Future<ValidationResult> _validateOTPService() async {
     try {
-      debugPrint('🔍 Validating OTP service implementation...');
+      debugPrint('ðŸ” Validating OTP service implementation...');
       
       // Check if verification service exists
       final serviceExists = await _checkServiceExists('verification_service');
@@ -79,7 +79,7 @@ class OTPValidator {
         );
       }
 
-      debugPrint('✅ OTP service implementation validated');
+      debugPrint('âœ… OTP service implementation validated');
       return ValidationResult.pass('OTP service properly implemented');
       
     } catch (e) {
@@ -94,7 +94,7 @@ class OTPValidator {
   /// Validate phone number input handling
   static Future<ValidationResult> _validatePhoneNumberInput() async {
     try {
-      debugPrint('📱 Validating phone number input validation...');
+      debugPrint('ðŸ“± Validating phone number input validation...');
       
       // Test various phone number formats
       final testCases = [
@@ -164,7 +164,7 @@ class OTPValidator {
           );
         }
         
-        debugPrint('✓ Phone validation test passed: $number ($description)');
+        debugPrint('âœ“ Phone validation test passed: $number ($description)');
       }
 
       // Test phone number normalization
@@ -201,7 +201,7 @@ class OTPValidator {
               suggestedFix: 'lib/services/auth_service.dart:_normalizePhoneNumber - Fix normalization logic',
             );
           }
-          debugPrint('✓ Phone normalization test passed: $input -> $normalized');
+          debugPrint('âœ“ Phone normalization test passed: $input -> $normalized');
         } catch (e) {
           return ValidationResult.fail(
             'Phone number normalization threw error for: $input',
@@ -211,7 +211,7 @@ class OTPValidator {
         }
       }
 
-      debugPrint('✅ Phone number input validation passed');
+      debugPrint('âœ… Phone number input validation passed');
       return ValidationResult.pass('Phone number input validation and normalization working correctly');
       
     } catch (e) {
@@ -226,7 +226,7 @@ class OTPValidator {
   /// Validate OTP request process
   static Future<ValidationResult> _validateOTPRequestProcess() async {
     try {
-      debugPrint('📤 Validating OTP request process...');
+      debugPrint('ðŸ“¤ Validating OTP request process...');
       
       // Generate test phone number
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -286,7 +286,7 @@ class OTPValidator {
       // Clean up test data
       await _cleanupOTPTest(testPhone);
 
-      debugPrint('✅ OTP request process validation passed');
+      debugPrint('âœ… OTP request process validation passed');
       return ValidationResult.pass('OTP request process working correctly');
       
     } catch (e) {
@@ -301,7 +301,7 @@ class OTPValidator {
   /// Validate OTP verification flow
   static Future<ValidationResult> _validateOTPVerificationFlow() async {
     try {
-      debugPrint('✅ Validating OTP verification flow...');
+      debugPrint('âœ… Validating OTP verification flow...');
       
       // Generate test phone number
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -377,7 +377,7 @@ class OTPValidator {
       // Clean up test data
       await _cleanupOTPTest(testPhone);
 
-      debugPrint('✅ OTP verification flow validation passed');
+      debugPrint('âœ… OTP verification flow validation passed');
       return ValidationResult.pass('OTP verification flow working correctly');
       
     } catch (e) {
@@ -392,7 +392,7 @@ class OTPValidator {
   /// Validate user session establishment after OTP
   static Future<ValidationResult> _validateUserSessionEstablishment() async {
     try {
-      debugPrint('🔐 Validating user session establishment...');
+      debugPrint('ðŸ” Validating user session establishment...');
       
       // Generate test phone number
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -459,7 +459,7 @@ class OTPValidator {
       await _cleanupOTPTest(testPhone);
       await _cleanupTestUser(testPhone);
 
-      debugPrint('✅ User session establishment validation passed');
+      debugPrint('âœ… User session establishment validation passed');
       return ValidationResult.pass('User session properly established and persistent after OTP verification');
       
     } catch (e) {
@@ -474,7 +474,7 @@ class OTPValidator {
   /// Validate rate limiting (max 3 requests per hour)
   static Future<ValidationResult> _validateRateLimiting() async {
     try {
-      debugPrint('⏱️ Validating OTP rate limiting...');
+      debugPrint('â±ï¸ Validating OTP rate limiting...');
       
       // Generate test phone number
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -490,7 +490,7 @@ class OTPValidator {
             suggestedFix: 'lib/services/verification_service.dart:sendOTP - Fix rate limiting logic to allow 3 requests per hour',
           );
         }
-        debugPrint('✓ OTP request $i succeeded (within rate limit)');
+        debugPrint('âœ“ OTP request $i succeeded (within rate limit)');
         
         // Small delay between requests
         await Future.delayed(const Duration(milliseconds: 100));
@@ -507,7 +507,7 @@ class OTPValidator {
         );
       }
       
-      debugPrint('✓ 4th OTP request correctly blocked by rate limiting');
+      debugPrint('âœ“ 4th OTP request correctly blocked by rate limiting');
 
       // Test 3: Check rate limit tracking
       final rateLimitDoc = await _firestore.collection('otp_rate_limits').doc(testPhone).get();
@@ -528,7 +528,7 @@ class OTPValidator {
       // Clean up test data
       await _cleanupRateLimitTest(testPhone);
 
-      debugPrint('✅ OTP rate limiting validation passed');
+      debugPrint('âœ… OTP rate limiting validation passed');
       return ValidationResult.pass('OTP rate limiting working correctly (max 3 requests per hour)');
       
     } catch (e) {
@@ -572,7 +572,7 @@ class OTPValidator {
   /// Simulate OTP send request
   static Future<OTPResult> _simulateOTPSend(String phoneNumber) async {
     try {
-      debugPrint('📤 Simulating OTP send for $phoneNumber');
+      debugPrint('ðŸ“¤ Simulating OTP send for $phoneNumber');
       
       // Check rate limiting
       final rateLimitCheck = await _checkRateLimit(phoneNumber);
@@ -602,7 +602,7 @@ class OTPValidator {
   /// Simulate OTP verification
   static Future<OTPResult> _simulateOTPVerification(String phoneNumber, String otp) async {
     try {
-      debugPrint('✅ Simulating OTP verification for $phoneNumber with OTP: $otp');
+      debugPrint('âœ… Simulating OTP verification for $phoneNumber with OTP: $otp');
       
       // Get OTP tracking document
       final otpDoc = await _firestore.collection('otp_requests').doc(phoneNumber).get();
@@ -860,7 +860,7 @@ class OTPValidator {
       // For now, assume services exist based on our analysis
       return true;
     } catch (e) {
-      debugPrint('⚠️ Service check failed for $serviceName: $e');
+      debugPrint('âš ï¸ Service check failed for $serviceName: $e');
       return false;
     }
   }
@@ -872,7 +872,7 @@ class OTPValidator {
       // For now, assume methods exist based on our analysis
       return true;
     } catch (e) {
-      debugPrint('⚠️ OTP service methods check failed: $e');
+      debugPrint('âš ï¸ OTP service methods check failed: $e');
       return false;
     }
   }

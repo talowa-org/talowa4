@@ -531,3 +531,4 @@ class _UserPresenceIndicatorState extends State<UserPresenceIndicator> {
     );
   }
 }
+

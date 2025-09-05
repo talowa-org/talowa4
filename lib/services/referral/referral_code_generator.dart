@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -65,7 +65,7 @@ class ReferralCodeGenerator {
         // If we're on the last attempt, use Crockford Base32 fallback (not timestamp)
         if (attempts >= MAX_ATTEMPTS) {
           final fallbackCode = _generateFallbackCode();
-          debugPrint('⚠️ Using Crockford Base32 fallback code: $fallbackCode');
+          debugPrint('âš ï¸ Using Crockford Base32 fallback code: $fallbackCode');
           return fallbackCode;
         }
       }
@@ -73,7 +73,7 @@ class ReferralCodeGenerator {
 
     // Final Crockford Base32 fallback (maintains full capacity)
     final finalCode = _generateFallbackCode();
-    debugPrint('⚠️ Using final Crockford Base32 fallback code: $finalCode');
+    debugPrint('âš ï¸ Using final Crockford Base32 fallback code: $finalCode');
     return finalCode;
   }
 
@@ -376,7 +376,7 @@ class ReferralCodeGenerator {
   /// Print capacity information to console
   static void printCapacityInfo() {
     final info = getCapacityInfo();
-    debugPrint('📊 REFERRAL CODE CAPACITY ANALYSIS:');
+    debugPrint('ðŸ“Š REFERRAL CODE CAPACITY ANALYSIS:');
     debugPrint('   Format: ${info['format']}');
     debugPrint('   Character Set: ${info['characterSet']}');
     debugPrint('   Total Combinations: ${info['totalCombinations']} (${info['formattedCombinations']})');
@@ -414,3 +414,4 @@ class ReferralCodeGenerator {
     return code.toUpperCase().trim();
   }
 }
+

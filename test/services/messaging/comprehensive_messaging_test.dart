@@ -1,4 +1,4 @@
-// Comprehensive Unit Tests for Messaging Components
+﻿// Comprehensive Unit Tests for Messaging Components
 // Tests all messaging, encryption, and voice calling components
 
 import 'package:flutter_test/flutter_test.dart';

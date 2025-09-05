@@ -1,4 +1,4 @@
-// Voice Recognition Service for TALOWA
+﻿// Voice Recognition Service for TALOWA
 // Custom implementation using platform channels for reliable voice recognition
 
 import 'dart:async';
@@ -27,9 +27,9 @@ class VoiceRecognitionService {
     try {
       // For web platform, use different initialization
       if (kIsWeb) {
-        debugPrint('🌐 Initializing voice recognition for web platform...');
+        debugPrint('ðŸŒ Initializing voice recognition for web platform...');
         _isInitialized = true;
-        debugPrint('✅ Voice recognition service initialized for web');
+        debugPrint('âœ… Voice recognition service initialized for web');
         return true;
       }
       
@@ -38,20 +38,20 @@ class VoiceRecognitionService {
       
       if (available) {
         _isInitialized = true;
-        debugPrint('✅ Voice recognition service initialized successfully');
+        debugPrint('âœ… Voice recognition service initialized successfully');
         
         // Test the service connection
         try {
           await _channel.invokeMethod('getSupportedLanguages');
-          debugPrint('✅ Voice recognition service connection verified');
+          debugPrint('âœ… Voice recognition service connection verified');
         } catch (e) {
-          debugPrint('⚠️ Voice recognition service connection issue: $e');
+          debugPrint('âš ï¸ Voice recognition service connection issue: $e');
           // Still mark as initialized but with potential issues
         }
         
         return true;
       } else {
-        debugPrint('❌ Voice recognition not available on this device');
+        debugPrint('âŒ Voice recognition not available on this device');
         _isInitialized = false;
         return false;
       }
@@ -104,7 +104,7 @@ class VoiceRecognitionService {
     if (!hasPermissions) {
       final granted = await _permissionService.requestVoicePermissions();
       if (!granted) {
-        onError('🎤 Microphone permission required. Please enable it in Settings > Apps > TALOWA > Permissions.');
+        onError('ðŸŽ¤ Microphone permission required. Please enable it in Settings > Apps > TALOWA > Permissions.');
         return;
       }
     }
@@ -128,7 +128,7 @@ class VoiceRecognitionService {
         // Only accept results with meaningful content
         onResult(result.trim());
       } else {
-        onError('🔇 No clear speech detected. Please speak louder and more clearly.');
+        onError('ðŸ”‡ No clear speech detected. Please speak louder and more clearly.');
       }
       
     } catch (e) {
@@ -139,24 +139,24 @@ class VoiceRecognitionService {
       final errorString = e.toString().toLowerCase();
       
       if (errorString.contains('permission_denied') || errorString.contains('insufficient_permissions')) {
-        onError('🎤 Microphone permission required. Please enable it in Settings > Apps > TALOWA > Permissions.');
+        onError('ðŸŽ¤ Microphone permission required. Please enable it in Settings > Apps > TALOWA > Permissions.');
       } else if (errorString.contains('network_error') || errorString.contains('network_timeout')) {
-        onError('🌐 Internet connection needed. Please check your connection and try again.');
+        onError('ðŸŒ Internet connection needed. Please check your connection and try again.');
       } else if (errorString.contains('no_match')) {
-        onError('🔇 Couldn\'t understand. Please speak clearly in English, Hindi, or Telugu.');
+        onError('ðŸ”‡ Couldn\'t understand. Please speak clearly in English, Hindi, or Telugu.');
       } else if (errorString.contains('speech_timeout')) {
-        onError('⏱️ No speech heard. Tap the microphone and start speaking immediately.');
+        onError('â±ï¸ No speech heard. Tap the microphone and start speaking immediately.');
       } else if (errorString.contains('audio_error')) {
-        onError('🎤 Microphone busy. Close other apps using the microphone and try again.');
+        onError('ðŸŽ¤ Microphone busy. Close other apps using the microphone and try again.');
       } else if (errorString.contains('recognizer_busy')) {
-        onError('🔄 Voice service busy. Please wait 2-3 seconds and try again.');
+        onError('ðŸ”„ Voice service busy. Please wait 2-3 seconds and try again.');
       } else if (errorString.contains('server_error')) {
-        onError('🌐 Voice service error. Please try again or use text input.');
+        onError('ðŸŒ Voice service error. Please try again or use text input.');
       } else if (errorString.contains('not_available') || errorString.contains('not connected')) {
-        onError('🎤 Voice recognition not supported on this device. Please use text input.');
+        onError('ðŸŽ¤ Voice recognition not supported on this device. Please use text input.');
       } else {
         // Generic fallback message with helpful suggestion
-        onError('🎤 Voice input unavailable right now. Please type your question instead.');
+        onError('ðŸŽ¤ Voice input unavailable right now. Please type your question instead.');
       }
     }
   }

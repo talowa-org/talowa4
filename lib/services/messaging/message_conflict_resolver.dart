@@ -1,4 +1,4 @@
-// Message Conflict Resolver for TALOWA
+﻿// Message Conflict Resolver for TALOWA
 // Implements Task 8: Create offline messaging and synchronization - Conflict Resolution
 // Reference: in-app-communication/requirements.md - Requirements 1.2, 8.3
 

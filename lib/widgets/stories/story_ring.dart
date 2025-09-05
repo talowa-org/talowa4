@@ -1,4 +1,4 @@
-// Story Ring Widget - Instagram-like story ring with gradient
+﻿// Story Ring Widget - Instagram-like story ring with gradient
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 

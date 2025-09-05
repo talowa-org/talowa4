@@ -6,6 +6,7 @@ import 'dart:async';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
 import '../../services/performance/performance_optimization_service.dart';
+import '../../services/performance/enterprise_performance_service.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../common/cached_network_image_widget.dart';
 
@@ -36,6 +37,7 @@ class OptimizedFeedWidget extends StatefulWidget {
 class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
     with AutomaticKeepAliveClientMixin {
   final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
+  final EnterprisePerformanceService _enterpriseService = EnterprisePerformanceService();
   final ScrollController _scrollController = ScrollController();
   
   List<PostModel> _allPosts = [];
@@ -60,7 +62,7 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
   @override
   void initState() {
     super.initState();
-    _initializePerformanceService();
+    _initializeServices();
     _setupScrollListener();
     _loadInitialPosts();
   }
@@ -72,8 +74,9 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
     super.dispose();
   }
 
-  Future<void> _initializePerformanceService() async {
+  Future<void> _initializeServices() async {
     await _performanceService.initialize();
+    await _enterpriseService.initialize();
   }
 
   void _setupScrollListener() {
@@ -231,9 +234,11 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
     });
 
     try {
-      final posts = await _performanceService.lazyLoadPosts(
+      // Use enterprise service for better caching and performance
+      final posts = await _enterpriseService.advancedLazyLoad(
         page: 0,
         pageSize: widget.pageSize,
+        enablePrefetch: true,
       );
 
       setState(() {
@@ -269,9 +274,11 @@ class _OptimizedFeedWidgetState extends State<OptimizedFeedWidget>
 
     try {
       final nextPage = _currentPage + 1;
-      final morePosts = await _performanceService.lazyLoadPosts(
+      // Use enterprise service for better performance
+      final morePosts = await _enterpriseService.advancedLazyLoad(
         page: nextPage,
         pageSize: widget.pageSize,
+        enablePrefetch: true,
       );
 
       setState(() {
@@ -610,3 +617,4 @@ class _OptimizedPostCardState extends State<OptimizedPostCard>
     }
   }
 }
+

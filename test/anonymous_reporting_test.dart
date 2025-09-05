@@ -1,4 +1,4 @@
-// Anonymous Reporting System Test for TALOWA
+﻿// Anonymous Reporting System Test for TALOWA
 // Tests the complete anonymous reporting functionality
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 

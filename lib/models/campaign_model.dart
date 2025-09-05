@@ -1,4 +1,4 @@
-// Campaign Model for TALOWA
+﻿// Campaign Model for TALOWA
 // Reference: TALOWA_APP_BLUEPRINT.md - Campaign Management
 
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -1,7 +1,7 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 void main() async {
-  print('🧪 TALOWA Registration Flow Validation Suite');
+  print('ðŸ§ª TALOWA Registration Flow Validation Suite');
   print('============================================');
   print('Based on: .kiro/specs/login-registration-validation/requirements.md');
   print('');
@@ -10,112 +10,112 @@ void main() async {
   var totalTests = 7;
 
   // Test Case A: Top-level Navigation
-  print('📋 Test Case A: Top-level Navigation');
+  print('ðŸ“‹ Test Case A: Top-level Navigation');
   try {
     final result = await _testTopLevelNavigation();
     if (result) {
-      print('✅ PASS: Login and Register buttons visible and functional');
+      print('âœ… PASS: Login and Register buttons visible and functional');
       passedTests++;
     } else {
-      print('❌ FAIL: Navigation issues detected');
+      print('âŒ FAIL: Navigation issues detected');
     }
   } catch (e) {
-    print('❌ FAIL: Navigation test failed - $e');
+    print('âŒ FAIL: Navigation test failed - $e');
   }
   print('');
 
   // Test Case B: New User Journey
-  print('📋 Test Case B: New User Journey (OTP → Form → Payment Optional)');
+  print('ðŸ“‹ Test Case B: New User Journey (OTP â†’ Form â†’ Payment Optional)');
   try {
     final result = await _testNewUserJourney();
     if (result) {
-      print('✅ PASS: Registration flow works end-to-end');
+      print('âœ… PASS: Registration flow works end-to-end');
       passedTests++;
     } else {
-      print('❌ FAIL: Registration flow issues detected');
+      print('âŒ FAIL: Registration flow issues detected');
     }
   } catch (e) {
-    print('❌ FAIL: Registration flow test failed - $e');
+    print('âŒ FAIL: Registration flow test failed - $e');
   }
   print('');
 
   // Test Case C: Existing User Login
-  print('📋 Test Case C: Existing User Login');
+  print('ðŸ“‹ Test Case C: Existing User Login');
   try {
     final result = await _testExistingUserLogin();
     if (result) {
-      print('✅ PASS: Login flow works correctly');
+      print('âœ… PASS: Login flow works correctly');
       passedTests++;
     } else {
-      print('❌ FAIL: Login flow issues detected');
+      print('âŒ FAIL: Login flow issues detected');
     }
   } catch (e) {
-    print('❌ FAIL: Login flow test failed - $e');
+    print('âŒ FAIL: Login flow test failed - $e');
   }
   print('');
 
   // Test Case D: Deep Link Auto-fill
-  print('📋 Test Case D: Deep Link Auto-fill');
+  print('ðŸ“‹ Test Case D: Deep Link Auto-fill');
   try {
     final result = await _testDeepLinkAutoFill();
     if (result) {
-      print('✅ PASS: Deep link auto-fill working');
+      print('âœ… PASS: Deep link auto-fill working');
       passedTests++;
     } else {
-      print('❌ FAIL: Deep link auto-fill issues');
+      print('âŒ FAIL: Deep link auto-fill issues');
     }
   } catch (e) {
-    print('❌ FAIL: Deep link test failed - $e');
+    print('âŒ FAIL: Deep link test failed - $e');
   }
   print('');
 
   // Test Case E: Referral Code Policy Compliance (CRITICAL)
-  print('📋 Test Case E: Referral Code Policy Compliance (CRITICAL)');
+  print('ðŸ“‹ Test Case E: Referral Code Policy Compliance (CRITICAL)');
   try {
     final result = await _testReferralCodePolicy();
     if (result) {
-      print('✅ PASS: All referral codes follow TAL + Crockford base32 format');
+      print('âœ… PASS: All referral codes follow TAL + Crockford base32 format');
       passedTests++;
     } else {
-      print('❌ FAIL: Referral code policy violations detected');
+      print('âŒ FAIL: Referral code policy violations detected');
     }
   } catch (e) {
-    print('❌ FAIL: Referral code policy test failed - $e');
+    print('âŒ FAIL: Referral code policy test failed - $e');
   }
   print('');
 
   // Test Case F: Real-time Network Updates
-  print('📋 Test Case F: Real-time Network Updates');
+  print('ðŸ“‹ Test Case F: Real-time Network Updates');
   try {
     final result = await _testRealTimeUpdates();
     if (result) {
-      print('✅ PASS: Real-time updates working');
+      print('âœ… PASS: Real-time updates working');
       passedTests++;
     } else {
-      print('❌ FAIL: Real-time update issues');
+      print('âŒ FAIL: Real-time update issues');
     }
   } catch (e) {
-    print('❌ FAIL: Real-time updates test failed - $e');
+    print('âŒ FAIL: Real-time updates test failed - $e');
   }
   print('');
 
   // Test Case G: Security Spot Checks
-  print('📋 Test Case G: Security Spot Checks');
+  print('ðŸ“‹ Test Case G: Security Spot Checks');
   try {
     final result = await _testSecurityChecks();
     if (result) {
-      print('✅ PASS: Security rules properly enforced');
+      print('âœ… PASS: Security rules properly enforced');
       passedTests++;
     } else {
-      print('❌ FAIL: Security vulnerabilities detected');
+      print('âŒ FAIL: Security vulnerabilities detected');
     }
   } catch (e) {
-    print('❌ FAIL: Security test failed - $e');
+    print('âŒ FAIL: Security test failed - $e');
   }
   print('');
 
   // Final Results
-  print('🎯 VALIDATION RESULTS');
+  print('ðŸŽ¯ VALIDATION RESULTS');
   print('====================');
   print('Tests Passed: $passedTests / $totalTests');
   print(
@@ -124,21 +124,21 @@ void main() async {
   print('');
 
   if (passedTests == totalTests) {
-    print('🎉 ALL TESTS PASSED!');
-    print('✅ FLOW MATCHES SPEC: YES');
-    print('✅ ReferralCode null issue: RESOLVED');
-    print('✅ Registration flow: WORKING');
-    print('✅ Payment integration: OPTIONAL (membershipPaid: true by default)');
+    print('ðŸŽ‰ ALL TESTS PASSED!');
+    print('âœ… FLOW MATCHES SPEC: YES');
+    print('âœ… ReferralCode null issue: RESOLVED');
+    print('âœ… Registration flow: WORKING');
+    print('âœ… Payment integration: OPTIONAL (membershipPaid: true by default)');
   } else {
-    print('⚠️  SOME TESTS FAILED');
-    print('❌ FLOW MATCHES SPEC: NO');
+    print('âš ï¸  SOME TESTS FAILED');
+    print('âŒ FLOW MATCHES SPEC: NO');
     print('Issues need to be addressed before production deployment');
   }
 
   print('');
-  print('🌐 Live URL: https://talowa.web.app');
+  print('ðŸŒ Live URL: https://talowa.web.app');
   print(
-    '📊 Firebase Console: https://console.firebase.google.com/project/talowa/overview',
+    'ðŸ“Š Firebase Console: https://console.firebase.google.com/project/talowa/overview',
   );
 }
 
@@ -213,11 +213,11 @@ Future<bool> _testDeepLinkAutoFill() async {
 
 Future<bool> _testReferralCodePolicy() async {
   // This is the CRITICAL test for the null referralCode issue
-  print('  🔍 Checking referralCode generation in user profile creation...');
+  print('  ðŸ” Checking referralCode generation in user profile creation...');
 
   final authServiceFile = File('lib/services/auth_service.dart');
   if (!await authServiceFile.exists()) {
-    print('  ❌ AuthService file not found');
+    print('  âŒ AuthService file not found');
     return false;
   }
 
@@ -227,19 +227,19 @@ Future<bool> _testReferralCodePolicy() async {
   if (!content.contains(
     'referralCode = await ReferralCodeGenerator.generateUniqueCode()',
   )) {
-    print('  ❌ ReferralCode not generated during profile creation');
+    print('  âŒ ReferralCode not generated during profile creation');
     return false;
   }
 
   // Check if referralCode is included in user data
   if (!content.contains('\'referralCode\': referralCode,')) {
-    print('  ❌ ReferralCode not included in user profile data');
+    print('  âŒ ReferralCode not included in user profile data');
     return false;
   }
 
   // Check if ProfileWritePolicy allows referralCode
   if (!content.contains('\'referralCode\'')) {
-    print('  ❌ ProfileWritePolicy does not allow referralCode');
+    print('  âŒ ProfileWritePolicy does not allow referralCode');
     return false;
   }
 
@@ -248,20 +248,20 @@ Future<bool> _testReferralCodePolicy() async {
     'lib/services/referral/referral_code_generator.dart',
   );
   if (!await generatorFile.exists()) {
-    print('  ❌ ReferralCodeGenerator file not found');
+    print('  âŒ ReferralCodeGenerator file not found');
     return false;
   }
 
   final generatorContent = await generatorFile.readAsString();
   if (!generatorContent.contains('PREFIX = \'TAL\'') ||
       !generatorContent.contains('23456789ABCDEFGHJKMNPQRSTUVWXYZ')) {
-    print('  ❌ ReferralCodeGenerator format incorrect');
+    print('  âŒ ReferralCodeGenerator format incorrect');
     return false;
   }
 
-  print('  ✅ ReferralCode generation properly implemented');
-  print('  ✅ TAL + Crockford base32 format confirmed');
-  print('  ✅ No more null referralCode issues expected');
+  print('  âœ… ReferralCode generation properly implemented');
+  print('  âœ… TAL + Crockford base32 format confirmed');
+  print('  âœ… No more null referralCode issues expected');
 
   return true;
 }
@@ -293,3 +293,4 @@ Future<bool> _testSecurityChecks() async {
   final content = await authServiceFile.readAsString();
   return content.contains('profileWritePolicy');
 }
+

@@ -1,9 +1,9 @@
-// TALOWA Referral Code Policy Validator
+﻿// TALOWA Referral Code Policy Validator
 // Comprehensive validation for referral code policy compliance (Test Case E)
 //
 // This validator ensures:
 // 1. TAL prefix requirement for all codes (except TALADMIN)
-// 2. Crockford base32 format compliance (A–Z,2–7; no 0/O/1/I)
+// 2. Crockford base32 format compliance (Aâ€“Z,2â€“7; no 0/O/1/I)
 // 3. TALADMIN exception handling
 // 4. No "Loading" states in referral codes
 // 5. Code uniqueness and proper generation
@@ -34,7 +34,7 @@ class ReferralCodePolicyValidator {
   /// Main validation entry point for Test Case E
   static Future<ValidationResult> validateReferralCodePolicy() async {
     try {
-      debugPrint('🧪 Running Test Case E: Referral Code Policy Validation...');
+      debugPrint('ðŸ§ª Running Test Case E: Referral Code Policy Validation...');
       
       // Step 1: Validate code generation algorithm
       final generationResult = await _validateCodeGeneration();
@@ -73,7 +73,7 @@ class ReferralCodePolicyValidator {
   /// Validate code generation algorithm
   static Future<ValidationResult> _validateCodeGeneration() async {
     try {
-      debugPrint('🔍 Validating referral code generation algorithm...');
+      debugPrint('ðŸ” Validating referral code generation algorithm...');
       
       // Generate multiple test codes
       final testCodes = <String>[];
@@ -124,7 +124,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      debugPrint('✅ Code generation algorithm validation passed');
+      debugPrint('âœ… Code generation algorithm validation passed');
       return ValidationResult.pass('Code generation follows TAL prefix and Crockford base32 format');
       
     } catch (e) {
@@ -139,7 +139,7 @@ class ReferralCodePolicyValidator {
   /// Validate existing codes in database
   static Future<ValidationResult> _validateExistingCodes() async {
     try {
-      debugPrint('🔍 Validating existing referral codes in database...');
+      debugPrint('ðŸ” Validating existing referral codes in database...');
       
       // Check user_registry collection
       final registryQuery = await _firestore
@@ -236,7 +236,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      debugPrint('✅ Existing codes validation passed');
+      debugPrint('âœ… Existing codes validation passed');
       return ValidationResult.pass('All existing referral codes comply with policy');
       
     } catch (e) {
@@ -251,7 +251,7 @@ class ReferralCodePolicyValidator {
   /// Validate TALADMIN exception handling
   static Future<ValidationResult> _validateAdminException() async {
     try {
-      debugPrint('🔍 Validating TALADMIN exception handling...');
+      debugPrint('ðŸ” Validating TALADMIN exception handling...');
       
       // Check admin user has TALADMIN code
       final adminDoc = await _firestore
@@ -294,7 +294,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      debugPrint('✅ TALADMIN exception validation passed');
+      debugPrint('âœ… TALADMIN exception validation passed');
       return ValidationResult.pass('TALADMIN exception properly handled');
       
     } catch (e) {
@@ -309,7 +309,7 @@ class ReferralCodePolicyValidator {
   /// Validate code uniqueness
   static Future<ValidationResult> _validateCodeUniqueness() async {
     try {
-      debugPrint('🔍 Validating referral code uniqueness...');
+      debugPrint('ðŸ” Validating referral code uniqueness...');
       
       // Get all referral codes from user_registry
       final registryQuery = await _firestore
@@ -346,7 +346,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      debugPrint('✅ Code uniqueness validation passed');
+      debugPrint('âœ… Code uniqueness validation passed');
       return ValidationResult.pass('All referral codes are unique');
       
     } catch (e) {
@@ -361,7 +361,7 @@ class ReferralCodePolicyValidator {
   /// Validate no "Loading" states
   static Future<ValidationResult> _validateNoLoadingStates() async {
     try {
-      debugPrint('🔍 Validating no "Loading" states in referral codes...');
+      debugPrint('ðŸ” Validating no "Loading" states in referral codes...');
       
       // Check user_registry for Loading states
       final loadingQuery = await _firestore
@@ -417,7 +417,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      debugPrint('✅ No Loading states validation passed');
+      debugPrint('âœ… No Loading states validation passed');
       return ValidationResult.pass('No "Loading" states found in referral codes');
       
     } catch (e) {

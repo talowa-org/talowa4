@@ -1,4 +1,4 @@
-// Content Analytics Service for TALOWA
+﻿// Content Analytics Service for TALOWA
 // Implements Task 23: Implement content analytics - Analytics Engine
 
 import 'dart:async';

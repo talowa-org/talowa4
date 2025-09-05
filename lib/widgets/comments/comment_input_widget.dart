@@ -1,4 +1,4 @@
-// Comment Input Widget - Text input for comments and replies
+﻿// Comment Input Widget - Text input for comments and replies
 // Part of Task 7: Build post engagement interface
 
 import 'package:flutter/material.dart';

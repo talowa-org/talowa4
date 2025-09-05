@@ -1,4 +1,4 @@
-// Instagram-like Stories Screen for TALOWA
+﻿// Instagram-like Stories Screen for TALOWA
 // Complete stories viewing experience with gestures and interactions
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -252,7 +252,7 @@ class _StoriesScreenState extends State<StoriesScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            '❤️', '😍', '😂', '😮', '😢', '👏', '🔥', '💪'
+            'â¤ï¸', 'ðŸ˜', 'ðŸ˜‚', 'ðŸ˜®', 'ðŸ˜¢', 'ðŸ‘', 'ðŸ”¥', 'ðŸ’ª'
           ].map((emoji) => GestureDetector(
             onTap: () {
               Navigator.pop(context);

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,15 +104,15 @@ class AuthTestScreen extends StatelessWidget {
               child: const Column(
                 children: [
                   Text(
-                    '✅ What This Fixes:',
+                    'âœ… What This Fixes:',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   SizedBox(height: 10),
-                  Text('• PIN mismatches between login & registration'),
-                  Text('• Permission denied errors'),
-                  Text('• Web authentication persistence issues'),
-                  Text('• Razorpay web compatibility'),
-                  Text('• Consistent phone number normalization'),
+                  Text('â€¢ PIN mismatches between login & registration'),
+                  Text('â€¢ Permission denied errors'),
+                  Text('â€¢ Web authentication persistence issues'),
+                  Text('â€¢ Razorpay web compatibility'),
+                  Text('â€¢ Consistent phone number normalization'),
                 ],
               ),
             ),
@@ -122,3 +122,4 @@ class AuthTestScreen extends StatelessWidget {
     );
   }
 }
+

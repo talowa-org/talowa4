@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../network_error_handler.dart';
 
@@ -9,7 +9,7 @@ class ComprehensiveStatsService {
   /// Update all statistics for a user by recalculating from actual data
   static Future<Map<String, dynamic>> updateUserStats(String userId) async {
     try {
-      debugPrint('🔄 Updating comprehensive stats for user: $userId');
+      debugPrint('ðŸ”„ Updating comprehensive stats for user: $userId');
 
       // Get user document
       final userDoc = await _firestore.collection('users').doc(userId).get();
@@ -21,7 +21,7 @@ class ComprehensiveStatsService {
       final referralCode = userData['referralCode'] as String? ?? '';
 
       if (referralCode.isEmpty) {
-        debugPrint('⚠️ User has no referral code, skipping stats update');
+        debugPrint('âš ï¸ User has no referral code, skipping stats update');
         return {
           'directReferrals': 0,
           'teamSize': 0,
@@ -50,7 +50,7 @@ class ComprehensiveStatsService {
         'lastStatsUpdate': FieldValue.serverTimestamp(),
       });
 
-      debugPrint('✅ Updated stats for ${userData['fullName']}: Direct=$directReferrals, Team=$teamSize');
+      debugPrint('âœ… Updated stats for ${userData['fullName']}: Direct=$directReferrals, Team=$teamSize');
 
       return {
         'directReferrals': directReferrals,
@@ -62,7 +62,7 @@ class ComprehensiveStatsService {
       };
 
     } catch (e) {
-      debugPrint('❌ Error updating user stats: $e');
+      debugPrint('âŒ Error updating user stats: $e');
       rethrow;
     }
   }
@@ -105,7 +105,7 @@ class ComprehensiveStatsService {
       };
 
     } catch (e) {
-      debugPrint('❌ Error getting user stats: $e');
+      debugPrint('âŒ Error getting user stats: $e');
       return {
         'directReferrals': 0,
         'teamSize': 0,
@@ -119,7 +119,7 @@ class ComprehensiveStatsService {
   /// Fix all stats for all users (admin function)
   static Future<Map<String, dynamic>> fixAllUserStats({int batchSize = 50}) async {
     try {
-      debugPrint('🔧 Starting comprehensive stats fix for all users...');
+      debugPrint('ðŸ”§ Starting comprehensive stats fix for all users...');
 
       // Get all users
       final usersQuery = await _firestore.collection('users').get();
@@ -141,7 +141,7 @@ class ComprehensiveStatsService {
             }
             processed++;
           } catch (e) {
-            debugPrint('❌ Error updating stats for user ${userDoc.id}: $e');
+            debugPrint('âŒ Error updating stats for user ${userDoc.id}: $e');
             errors++;
             processed++;
           }
@@ -152,7 +152,7 @@ class ComprehensiveStatsService {
           await Future.delayed(const Duration(milliseconds: 200));
         }
 
-        debugPrint('📊 Progress: $processed/$totalUsers users processed');
+        debugPrint('ðŸ“Š Progress: $processed/$totalUsers users processed');
       }
 
       final result = {
@@ -164,11 +164,11 @@ class ComprehensiveStatsService {
         'completedAt': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('✅ Stats fix completed: $result');
+      debugPrint('âœ… Stats fix completed: $result');
       return result;
 
     } catch (e) {
-      debugPrint('❌ Error in comprehensive stats fix: $e');
+      debugPrint('âŒ Error in comprehensive stats fix: $e');
       return {
         'error': e.toString(),
         'success': false,
@@ -195,7 +195,7 @@ class ComprehensiveStatsService {
       };
 
     } catch (e) {
-      debugPrint('❌ Error getting stats summary: $e');
+      debugPrint('âŒ Error getting stats summary: $e');
       return {
         'error': e.toString(),
         'current': {
@@ -336,7 +336,7 @@ class ComprehensiveStatsService {
 
       return totalTeamSize;
     } catch (e) {
-      debugPrint('❌ Error calculating team size for $referralCode: $e');
+      debugPrint('âŒ Error calculating team size for $referralCode: $e');
       return 0;
     }
   }
@@ -427,7 +427,7 @@ class ComprehensiveStatsService {
 
       return referralHistory;
     } catch (e) {
-      debugPrint('❌ Error getting referral history: $e');
+      debugPrint('âŒ Error getting referral history: $e');
       return [];
     }
   }
@@ -509,7 +509,7 @@ class ComprehensiveStatsService {
         'supportRate': totalReferrals > 0 ? (supporterMembers / totalReferrals * 100).round() : 0, // Percentage who chose to support
       };
     } catch (e) {
-      debugPrint('❌ Error getting referral statistics: $e');
+      debugPrint('âŒ Error getting referral statistics: $e');
       return {
         'totalReferrals': 0,
         'activeReferrals': 0,

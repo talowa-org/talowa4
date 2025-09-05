@@ -1,4 +1,4 @@
-// Admin PIN Change Screen - Allow admin to change their PIN
+﻿// Admin PIN Change Screen - Allow admin to change their PIN
 import 'package:flutter/material.dart';
 import '../../services/admin/admin_auth_service.dart';
 import 'admin_dashboard_screen.dart';
@@ -429,11 +429,11 @@ class _AdminPinChangeScreenState extends State<AdminPinChangeScreen> {
       builder: (context) => AlertDialog(
         title: const Text('PIN Security Tips'),
         content: const Text(
-          '• Use a PIN that is at least 4 digits long\n'
-          '• Avoid using obvious numbers like 1234 or 0000\n'
-          '• Don\'t use your birth date or phone number\n'
-          '• Change your PIN regularly\n'
-          '• Keep your PIN confidential\n\n'
+          'â€¢ Use a PIN that is at least 4 digits long\n'
+          'â€¢ Avoid using obvious numbers like 1234 or 0000\n'
+          'â€¢ Don\'t use your birth date or phone number\n'
+          'â€¢ Change your PIN regularly\n'
+          'â€¢ Keep your PIN confidential\n\n'
           'If you forget your PIN, use the emergency reset option.',
         ),
         actions: [

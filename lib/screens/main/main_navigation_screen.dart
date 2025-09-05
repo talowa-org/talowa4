@@ -1,4 +1,4 @@
-// TALOWA Main Navigation Screen - 5 Tab System
+﻿// TALOWA Main Navigation Screen - 5 Tab System
 // Reference: complete-app-structure.md - Bottom Navigation (5 Main Tabs)
 
 import 'package:flutter/material.dart';
@@ -155,27 +155,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         // Comprehensive swipe protection to prevent logout
         onHorizontalDragStart: (details) {
           // Consume the gesture to prevent it from propagating
-          debugPrint('🛡️ Horizontal drag start blocked');
+          debugPrint('ðŸ›¡ï¸ Horizontal drag start blocked');
         },
         onHorizontalDragUpdate: (details) {
           // Consume the gesture to prevent it from propagating
-          debugPrint('🛡️ Horizontal drag update blocked');
+          debugPrint('ðŸ›¡ï¸ Horizontal drag update blocked');
         },
         onHorizontalDragEnd: (details) {
           // Consume the gesture to prevent it from propagating
-          debugPrint('🛡️ Horizontal drag end blocked');
+          debugPrint('ðŸ›¡ï¸ Horizontal drag end blocked');
         },
         onPanStart: (details) {
           // Also block pan gestures that could cause navigation
-          debugPrint('🛡️ Pan gesture start blocked');
+          debugPrint('ðŸ›¡ï¸ Pan gesture start blocked');
         },
         onPanUpdate: (details) {
           // Block pan updates
-          debugPrint('🛡️ Pan gesture update blocked');
+          debugPrint('ðŸ›¡ï¸ Pan gesture update blocked');
         },
         onPanEnd: (details) {
           // Block pan end
-          debugPrint('🛡️ Pan gesture end blocked');
+          debugPrint('ðŸ›¡ï¸ Pan gesture end blocked');
         },
         behavior: HitTestBehavior.opaque,
         child: Scaffold(

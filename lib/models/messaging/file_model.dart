@@ -1,4 +1,4 @@
-// File Model for TALOWA Messaging System
+﻿// File Model for TALOWA Messaging System
 // Implements secure file sharing with encryption and access control
 // Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
 

@@ -1,4 +1,4 @@
-// Test file for GeographicTargeting
+﻿// Test file for GeographicTargeting
 // Tests for geographic targeting functionality
 
 import 'package:flutter_test/flutter_test.dart';
@@ -11,62 +11,62 @@ void main() {
       test('should create village-level targeting', () {
         // Act
         final targeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Assert
-        expect(targeting.village, equals('रामपुर'));
-        expect(targeting.mandal, equals('सरायकेला'));
-        expect(targeting.district, equals('सरायकेला खरसावां'));
-        expect(targeting.state, equals('झारखंड'));
+        expect(targeting.village, equals('à¤°à¤¾à¤®à¤ªà¥à¤°'));
+        expect(targeting.mandal, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾'));
+        expect(targeting.district, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚'));
+        expect(targeting.state, equals('à¤à¤¾à¤°à¤–à¤‚à¤¡'));
         expect(targeting.scope, equals(TargetingScope.village));
       });
 
       test('should create mandal-level targeting', () {
         // Act
         final targeting = GeographicTargeting.forMandal(
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Assert
         expect(targeting.village, isNull);
-        expect(targeting.mandal, equals('सरायकेला'));
-        expect(targeting.district, equals('सरायकेला खरसावां'));
-        expect(targeting.state, equals('झारखंड'));
+        expect(targeting.mandal, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾'));
+        expect(targeting.district, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚'));
+        expect(targeting.state, equals('à¤à¤¾à¤°à¤–à¤‚à¤¡'));
         expect(targeting.scope, equals(TargetingScope.mandal));
       });
 
       test('should create district-level targeting', () {
         // Act
         final targeting = GeographicTargeting.forDistrict(
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Assert
         expect(targeting.village, isNull);
         expect(targeting.mandal, isNull);
-        expect(targeting.district, equals('सरायकेला खरसावां'));
-        expect(targeting.state, equals('झारखंड'));
+        expect(targeting.district, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚'));
+        expect(targeting.state, equals('à¤à¤¾à¤°à¤–à¤‚à¤¡'));
         expect(targeting.scope, equals(TargetingScope.district));
       });
 
       test('should create state-level targeting', () {
         // Act
         final targeting = GeographicTargeting.forState(
-          state: 'झारखंड',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Assert
         expect(targeting.village, isNull);
         expect(targeting.mandal, isNull);
         expect(targeting.district, isNull);
-        expect(targeting.state, equals('झारखंड'));
+        expect(targeting.state, equals('à¤à¤¾à¤°à¤–à¤‚à¤¡'));
         expect(targeting.scope, equals(TargetingScope.state));
       });
 
@@ -104,94 +104,94 @@ void main() {
       test('should match village-level targeting', () {
         // Arrange
         final targeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
-          userVillage: 'रामपुर',
-          userMandal: 'सरायकेला',
-          userDistrict: 'सरायकेला खरसावां',
-          userState: 'झारखंड',
+          userVillage: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          userMandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          userDistrict: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isTrue);
 
         expect(targeting.matchesUserLocation(
-          userVillage: 'अन्य गांव',
-          userMandal: 'सरायकेला',
-          userDistrict: 'सरायकेला खरसावां',
-          userState: 'झारखंड',
+          userVillage: 'à¤…à¤¨à¥à¤¯ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          userDistrict: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isFalse);
       });
 
       test('should match mandal-level targeting', () {
         // Arrange
         final targeting = GeographicTargeting.forMandal(
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'सरायकेला',
-          userDistrict: 'सरायकेला खरसावां',
-          userState: 'झारखंड',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          userDistrict: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isTrue);
 
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'अन्य मंडल',
-          userDistrict: 'सरायकेला खरसावां',
-          userState: 'झारखंड',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤…à¤¨à¥à¤¯ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isFalse);
       });
 
       test('should match district-level targeting', () {
         // Arrange
         final targeting = GeographicTargeting.forDistrict(
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'कोई भी मंडल',
-          userDistrict: 'सरायकेला खरसावां',
-          userState: 'झारखंड',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isTrue);
 
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'कोई भी मंडल',
-          userDistrict: 'अन्य जिला',
-          userState: 'झारखंड',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤…à¤¨à¥à¤¯ à¤œà¤¿à¤²à¤¾',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isFalse);
       });
 
       test('should match state-level targeting', () {
         // Arrange
         final targeting = GeographicTargeting.forState(
-          state: 'झारखंड',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'कोई भी मंडल',
-          userDistrict: 'कोई भी जिला',
-          userState: 'झारखंड',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤œà¤¿à¤²à¤¾',
+          userState: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         ), isTrue);
 
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'कोई भी मंडल',
-          userDistrict: 'कोई भी जिला',
-          userState: 'बिहार',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤œà¤¿à¤²à¤¾',
+          userState: 'à¤¬à¤¿à¤¹à¤¾à¤°',
         ), isFalse);
       });
 
@@ -201,10 +201,10 @@ void main() {
 
         // Act & Assert
         expect(targeting.matchesUserLocation(
-          userVillage: 'कोई भी गांव',
-          userMandal: 'कोई भी मंडल',
-          userDistrict: 'कोई भी जिला',
-          userState: 'कोई भी राज्य',
+          userVillage: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤—à¤¾à¤‚à¤µ',
+          userMandal: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤®à¤‚à¤¡à¤²',
+          userDistrict: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤œà¤¿à¤²à¤¾',
+          userState: 'à¤•à¥‹à¤ˆ à¤­à¥€ à¤°à¤¾à¤œà¥à¤¯',
         ), isTrue);
 
         expect(targeting.matchesUserLocation(), isTrue);
@@ -282,19 +282,19 @@ void main() {
       test('should generate correct display strings', () {
         // Arrange & Act & Assert
         final villageTargeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
-        expect(villageTargeting.getDisplayString(), equals('रामपुर'));
+        expect(villageTargeting.getDisplayString(), equals('à¤°à¤¾à¤®à¤ªà¥à¤°'));
 
         final mandalTargeting = GeographicTargeting.forMandal(
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
-        expect(mandalTargeting.getDisplayString(), equals('सरायकेला'));
+        expect(mandalTargeting.getDisplayString(), equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾'));
 
         final radiusTargeting = GeographicTargeting.forRadius(
           centerPoint: const GeoPoint(23.3441, 85.3096),
@@ -309,31 +309,31 @@ void main() {
       test('should generate hierarchical strings', () {
         // Arrange
         final targeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act
         final hierarchical = targeting.getHierarchicalString();
 
         // Assert
-        expect(hierarchical, equals('रामपुर, सरायकेला, सरायकेला खरसावां, झारखंड'));
+        expect(hierarchical, equals('à¤°à¤¾à¤®à¤ªà¥à¤°, à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾, à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚, à¤à¤¾à¤°à¤–à¤‚à¤¡'));
       });
 
       test('should handle partial hierarchical data', () {
         // Arrange
         final targeting = GeographicTargeting.forDistrict(
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act
         final hierarchical = targeting.getHierarchicalString();
 
         // Assert
-        expect(hierarchical, equals('सरायकेला खरसावां, झारखंड'));
+        expect(hierarchical, equals('à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚, à¤à¤¾à¤°à¤–à¤‚à¤¡'));
       });
     });
 
@@ -341,10 +341,10 @@ void main() {
       test('should validate village targeting successfully', () {
         // Arrange
         final targeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act
@@ -357,7 +357,7 @@ void main() {
       test('should fail validation for incomplete village targeting', () {
         // Arrange
         const targeting = GeographicTargeting(
-          village: 'रामपुर',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
           // Missing mandal, district, state
           scope: TargetingScope.village,
         );
@@ -431,10 +431,10 @@ void main() {
       test('should serialize and deserialize correctly', () {
         // Arrange
         final originalTargeting = GeographicTargeting.forVillage(
-          village: 'रामपुर',
-          mandal: 'सरायकेला',
-          district: 'सरायकेला खरसावां',
-          state: 'झारखंड',
+          village: 'à¤°à¤¾à¤®à¤ªà¥à¤°',
+          mandal: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾',
+          district: 'à¤¸à¤°à¤¾à¤¯à¤•à¥‡à¤²à¤¾ à¤–à¤°à¤¸à¤¾à¤µà¤¾à¤‚',
+          state: 'à¤à¤¾à¤°à¤–à¤‚à¤¡',
         );
 
         // Act
@@ -487,12 +487,12 @@ void main() {
       });
 
       test('should have appropriate icons', () {
-        expect(TargetingScope.village.icon, equals('🏘️'));
-        expect(TargetingScope.mandal.icon, equals('🏙️'));
-        expect(TargetingScope.district.icon, equals('🌆'));
-        expect(TargetingScope.state.icon, equals('🗺️'));
-        expect(TargetingScope.radius.icon, equals('📍'));
-        expect(TargetingScope.national.icon, equals('🇮🇳'));
+        expect(TargetingScope.village.icon, equals('ðŸ˜ï¸'));
+        expect(TargetingScope.mandal.icon, equals('ðŸ™ï¸'));
+        expect(TargetingScope.district.icon, equals('ðŸŒ†'));
+        expect(TargetingScope.state.icon, equals('ðŸ—ºï¸'));
+        expect(TargetingScope.radius.icon, equals('ðŸ“'));
+        expect(TargetingScope.national.icon, equals('ðŸ‡®ðŸ‡³'));
       });
     });
   });

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:talowa/widgets/ai_assistant/ai_assistant_widget.dart';
 import '../test_utils/firebase_test_init.dart';
@@ -31,4 +31,5 @@ void main() {
     expect(find.text('hello'), findsWidgets);
   }, skip: true);
 }
+
 

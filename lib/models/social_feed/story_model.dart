@@ -1,4 +1,4 @@
-// Story Model for TALOWA Social Feed
+﻿// Story Model for TALOWA Social Feed
 // 24-hour temporary stories feature
 import 'package:cloud_firestore/cloud_firestore.dart';
 

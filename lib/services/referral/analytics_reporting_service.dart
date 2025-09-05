@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -579,3 +579,4 @@ class AnalyticsReportingService {
     return buffer.toString();
   }
 }
+

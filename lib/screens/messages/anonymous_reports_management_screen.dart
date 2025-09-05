@@ -798,3 +798,4 @@ extension ReportTypeDisplay on ReportType {
     }
   }
 }
+

@@ -1,4 +1,4 @@
-// Web stub for flutter_local_notifications
+﻿// Web stub for flutter_local_notifications
 // This file provides empty implementations for web platform
 
 class FlutterLocalNotificationsPlugin {

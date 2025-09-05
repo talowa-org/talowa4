@@ -1,4 +1,4 @@
-// Redis Cache Service for TALOWA Messaging
+﻿// Redis Cache Service for TALOWA Messaging
 // Handles session management and presence tracking
 // Requirements: 1.6, 7.2, 7.3
 

@@ -1,4 +1,4 @@
-// Moderation Statistics Widget for TALOWA Content Moderation
+﻿// Moderation Statistics Widget for TALOWA Content Moderation
 // Displays moderation statistics and analytics
 
 import 'package:flutter/material.dart';

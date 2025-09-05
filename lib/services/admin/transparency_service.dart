@@ -1,4 +1,4 @@
-// Transparency Service for TALOWA Admin Actions
+﻿// Transparency Service for TALOWA Admin Actions
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 

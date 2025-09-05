@@ -1,4 +1,4 @@
-// File Sharing Service for TALOWA Messaging System
+﻿// File Sharing Service for TALOWA Messaging System
 // Implements secure file upload, virus scanning, encryption, and access control
 // Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
 

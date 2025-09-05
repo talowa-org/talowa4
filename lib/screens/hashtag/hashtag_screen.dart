@@ -507,3 +507,4 @@ class _HashtagScreenState extends State<HashtagScreen> {
     debugPrint('Opening post detail: ${post.id}');
   }
 }
+

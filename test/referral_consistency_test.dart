@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:talowa/services/referral/referral_code_generator.dart';
 
 /// Test suite to validate referral code consistency and format

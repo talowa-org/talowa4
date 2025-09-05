@@ -1,4 +1,4 @@
-// Community Guidelines Service for TALOWA
+﻿// Community Guidelines Service for TALOWA
 // Implements Task 19: Build user safety features - Community Guidelines
 
 import 'dart:async';

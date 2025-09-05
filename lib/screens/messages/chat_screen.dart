@@ -1,4 +1,4 @@
-// Enhanced Chat Screen for TALOWA Messaging
+﻿// Enhanced Chat Screen for TALOWA Messaging
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';

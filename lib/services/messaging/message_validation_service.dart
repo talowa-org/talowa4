@@ -1,4 +1,4 @@
-// Message Validation and Sanitization Service for TALOWA
+﻿// Message Validation and Sanitization Service for TALOWA
 // Implements message validation and sanitization to prevent malicious content
 // Requirements: 6.6, 10.2
 

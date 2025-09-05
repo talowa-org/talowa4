@@ -1,4 +1,4 @@
-// Anonymous Message Model for TALOWA Communication System
+﻿// Anonymous Message Model for TALOWA Communication System
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 
 import 'package:cloud_firestore/cloud_firestore.dart';

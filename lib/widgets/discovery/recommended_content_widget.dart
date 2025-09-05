@@ -1,4 +1,4 @@
-// Recommended Content Widget - AI-powered content recommendations
+﻿// Recommended Content Widget - AI-powered content recommendations
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';

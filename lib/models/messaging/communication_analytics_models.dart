@@ -1,4 +1,4 @@
-// Communication Analytics Models for TALOWA In-App Communication System
+﻿// Communication Analytics Models for TALOWA In-App Communication System
 // Implements Task 16: Implement monitoring and analytics - Data Models
 
 import 'package:cloud_firestore/cloud_firestore.dart';

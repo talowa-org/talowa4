@@ -379,3 +379,4 @@ class EmergencyAnonymousReportButton extends StatelessWidget {
     );
   }
 }
+

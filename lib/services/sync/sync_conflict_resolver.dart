@@ -1,4 +1,4 @@
-// Sync Conflict Resolver for TALOWA
+﻿// Sync Conflict Resolver for TALOWA
 // Implements Task 22: Add sync and conflict resolution - Conflict Resolution
 
 import 'dart:async';

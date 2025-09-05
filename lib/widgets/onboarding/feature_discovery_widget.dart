@@ -1,4 +1,4 @@
-// TALOWA Feature Discovery Widget
+﻿// TALOWA Feature Discovery Widget
 // Shows contextual tips and feature discovery prompts
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 

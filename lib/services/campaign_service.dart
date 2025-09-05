@@ -1,4 +1,4 @@
-// Campaign Service for TALOWA
+﻿// Campaign Service for TALOWA
 // Manages campaigns and integrates with messaging system
 // Reference: TALOWA_APP_BLUEPRINT.md - Campaign Management
 

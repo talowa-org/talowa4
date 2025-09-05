@@ -1,4 +1,4 @@
-// Animated Post Widget - Provides smooth animations for real-time post updates
+﻿// Animated Post Widget - Provides smooth animations for real-time post updates
 // Part of Task 13: Implement real-time feed updates
 
 import 'package:flutter/material.dart';

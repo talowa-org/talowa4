@@ -1,4 +1,4 @@
-// Test for Offline Messaging Service
+﻿// Test for Offline Messaging Service
 // Tests Task 8: Create offline messaging and synchronization
 
 import 'package:flutter_test/flutter_test.dart';

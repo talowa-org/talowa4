@@ -1,4 +1,4 @@
-// Feature Section Card Widget
+﻿// Feature Section Card Widget
 // Reference: complete-app-structure.md - More Tab
 
 import 'package:flutter/material.dart';

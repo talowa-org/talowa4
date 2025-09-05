@@ -1,4 +1,4 @@
-// Safety Settings Screen for TALOWA
+﻿// Safety Settings Screen for TALOWA
 // Implements Task 18: Add security and content safety - Safety UI
 
 import 'package:flutter/material.dart';

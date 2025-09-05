@@ -1,4 +1,4 @@
-// Privacy-Aware Feed Service for TALOWA Social Feed
+﻿// Privacy-Aware Feed Service for TALOWA Social Feed
 // Implements Task 17: Privacy protection system - Feed Integration
 
 import 'dart:async';

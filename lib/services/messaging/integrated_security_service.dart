@@ -1,4 +1,4 @@
-// Integrated Security Service for TALOWA Messaging
+﻿// Integrated Security Service for TALOWA Messaging
 // Coordinates all security components for comprehensive message protection
 // Requirements: 1.6, 6.1, 6.3, 6.6, 10.2
 

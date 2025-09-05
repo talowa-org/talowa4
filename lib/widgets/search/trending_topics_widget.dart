@@ -1,4 +1,4 @@
-// Trending Topics Widget for TALOWA
+﻿// Trending Topics Widget for TALOWA
 // Implements Task 24: Add advanced search and discovery - Trending Topics
 
 import 'package:flutter/material.dart';

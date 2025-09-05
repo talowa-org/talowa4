@@ -65,3 +65,4 @@ class ErrorDisplayWidget extends StatelessWidget {
     );
   }
 }
+

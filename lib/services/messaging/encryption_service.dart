@@ -1,4 +1,4 @@
-// Message Encryption Service for TALOWA
+﻿// Message Encryption Service for TALOWA
 // Implements AES-256 and RSA key management for secure messaging
 // Requirements: 1.6, 7.2, 7.3
 

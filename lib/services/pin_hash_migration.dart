@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'auth_policy.dart';
 
@@ -13,7 +13,7 @@ class PinHashMigration {
     required String pin,
   }) async {
     try {
-      debugPrint('🔄 Backfilling PIN hash for: $phoneNumber');
+      debugPrint('ðŸ”„ Backfilling PIN hash for: $phoneNumber');
       
       final normalizedPhone = normalizeE164(phoneNumber);
       final hashedPin = passwordFromPin(pin);
@@ -25,7 +25,7 @@ class PinHashMigration {
           .get();
       
       if (!registryDoc.exists) {
-        debugPrint('❌ User registry not found for: $normalizedPhone');
+        debugPrint('âŒ User registry not found for: $normalizedPhone');
         return;
       }
       
@@ -43,9 +43,9 @@ class PinHashMigration {
         'updatedAt': FieldValue.serverTimestamp(),
       });
       
-      debugPrint('✅ PIN hash backfilled successfully for: $normalizedPhone');
+      debugPrint('âœ… PIN hash backfilled successfully for: $normalizedPhone');
     } catch (e) {
-      debugPrint('❌ Failed to backfill PIN hash for $phoneNumber: $e');
+      debugPrint('âŒ Failed to backfill PIN hash for $phoneNumber: $e');
       throw Exception('Failed to backfill PIN hash: $e');
     }
   }
@@ -54,7 +54,7 @@ class PinHashMigration {
   static Future<void> backfillPinHashForUsers(
     Map<String, String> phoneNumberToPinMap,
   ) async {
-    debugPrint('🔄 Starting bulk PIN hash backfill for ${phoneNumberToPinMap.length} users');
+    debugPrint('ðŸ”„ Starting bulk PIN hash backfill for ${phoneNumberToPinMap.length} users');
     
     int successCount = 0;
     int failureCount = 0;
@@ -67,12 +67,12 @@ class PinHashMigration {
         );
         successCount++;
       } catch (e) {
-        debugPrint('❌ Failed to backfill for ${entry.key}: $e');
+        debugPrint('âŒ Failed to backfill for ${entry.key}: $e');
         failureCount++;
       }
     }
     
-    debugPrint('✅ Bulk backfill completed: $successCount success, $failureCount failures');
+    debugPrint('âœ… Bulk backfill completed: $successCount success, $failureCount failures');
   }
 
   /// Check if a user needs PIN hash migration

@@ -1,4 +1,4 @@
-// Auth Service for TALOWA app
+﻿// Auth Service for TALOWA app
 // Provides authentication functionality
 
 import 'package:firebase_auth/firebase_auth.dart';

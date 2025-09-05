@@ -1,4 +1,4 @@
-import 'package:cloud_functions/cloud_functions.dart';
+﻿import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 
 /// Service to handle referral system Cloud Functions
@@ -8,15 +8,15 @@ class CloudFunctionsService {
   /// Process referral chain for a user
   static Future<bool> processReferral(String userId) async {
     try {
-      debugPrint('🔄 Calling processReferral Cloud Function for user: $userId');
+      debugPrint('ðŸ”„ Calling processReferral Cloud Function for user: $userId');
       
       final callable = _functions.httpsCallable('processReferral');
       final result = await callable.call({'userId': userId});
       
-      debugPrint('✅ processReferral result: ${result.data}');
+      debugPrint('âœ… processReferral result: ${result.data}');
       return result.data['success'] ?? false;
     } catch (e) {
-      debugPrint('❌ Error calling processReferral: $e');
+      debugPrint('âŒ Error calling processReferral: $e');
       return false;
     }
   }
@@ -24,15 +24,15 @@ class CloudFunctionsService {
   /// Auto-promote user based on referral stats
   static Future<Map<String, dynamic>?> autoPromoteUser(String userId) async {
     try {
-      debugPrint('🔄 Calling autoPromoteUser Cloud Function for user: $userId');
+      debugPrint('ðŸ”„ Calling autoPromoteUser Cloud Function for user: $userId');
       
       final callable = _functions.httpsCallable('autoPromoteUser');
       final result = await callable.call({'userId': userId});
       
-      debugPrint('✅ autoPromoteUser result: ${result.data}');
+      debugPrint('âœ… autoPromoteUser result: ${result.data}');
       return result.data;
     } catch (e) {
-      debugPrint('❌ Error calling autoPromoteUser: $e');
+      debugPrint('âŒ Error calling autoPromoteUser: $e');
       return null;
     }
   }
@@ -40,15 +40,15 @@ class CloudFunctionsService {
   /// Fix orphaned users (admin function)
   static Future<bool> fixOrphanedUsers() async {
     try {
-      debugPrint('🔄 Calling fixOrphanedUsers Cloud Function');
+      debugPrint('ðŸ”„ Calling fixOrphanedUsers Cloud Function');
       
       final callable = _functions.httpsCallable('fixOrphanedUsers');
       final result = await callable.call();
       
-      debugPrint('✅ fixOrphanedUsers result: ${result.data}');
+      debugPrint('âœ… fixOrphanedUsers result: ${result.data}');
       return result.data['success'] ?? false;
     } catch (e) {
-      debugPrint('❌ Error calling fixOrphanedUsers: $e');
+      debugPrint('âŒ Error calling fixOrphanedUsers: $e');
       return false;
     }
   }
@@ -64,7 +64,7 @@ class CloudFunctionsService {
         await autoPromoteUser(userId);
       }
     } catch (e) {
-      debugPrint('❌ Error in processReferralAndPromote: $e');
+      debugPrint('âŒ Error in processReferralAndPromote: $e');
     }
   }
 }

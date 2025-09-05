@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../models/call_participant.dart';
 
 /// Participant avatar widget for voice calls

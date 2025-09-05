@@ -7,6 +7,11 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
 import '../../screens/media/document_viewer_screen.dart';
 import '../../screens/hashtag/hashtag_screen.dart';
+import '../media/video_player_widget.dart';
+import '../media/enhanced_feed_media_widget.dart';
+import '../../services/auth/auth_service.dart';
+import '../../services/social_feed/post_management_service.dart';
+import '../../utils/navigation_helper.dart';
 
 class PostWidget extends StatefulWidget {
   final PostModel post;
@@ -85,6 +90,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             _buildPostHeader(),
             _buildPostContent(),
             if (widget.post.imageUrls.isNotEmpty) _buildPostImages(),
+            if (widget.post.videoUrls.isNotEmpty) _buildPostVideos(),
             if (widget.post.documentUrls.isNotEmpty) _buildPostDocuments(),
             _buildPostActions(),
             _buildPostStats(),
@@ -188,32 +194,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: Colors.grey[600]),
             onSelected: _handlePostAction,
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'report',
-                child: ListTile(
-                  leading: Icon(Icons.flag),
-                  title: Text('Report'),
-                  dense: true,
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'hide',
-                child: ListTile(
-                  leading: Icon(Icons.visibility_off),
-                  title: Text('Hide'),
-                  dense: true,
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'copy_link',
-                child: ListTile(
-                  leading: Icon(Icons.link),
-                  title: Text('Copy Link'),
-                  dense: true,
-                ),
-              ),
-            ],
+            itemBuilder: (context) => _buildMenuItems(),
           ),
         ],
       ),
@@ -420,40 +401,12 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             aspectRatio: 16 / 9,
             child: Hero(
               tag: 'post_image_${widget.post.id}_0',
-              child: Image.network(
-                imageUrl,
+              child: EnhancedFeedMediaWidget(
+                mediaUrl: imageUrl,
+                postId: widget.post.id,
+                mediaIndex: 0,
+                width: double.infinity,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey[200],
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.broken_image, color: Colors.grey[400], size: 48),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Failed to load image',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  );
-                },
               ),
             ),
           ),
@@ -485,24 +438,13 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                 children: [
                   Hero(
                     tag: 'post_image_${widget.post.id}_$index',
-                    child: Image.network(
-                      widget.post.imageUrls[index],
+                    child: EnhancedFeedMediaWidget(
+                      mediaUrl: widget.post.imageUrls[index],
+                      postId: widget.post.id,
+                      mediaIndex: index,
+                      width: double.infinity,
+                      height: double.infinity,
                       fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 1),
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: Icon(Icons.broken_image, color: Colors.grey[400]),
-                        );
-                      },
                     ),
                   ),
                   if (isLastItem)
@@ -540,6 +482,38 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildPostVideos() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+      child: Column(
+        children: widget.post.videoUrls.asMap().entries.map((entry) {
+          final index = entry.key;
+          final videoUrl = entry.value;
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: EnhancedFeedMediaWidget(
+                  mediaUrl: videoUrl,
+                  contentType: 'video/mp4',
+                  postId: widget.post.id,
+                  mediaIndex: index,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  showControls: true,
+                  autoPlay: false,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -866,8 +840,75 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     }
   }
 
+  List<PopupMenuEntry<String>> _buildMenuItems() {
+    final currentUser = AuthService.currentUser;
+    final isAuthor = currentUser != null && currentUser.uid == widget.post.authorId;
+    
+    List<PopupMenuEntry<String>> items = [];
+    
+    if (isAuthor) {
+      // Author can edit and delete their own posts
+      items.addAll([
+        const PopupMenuItem(
+          value: 'edit',
+          child: ListTile(
+            leading: Icon(Icons.edit, color: Colors.blue),
+            title: Text('Edit Post'),
+            dense: true,
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'delete',
+          child: ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('Delete Post', style: TextStyle(color: Colors.red)),
+            dense: true,
+          ),
+        ),
+        const PopupMenuDivider(),
+      ]);
+    }
+    
+    // Common options for all users
+    items.addAll([
+      if (!isAuthor)
+        const PopupMenuItem(
+          value: 'report',
+          child: ListTile(
+            leading: Icon(Icons.flag, color: Colors.orange),
+            title: Text('Report Post'),
+            dense: true,
+          ),
+        ),
+      const PopupMenuItem(
+        value: 'hide',
+        child: ListTile(
+          leading: Icon(Icons.visibility_off),
+          title: Text('Hide Post'),
+          dense: true,
+        ),
+      ),
+      const PopupMenuItem(
+        value: 'copy_link',
+        child: ListTile(
+          leading: Icon(Icons.link),
+          title: Text('Copy Link'),
+          dense: true,
+        ),
+      ),
+    ]);
+    
+    return items;
+  }
+
   void _handlePostAction(String action) {
     switch (action) {
+      case 'edit':
+        _editPost();
+        break;
+      case 'delete':
+        _deletePost();
+        break;
       case 'report':
         _reportPost();
         break;
@@ -880,16 +921,104 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     }
   }
 
+  void _editPost() {
+    // Navigate to post creation screen with editing data
+    NavigationHelper.navigateToPostCreation(
+      context,
+      editingPost: widget.post,
+    ).then((result) {
+      if (result == true) {
+        // Refresh the feed or update the post
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Post updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+  }
+
+  void _deletePost() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text(
+          'Are you sure you want to delete this post? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _confirmDeletePost();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmDeletePost() async {
+    try {
+      await PostManagementService.deletePost(widget.post.id);
+      
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Post deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete post: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   void _reportPost() {
     // TODO: Implement report functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Report functionality coming soon'),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   void _hidePost() {
     // TODO: Implement hide functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Hide functionality coming soon'),
+        backgroundColor: Colors.blue,
+      ),
+    );
   }
 
   void _copyPostLink() {
     // TODO: Implement copy link functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Copy link functionality coming soon'),
+        backgroundColor: Colors.blue,
+      ),
+    );
   }
 
   void _onHashtagTap(String hashtag) {
@@ -924,27 +1053,11 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             itemBuilder: (context, index) {
               return Center(
                 child: InteractiveViewer(
-                  child: Image.network(
-                    widget.post.imageUrls[index],
+                  child: EnhancedFeedMediaWidget(
+                    mediaUrl: widget.post.imageUrls[index],
+                    postId: widget.post.id,
+                    mediaIndex: index,
                     fit: BoxFit.contain,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const Center(
-                        child: CircularProgressIndicator(color: Colors.white),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.error, color: Colors.white, size: 48),
-                            SizedBox(height: 16),
-                            Text('Failed to load image', style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                      );
-                    },
                   ),
                 ),
               );
@@ -964,3 +1077,4 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     );
   }
 }
+

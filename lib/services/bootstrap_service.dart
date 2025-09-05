@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'admin/admin_bootstrap_service.dart';
 import 'referral/referral_code_generator.dart';
 
@@ -40,3 +40,4 @@ class BootstrapService {
     _isBootstrapped = false;
   }
 }
+

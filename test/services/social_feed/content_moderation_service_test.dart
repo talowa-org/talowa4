@@ -1,4 +1,4 @@
-// Test file for ContentModerationService
+﻿// Test file for ContentModerationService
 // Comprehensive tests for content moderation functionality
 
 import 'package:flutter_test/flutter_test.dart';
@@ -526,7 +526,7 @@ void main() {
     group('Language Detection', () {
       test('should detect Hindi inappropriate words', () async {
         // Arrange
-        const content = 'यह पोस्ट में नफरत और हिंसा है';
+        const content = 'à¤¯à¤¹ à¤ªà¥‹à¤¸à¥à¤Ÿ à¤®à¥‡à¤‚ à¤¨à¤«à¤°à¤¤ à¤”à¤° à¤¹à¤¿à¤‚à¤¸à¤¾ à¤¹à¥ˆ';
         const authorId = 'test_user_123';
 
         // Act
@@ -543,7 +543,7 @@ void main() {
 
       test('should detect Telugu inappropriate words', () async {
         // Arrange
-        const content = 'ఈ పోస్ట్‌లో ద్వేషం మరియు హింస ఉంది';
+        const content = 'à°ˆ à°ªà±‹à°¸à±à°Ÿà±â€Œà°²à±‹ à°¦à±à°µà±‡à°·à°‚ à°®à°°à°¿à°¯à± à°¹à°¿à°‚à°¸ à°‰à°‚à°¦à°¿';
         const authorId = 'test_user_123';
 
         // Act

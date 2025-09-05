@@ -1,4 +1,4 @@
-// Metrics Card Widget for TALOWA
+﻿// Metrics Card Widget for TALOWA
 // Implements Task 23: Implement content analytics - Metrics Display
 
 import 'package:flutter/material.dart';
@@ -504,7 +504,7 @@ class MetricsFormatter {
   }
 
   static String formatCurrency(double value) {
-    return '₹${value.toStringAsFixed(2)}';
+    return 'â‚¹${value.toStringAsFixed(2)}';
   }
 
   static String formatDuration(Duration duration) {

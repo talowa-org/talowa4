@@ -1,4 +1,4 @@
-// Notification Batching Service - Prevent spam and improve battery life
+﻿// Notification Batching Service - Prevent spam and improve battery life
 // Part of Task 12: Build push notification system
 
 import 'dart:async';

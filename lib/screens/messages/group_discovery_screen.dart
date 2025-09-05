@@ -496,3 +496,4 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
     ).then((_) => _discoverGroups());
   }
 }
+

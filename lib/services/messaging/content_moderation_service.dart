@@ -1,4 +1,4 @@
-// Content Moderation Service for TALOWA Messaging System
+﻿// Content Moderation Service for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/messaging/content_report_model.dart';

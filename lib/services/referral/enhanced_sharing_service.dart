@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -268,12 +268,12 @@ class EnhancedSharingService {
   static String _generateShareMessage(String referralCode, String referralLink, String? userName) {
     final userPart = userName != null ? '$userName invites you to join ' : 'Join ';
     
-    return '''🌟 ${userPart}TALOWA - India's Land Rights Movement!
+    return '''ðŸŒŸ ${userPart}TALOWA - India's Land Rights Movement!
 
 Use referral code: $referralCode
 Or click: $referralLink
 
-Together we can secure land rights for all! 🏡
+Together we can secure land rights for all! ðŸ¡
 
 #TALOWA #LandRights #India #JoinTheMovement''';
   }
@@ -282,17 +282,17 @@ Together we can secure land rights for all! 🏡
   static String _generatePlatformSpecificMessage(String platform, String referralCode, String referralLink, String? userName) {
     switch (platform.toLowerCase()) {
       case 'whatsapp':
-        return '''🌟 Join TALOWA Movement! 🌟
+        return '''ðŸŒŸ Join TALOWA Movement! ðŸŒŸ
 
 ${userName != null ? '$userName invited you to' : 'You\'re invited to'} join India's largest land rights platform.
 
-🔗 Use code: *$referralCode*
-📱 Or click: $referralLink
+ðŸ”— Use code: *$referralCode*
+ðŸ“± Or click: $referralLink
 
-Together for land rights! 🏡 #TALOWA''';
+Together for land rights! ðŸ¡ #TALOWA''';
         
       case 'twitter':
-        return '''🌟 Joining @TALOWA_Official - India's land rights movement! 
+        return '''ðŸŒŸ Joining @TALOWA_Official - India's land rights movement! 
 
 Use code: $referralCode
 $referralLink
@@ -300,14 +300,14 @@ $referralLink
 #TALOWA #LandRights #India''';
         
       case 'facebook':
-        return '''🌟 Join TALOWA - India's Land Rights Movement!
+        return '''ðŸŒŸ Join TALOWA - India's Land Rights Movement!
 
 I'm inviting you to be part of something bigger - securing land rights for all Indians.
 
 Use my referral code: $referralCode
 Or click this link: $referralLink
 
-Together, we can make a difference! 🏡
+Together, we can make a difference! ðŸ¡
 
 #TALOWA #LandRights #India #JoinTheMovement''';
         
@@ -442,3 +442,4 @@ Or visit: $referralLink
     }
   }
 }
+

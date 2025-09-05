@@ -1,4 +1,4 @@
-// TALOWA Article Screenshots Widget
+﻿// TALOWA Article Screenshots Widget
 // Displays article screenshots in a gallery format
 
 import 'package:flutter/material.dart';

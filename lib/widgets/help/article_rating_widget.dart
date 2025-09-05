@@ -232,3 +232,4 @@ class _QuickFeedbackButton extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-// Performance Monitor Widget for TALOWA
+﻿// Performance Monitor Widget for TALOWA
 // Implements Task 21: Performance optimization - Monitoring & Analytics
 
 import 'package:flutter/material.dart';

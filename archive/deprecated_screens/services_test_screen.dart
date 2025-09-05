@@ -1,4 +1,4 @@
-// Services Test Screen for TALOWA
+﻿// Services Test Screen for TALOWA
 // Test screen to demonstrate new services functionality
 
 import 'package:flutter/material.dart';
@@ -169,9 +169,9 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
         _appendResult('   - ${suggestions[i]}');
       }
 
-      _appendResult('\n✅ AI Assistant Service Test COMPLETED');
+      _appendResult('\nâœ… AI Assistant Service Test COMPLETED');
     } catch (e) {
-      _appendResult('❌ AI Assistant Test FAILED: $e');
+      _appendResult('âŒ AI Assistant Test FAILED: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -209,9 +209,9 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
         _appendResult('   GPS: Not available (permissions needed)');
       }
 
-      _appendResult('\n✅ Land Records Service Test COMPLETED');
+      _appendResult('\nâœ… Land Records Service Test COMPLETED');
     } catch (e) {
-      _appendResult('❌ Land Records Test FAILED: $e');
+      _appendResult('âŒ Land Records Test FAILED: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -247,9 +247,9 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
         _appendResult('   $key: $value');
       });
 
-      _appendResult('\n✅ Emergency Service Test COMPLETED');
+      _appendResult('\nâœ… Emergency Service Test COMPLETED');
     } catch (e) {
-      _appendResult('❌ Emergency Test FAILED: $e');
+      _appendResult('âŒ Emergency Test FAILED: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -287,9 +287,9 @@ class _ServicesTestScreenState extends State<ServicesTestScreen> {
       final lawyers = await _legalService.getAvailableLawyers();
       _appendResult('   Available lawyers: ${lawyers.length}');
 
-      _appendResult('\n✅ Legal Case Service Test COMPLETED');
+      _appendResult('\nâœ… Legal Case Service Test COMPLETED');
     } catch (e) {
-      _appendResult('❌ Legal Case Test FAILED: $e');
+      _appendResult('âŒ Legal Case Test FAILED: $e');
     } finally {
       setState(() {
         _isLoading = false;

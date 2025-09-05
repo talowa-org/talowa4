@@ -1027,3 +1027,4 @@ class ChatMessage {
     this.confidence = 1.0,
   });
 }
+

@@ -709,3 +709,4 @@ class _SafetyEducationScreenState extends State<SafetyEducationScreen>
     }
   }
 }
+

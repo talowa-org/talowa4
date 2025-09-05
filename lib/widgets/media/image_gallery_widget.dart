@@ -1,1 +1,279 @@
-// Image Gallery Widget - Display and view multiple images\n// Part of Task 6: Implement PostWidget for individual posts\n\nimport 'package:flutter/material.dart';\nimport 'package:cached_network_image/cached_network_image.dart';\nimport 'package:photo_view/photo_view.dart';\nimport 'package:photo_view/photo_view_gallery.dart';\n\nclass ImageGalleryWidget extends StatelessWidget {\n  final List<String> imageUrls;\n  final int initialIndex;\n  final bool isFullScreen;\n  final Function(int)? onImageTap;\n  final double? height;\n  final EdgeInsets? padding;\n\n  const ImageGalleryWidget({\n    super.key,\n    required this.imageUrls,\n    this.initialIndex = 0,\n    this.isFullScreen = false,\n    this.onImageTap,\n    this.height,\n    this.padding,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    if (imageUrls.isEmpty) return const SizedBox.shrink();\n    \n    if (isFullScreen) {\n      return _buildFullScreenGallery(context);\n    } else {\n      return _buildInlineGallery(context);\n    }\n  }\n\n  Widget _buildInlineGallery(BuildContext context) {\n    final displayHeight = height ?? _calculateHeight();\n    \n    return Container(\n      height: displayHeight,\n      padding: padding,\n      child: _buildGalleryLayout(context),\n    );\n  }\n\n  Widget _buildGalleryLayout(BuildContext context) {\n    if (imageUrls.length == 1) {\n      return _buildSingleImage(context, 0);\n    } else if (imageUrls.length == 2) {\n      return _buildTwoImages(context);\n    } else if (imageUrls.length == 3) {\n      return _buildThreeImages(context);\n    } else {\n      return _buildMultipleImages(context);\n    }\n  }\n\n  Widget _buildSingleImage(BuildContext context, int index) {\n    return GestureDetector(\n      onTap: () => _handleImageTap(context, index),\n      child: ClipRRect(\n        borderRadius: BorderRadius.circular(12),\n        child: CachedNetworkImage(\n          imageUrl: imageUrls[index],\n          width: double.infinity,\n          height: double.infinity,\n          fit: BoxFit.cover,\n          placeholder: (context, url) => _buildPlaceholder(),\n          errorWidget: (context, url, error) => _buildErrorWidget(),\n        ),\n      ),\n    );\n  }\n\n  Widget _buildTwoImages(BuildContext context) {\n    return Row(\n      children: [\n        Expanded(\n          child: _buildImageItem(context, 0),\n        ),\n        const SizedBox(width: 4),\n        Expanded(\n          child: _buildImageItem(context, 1),\n        ),\n      ],\n    );\n  }\n\n  Widget _buildThreeImages(BuildContext context) {\n    return Row(\n      children: [\n        Expanded(\n          flex: 2,\n          child: _buildImageItem(context, 0),\n        ),\n        const SizedBox(width: 4),\n        Expanded(\n          child: Column(\n            children: [\n              Expanded(\n                child: _buildImageItem(context, 1),\n              ),\n              const SizedBox(height: 4),\n              Expanded(\n                child: _buildImageItem(context, 2),\n              ),\n            ],\n          ),\n        ),\n      ],\n    );\n  }\n\n  Widget _buildMultipleImages(BuildContext context) {\n    return Row(\n      children: [\n        Expanded(\n          flex: 2,\n          child: _buildImageItem(context, 0),\n        ),\n        const SizedBox(width: 4),\n        Expanded(\n          child: Column(\n            children: [\n              Expanded(\n                child: _buildImageItem(context, 1),\n              ),\n              const SizedBox(height: 4),\n              Expanded(\n                child: Stack(\n                  children: [\n                    _buildImageItem(context, 2),\n                    if (imageUrls.length > 3)\n                      _buildMoreImagesOverlay(context),\n                  ],\n                ),\n              ),\n            ],\n          ),\n        ),\n      ],\n    );\n  }\n\n  Widget _buildImageItem(BuildContext context, int index) {\n    return GestureDetector(\n      onTap: () => _handleImageTap(context, index),\n      child: ClipRRect(\n        borderRadius: BorderRadius.circular(8),\n        child: CachedNetworkImage(\n          imageUrl: imageUrls[index],\n          width: double.infinity,\n          height: double.infinity,\n          fit: BoxFit.cover,\n          placeholder: (context, url) => _buildPlaceholder(),\n          errorWidget: (context, url, error) => _buildErrorWidget(),\n        ),\n      ),\n    );\n  }\n\n  Widget _buildMoreImagesOverlay(BuildContext context) {\n    final remainingCount = imageUrls.length - 3;\n    \n    return Positioned.fill(\n      child: GestureDetector(\n        onTap: () => _handleImageTap(context, 2),\n        child: Container(\n          decoration: BoxDecoration(\n            color: Colors.black.withOpacity(0.6),\n            borderRadius: BorderRadius.circular(8),\n          ),\n          child: Center(\n            child: Text(\n              '+$remainingCount',\n              style: const TextStyle(\n                color: Colors.white,\n                fontSize: 24,\n                fontWeight: FontWeight.bold,\n              ),\n            ),\n          ),\n        ),\n      ),\n    );\n  }\n\n  Widget _buildFullScreenGallery(BuildContext context) {\n    return Scaffold(\n      backgroundColor: Colors.black,\n      appBar: AppBar(\n        backgroundColor: Colors.transparent,\n        elevation: 0,\n        iconTheme: const IconThemeData(color: Colors.white),\n        title: Text(\n          '${initialIndex + 1} of ${imageUrls.length}',\n          style: const TextStyle(color: Colors.white),\n        ),\n        actions: [\n          IconButton(\n            onPressed: () => _shareImage(context),\n            icon: const Icon(Icons.share),\n          ),\n          IconButton(\n            onPressed: () => _downloadImage(context),\n            icon: const Icon(Icons.download),\n          ),\n        ],\n      ),\n      body: PhotoViewGallery.builder(\n        scrollPhysics: const BouncingScrollPhysics(),\n        builder: (BuildContext context, int index) {\n          return PhotoViewGalleryPageOptions(\n            imageProvider: CachedNetworkImageProvider(imageUrls[index]),\n            initialScale: PhotoViewComputedScale.contained,\n            minScale: PhotoViewComputedScale.contained * 0.8,\n            maxScale: PhotoViewComputedScale.covered * 2,\n            heroAttributes: PhotoViewHeroAttributes(tag: imageUrls[index]),\n          );\n        },\n        itemCount: imageUrls.length,\n        loadingBuilder: (context, event) => _buildFullScreenPlaceholder(),\n        pageController: PageController(initialPage: initialIndex),\n        onPageChanged: (index) {\n          // Update app bar title\n        },\n      ),\n    );\n  }\n\n  Widget _buildPlaceholder() {\n    return Container(\n      color: Colors.grey[200],\n      child: const Center(\n        child: CircularProgressIndicator(),\n      ),\n    );\n  }\n\n  Widget _buildFullScreenPlaceholder() {\n    return const Center(\n      child: CircularProgressIndicator(\n        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),\n      ),\n    );\n  }\n\n  Widget _buildErrorWidget() {\n    return Container(\n      color: Colors.grey[200],\n      child: const Center(\n        child: Icon(\n          Icons.error_outline,\n          color: Colors.grey,\n          size: 32,\n        ),\n      ),\n    );\n  }\n\n  double _calculateHeight() {\n    if (imageUrls.length == 1) {\n      return 200;\n    } else if (imageUrls.length <= 3) {\n      return 150;\n    } else {\n      return 180;\n    }\n  }\n\n  void _handleImageTap(BuildContext context, int index) {\n    if (onImageTap != null) {\n      onImageTap!(index);\n    } else {\n      Navigator.of(context).push(\n        MaterialPageRoute(\n          builder: (context) => ImageGalleryWidget(\n            imageUrls: imageUrls,\n            initialIndex: index,\n            isFullScreen: true,\n          ),\n        ),\n      );\n    }\n  }\n\n  void _shareImage(BuildContext context) {\n    // TODO: Implement image sharing\n    // Image sharing functionality will be implemented later\n  }\n\n  void _downloadImage(BuildContext context) {\n    // TODO: Implement image download\n    // Image download functionality will be implemented later\n    ScaffoldMessenger.of(context).showSnackBar(\n      const SnackBar(\n        content: Text('Image download started'),\n        backgroundColor: Colors.green,\n      ),\n    );\n  }\n}\n\n// Compact image gallery for small spaces\nclass CompactImageGalleryWidget extends StatelessWidget {\n  final List<String> imageUrls;\n  final double height;\n  final Function(int)? onImageTap;\n\n  const CompactImageGalleryWidget({\n    super.key,\n    required this.imageUrls,\n    this.height = 80,\n    this.onImageTap,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    if (imageUrls.isEmpty) return const SizedBox.shrink();\n    \n    return SizedBox(\n      height: height,\n      child: ListView.builder(\n        scrollDirection: Axis.horizontal,\n        itemCount: imageUrls.length,\n        itemBuilder: (context, index) {\n          return Padding(\n            padding: EdgeInsets.only(right: index < imageUrls.length - 1 ? 8 : 0),\n            child: GestureDetector(\n              onTap: () => onImageTap?.call(index),\n              child: ClipRRect(\n                borderRadius: BorderRadius.circular(8),\n                child: CachedNetworkImage(\n                  imageUrl: imageUrls[index],\n                  width: height,\n                  height: height,\n                  fit: BoxFit.cover,\n                  placeholder: (context, url) => Container(\n                    width: height,\n                    height: height,\n                    color: Colors.grey[200],\n                    child: const Center(\n                      child: CircularProgressIndicator(),\n                    ),\n                  ),\n                  errorWidget: (context, url, error) => Container(\n                    width: height,\n                    height: height,\n                    color: Colors.grey[200],\n                    child: const Icon(\n                      Icons.error_outline,\n                      color: Colors.grey,\n                    ),\n                  ),\n                ),\n              ),\n            ),\n          );\n        },\n      ),\n    );\n  }\n}\n\n// Image grid widget for profile galleries\nclass ImageGridWidget extends StatelessWidget {\n  final List<String> imageUrls;\n  final int crossAxisCount;\n  final double aspectRatio;\n  final Function(int)? onImageTap;\n  final EdgeInsets? padding;\n\n  const ImageGridWidget({\n    super.key,\n    required this.imageUrls,\n    this.crossAxisCount = 3,\n    this.aspectRatio = 1.0,\n    this.onImageTap,\n    this.padding,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    if (imageUrls.isEmpty) return const SizedBox.shrink();\n    \n    return Padding(\n      padding: padding ?? EdgeInsets.zero,\n      child: GridView.builder(\n        shrinkWrap: true,\n        physics: const NeverScrollableScrollPhysics(),\n        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(\n          crossAxisCount: crossAxisCount,\n          aspectRatio: aspectRatio,\n          crossAxisSpacing: 4,\n          mainAxisSpacing: 4,\n        ),\n        itemCount: imageUrls.length,\n        itemBuilder: (context, index) {\n          return GestureDetector(\n            onTap: () => onImageTap?.call(index),\n            child: ClipRRect(\n              borderRadius: BorderRadius.circular(8),\n              child: CachedNetworkImage(\n                imageUrl: imageUrls[index],\n                fit: BoxFit.cover,\n                placeholder: (context, url) => Container(\n                  color: Colors.grey[200],\n                  child: const Center(\n                    child: CircularProgressIndicator(),\n                  ),\n                ),\n                errorWidget: (context, url, error) => Container(\n                  color: Colors.grey[200],\n                  child: const Icon(\n                    Icons.error_outline,\n                    color: Colors.grey,\n                  ),\n                ),\n              ),\n            ),\n          );\n        },\n      ),\n    );\n  }\n}"
+﻿// Image Gallery Widget - Display and view multiple images with enhanced media support
+// Part of Task 6: Implement PostWidget for individual posts
+
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'enhanced_media_widget.dart';
+
+class ImageGalleryWidget extends StatelessWidget {
+  final List<String> imageUrls;
+  final int initialIndex;
+  final bool isFullScreen;
+  final Function(int)? onImageTap;
+  final double? height;
+  final EdgeInsets? padding;
+  final String? heroTag;
+
+  const ImageGalleryWidget({
+    super.key,
+    required this.imageUrls,
+    this.initialIndex = 0,
+    this.isFullScreen = false,
+    this.onImageTap,
+    this.height,
+    this.padding,
+    this.heroTag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrls.isEmpty) return const SizedBox.shrink();
+
+    if (isFullScreen) {
+      return _buildFullScreenGallery(context);
+    } else {
+      return _buildInlineGallery(context);
+    }
+  }
+
+  Widget _buildInlineGallery(BuildContext context) {
+    final displayHeight = height ?? _calculateHeight();
+
+    return Container(
+      height: displayHeight,
+      padding: padding,
+      child: _buildGalleryLayout(context),
+    );
+  }
+
+  Widget _buildGalleryLayout(BuildContext context) {
+    if (imageUrls.length == 1) {
+      return _buildSingleImage(context, 0);
+    } else if (imageUrls.length == 2) {
+      return _buildTwoImages(context);
+    } else if (imageUrls.length == 3) {
+      return _buildThreeImages(context);
+    } else {
+      return _buildMultipleImages(context);
+    }
+  }
+
+  Widget _buildSingleImage(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () => _handleImageTap(context, index),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Hero(
+          tag: heroTag != null ? '${heroTag}_$index' : 'image_$index',
+          child: EnhancedMediaWidget(
+            legacyUrl: imageUrls[index],
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTwoImages(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildImageItem(context, 0),
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: _buildImageItem(context, 1),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThreeImages(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: _buildImageItem(context, 0),
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: _buildImageItem(context, 1),
+              ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: _buildImageItem(context, 2),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMultipleImages(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: _buildImageItem(context, 0),
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: _buildImageItem(context, 1),
+              ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildImageItem(context, 2),
+                    if (imageUrls.length > 3)
+                      _buildMoreImagesOverlay(context),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageItem(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () => _handleImageTap(context, index),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Hero(
+          tag: heroTag != null ? '${heroTag}_$index' : 'image_$index',
+          child: EnhancedMediaWidget(
+            legacyUrl: imageUrls[index],
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoreImagesOverlay(BuildContext context) {
+    final remainingCount = imageUrls.length - 3;
+
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: () => _handleImageTap(context, 2),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.6),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              '+$remainingCount',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullScreenGallery(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          '${initialIndex + 1} of ${imageUrls.length}',
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => _shareImage(context),
+            icon: const Icon(Icons.share),
+          ),
+        ],
+      ),
+      body: PageView.builder(
+        controller: PageController(initialPage: initialIndex),
+        itemCount: imageUrls.length,
+        itemBuilder: (context, index) {
+          return Center(
+            child: InteractiveViewer(
+              child: EnhancedMediaWidget(
+                legacyUrl: imageUrls[index],
+                fit: BoxFit.contain,
+                placeholder: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                errorWidget: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error, color: Colors.white, size: 48),
+                      SizedBox(height: 16),
+                      Text('Failed to load image', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  double _calculateHeight() {
+    if (imageUrls.length == 1) {
+      return 200;
+    } else if (imageUrls.length <= 3) {
+      return 150;
+    } else {
+      return 180;
+    }
+  }
+
+  void _handleImageTap(BuildContext context, int index) {
+    if (onImageTap != null) {
+      onImageTap!(index);
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ImageGalleryWidget(
+            imageUrls: imageUrls,
+            initialIndex: index,
+            isFullScreen: true,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _shareImage(BuildContext context) {
+    // TODO: Implement image sharing
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Image sharing will be implemented'),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+}
+

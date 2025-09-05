@@ -1,4 +1,4 @@
-// Messaging Service for TALOWA
+﻿// Messaging Service for TALOWA
 // Fully functional real-time messaging with Firebase
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';

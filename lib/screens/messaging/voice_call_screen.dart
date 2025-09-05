@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/voice_call.dart';
 import '../../models/call_participant.dart';
@@ -198,7 +198,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
       case 'connecting':
         return widget.isIncoming ? 'Incoming call...' : 'Connecting...';
       case 'connected':
-        return 'Connected • ${_formatDuration(_currentCall!.duration)}';
+        return 'Connected â€¢ ${_formatDuration(_currentCall!.duration)}';
       case 'ended':
         return 'Call ended';
       case 'failed':

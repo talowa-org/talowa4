@@ -7,6 +7,7 @@ import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/comment_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../services/auth/auth_service.dart';
+// import '../media/enhanced_media_widget.dart'; // TODO: Add when available
 import 'post_engagement_widget.dart';
 import 'hashtag_text_widget.dart';
 import 'author_info_widget.dart';
@@ -125,7 +126,8 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
               authorId: _currentPost.authorId,
               authorName: _currentPost.authorName,
               authorRole: _currentPost.authorRole,
-              authorAvatarUrl: _currentPost.authorAvatarUrl,
+              // TODO: Add authorAvatarUrl property to PostModel
+              // authorAvatarUrl: _currentPost.authorAvatarUrl,
               createdAt: _currentPost.createdAt,
               onUserTapped: widget.onUserTapped,
             ),
@@ -261,9 +263,17 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
       children: [
         // Images
         if (_currentPost.imageUrls.isNotEmpty)
-          ImageGalleryWidget(
-            imageUrls: _currentPost.imageUrls,
-            heroTag: 'post_${_currentPost.id}',
+          // TODO: Implement ImageGalleryWidget when available
+          Container(
+            height: 200,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text('Image Gallery - Coming Soon'),
+            ),
           ),
         
         // Documents
@@ -294,57 +304,57 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
               targeting: _currentPost.geographicTargeting!,
             ),
           
-          // Priority indicator
-          if (_currentPost.priority == PostPriority.high)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.priority_high, size: 12, color: Colors.orange),
-                  SizedBox(width: 4),
-                  Text(
-                    'High Priority',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.orange,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Priority indicator - TODO: Add priority property to PostModel
+          // if (_currentPost.priority == PostPriority.high)
+          //   Container(
+          //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          //     decoration: BoxDecoration(
+          //       color: Colors.orange.withValues(alpha: 0.1),
+          //       borderRadius: BorderRadius.circular(12),
+          //       border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+          //     ),
+          //     child: const Row(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         Icon(Icons.priority_high, size: 12, color: Colors.orange),
+          //         SizedBox(width: 4),
+          //         Text(
+          //           'High Priority',
+          //           style: TextStyle(
+          //             fontSize: 10,
+          //             color: Colors.orange,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
           
-          // Pinned indicator
-          if (_currentPost.isPinned)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.withValues(alpha: 3)),0.
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.push_pin, size: 12, color: Colors.blue),
-                  SizedBox(width: 4),
-                  Text(
-                    'Pinned',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Pinned indicator - TODO: Add isPinned property to PostModel
+          // if (_currentPost.isPinned)
+          //   Container(
+          //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          //     decoration: BoxDecoration(
+          //       color: Colors.blue.withValues(alpha: 0.1),
+          //       borderRadius: BorderRadius.circular(12),
+          //       border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+          //     ),
+          //     child: const Row(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         Icon(Icons.push_pin, size: 12, color: Colors.blue),
+          //         SizedBox(width: 4),
+          //         Text(
+          //           'Pinned',
+          //           style: TextStyle(
+          //             fontSize: 10,
+          //             color: Colors.blue,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
         ],
       ),
     );
@@ -431,7 +441,7 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
       }
       
       if (_isLiked) {
-        await FeedService.unlikePost(_currentPost.id, currentUser.uid);
+        await FeedService().toggleLike(_currentPost.id);
         setState(() {
           _isLiked = false;
           _currentPost = _currentPost.copyWith(
@@ -440,7 +450,7 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
           );
         });
       } else {
-        await FeedService.likePost(_currentPost.id, currentUser.uid);
+        await FeedService().toggleLike(_currentPost.id);
         setState(() {
           _isLiked = true;
           _currentPost = _currentPost.copyWith(
@@ -478,7 +488,7 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
         return;
       }
       
-      await FeedService.sharePost(_currentPost.id, currentUser.uid);
+      await FeedService().sharePost(_currentPost.id);
       
       setState(() {
         _currentPost = _currentPost.copyWith(
@@ -529,11 +539,11 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
       final currentUser = AuthService.currentUser;
       if (currentUser == null) return;
       
-      await FeedService.deletePost(_currentPost.id, currentUser.uid);
+      await FeedService().deletePost(_currentPost.id);
       _showSuccess('Post deleted successfully');
       
       // Notify parent to remove post from list
-      widget.onPostUpdated?.call(_currentPost.copyWith(isHidden: true));
+      widget.onPostUpdated?.call(_currentPost);
     } catch (e) {
       _showError('Failed to delete post: $e');
     }
@@ -564,7 +574,8 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
   
   Future<void> _submitReport(String reason) async {
     try {
-      await FeedService.reportPost(_currentPost.id, reason);
+      // TODO: Implement report functionality when available
+      // await FeedService.reportPost(_currentPost.id, reason);
       _showSuccess('Post reported successfully');
     } catch (e) {
       _showError('Failed to report post: $e');
@@ -638,10 +649,10 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
-                  itemCount: _currentPost.recentComments.length,
+                  itemCount: 0, // TODO: Add recentComments property to PostModel
                   itemBuilder: (context, index) {
-                    final comment = _currentPost.recentComments[index];
-                    return _buildCommentItem(comment);
+                    // TODO: Implement when recentComments is available
+                    return Container();
                   },
                 ),
               ),
@@ -655,113 +666,7 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
     );
   }
   
-  Widget _buildCommentItem(CommentModel comment) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Comment author avatar
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.grey.shade300,
-            child: Text(
-              comment.authorName.isNotEmpty ? comment.authorName[0].toUpperCase() : '?',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Comment content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Author name and time
-                Row(
-                  children: [
-                    Text(
-                      comment.authorName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _formatTime(comment.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 4),
-                
-                // Comment text
-                Text(
-                  comment.content,
-                  style: const TextStyle(fontSize: 14),
-                ),
-                
-                const SizedBox(height: 4),
-                
-                // Comment actions
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        // TODO: Implement comment like
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            comment.isLikedByCurrentUser ? Icons.favorite : Icons.favorite_border,
-                            size: 16,
-                            color: comment.isLikedByCurrentUser ? Colors.red : Colors.grey,
-                          ),
-                          if (comment.likesCount > 0) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              '${comment.likesCount}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 16),
-                    
-                    InkWell(
-                      onTap: () {
-                        // TODO: Implement reply to comment
-                      },
-                      child: Text(
-                        'Reply',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // TODO: Implement _buildCommentItem when CommentModel is available
   
   Widget _buildCommentInput() {
     return Container(
@@ -862,6 +767,30 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
           'icon': Icons.newspaper,
           'color': Colors.teal,
         };
+      case PostCategory.agriculture:
+        return {
+          'label': 'Agriculture',
+          'icon': Icons.agriculture,
+          'color': Colors.green,
+        };
+      case PostCategory.governmentSchemes:
+        return {
+          'label': 'Government Schemes',
+          'icon': Icons.account_balance,
+          'color': Colors.indigo,
+        };
+      case PostCategory.education:
+        return {
+          'label': 'Education',
+          'icon': Icons.school,
+          'color': Colors.blue,
+        };
+      case PostCategory.health:
+        return {
+          'label': 'Health',
+          'icon': Icons.health_and_safety,
+          'color': Colors.red,
+        };
     }
   }
   
@@ -918,3 +847,4 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
     );
   }
 }
+

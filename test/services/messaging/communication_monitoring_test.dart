@@ -1,4 +1,4 @@
-// Test file for Communication Monitoring and Analytics System
+﻿// Test file for Communication Monitoring and Analytics System
 // Implements Task 16: Implement monitoring and analytics - Testing
 
 import 'package:flutter_test/flutter_test.dart';

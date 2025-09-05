@@ -1,4 +1,4 @@
-// Real-time Engagement Service for TALOWA Social Feed
+﻿// Real-time Engagement Service for TALOWA Social Feed
 // Implements Task 15: Add real-time engagement features
 
 import 'dart:async';

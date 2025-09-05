@@ -1,4 +1,4 @@
-// Referral Code Caching Service for TALOWA
+﻿// Referral Code Caching Service for TALOWA
 // Ensures referral codes are cached locally and never show "Loading..."
 
 import 'dart:async';
@@ -171,3 +171,4 @@ class ReferralCodeCacheService {
     _codeController.close();
   }
 }
+

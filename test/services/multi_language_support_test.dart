@@ -1,4 +1,4 @@
-// Comprehensive Multi-Language Support Test for TALOWA
+﻿// Comprehensive Multi-Language Support Test for TALOWA
 // Tests all aspects of the multi-language implementation
 
 import 'package:flutter_test/flutter_test.dart';
@@ -32,10 +32,10 @@ void main() {
 
       test('should detect language correctly', () {
         expect(LocalizationService.detectLanguage('Hello world'), 'en');
-        expect(LocalizationService.detectLanguage('नमस्ते दुनिया'), 'hi');
-        expect(LocalizationService.detectLanguage('హలో ప్రపంచం'), 'te');
-        expect(LocalizationService.detectLanguage('السلام علیکم'), 'ur');
-        expect(LocalizationService.detectLanguage('مرحبا بالعالم'), 'ar');
+        expect(LocalizationService.detectLanguage('à¤¨à¤®à¤¸à¥à¤¤à¥‡ à¤¦à¥à¤¨à¤¿à¤¯à¤¾'), 'hi');
+        expect(LocalizationService.detectLanguage('à°¹à°²à±‹ à°ªà±à°°à°ªà°‚à°šà°‚'), 'te');
+        expect(LocalizationService.detectLanguage('Ø§Ù„Ø³Ù„Ø§Ù… Ø¹Ù„ÛŒÚ©Ù…'), 'ur');
+        expect(LocalizationService.detectLanguage('Ù…Ø±Ø­Ø¨Ø§ Ø¨Ø§Ù„Ø¹Ø§Ù„Ù…'), 'ar');
       });
 
       test('should identify RTL languages correctly', () {
@@ -49,19 +49,19 @@ void main() {
       test('should format numbers correctly for different languages', () async {
         // Test Hindi numerals
         await LocalizationService.setLanguage('hi');
-        expect(LocalizationService.formatNumber(123), '१२३');
+        expect(LocalizationService.formatNumber(123), 'à¥§à¥¨à¥©');
         
         // Test Telugu numerals
         await LocalizationService.setLanguage('te');
-        expect(LocalizationService.formatNumber(456), '౪౫౬');
+        expect(LocalizationService.formatNumber(456), 'à±ªà±«à±¬');
         
         // Test Arabic-Indic numerals for Urdu
         await LocalizationService.setLanguage('ur');
-        expect(LocalizationService.formatNumber(789), '۷۸۹');
+        expect(LocalizationService.formatNumber(789), 'Û·Û¸Û¹');
         
         // Test Arabic numerals
         await LocalizationService.setLanguage('ar');
-        expect(LocalizationService.formatNumber(101), '١٠١');
+        expect(LocalizationService.formatNumber(101), 'Ù¡Ù Ù¡');
       });
 
       test('should provide voice commands for all languages', () {
@@ -99,7 +99,7 @@ void main() {
       });
 
       test('should format RTL text with proper markers', () {
-        final arabicText = RTLSupportService.formatRTLText('مرحبا 123 بالعالم', 'ar');
+        final arabicText = RTLSupportService.formatRTLText('Ù…Ø±Ø­Ø¨Ø§ 123 Ø¨Ø§Ù„Ø¹Ø§Ù„Ù…', 'ar');
         expect(arabicText.contains('\u200E'), true); // Contains LTR mark
         expect(arabicText.contains('\u200F'), true); // Contains RTL mark
         
@@ -332,8 +332,8 @@ void main() {
         
         for (int i = 0; i < 1000; i++) {
           LocalizationService.detectLanguage('Hello world $i');
-          LocalizationService.detectLanguage('नमस्ते दुनिया $i');
-          LocalizationService.detectLanguage('హలో ప్రపంచం $i');
+          LocalizationService.detectLanguage('à¤¨à¤®à¤¸à¥à¤¤à¥‡ à¤¦à¥à¤¨à¤¿à¤¯à¤¾ $i');
+          LocalizationService.detectLanguage('à°¹à°²à±‹ à°ªà±à°°à°ªà°‚à°šà°‚ $i');
         }
         
         stopwatch.stop();

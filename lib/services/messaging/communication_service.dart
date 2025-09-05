@@ -1,4 +1,4 @@
-// Communication Service for TALOWA
+﻿// Communication Service for TALOWA
 // Integrates messaging, encryption, caching, and voice calls
 // Requirements: 1.6, 7.2, 7.3
 

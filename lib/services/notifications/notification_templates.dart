@@ -1,4 +1,4 @@
-// Notification Templates - Templates for different message types and priorities
+﻿// Notification Templates - Templates for different message types and priorities
 // Part of Task 12: Build push notification system
 
 import '../../models/notification_model.dart';
@@ -110,7 +110,7 @@ class NotificationTemplates {
       // Emergency templates
       case NotificationTemplateType.emergencyAlert:
         return const NotificationTemplate(
-          title: '🚨 EMERGENCY ALERT',
+          title: 'ðŸš¨ EMERGENCY ALERT',
           body: '{{alertMessage}}',
           notificationType: NotificationType.emergency,
           priority: NotificationPriority.critical,
@@ -119,7 +119,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.landGrabbingAlert:
         return const NotificationTemplate(
-          title: '⚠️ Land Grabbing Alert',
+          title: 'âš ï¸ Land Grabbing Alert',
           body: 'Land grabbing reported in {{location}}. {{details}}',
           notificationType: NotificationType.landRightsAlert,
           priority: NotificationPriority.critical,
@@ -128,7 +128,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.governmentAction:
         return const NotificationTemplate(
-          title: '📢 Government Action Alert',
+          title: 'ðŸ“¢ Government Action Alert',
           body: '{{actionType}} in {{location}}. {{details}}',
           notificationType: NotificationType.emergency,
           priority: NotificationPriority.high,
@@ -138,7 +138,7 @@ class NotificationTemplates {
       // Legal templates
       case NotificationTemplateType.courtDateReminder:
         return const NotificationTemplate(
-          title: '⚖️ Court Date Reminder',
+          title: 'âš–ï¸ Court Date Reminder',
           body: 'Court hearing for {{caseName}} on {{date}} at {{time}}',
           notificationType: NotificationType.courtDateReminder,
           priority: NotificationPriority.high,
@@ -147,7 +147,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.legalUpdate:
         return const NotificationTemplate(
-          title: '📋 Legal Update',
+          title: 'ðŸ“‹ Legal Update',
           body: 'Update on {{caseName}}: {{updateDetails}}',
           notificationType: NotificationType.legalUpdate,
           priority: NotificationPriority.normal,
@@ -156,7 +156,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.documentExpiry:
         return const NotificationTemplate(
-          title: '📄 Document Expiring',
+          title: 'ðŸ“„ Document Expiring',
           body: 'Your {{documentType}} expires on {{expiryDate}}',
           notificationType: NotificationType.documentExpiry,
           priority: NotificationPriority.high,
@@ -166,7 +166,7 @@ class NotificationTemplates {
       // Campaign templates
       case NotificationTemplateType.campaignUpdate:
         return const NotificationTemplate(
-          title: '📢 Campaign Update',
+          title: 'ðŸ“¢ Campaign Update',
           body: '{{campaignName}}: {{updateMessage}}',
           notificationType: NotificationType.campaignUpdate,
           priority: NotificationPriority.normal,
@@ -175,7 +175,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.meetingReminder:
         return const NotificationTemplate(
-          title: '📅 Meeting Reminder',
+          title: 'ðŸ“… Meeting Reminder',
           body: '{{meetingTitle}} starts in {{timeUntil}} at {{location}}',
           notificationType: NotificationType.meetingReminder,
           priority: NotificationPriority.high,
@@ -184,7 +184,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.protestAlert:
         return const NotificationTemplate(
-          title: '✊ Protest Alert',
+          title: 'âœŠ Protest Alert',
           body: 'Protest organized at {{location}} on {{date}}. {{details}}',
           notificationType: NotificationType.campaignUpdate,
           priority: NotificationPriority.high,
@@ -203,7 +203,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.networkMilestone:
         return const NotificationTemplate(
-          title: '🎉 Network Milestone',
+          title: 'ðŸŽ‰ Network Milestone',
           body: 'Congratulations! You now have {{count}} {{type}} in your network',
           notificationType: NotificationType.networkUpdate,
           priority: NotificationPriority.normal,
@@ -212,7 +212,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.teamPromotion:
         return const NotificationTemplate(
-          title: '🎊 Promotion!',
+          title: 'ðŸŽŠ Promotion!',
           body: 'Congratulations! You have been promoted to {{newRole}}',
           notificationType: NotificationType.networkUpdate,
           priority: NotificationPriority.high,
@@ -222,7 +222,7 @@ class NotificationTemplates {
       // System templates
       case NotificationTemplateType.systemUpdate:
         return const NotificationTemplate(
-          title: '🔄 App Update',
+          title: 'ðŸ”„ App Update',
           body: '{{updateMessage}}',
           notificationType: NotificationType.systemUpdate,
           priority: NotificationPriority.low,
@@ -231,7 +231,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.maintenanceAlert:
         return const NotificationTemplate(
-          title: '🔧 Maintenance Alert',
+          title: 'ðŸ”§ Maintenance Alert',
           body: 'Scheduled maintenance from {{startTime}} to {{endTime}}',
           notificationType: NotificationType.systemUpdate,
           priority: NotificationPriority.normal,
@@ -240,7 +240,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.securityAlert:
         return const NotificationTemplate(
-          title: '🔒 Security Alert',
+          title: 'ðŸ”’ Security Alert',
           body: '{{alertMessage}}',
           notificationType: NotificationType.systemUpdate,
           priority: NotificationPriority.high,
@@ -250,7 +250,7 @@ class NotificationTemplates {
       // Success story templates
       case NotificationTemplateType.successStory:
         return const NotificationTemplate(
-          title: '🎉 Success Story',
+          title: 'ðŸŽ‰ Success Story',
           body: '{{title}}: {{summary}}',
           notificationType: NotificationType.successStory,
           priority: NotificationPriority.normal,
@@ -259,7 +259,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.pattaReceived:
         return const NotificationTemplate(
-          title: '🎊 Patta Received!',
+          title: 'ðŸŽŠ Patta Received!',
           body: '{{farmerName}} received patta for {{landArea}} in {{village}}',
           notificationType: NotificationType.successStory,
           priority: NotificationPriority.normal,
@@ -268,7 +268,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.caseWon:
         return const NotificationTemplate(
-          title: '⚖️ Case Won!',
+          title: 'âš–ï¸ Case Won!',
           body: 'Victory in {{caseName}}! {{details}}',
           notificationType: NotificationType.successStory,
           priority: NotificationPriority.high,
@@ -278,7 +278,7 @@ class NotificationTemplates {
       // Announcement templates
       case NotificationTemplateType.generalAnnouncement:
         return const NotificationTemplate(
-          title: '📢 Announcement',
+          title: 'ðŸ“¢ Announcement',
           body: '{{announcementText}}',
           notificationType: NotificationType.announcement,
           priority: NotificationPriority.normal,
@@ -287,7 +287,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.coordinatorMessage:
         return const NotificationTemplate(
-          title: '👤 Message from {{coordinatorName}}',
+          title: 'ðŸ‘¤ Message from {{coordinatorName}}',
           body: '{{message}}',
           notificationType: NotificationType.announcement,
           priority: NotificationPriority.high,
@@ -296,7 +296,7 @@ class NotificationTemplates {
 
       case NotificationTemplateType.policyUpdate:
         return const NotificationTemplate(
-          title: '📋 Policy Update',
+          title: 'ðŸ“‹ Policy Update',
           body: 'New policy: {{policyTitle}}. {{summary}}',
           notificationType: NotificationType.announcement,
           priority: NotificationPriority.high,

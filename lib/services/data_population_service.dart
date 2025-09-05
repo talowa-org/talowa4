@@ -1,4 +1,4 @@
-// Data Population Service for TALOWA
+﻿// Data Population Service for TALOWA
 // Populates missing Firestore collections with initial data
 
 import 'package:flutter/foundation.dart';
@@ -10,36 +10,36 @@ class DataPopulationService {
   /// Populate all missing collections
   static Future<void> populateAllMissingData() async {
     try {
-      debugPrint('🔄 Starting data population...');
+      debugPrint('ðŸ”„ Starting data population...');
       
       // Populate each collection independently, don't stop if one fails
       await populateDailyMotivation().catchError((e) => 
-        debugPrint('❌ Daily motivation population failed: $e'));
+        debugPrint('âŒ Daily motivation population failed: $e'));
       
       await populateHashtags().catchError((e) => 
-        debugPrint('❌ Hashtags population failed: $e'));
+        debugPrint('âŒ Hashtags population failed: $e'));
       
       await populateAnalytics().catchError((e) => 
-        debugPrint('❌ Analytics population failed: $e'));
+        debugPrint('âŒ Analytics population failed: $e'));
       
       await populateNotifications().catchError((e) => 
-        debugPrint('❌ Notifications population failed: $e'));
+        debugPrint('âŒ Notifications population failed: $e'));
       
       await populateActiveStories().catchError((e) => 
-        debugPrint('❌ Active stories population failed: $e'));
+        debugPrint('âŒ Active stories population failed: $e'));
       
-      debugPrint('✅ Data population completed (some operations may have failed)');
+      debugPrint('âœ… Data population completed (some operations may have failed)');
     } catch (e) {
-      debugPrint('❌ Critical error in data population: $e');
+      debugPrint('âŒ Critical error in data population: $e');
       // Don't rethrow to prevent app crashes
-      debugPrint('⚠️ Continuing app startup despite data population errors...');
+      debugPrint('âš ï¸ Continuing app startup despite data population errors...');
     }
   }
   
   /// Populate active stories collection
   static Future<void> populateActiveStories() async {
     try {
-      debugPrint('📖 Populating active stories...');
+      debugPrint('ðŸ“– Populating active stories...');
       
       // Check if active stories already exist
       final existingStories = await _firestore
@@ -48,7 +48,7 @@ class DataPopulationService {
           .get();
       
       if (existingStories.docs.isNotEmpty) {
-        debugPrint('✅ Active stories already exist, skipping...');
+        debugPrint('âœ… Active stories already exist, skipping...');
         return;
       }
       
@@ -64,16 +64,16 @@ class DataPopulationService {
           .doc('current')
           .set(storiesData);
       
-      debugPrint('✅ Active stories populated successfully!');
+      debugPrint('âœ… Active stories populated successfully!');
     } catch (e) {
-      debugPrint('❌ Error populating active stories: $e');
+      debugPrint('âŒ Error populating active stories: $e');
     }
   }
 
   /// Populate daily motivation content
   static Future<void> populateDailyMotivation() async {
     try {
-      debugPrint('📝 Populating daily motivation...');
+      debugPrint('ðŸ“ Populating daily motivation...');
       
       // Check if daily motivation already exists
       final existingMotivation = await _firestore
@@ -82,41 +82,41 @@ class DataPopulationService {
           .get();
       
       if (existingMotivation.docs.isNotEmpty) {
-        debugPrint('✅ Daily motivation already exists, skipping...');
+        debugPrint('âœ… Daily motivation already exists, skipping...');
         return;
       }
       
       final motivationData = {
         'id': 'daily_motivation_${DateTime.now().millisecondsSinceEpoch}',
         'messages': [
-          "आज एक नया दिन है। अपनी भूमि के लिए लड़ते रहें। (Today is a new day. Keep fighting for your land.)",
-          "एकजुट होकर हम अपने अधिकारों को पा सकते हैं। (United we can achieve our rights.)",
-          "हर छोटा कदम बड़े बदलाव की शुरुआत है। (Every small step is the beginning of big change.)",
-          "आपकी आवाज़ मायने रखती है। बोलते रहें। (Your voice matters. Keep speaking up.)",
-          "न्याय की लड़ाई में हम साथ हैं। (We are together in the fight for justice.)",
-          "भूमि हमारा अधिकार है, हम इसे पाकर रहेंगे। (Land is our right, we will get it.)",
-          "संगठन में शक्ति है। एक साथ चलें। (There is strength in organization. Let's move together.)",
-          "हमारे बच्चों के लिए एक बेहतर कल बनाएं। (Create a better tomorrow for our children.)",
-          "कानूनी लड़ाई में धैर्य और दृढ़ता जरूरी है। (Patience and persistence are necessary in legal battles.)",
-          "आपका संघर्ष व्यर्थ नहीं है। जारी रखें। (Your struggle is not in vain. Continue.)"
+          "à¤†à¤œ à¤à¤• à¤¨à¤¯à¤¾ à¤¦à¤¿à¤¨ à¤¹à¥ˆà¥¤ à¤…à¤ªà¤¨à¥€ à¤­à¥‚à¤®à¤¿ à¤•à¥‡ à¤²à¤¿à¤ à¤²à¤¡à¤¼à¤¤à¥‡ à¤°à¤¹à¥‡à¤‚à¥¤ (Today is a new day. Keep fighting for your land.)",
+          "à¤à¤•à¤œà¥à¤Ÿ à¤¹à¥‹à¤•à¤° à¤¹à¤® à¤…à¤ªà¤¨à¥‡ à¤…à¤§à¤¿à¤•à¤¾à¤°à¥‹à¤‚ à¤•à¥‹ à¤ªà¤¾ à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤ (United we can achieve our rights.)",
+          "à¤¹à¤° à¤›à¥‹à¤Ÿà¤¾ à¤•à¤¦à¤® à¤¬à¤¡à¤¼à¥‡ à¤¬à¤¦à¤²à¤¾à¤µ à¤•à¥€ à¤¶à¥à¤°à¥à¤†à¤¤ à¤¹à¥ˆà¥¤ (Every small step is the beginning of big change.)",
+          "à¤†à¤ªà¤•à¥€ à¤†à¤µà¤¾à¤œà¤¼ à¤®à¤¾à¤¯à¤¨à¥‡ à¤°à¤–à¤¤à¥€ à¤¹à¥ˆà¥¤ à¤¬à¥‹à¤²à¤¤à¥‡ à¤°à¤¹à¥‡à¤‚à¥¤ (Your voice matters. Keep speaking up.)",
+          "à¤¨à¥à¤¯à¤¾à¤¯ à¤•à¥€ à¤²à¤¡à¤¼à¤¾à¤ˆ à¤®à¥‡à¤‚ à¤¹à¤® à¤¸à¤¾à¤¥ à¤¹à¥ˆà¤‚à¥¤ (We are together in the fight for justice.)",
+          "à¤­à¥‚à¤®à¤¿ à¤¹à¤®à¤¾à¤°à¤¾ à¤…à¤§à¤¿à¤•à¤¾à¤° à¤¹à¥ˆ, à¤¹à¤® à¤‡à¤¸à¥‡ à¤ªà¤¾à¤•à¤° à¤°à¤¹à¥‡à¤‚à¤—à¥‡à¥¤ (Land is our right, we will get it.)",
+          "à¤¸à¤‚à¤—à¤ à¤¨ à¤®à¥‡à¤‚ à¤¶à¤•à¥à¤¤à¤¿ à¤¹à¥ˆà¥¤ à¤à¤• à¤¸à¤¾à¤¥ à¤šà¤²à¥‡à¤‚à¥¤ (There is strength in organization. Let's move together.)",
+          "à¤¹à¤®à¤¾à¤°à¥‡ à¤¬à¤šà¥à¤šà¥‹à¤‚ à¤•à¥‡ à¤²à¤¿à¤ à¤à¤• à¤¬à¥‡à¤¹à¤¤à¤° à¤•à¤² à¤¬à¤¨à¤¾à¤à¤‚à¥¤ (Create a better tomorrow for our children.)",
+          "à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤²à¤¡à¤¼à¤¾à¤ˆ à¤®à¥‡à¤‚ à¤§à¥ˆà¤°à¥à¤¯ à¤”à¤° à¤¦à¥ƒà¤¢à¤¼à¤¤à¤¾ à¤œà¤°à¥‚à¤°à¥€ à¤¹à¥ˆà¥¤ (Patience and persistence are necessary in legal battles.)",
+          "à¤†à¤ªà¤•à¤¾ à¤¸à¤‚à¤˜à¤°à¥à¤· à¤µà¥à¤¯à¤°à¥à¤¥ à¤¨à¤¹à¥€à¤‚ à¤¹à¥ˆà¥¤ à¤œà¤¾à¤°à¥€ à¤°à¤–à¥‡à¤‚à¥¤ (Your struggle is not in vain. Continue.)"
         ],
         'success_stories': [
           {
-            'title': "करीमनगर में 500 एकड़ भूमि वापसी",
-            'description': "सामूहिक प्रयास से किसानों को अपनी भूमि वापस मिली।",
-            'location': "करीमनगर, तेलंगाना",
+            'title': "à¤•à¤°à¥€à¤®à¤¨à¤—à¤° à¤®à¥‡à¤‚ 500 à¤à¤•à¤¡à¤¼ à¤­à¥‚à¤®à¤¿ à¤µà¤¾à¤ªà¤¸à¥€",
+            'description': "à¤¸à¤¾à¤®à¥‚à¤¹à¤¿à¤• à¤ªà¥à¤°à¤¯à¤¾à¤¸ à¤¸à¥‡ à¤•à¤¿à¤¸à¤¾à¤¨à¥‹à¤‚ à¤•à¥‹ à¤…à¤ªà¤¨à¥€ à¤­à¥‚à¤®à¤¿ à¤µà¤¾à¤ªà¤¸ à¤®à¤¿à¤²à¥€à¥¤",
+            'location': "à¤•à¤°à¥€à¤®à¤¨à¤—à¤°, à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾",
             'date': "2024-01-15"
           },
           {
-            'title': "वारंगल में पट्टा वितरण",
-            'description': "200 परिवारों को भूमि पट्टे मिले।",
-            'location': "वारंगल, तेलंगाना",
+            'title': "à¤µà¤¾à¤°à¤‚à¤—à¤² à¤®à¥‡à¤‚ à¤ªà¤Ÿà¥à¤Ÿà¤¾ à¤µà¤¿à¤¤à¤°à¤£",
+            'description': "200 à¤ªà¤°à¤¿à¤µà¤¾à¤°à¥‹à¤‚ à¤•à¥‹ à¤­à¥‚à¤®à¤¿ à¤ªà¤Ÿà¥à¤Ÿà¥‡ à¤®à¤¿à¤²à¥‡à¥¤",
+            'location': "à¤µà¤¾à¤°à¤‚à¤—à¤², à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾",
             'date': "2024-02-20"
           },
           {
-            'title': "निज़ामाबाद में न्यायालयी जीत",
-            'description': "भूमि हड़पने के मामले में किसानों की जीत।",
-            'location': "निज़ामाबाद, तेलंगाना",
+            'title': "à¤¨à¤¿à¤œà¤¼à¤¾à¤®à¤¾à¤¬à¤¾à¤¦ à¤®à¥‡à¤‚ à¤¨à¥à¤¯à¤¾à¤¯à¤¾à¤²à¤¯à¥€ à¤œà¥€à¤¤",
+            'description': "à¤­à¥‚à¤®à¤¿ à¤¹à¤¡à¤¼à¤ªà¤¨à¥‡ à¤•à¥‡ à¤®à¤¾à¤®à¤²à¥‡ à¤®à¥‡à¤‚ à¤•à¤¿à¤¸à¤¾à¤¨à¥‹à¤‚ à¤•à¥€ à¤œà¥€à¤¤à¥¤",
+            'location': "à¤¨à¤¿à¤œà¤¼à¤¾à¤®à¤¾à¤¬à¤¾à¤¦, à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾",
             'date': "2024-03-10"
           }
         ],
@@ -126,20 +126,20 @@ class DataPopulationService {
       // Try to write to daily_motivation collection first (has unauthenticated read)
       try {
         await _firestore.collection('daily_motivation').doc('current').set(motivationData);
-        debugPrint('✅ Daily motivation populated successfully in daily_motivation collection!');
+        debugPrint('âœ… Daily motivation populated successfully in daily_motivation collection!');
       } catch (e) {
-        debugPrint('⚠️ Could not write to daily_motivation collection: $e');
+        debugPrint('âš ï¸ Could not write to daily_motivation collection: $e');
         // Fallback: try content collection
         try {
           await _firestore.collection('content').doc('daily_motivation').set(motivationData);
-          debugPrint('✅ Daily motivation populated successfully in content collection!');
+          debugPrint('âœ… Daily motivation populated successfully in content collection!');
         } catch (e2) {
-          debugPrint('❌ Could not write to content collection either: $e2');
+          debugPrint('âŒ Could not write to content collection either: $e2');
           // Don't rethrow - this is a background operation
         }
       }
     } catch (e) {
-      debugPrint('❌ Error populating daily motivation: $e');
+      debugPrint('âŒ Error populating daily motivation: $e');
       // Don't rethrow - this is a background operation
     }
   }
@@ -147,19 +147,19 @@ class DataPopulationService {
   /// Populate hashtags collection
   static Future<void> populateHashtags() async {
     try {
-      debugPrint('🏷️ Populating hashtags...');
+      debugPrint('ðŸ·ï¸ Populating hashtags...');
       
       final hashtags = [
-        {'tag': 'भूमिअधिकार', 'count': 0, 'category': 'land_rights'},
-        {'tag': 'किसानन्याय', 'count': 0, 'category': 'farmer_justice'},
-        {'tag': 'पट्टावितरण', 'count': 0, 'category': 'patta_distribution'},
-        {'tag': 'तेलंगानाकिसान', 'count': 0, 'category': 'telangana_farmers'},
-        {'tag': 'भूमिसंघर्ष', 'count': 0, 'category': 'land_struggle'},
-        {'tag': 'न्यायालयीजीत', 'count': 0, 'category': 'court_victory'},
-        {'tag': 'सामुदायिकशक्ति', 'count': 0, 'category': 'community_power'},
-        {'tag': 'कृषिनीति', 'count': 0, 'category': 'agriculture_policy'},
-        {'tag': 'ग्रामीणविकास', 'count': 0, 'category': 'rural_development'},
-        {'tag': 'सामाजिकन्याय', 'count': 0, 'category': 'social_justice'}
+        {'tag': 'à¤­à¥‚à¤®à¤¿à¤…à¤§à¤¿à¤•à¤¾à¤°', 'count': 0, 'category': 'land_rights'},
+        {'tag': 'à¤•à¤¿à¤¸à¤¾à¤¨à¤¨à¥à¤¯à¤¾à¤¯', 'count': 0, 'category': 'farmer_justice'},
+        {'tag': 'à¤ªà¤Ÿà¥à¤Ÿà¤¾à¤µà¤¿à¤¤à¤°à¤£', 'count': 0, 'category': 'patta_distribution'},
+        {'tag': 'à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾à¤•à¤¿à¤¸à¤¾à¤¨', 'count': 0, 'category': 'telangana_farmers'},
+        {'tag': 'à¤­à¥‚à¤®à¤¿à¤¸à¤‚à¤˜à¤°à¥à¤·', 'count': 0, 'category': 'land_struggle'},
+        {'tag': 'à¤¨à¥à¤¯à¤¾à¤¯à¤¾à¤²à¤¯à¥€à¤œà¥€à¤¤', 'count': 0, 'category': 'court_victory'},
+        {'tag': 'à¤¸à¤¾à¤®à¥à¤¦à¤¾à¤¯à¤¿à¤•à¤¶à¤•à¥à¤¤à¤¿', 'count': 0, 'category': 'community_power'},
+        {'tag': 'à¤•à¥ƒà¤·à¤¿à¤¨à¥€à¤¤à¤¿', 'count': 0, 'category': 'agriculture_policy'},
+        {'tag': 'à¤—à¥à¤°à¤¾à¤®à¥€à¤£à¤µà¤¿à¤•à¤¾à¤¸', 'count': 0, 'category': 'rural_development'},
+        {'tag': 'à¤¸à¤¾à¤®à¤¾à¤œà¤¿à¤•à¤¨à¥à¤¯à¤¾à¤¯', 'count': 0, 'category': 'social_justice'}
       ];
 
       final batch = _firestore.batch();
@@ -173,9 +173,9 @@ class DataPopulationService {
       }
 
       await batch.commit();
-      debugPrint('✅ Hashtags populated successfully!');
+      debugPrint('âœ… Hashtags populated successfully!');
     } catch (e) {
-      debugPrint('❌ Error populating hashtags: $e');
+      debugPrint('âŒ Error populating hashtags: $e');
       // Don't rethrow - this is a background operation
     }
   }
@@ -183,7 +183,7 @@ class DataPopulationService {
   /// Populate analytics collection
   static Future<void> populateAnalytics() async {
     try {
-      debugPrint('📊 Populating analytics...');
+      debugPrint('ðŸ“Š Populating analytics...');
       
       final analyticsData = {
         'total_users': 0,
@@ -198,9 +198,9 @@ class DataPopulationService {
       };
 
       await _firestore.collection('analytics').doc('global_stats').set(analyticsData);
-      debugPrint('✅ Analytics populated successfully!');
+      debugPrint('âœ… Analytics populated successfully!');
     } catch (e) {
-      debugPrint('❌ Error populating analytics: $e');
+      debugPrint('âŒ Error populating analytics: $e');
       // Don't rethrow - this is a background operation
     }
   }
@@ -208,7 +208,7 @@ class DataPopulationService {
   /// Populate notifications collection structure
   static Future<void> populateNotifications() async {
     try {
-      debugPrint('🔔 Populating notifications structure...');
+      debugPrint('ðŸ”” Populating notifications structure...');
       
       // Create a sample notification structure document
       final notificationStructure = {
@@ -229,9 +229,9 @@ class DataPopulationService {
       };
 
       await _firestore.collection('notifications').doc('_structure').set(notificationStructure);
-      debugPrint('✅ Notifications structure populated successfully!');
+      debugPrint('âœ… Notifications structure populated successfully!');
     } catch (e) {
-      debugPrint('❌ Error populating notifications: $e');
+      debugPrint('âŒ Error populating notifications: $e');
       // Don't rethrow - this is a background operation
     }
   }
@@ -243,24 +243,24 @@ class DataPopulationService {
       try {
         final motivationDoc = await _firestore.collection('daily_motivation').doc('current').get();
         if (motivationDoc.exists) {
-          debugPrint('✅ Daily motivation exists in daily_motivation collection');
+          debugPrint('âœ… Daily motivation exists in daily_motivation collection');
         } else {
-          debugPrint('📝 Daily motivation needs population');
+          debugPrint('ðŸ“ Daily motivation needs population');
           return true;
         }
       } catch (e) {
-        debugPrint('⚠️ Could not check daily_motivation collection: $e');
+        debugPrint('âš ï¸ Could not check daily_motivation collection: $e');
         // Try content collection as fallback
         try {
           final motivationDoc = await _firestore.collection('content').doc('daily_motivation').get();
           if (motivationDoc.exists) {
-            debugPrint('✅ Daily motivation exists in content collection');
+            debugPrint('âœ… Daily motivation exists in content collection');
           } else {
-            debugPrint('📝 Daily motivation needs population');
+            debugPrint('ðŸ“ Daily motivation needs population');
             return true;
           }
         } catch (e2) {
-          debugPrint('⚠️ Could not check content collection either: $e2');
+          debugPrint('âš ï¸ Could not check content collection either: $e2');
           return true; // Assume we need population if we can't check
         }
       }
@@ -269,13 +269,13 @@ class DataPopulationService {
       try {
         final hashtagsSnapshot = await _firestore.collection('hashtags').limit(1).get();
         if (hashtagsSnapshot.docs.isNotEmpty) {
-          debugPrint('✅ Hashtags exist');
+          debugPrint('âœ… Hashtags exist');
         } else {
-          debugPrint('🏷️ Hashtags need population');
+          debugPrint('ðŸ·ï¸ Hashtags need population');
           return true;
         }
       } catch (e) {
-        debugPrint('⚠️ Could not check hashtags collection: $e');
+        debugPrint('âš ï¸ Could not check hashtags collection: $e');
         return true; // Assume we need population if we can't check
       }
 
@@ -283,17 +283,17 @@ class DataPopulationService {
       try {
         final analyticsDoc = await _firestore.collection('analytics').doc('global_stats').get();
         if (analyticsDoc.exists) {
-          debugPrint('✅ Analytics exist');
+          debugPrint('âœ… Analytics exist');
         } else {
-          debugPrint('📊 Analytics need population');
+          debugPrint('ðŸ“Š Analytics need population');
           return true;
         }
       } catch (e) {
-        debugPrint('⚠️ Could not check analytics collection: $e');
+        debugPrint('âš ï¸ Could not check analytics collection: $e');
         return true; // Assume we need population if we can't check
       }
 
-      debugPrint('✅ All required data already exists');
+      debugPrint('âœ… All required data already exists');
       return false;
     } catch (e) {
       debugPrint('Error checking data population needs: $e');
@@ -306,14 +306,15 @@ class DataPopulationService {
     try {
       final needsPopulation = await needsDataPopulation();
       if (needsPopulation) {
-        debugPrint('🔄 Data population needed, starting...');
+        debugPrint('ðŸ”„ Data population needed, starting...');
         await populateAllMissingData();
       } else {
-        debugPrint('✅ Data already populated, skipping...');
+        debugPrint('âœ… Data already populated, skipping...');
       }
     } catch (e) {
-      debugPrint('❌ Error in populateIfNeeded: $e');
+      debugPrint('âŒ Error in populateIfNeeded: $e');
       // Don't rethrow - this is a background operation
     }
   }
 }
+

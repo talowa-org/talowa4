@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,7 +50,7 @@ class RazorpayService {
 
     final options = {
       'key': 'rzp_test_1DP5mmOlF5G5ag', // Replace with your Razorpay key
-      'amount': 10000, // ₹100 in paise
+      'amount': 10000, // â‚¹100 in paise
       'name': 'TALOWA',
       'description': 'Membership Fee',
       'retry': {'enabled': true, 'max_count': 1},
@@ -209,3 +209,4 @@ class PaymentResult {
     this.error,
   });
 }
+

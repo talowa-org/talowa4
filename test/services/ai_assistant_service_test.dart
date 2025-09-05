@@ -1,4 +1,4 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+﻿import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../test_utils/firebase_test_init.dart';
@@ -23,4 +23,5 @@ void main() {
     expect(r2.actions.any((a) => a.type == AIActionType.call || a.type == AIActionType.navigate), true);
   });
 }
+
 

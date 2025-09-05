@@ -1,4 +1,4 @@
-/// TURN server credentials model
+﻿/// TURN server credentials model
 class TurnCredentials {
   final String urls;
   final String username;

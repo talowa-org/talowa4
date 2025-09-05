@@ -1,4 +1,4 @@
-// Database Optimization Service for TALOWA
+﻿// Database Optimization Service for TALOWA
 // Implements connection pooling and query optimization
 // Requirements: 1.1, 8.4
 

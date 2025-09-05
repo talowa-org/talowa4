@@ -1,4 +1,4 @@
-// Test file for CommentModel
+﻿// Test file for CommentModel
 // Tests for comment model functionality and validation
 
 import 'package:flutter_test/flutter_test.dart';

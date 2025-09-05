@@ -1,4 +1,4 @@
-// Simple Feed Screen - Basic version for testing
+﻿// Simple Feed Screen - Basic version for testing
 // Simplified version to test feed functionality without complex dependencies
 
 import 'package:flutter/material.dart';
@@ -51,11 +51,11 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
       PostModel(
         id: '1',
         authorId: 'user1',
-        authorName: 'राम कुमार',
+        authorName: 'à¤°à¤¾à¤® à¤•à¥à¤®à¤¾à¤°',
         authorRole: 'village_coordinator',
-        title: 'भूमि सर्वेक्षण की जानकारी',
-        content: 'आज हमारे गांव में भूमि सर्वेक्षण का काम शुरू हुआ है। सभी किसान भाई अपने दस्तावेज तैयार रखें। #भूमि_अधिकार #सर्वेक्षण',
-        hashtags: ['भूमि_अधिकार', 'सर्वेक्षण'],
+        title: 'à¤­à¥‚à¤®à¤¿ à¤¸à¤°à¥à¤µà¥‡à¤•à¥à¤·à¤£ à¤•à¥€ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€',
+        content: 'à¤†à¤œ à¤¹à¤®à¤¾à¤°à¥‡ à¤—à¤¾à¤‚à¤µ à¤®à¥‡à¤‚ à¤­à¥‚à¤®à¤¿ à¤¸à¤°à¥à¤µà¥‡à¤•à¥à¤·à¤£ à¤•à¤¾ à¤•à¤¾à¤® à¤¶à¥à¤°à¥‚ à¤¹à¥à¤† à¤¹à¥ˆà¥¤ à¤¸à¤­à¥€ à¤•à¤¿à¤¸à¤¾à¤¨ à¤­à¤¾à¤ˆ à¤…à¤ªà¤¨à¥‡ à¤¦à¤¸à¥à¤¤à¤¾à¤µà¥‡à¤œ à¤¤à¥ˆà¤¯à¤¾à¤° à¤°à¤–à¥‡à¤‚à¥¤ #à¤­à¥‚à¤®à¤¿_à¤…à¤§à¤¿à¤•à¤¾à¤° #à¤¸à¤°à¥à¤µà¥‡à¤•à¥à¤·à¤£',
+        hashtags: ['à¤­à¥‚à¤®à¤¿_à¤…à¤§à¤¿à¤•à¤¾à¤°', 'à¤¸à¤°à¥à¤µà¥‡à¤•à¥à¤·à¤£'],
         category: PostCategory.announcement,
         createdAt: DateTime.now().subtract(const Duration(hours: 2)),
         likesCount: 15,
@@ -65,11 +65,11 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
       PostModel(
         id: '2',
         authorId: 'user2',
-        authorName: 'सुनीता देवी',
+        authorName: 'à¤¸à¥à¤¨à¥€à¤¤à¤¾ à¤¦à¥‡à¤µà¥€',
         authorRole: 'member',
-        title: 'सफलता की कहानी',
-        content: 'मुझे आज अपना पट्टा मिल गया! TALOWA की मदद से यह संभव हुआ। धन्यवाद! #सफलता #पट्टा_मिला',
-        hashtags: ['सफलता', 'पट्टा_मिला'],
+        title: 'à¤¸à¤«à¤²à¤¤à¤¾ à¤•à¥€ à¤•à¤¹à¤¾à¤¨à¥€',
+        content: 'à¤®à¥à¤à¥‡ à¤†à¤œ à¤…à¤ªà¤¨à¤¾ à¤ªà¤Ÿà¥à¤Ÿà¤¾ à¤®à¤¿à¤² à¤—à¤¯à¤¾! TALOWA à¤•à¥€ à¤®à¤¦à¤¦ à¤¸à¥‡ à¤¯à¤¹ à¤¸à¤‚à¤­à¤µ à¤¹à¥à¤†à¥¤ à¤§à¤¨à¥à¤¯à¤µà¤¾à¤¦! #à¤¸à¤«à¤²à¤¤à¤¾ #à¤ªà¤Ÿà¥à¤Ÿà¤¾_à¤®à¤¿à¤²à¤¾',
+        hashtags: ['à¤¸à¤«à¤²à¤¤à¤¾', 'à¤ªà¤Ÿà¥à¤Ÿà¤¾_à¤®à¤¿à¤²à¤¾'],
         category: PostCategory.successStory,
         createdAt: DateTime.now().subtract(const Duration(hours: 5)),
         likesCount: 42,
@@ -79,11 +79,11 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
       PostModel(
         id: '3',
         authorId: 'user3',
-        authorName: 'अजय सिंह',
+        authorName: 'à¤…à¤œà¤¯ à¤¸à¤¿à¤‚à¤¹',
         authorRole: 'mandal_coordinator',
-        title: 'कानूनी अपडेट',
-        content: 'नया भूमि अधिकार कानून पास हुआ है। सभी सदस्यों को इसकी जानकारी दी जा रही है। #कानूनी_अपडेट #भूमि_कानून',
-        hashtags: ['कानूनी_अपडेट', 'भूमि_कानून'],
+        title: 'à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤…à¤ªà¤¡à¥‡à¤Ÿ',
+        content: 'à¤¨à¤¯à¤¾ à¤­à¥‚à¤®à¤¿ à¤…à¤§à¤¿à¤•à¤¾à¤° à¤•à¤¾à¤¨à¥‚à¤¨ à¤ªà¤¾à¤¸ à¤¹à¥à¤† à¤¹à¥ˆà¥¤ à¤¸à¤­à¥€ à¤¸à¤¦à¤¸à¥à¤¯à¥‹à¤‚ à¤•à¥‹ à¤‡à¤¸à¤•à¥€ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤¦à¥€ à¤œà¤¾ à¤°à¤¹à¥€ à¤¹à¥ˆà¥¤ #à¤•à¤¾à¤¨à¥‚à¤¨à¥€_à¤…à¤ªà¤¡à¥‡à¤Ÿ #à¤­à¥‚à¤®à¤¿_à¤•à¤¾à¤¨à¥‚à¤¨',
+        hashtags: ['à¤•à¤¾à¤¨à¥‚à¤¨à¥€_à¤…à¤ªà¤¡à¥‡à¤Ÿ', 'à¤­à¥‚à¤®à¤¿_à¤•à¤¾à¤¨à¥‚à¤¨'],
         category: PostCategory.legalUpdate,
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
         likesCount: 28,
@@ -93,11 +93,11 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
       PostModel(
         id: '4',
         authorId: 'user4',
-        authorName: 'प्रिया शर्मा',
+        authorName: 'à¤ªà¥à¤°à¤¿à¤¯à¤¾ à¤¶à¤°à¥à¤®à¤¾',
         authorRole: 'volunteer',
-        title: 'आपातकालीन सूचना',
-        content: 'कल सुबह 10 बजे गांव में महत्वपूर्ण बैठक है। सभी सदस्य उपस्थित रहें। #आपातकाल #बैठक',
-        hashtags: ['आपातकाल', 'बैठक'],
+        title: 'à¤†à¤ªà¤¾à¤¤à¤•à¤¾à¤²à¥€à¤¨ à¤¸à¥‚à¤šà¤¨à¤¾',
+        content: 'à¤•à¤² à¤¸à¥à¤¬à¤¹ 10 à¤¬à¤œà¥‡ à¤—à¤¾à¤‚à¤µ à¤®à¥‡à¤‚ à¤®à¤¹à¤¤à¥à¤µà¤ªà¥‚à¤°à¥à¤£ à¤¬à¥ˆà¤ à¤• à¤¹à¥ˆà¥¤ à¤¸à¤­à¥€ à¤¸à¤¦à¤¸à¥à¤¯ à¤‰à¤ªà¤¸à¥à¤¥à¤¿à¤¤ à¤°à¤¹à¥‡à¤‚à¥¤ #à¤†à¤ªà¤¾à¤¤à¤•à¤¾à¤² #à¤¬à¥ˆà¤ à¤•',
+        hashtags: ['à¤†à¤ªà¤¾à¤¤à¤•à¤¾à¤²', 'à¤¬à¥ˆà¤ à¤•'],
         category: PostCategory.emergency,
         createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
         likesCount: 8,
@@ -576,7 +576,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: ['भूमि_अधिकार', 'सफलता', 'कानूनी_अपडेट', 'आपातकाल']
+              children: ['à¤­à¥‚à¤®à¤¿_à¤…à¤§à¤¿à¤•à¤¾à¤°', 'à¤¸à¤«à¤²à¤¤à¤¾', 'à¤•à¤¾à¤¨à¥‚à¤¨à¥€_à¤…à¤ªà¤¡à¥‡à¤Ÿ', 'à¤†à¤ªà¤¾à¤¤à¤•à¤¾à¤²']
                   .map((tag) => ActionChip(
                         label: Text('#$tag'),
                         onPressed: () {
@@ -747,13 +747,13 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
     final commentController = TextEditingController();
     final List<Map<String, dynamic>> comments = [
       {
-        'author': 'राज कुमार',
-        'content': 'बहुत अच्छी जानकारी है!',
+        'author': 'à¤°à¤¾à¤œ à¤•à¥à¤®à¤¾à¤°',
+        'content': 'à¤¬à¤¹à¥à¤¤ à¤…à¤šà¥à¤›à¥€ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤¹à¥ˆ!',
         'time': DateTime.now().subtract(const Duration(minutes: 30)),
       },
       {
-        'author': 'सुमित्रा देवी',
-        'content': 'धन्यवाद इस जानकारी के लिए।',
+        'author': 'à¤¸à¥à¤®à¤¿à¤¤à¥à¤°à¤¾ à¤¦à¥‡à¤µà¥€',
+        'content': 'à¤§à¤¨à¥à¤¯à¤µà¤¾à¤¦ à¤‡à¤¸ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤•à¥‡ à¤²à¤¿à¤à¥¤',
         'time': DateTime.now().subtract(const Duration(hours: 1)),
       },
     ];
@@ -947,7 +947,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
     final newPost = PostModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       authorId: 'current_user',
-      authorName: 'आप',
+      authorName: 'à¤†à¤ª',
       authorRole: 'member',
       title: title,
       content: content,

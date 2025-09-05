@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
@@ -8,7 +8,7 @@ import 'package:talowa/services/admin/admin_bootstrap_service.dart';
 import 'package:talowa/services/referral/universal_link_service.dart';
 
 void main() {
-  group('VALIDATION SUITE — LOGIN + REGISTRATION + REFERRALS', () {
+  group('VALIDATION SUITE â€” LOGIN + REGISTRATION + REFERRALS', () {
     late FakeFirebaseFirestore fakeFirestore;
     late MockFirebaseAuth mockAuth;
 
@@ -75,7 +75,7 @@ void main() {
       expect(userData['referralCode'], startsWith('TAL'));
     });
 
-    test('B4) Payment success → activation + counters/roles: PASS', () async {
+    test('B4) Payment success â†’ activation + counters/roles: PASS', () async {
       // Setup referrer
       await fakeFirestore.collection('users').doc('referrer-123').set({
         'referralCode': 'TAL123456',
@@ -123,7 +123,7 @@ void main() {
       expect(referrerData['totalTeamSize'], 1);
     });
 
-    test('B5) Payment failure → access retained, pending_payment: PASS', () async {
+    test('B5) Payment failure â†’ access retained, pending_payment: PASS', () async {
       // Create user profile
       await UserRegistrationService.createUserProfile(
         userId: 'test-user-fail',
@@ -190,3 +190,4 @@ void main() {
     });
   });
 }
+

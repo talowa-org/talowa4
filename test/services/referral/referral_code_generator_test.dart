@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:talowa/services/referral/referral_code_generator.dart';
 
@@ -143,7 +143,7 @@ void main() {
       });
 
       test('should handle unicode characters in seed', () {
-        const unicodeSeed = '🎉🚀💡🌟⭐';
+        const unicodeSeed = 'ðŸŽ‰ðŸš€ðŸ’¡ðŸŒŸâ­';
         final code = ReferralCodeGenerator.generateTestCode(unicodeSeed);
         expect(ReferralCodeGenerator.isValidFormat(code), isTrue);
       });
@@ -195,3 +195,4 @@ void main() {
     });
   });
 }
+

@@ -459,3 +459,4 @@ enum GeographicScope {
   const GeographicScope(this.displayName);
   final String displayName;
 }
+

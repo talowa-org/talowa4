@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/foundation.dart';
 // import 'package:app_links/app_links.dart';  // Not supported on web
 // import 'package:uni_links/uni_links.dart';  // Not supported on web
@@ -71,18 +71,18 @@ class UniversalLinkService {
       try {
         // Get current URL and check for referral parameters
         final currentUrl = Uri.base;
-        debugPrint('🔗 Checking URL for referral code: ${currentUrl.toString()}');
+        debugPrint('ðŸ”— Checking URL for referral code: ${currentUrl.toString()}');
         
         final referralCode = _extractReferralCode(currentUrl);
         
         if (referralCode != null) {
-          debugPrint('✅ Found referral code in URL: $referralCode');
+          debugPrint('âœ… Found referral code in URL: $referralCode');
           await _handleReferralLink(referralCode);
         } else {
-          debugPrint('ℹ️ No referral code found in URL');
+          debugPrint('â„¹ï¸ No referral code found in URL');
         }
       } catch (e) {
-        debugPrint('❌ Failed to handle web initial link: $e');
+        debugPrint('âŒ Failed to handle web initial link: $e');
       }
     }
   }
@@ -105,15 +105,15 @@ class UniversalLinkService {
   
   /// Extract referral code from URI
   static String? _extractReferralCode(Uri uri) {
-    debugPrint('🔍 Extracting referral code from URI: ${uri.toString()}');
-    debugPrint('🔍 Query parameters: ${uri.queryParameters}');
-    debugPrint('🔍 Path segments: ${uri.pathSegments}');
+    debugPrint('ðŸ” Extracting referral code from URI: ${uri.toString()}');
+    debugPrint('ðŸ” Query parameters: ${uri.queryParameters}');
+    debugPrint('ðŸ” Path segments: ${uri.pathSegments}');
     
     // Check query parameters first (most common: ?ref=CODE)
     final referralCode = uri.queryParameters[REFERRAL_PARAM];
     if (referralCode != null && referralCode.trim().isNotEmpty) {
       final cleanCode = referralCode.trim().toUpperCase();
-      debugPrint('✅ Found referral code in query params: $cleanCode');
+      debugPrint('âœ… Found referral code in query params: $cleanCode');
       return cleanCode;
     }
 
@@ -122,7 +122,7 @@ class UniversalLinkService {
       final code = uri.pathSegments[1].trim();
       if (code.isNotEmpty) {
         final cleanCode = code.toUpperCase();
-        debugPrint('✅ Found referral code in path: $cleanCode');
+        debugPrint('âœ… Found referral code in path: $cleanCode');
         return cleanCode;
       }
     }
@@ -131,12 +131,12 @@ class UniversalLinkService {
     for (final segment in uri.pathSegments) {
       if (ReferralCodeGenerator.hasValidTALPrefix(segment) && segment.length >= 6) {
         final cleanCode = segment.trim().toUpperCase();
-        debugPrint('✅ Found referral code in path segment: $cleanCode');
+        debugPrint('âœ… Found referral code in path segment: $cleanCode');
         return cleanCode;
       }
     }
 
-    debugPrint('❌ No referral code found in URI');
+    debugPrint('âŒ No referral code found in URI');
     return null;
   }
   
@@ -366,3 +366,4 @@ class UniversalLinkService {
     }
   }
 }
+

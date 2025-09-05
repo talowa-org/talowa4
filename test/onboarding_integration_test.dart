@@ -1,4 +1,4 @@
-// TALOWA Onboarding Integration Test
+﻿// TALOWA Onboarding Integration Test
 // Tests the complete onboarding and help system implementation
 
 import 'package:flutter/material.dart';

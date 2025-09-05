@@ -1,4 +1,4 @@
-// Post Comments Screen - Task 7: Build post engagement interface
+﻿// Post Comments Screen - Task 7: Build post engagement interface
 // Comprehensive comment display and input interface
 
 import 'package:flutter/material.dart';

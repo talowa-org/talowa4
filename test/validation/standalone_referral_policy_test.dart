@@ -1,4 +1,4 @@
-// Standalone Referral Code Policy Validation Test
+﻿// Standalone Referral Code Policy Validation Test
 // This test validates the referral code policy implementation without external dependencies
 
 import 'package:flutter_test/flutter_test.dart';
@@ -12,24 +12,24 @@ void main() {
       // Initialize Firebase for testing if available
       try {
         await Firebase.initializeApp();
-        print('✅ Firebase initialized for testing');
+        print('âœ… Firebase initialized for testing');
       } catch (e) {
-        print('⚠️ Firebase not available for testing: $e');
+        print('âš ï¸ Firebase not available for testing: $e');
       }
     });
 
     test('Test Case E: Complete Referral Code Policy Validation', () async {
-      print('🧪 Running Test Case E: Referral Code Policy Validation...');
+      print('ðŸ§ª Running Test Case E: Referral Code Policy Validation...');
       
       final validator = ReferralCodePolicyValidator();
       final result = await validator.validateReferralCodePolicy();
       
-      print('📊 Validation Result:');
+      print('ðŸ“Š Validation Result:');
       print('   Status: ${result.passed ? "PASS" : "FAIL"}');
       print('   Message: ${result.message}');
       
       if (!result.passed) {
-        print('❌ FAILURE DETAILS:');
+        print('âŒ FAILURE DETAILS:');
         if (result.errorDetails != null) {
           print('   Error: ${result.errorDetails}');
         }
@@ -59,7 +59,7 @@ void main() {
       expect(validator.validateTALPrefix('123456789'), isFalse);
       expect(validator.validateTALPrefix(''), isFalse);
       
-      print('✅ TAL prefix validation tests passed');
+      print('âœ… TAL prefix validation tests passed');
     });
 
     test('Validate Crockford base32 format compliance', () {
@@ -83,7 +83,7 @@ void main() {
       expect(validator.isValidCrockfordBase32('ABCDEFGH'), isFalse);
       expect(validator.isValidCrockfordBase32(''), isFalse);
       
-      print('✅ Crockford base32 format validation tests passed');
+      print('âœ… Crockford base32 format validation tests passed');
     });
 
     test('Validate TALADMIN exception handling', () {
@@ -93,7 +93,7 @@ void main() {
       expect(result.passed, isTrue, reason: 'TALADMIN should be allowed as exception');
       expect(result.message, contains('exception'), reason: 'Should mention exception');
       
-      print('✅ TALADMIN exception handling test passed');
+      print('âœ… TALADMIN exception handling test passed');
     });
 
     test('Validate no Loading states', () {
@@ -110,7 +110,7 @@ void main() {
       expect(validator.hasLoadingState('LoadingTAL'), isTrue);
       expect(validator.hasLoadingState('TAL Loading'), isTrue);
       
-      print('✅ Loading state validation tests passed');
+      print('âœ… Loading state validation tests passed');
     });
 
     test('Generate and validate test referral codes', () {
@@ -142,7 +142,7 @@ void main() {
       expect(uniqueCodes.length, equals(codes.length), 
         reason: 'All generated codes should be unique. Generated ${codes.length}, unique ${uniqueCodes.length}');
       
-      print('✅ Generated ${codes.length} unique valid referral codes');
+      print('âœ… Generated ${codes.length} unique valid referral codes');
     });
 
     test('Database validation (if Firebase available)', () async {
@@ -150,12 +150,12 @@ void main() {
         final validator = ReferralCodePolicyValidator();
         final dbResult = await validator.validateExistingCodesInDatabase();
         
-        print('📊 Database Validation Result:');
+        print('ðŸ“Š Database Validation Result:');
         print('   Status: ${dbResult.passed ? "PASS" : "FAIL"}');
         print('   Message: ${dbResult.message}');
         
         if (!dbResult.passed) {
-          print('⚠️ Database validation issues found:');
+          print('âš ï¸ Database validation issues found:');
           if (dbResult.errorDetails != null) {
             print('   Details: ${dbResult.errorDetails}');
           }
@@ -165,7 +165,7 @@ void main() {
         // That's expected and helps identify issues
         
       } catch (e) {
-        print('⚠️ Database validation skipped (Firebase not available): $e');
+        print('âš ï¸ Database validation skipped (Firebase not available): $e');
       }
     });
   });
@@ -184,7 +184,7 @@ class ReferralCodePolicyValidator {
   /// Main validation entry point for Test Case E
   Future<ValidationResult> validateReferralCodePolicy() async {
     try {
-      print('🔍 Validating referral code policy...');
+      print('ðŸ” Validating referral code policy...');
       
       // Step 1: Validate code generation algorithm
       final generationResult = _validateCodeGeneration();
@@ -195,7 +195,7 @@ class ReferralCodePolicyValidator {
         final existingCodesResult = await validateExistingCodesInDatabase();
         if (!existingCodesResult.passed) return existingCodesResult;
       } catch (e) {
-        print('⚠️ Database validation skipped: $e');
+        print('âš ï¸ Database validation skipped: $e');
       }
       
       // Step 3: Validate TALADMIN exception
@@ -227,7 +227,7 @@ class ReferralCodePolicyValidator {
   /// Validate code generation algorithm
   ValidationResult _validateCodeGeneration() {
     try {
-      print('🔍 Validating referral code generation algorithm...');
+      print('ðŸ” Validating referral code generation algorithm...');
       
       // Generate multiple test codes
       final testCodes = <String>[];
@@ -278,7 +278,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      print('✅ Code generation algorithm validation passed');
+      print('âœ… Code generation algorithm validation passed');
       return ValidationResult.pass('Code generation follows TAL prefix and Crockford base32 format');
       
     } catch (e) {
@@ -293,7 +293,7 @@ class ReferralCodePolicyValidator {
   /// Validate existing codes in database
   Future<ValidationResult> validateExistingCodesInDatabase() async {
     try {
-      print('🔍 Validating existing referral codes in database...');
+      print('ðŸ” Validating existing referral codes in database...');
       
       final firestore = FirebaseFirestore.instance;
       
@@ -354,7 +354,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      print('✅ Existing codes validation passed');
+      print('âœ… Existing codes validation passed');
       return ValidationResult.pass('All existing referral codes comply with policy');
       
     } catch (e) {
@@ -369,7 +369,7 @@ class ReferralCodePolicyValidator {
   /// Validate TALADMIN exception handling
   ValidationResult _validateAdminException() {
     try {
-      print('🔍 Validating TALADMIN exception handling...');
+      print('ðŸ” Validating TALADMIN exception handling...');
       
       // Test TALADMIN validation
       final adminResult = validateCodeFormat(_adminException);
@@ -382,7 +382,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      print('✅ TALADMIN exception validation passed');
+      print('âœ… TALADMIN exception validation passed');
       return ValidationResult.pass('TALADMIN exception properly handled');
       
     } catch (e) {
@@ -397,7 +397,7 @@ class ReferralCodePolicyValidator {
   /// Validate code uniqueness
   ValidationResult _validateCodeUniqueness() {
     try {
-      print('🔍 Validating referral code uniqueness...');
+      print('ðŸ” Validating referral code uniqueness...');
       
       // Generate test codes and check uniqueness
       final codes = <String>[];
@@ -426,7 +426,7 @@ class ReferralCodePolicyValidator {
         );
       }
       
-      print('✅ Code uniqueness validation passed');
+      print('âœ… Code uniqueness validation passed');
       return ValidationResult.pass('All referral codes are unique');
       
     } catch (e) {
@@ -441,7 +441,7 @@ class ReferralCodePolicyValidator {
   /// Validate no "Loading" states
   ValidationResult _validateNoLoadingStates() {
     try {
-      print('🔍 Validating no "Loading" states in referral codes...');
+      print('ðŸ” Validating no "Loading" states in referral codes...');
       
       // Test various Loading state scenarios
       final loadingTests = [
@@ -481,7 +481,7 @@ class ReferralCodePolicyValidator {
         }
       }
       
-      print('✅ No Loading states validation passed');
+      print('âœ… No Loading states validation passed');
       return ValidationResult.pass('No "Loading" states found in referral codes');
       
     } catch (e) {

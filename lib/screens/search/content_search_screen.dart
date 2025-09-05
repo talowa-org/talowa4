@@ -664,3 +664,4 @@ enum DateRange {
   const DateRange(this.displayName);
   final String displayName;
 }
+

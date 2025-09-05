@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/land_records_service.dart';
 import '../../models/land_record_model.dart';
 import '../../core/theme/app_theme.dart';
@@ -89,4 +89,5 @@ class _LandRecordDetailScreenState extends State<LandRecordDetailScreen> {
         subtitle: Text(value),
       );
 }
+
 

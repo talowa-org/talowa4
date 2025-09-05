@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class ContextualTipsWidget extends StatelessWidget {
   final String tip;

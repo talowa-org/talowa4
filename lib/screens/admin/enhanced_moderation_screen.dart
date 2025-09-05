@@ -906,3 +906,4 @@ List<Map<String, dynamic>>> _loadFlaggedActivities() async {
     }
   }
 }
+

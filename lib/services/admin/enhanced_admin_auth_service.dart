@@ -1,4 +1,4 @@
-// Enhanced Admin Authentication Service - Firebase Auth + Custom Claims + PIN as 2FA
+﻿// Enhanced Admin Authentication Service - Firebase Auth + Custom Claims + PIN as 2FA
 // Enterprise-grade admin system with RBAC, MFA, and session management
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

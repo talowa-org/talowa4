@@ -495,3 +495,4 @@ class _AnonymousReportTrackingScreenState extends State<AnonymousReportTrackingS
     );
   }
 }
+

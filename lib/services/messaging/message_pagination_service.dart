@@ -1,4 +1,4 @@
-// Message Pagination Service for TALOWA
+﻿// Message Pagination Service for TALOWA
 // Implements efficient loading of conversation history with caching
 // Requirements: 1.1, 8.4
 

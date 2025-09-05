@@ -1,4 +1,4 @@
-// Messaging Integration Service for TALOWA
+﻿// Messaging Integration Service for TALOWA
 // Integrates messaging system with existing TALOWA systems
 // Reference: in-app-communication/tasks.md - Task 11
 

@@ -1,4 +1,4 @@
-import 'call_participant.dart';
+﻿import 'call_participant.dart';
 import 'call_quality.dart';
 
 /// Voice call session model

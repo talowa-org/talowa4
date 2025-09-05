@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/referral/referral_models.dart';
 import 'referral_lookup_service.dart';
 
@@ -283,3 +283,4 @@ class ReferralTrackingService {
     }
   }
 }
+

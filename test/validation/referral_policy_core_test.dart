@@ -1,4 +1,4 @@
-// Core Referral Code Policy Validation Test (Test Case E)
+﻿// Core Referral Code Policy Validation Test (Test Case E)
 // Tests the referral code policy logic without Firebase dependencies
 
 import 'package:flutter_test/flutter_test.dart';
@@ -10,20 +10,20 @@ void main() {
 
     setUpAll(() {
       validator = ReferralCodePolicyValidator();
-      print('🧪 Starting Test Case E: Referral Code Policy Validation');
+      print('ðŸ§ª Starting Test Case E: Referral Code Policy Validation');
     });
 
     test('Complete Referral Code Policy Validation', () {
-      print('🔍 Running comprehensive referral code policy validation...');
+      print('ðŸ” Running comprehensive referral code policy validation...');
       
       final result = validator.validateReferralCodePolicyCore();
       
-      print('📊 Test Case E Result:');
+      print('ðŸ“Š Test Case E Result:');
       print('   Status: ${result.passed ? "PASS" : "FAIL"}');
       print('   Message: ${result.message}');
       
       if (!result.passed) {
-        print('❌ FAILURE DETAILS:');
+        print('âŒ FAILURE DETAILS:');
         if (result.errorDetails != null) {
           print('   Error: ${result.errorDetails}');
         }
@@ -34,14 +34,14 @@ void main() {
           print('   Suggested Fix: ${result.suggestedFix}');
         }
       } else {
-        print('✅ Test Case E PASSED: All referral code policy requirements met');
+        print('âœ… Test Case E PASSED: All referral code policy requirements met');
       }
       
       expect(result.passed, isTrue, reason: 'Test Case E: Referral code policy validation should pass');
     });
 
     test('TAL Prefix Requirement Validation', () {
-      print('🔍 Testing TAL prefix requirement...');
+      print('ðŸ” Testing TAL prefix requirement...');
       
       // Valid codes with TAL prefix
       final validCodes = ['TALABC234', 'TALXYZ567', 'TAL2A3B4C', 'TALADMIN'];
@@ -57,11 +57,11 @@ void main() {
           reason: 'Code $code should fail TAL prefix validation');
       }
       
-      print('✅ TAL prefix requirement validation passed');
+      print('âœ… TAL prefix requirement validation passed');
     });
 
     test('Crockford Base32 Format Compliance', () {
-      print('🔍 Testing Crockford base32 format compliance...');
+      print('ðŸ” Testing Crockford base32 format compliance...');
       
       // Valid Crockford base32 characters (A-Z, 2-7, no 0/O/1/I)
       final validFormats = ['ABCDEF', '234567', 'GHKMNP', 'QRSTVW', 'XYZ234'];
@@ -77,11 +77,11 @@ void main() {
           reason: 'Format $format should fail Crockford base32 validation');
       }
       
-      print('✅ Crockford base32 format compliance validation passed');
+      print('âœ… Crockford base32 format compliance validation passed');
     });
 
     test('TALADMIN Exception Handling', () {
-      print('🔍 Testing TALADMIN exception handling...');
+      print('ðŸ” Testing TALADMIN exception handling...');
       
       final adminResult = validator.validateCodeFormat('TALADMIN');
       expect(adminResult.passed, isTrue, reason: 'TALADMIN should be allowed as exception');
@@ -92,11 +92,11 @@ void main() {
       expect('TALADMIN'.length, isNot(equals(9)), 
         reason: 'TALADMIN should not follow normal 9-character rule');
       
-      print('✅ TALADMIN exception handling validation passed');
+      print('âœ… TALADMIN exception handling validation passed');
     });
 
     test('No Loading States Validation', () {
-      print('🔍 Testing no Loading states validation...');
+      print('ðŸ” Testing no Loading states validation...');
       
       // Valid codes (no Loading)
       final validCodes = ['TALABC234', 'TALXYZ567', 'TALADMIN'];
@@ -112,11 +112,11 @@ void main() {
           reason: 'Code $code should be detected as Loading state');
       }
       
-      print('✅ No Loading states validation passed');
+      print('âœ… No Loading states validation passed');
     });
 
     test('Code Generation and Uniqueness', () {
-      print('🔍 Testing code generation and uniqueness...');
+      print('ðŸ” Testing code generation and uniqueness...');
       
       final codes = <String>[];
       
@@ -149,11 +149,11 @@ void main() {
       expect(uniqueCodes.length, equals(codes.length), 
         reason: 'All generated codes should be unique. Generated ${codes.length}, unique ${uniqueCodes.length}');
       
-      print('✅ Generated ${codes.length} unique valid referral codes');
+      print('âœ… Generated ${codes.length} unique valid referral codes');
     });
 
     test('Complete Code Format Validation', () {
-      print('🔍 Testing complete code format validation...');
+      print('ðŸ” Testing complete code format validation...');
       
       // Valid complete codes
       final validCodes = ['TALABC234', 'TALXYZ567', 'TAL2A3B4C', 'TALADMIN'];
@@ -180,15 +180,15 @@ void main() {
           reason: 'Invalid code $code should fail validation');
       }
       
-      print('✅ Complete code format validation passed');
+      print('âœ… Complete code format validation passed');
     });
 
     test('Policy Compliance Summary', () {
-      print('🔍 Generating policy compliance summary...');
+      print('ðŸ” Generating policy compliance summary...');
       
       final summary = validator.generatePolicyComplianceSummary();
       
-      print('📊 Policy Compliance Summary:');
+      print('ðŸ“Š Policy Compliance Summary:');
       print('   Test Codes Generated: ${summary['testCodesGenerated']}');
       print('   Valid Codes: ${summary['validCodes']}');
       print('   Compliance Rate: ${summary['complianceRate']}%');
@@ -208,11 +208,11 @@ void main() {
       expect(summary['taladminExceptionHandled'], isTrue, 
         reason: 'TALADMIN exception should be handled');
       
-      print('✅ Policy compliance summary validation passed');
+      print('âœ… Policy compliance summary validation passed');
     });
 
     tearDownAll(() {
-      print('🎯 Test Case E: Referral Code Policy Validation completed');
+      print('ðŸŽ¯ Test Case E: Referral Code Policy Validation completed');
     });
   });
 }
@@ -230,7 +230,7 @@ class ReferralCodePolicyValidator {
   /// Core validation without Firebase dependencies
   ValidationResult validateReferralCodePolicyCore() {
     try {
-      print('🔍 Validating referral code policy (core logic)...');
+      print('ðŸ” Validating referral code policy (core logic)...');
       
       // Step 1: Validate code generation algorithm
       final generationResult = _validateCodeGeneration();

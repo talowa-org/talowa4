@@ -1,4 +1,4 @@
-// Communication Analytics Service for TALOWA In-App Communication System
+﻿// Communication Analytics Service for TALOWA In-App Communication System
 // Implements Task 16: Implement monitoring and analytics - Performance Dashboards & User Engagement Analytics
 
 import 'dart:async';

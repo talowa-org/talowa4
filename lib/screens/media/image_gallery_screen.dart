@@ -1,4 +1,4 @@
-// Image Gallery Screen - Full screen image viewer with swipe navigation
+﻿// Image Gallery Screen - Full screen image viewer with swipe navigation
 // Part of Task 6: Implement PostWidget for individual posts
 
 import 'package:flutter/material.dart';

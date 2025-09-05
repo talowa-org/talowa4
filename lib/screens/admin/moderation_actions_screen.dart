@@ -1,4 +1,4 @@
-// Moderation Actions Screen for TALOWA Admin Dashboard
+﻿// Moderation Actions Screen for TALOWA Admin Dashboard
 import 'package:flutter/material.dart';
 
 class ModerationActionsScreen extends StatefulWidget {
@@ -35,11 +35,11 @@ class _ModerationActionsScreenState extends State<ModerationActionsScreen> {
             SizedBox(height: 16),
             Text(
               'This screen will show:\n'
-              '• Active user restrictions\n'
-              '• Temporary bans and their expiration\n'
-              '• Permanent bans\n'
-              '• Message removals\n'
-              '• Action history and logs',
+              'â€¢ Active user restrictions\n'
+              'â€¢ Temporary bans and their expiration\n'
+              'â€¢ Permanent bans\n'
+              'â€¢ Message removals\n'
+              'â€¢ Action history and logs',
               textAlign: TextAlign.center,
             ),
           ],

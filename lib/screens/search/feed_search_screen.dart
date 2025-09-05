@@ -665,3 +665,4 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
     debugPrint('Opening post detail: ${post.id}');
   }
 }
+

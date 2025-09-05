@@ -1,4 +1,4 @@
-// Group Model for TALOWA Messaging System
+﻿// Group Model for TALOWA Messaging System
 // Reference: in-app-communication/design.md - Group Management Component
 
 import 'package:cloud_firestore/cloud_firestore.dart';

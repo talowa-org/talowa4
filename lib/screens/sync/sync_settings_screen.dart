@@ -691,3 +691,4 @@ extension SyncConfigurationExtension on SyncConfiguration {
     );
   }
 }
+

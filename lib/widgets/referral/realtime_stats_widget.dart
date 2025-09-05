@@ -279,3 +279,4 @@ class RoleProgressWidget extends StatelessWidget {
     );
   }
 }
+

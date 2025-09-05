@@ -1,4 +1,4 @@
-// Security Tests for Messaging System
+﻿// Security Tests for Messaging System
 // Tests encryption validation, authentication, and security vulnerabilities
 
 import 'package:flutter_test/flutter_test.dart';

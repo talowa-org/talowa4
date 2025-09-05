@@ -1,4 +1,4 @@
-// Safety Education Service for TALOWA
+﻿// Safety Education Service for TALOWA
 // Implements Task 19: Build user safety features - Safety Education
 
 import 'dart:async';

@@ -1,4 +1,4 @@
-// PostWidget Tests
+﻿// PostWidget Tests
 @Skip('Legacy code - compile errors; excluded from core feature suite')
 
 // Part of Task 6: Implement PostWidget for individual posts

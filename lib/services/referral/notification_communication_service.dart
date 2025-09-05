@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -213,7 +213,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: referrerId,
         type: NotificationType.referralUsed,
-        title: 'Your referral code was used! 🎉',
+        title: 'Your referral code was used! ðŸŽ‰',
         message: '$newUserName just joined using your referral code $referralCode',
         data: {
           'newUserId': newUserId,
@@ -255,7 +255,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: userId,
         type: NotificationType.paymentCompleted,
-        title: 'Payment confirmed! ✅',
+        title: 'Payment confirmed! âœ…',
         message: 'Your membership payment of $amount $currency has been processed successfully',
         data: {
           'amount': amount,
@@ -279,7 +279,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: referrerId,
         type: NotificationType.teamGrowth,
-        title: 'Team member activated! 🚀',
+        title: 'Team member activated! ðŸš€',
         message: '$userName completed their membership payment and is now active in your team',
         data: {
           'activatedUserId': userId,
@@ -328,7 +328,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: userId,
         type: NotificationType.rolePromotion,
-        title: 'Congratulations on your promotion! 🎊',
+        title: 'Congratulations on your promotion! ðŸŽŠ',
         message: 'You\'ve been promoted from ${_formatRoleName(oldRole)} to ${_formatRoleName(newRole)}',
         data: {
           'oldRole': oldRole,
@@ -371,7 +371,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: userId,
         type: NotificationType.achievement,
-        title: 'Achievement unlocked! 🏆',
+        title: 'Achievement unlocked! ðŸ†',
         message: 'You\'ve earned the "$achievementName" achievement',
         data: {
           'achievementId': achievementId,
@@ -414,7 +414,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: userId,
         type: NotificationType.milestone,
-        title: 'Milestone reached! 🎯',
+        title: 'Milestone reached! ðŸŽ¯',
         message: milestoneDescription,
         data: {
           'milestoneType': milestoneType,
@@ -455,7 +455,7 @@ class NotificationCommunicationService {
         id: _generateNotificationId(),
         userId: userId,
         type: NotificationType.teamSizeMilestone,
-        title: 'Team milestone achieved! 👥',
+        title: 'Team milestone achieved! ðŸ‘¥',
         message: 'Your team has reached $milestoneSize members! Current team size: $teamSize',
         data: {
           'teamSize': teamSize,
@@ -741,3 +741,4 @@ class NotificationCommunicationService {
     return true;
   }
 }
+

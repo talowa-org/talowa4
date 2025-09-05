@@ -417,3 +417,5 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
     );
   }
 }
+
+

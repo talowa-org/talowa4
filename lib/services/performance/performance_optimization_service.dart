@@ -1,4 +1,4 @@
-// Performance Optimization Service for TALOWA
+﻿// Performance Optimization Service for TALOWA
 // Implements Task 21: Optimize performance and loading
 
 import 'dart:async';

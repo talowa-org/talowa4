@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import '../../services/navigation/navigation_guard_service.dart';
@@ -246,10 +246,10 @@ class _LandScreenState extends State<LandScreen> {
         title: const Text('Add Land Record'),
         content: const Text(
           'Land record management feature is coming soon. This will allow you to:\n\n'
-          '• Add land survey details\n'
-          '• Upload land documents\n'
-          '• Track land ownership\n'
-          '• Manage land transactions',
+          'â€¢ Add land survey details\n'
+          'â€¢ Upload land documents\n'
+          'â€¢ Track land ownership\n'
+          'â€¢ Manage land transactions',
         ),
         actions: [
           TextButton(

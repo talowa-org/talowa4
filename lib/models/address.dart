@@ -1,4 +1,4 @@
-// Minimal Address model for tests and profile writes
+﻿// Minimal Address model for tests and profile writes
 class Address {
   final String state;
   final String district;
@@ -19,3 +19,4 @@ class Address {
     'villageCity': villageCity,
   };
 }
+

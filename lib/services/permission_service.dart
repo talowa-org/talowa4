@@ -1,4 +1,4 @@
-// Permission Service for TALOWA
+﻿// Permission Service for TALOWA
 // Handles runtime permissions for voice recognition and other features
 
 import 'package:flutter/foundation.dart';

@@ -1,4 +1,4 @@
-// Notification Model - Represents app notifications
+﻿// Notification Model - Represents app notifications
 // Part of Task 14: Build notification system
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,7 +48,7 @@ class NotificationModel {
   /// Create NotificationModel from Firestore document
   factory NotificationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    
+
     return NotificationModel(
       id: doc.id,
       title: data['title'] ?? '',
@@ -57,8 +57,28 @@ class NotificationModel {
       data: Map<String, dynamic>.from(data['data'] ?? {}),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       isRead: data['isRead'] ?? false,
-      readAt: data['readAt'] != null 
-          ? (data['readAt'] as Timestamp).toDate() 
+      readAt: data['readAt'] != null
+          ? (data['readAt'] as Timestamp).toDate()
+          : null,
+      imageUrl: data['imageUrl'],
+      actionUrl: data['actionUrl'],
+    );
+  }
+
+  /// Create NotificationModel from Map
+  factory NotificationModel.fromMap(Map<String, dynamic> data) {
+    return NotificationModel(
+      id: data['id'] ?? '',
+      title: data['title'] ?? '',
+      body: data['body'] ?? '',
+      type: _parseNotificationType(data['type']),
+      data: Map<String, dynamic>.from(data['data'] ?? {}),
+      createdAt: data['createdAt'] is Timestamp
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      isRead: data['isRead'] ?? false,
+      readAt: data['readAt'] != null && data['readAt'] is Timestamp
+          ? (data['readAt'] as Timestamp).toDate()
           : null,
       imageUrl: data['imageUrl'],
       actionUrl: data['actionUrl'],
@@ -233,6 +253,10 @@ enum NotificationType {
   courtDateReminder,
   documentExpiry,
   meetingReminder,
+  campaign,
+  social,
+  engagement,
+  referral,
 }
 
 /// Extension for NotificationType localization
@@ -275,6 +299,14 @@ extension NotificationTypeExtension on NotificationType {
         return 'Document Expiry';
       case NotificationType.meetingReminder:
         return 'Meeting Reminder';
+      case NotificationType.campaign:
+        return 'Campaign';
+      case NotificationType.social:
+        return 'Social';
+      case NotificationType.engagement:
+        return 'Engagement';
+      case NotificationType.referral:
+        return 'Referral';
     }
   }
   
@@ -316,6 +348,14 @@ extension NotificationTypeExtension on NotificationType {
         return 'Document expiring soon';
       case NotificationType.meetingReminder:
         return 'Upcoming meeting reminder';
+      case NotificationType.campaign:
+        return 'Campaign related notification';
+      case NotificationType.social:
+        return 'Social interaction notification';
+      case NotificationType.engagement:
+        return 'User engagement notification';
+      case NotificationType.referral:
+        return 'Referral program notification';
     }
   }
 }

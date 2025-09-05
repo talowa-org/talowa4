@@ -1,4 +1,4 @@
-// TALOWA App Theme
+﻿// TALOWA App Theme
 // Reference: complete-app-structure.md - Design System Guidelines
 
 import 'package:flutter/material.dart';

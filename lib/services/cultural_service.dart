@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 // import 'package:speech_to_text/speech_to_text.dart';  // Temporarily disabled
@@ -120,19 +120,19 @@ class CulturalService {
   static Map<String, dynamic> _getFallbackMotivation(int seed) {
     final messages = [
       {
-        'hindi': 'आपकी मेहनत रंग लाएगी। जय किसान!',
+        'hindi': 'à¤†à¤ªà¤•à¥€ à¤®à¥‡à¤¹à¤¨à¤¤ à¤°à¤‚à¤— à¤²à¤¾à¤à¤—à¥€à¥¤ à¤œà¤¯ à¤•à¤¿à¤¸à¤¾à¤¨!',
         'english': 'Your hard work will pay off. Jai Kisan!',
-        'telugu': 'మీ కష్టం ఫలిస్తుంది. జై కిసాన్!',
+        'telugu': 'à°®à±€ à°•à°·à±à°Ÿà°‚ à°«à°²à°¿à°¸à±à°¤à±à°‚à°¦à°¿. à°œà±ˆ à°•à°¿à°¸à°¾à°¨à±!',
       },
       {
-        'hindi': 'एकजुट होकर हम अपनी जमीन की रक्षा करेंगे।',
+        'hindi': 'à¤à¤•à¤œà¥à¤Ÿ à¤¹à¥‹à¤•à¤° à¤¹à¤® à¤…à¤ªà¤¨à¥€ à¤œà¤®à¥€à¤¨ à¤•à¥€ à¤°à¤•à¥à¤·à¤¾ à¤•à¤°à¥‡à¤‚à¤—à¥‡à¥¤',
         'english': 'Together we will protect our land.',
-        'telugu': 'కలిసి మన భూమిని కాపాడుకుంటాం.',
+        'telugu': 'à°•à°²à°¿à°¸à°¿ à°®à°¨ à°­à±‚à°®à°¿à°¨à°¿ à°•à°¾à°ªà°¾à°¡à±à°•à±à°‚à°Ÿà°¾à°‚.',
       },
       {
-        'hindi': 'आपका हक, आपकी जमीन, आपका सम्मान।',
+        'hindi': 'à¤†à¤ªà¤•à¤¾ à¤¹à¤•, à¤†à¤ªà¤•à¥€ à¤œà¤®à¥€à¤¨, à¤†à¤ªà¤•à¤¾ à¤¸à¤®à¥à¤®à¤¾à¤¨à¥¤',
         'english': 'Your right, your land, your dignity.',
-        'telugu': 'మీ హక్కు, మీ భూమి, మీ గౌరవం.',
+        'telugu': 'à°®à±€ à°¹à°•à±à°•à±, à°®à±€ à°­à±‚à°®à°¿, à°®à±€ à°—à±Œà°°à°µà°‚.',
       },
     ];
 
@@ -143,9 +143,9 @@ class CulturalService {
         'impact': '5 acres of land secured',
       },
       {
-        'title': 'सुनीता का संघर्ष',
-        'content': 'महिला किसान सुनीता ने भूमि हड़पने वालों से अपनी जमीन वापस दिलाई।',
-        'impact': '2 एकड़ जमीन वापस मिली',
+        'title': 'à¤¸à¥à¤¨à¥€à¤¤à¤¾ à¤•à¤¾ à¤¸à¤‚à¤˜à¤°à¥à¤·',
+        'content': 'à¤®à¤¹à¤¿à¤²à¤¾ à¤•à¤¿à¤¸à¤¾à¤¨ à¤¸à¥à¤¨à¥€à¤¤à¤¾ à¤¨à¥‡ à¤­à¥‚à¤®à¤¿ à¤¹à¤¡à¤¼à¤ªà¤¨à¥‡ à¤µà¤¾à¤²à¥‹à¤‚ à¤¸à¥‡ à¤…à¤ªà¤¨à¥€ à¤œà¤®à¥€à¤¨ à¤µà¤¾à¤ªà¤¸ à¤¦à¤¿à¤²à¤¾à¤ˆà¥¤',
+        'impact': '2 à¤à¤•à¤¡à¤¼ à¤œà¤®à¥€à¤¨ à¤µà¤¾à¤ªà¤¸ à¤®à¤¿à¤²à¥€',
       },
     ];
 
@@ -163,23 +163,23 @@ class CulturalService {
     Map<String, dynamic> extractedData = {};
 
     // Extract land grabbing information
-    if (input.contains('जमीन') || input.contains('land') || input.contains('भूमि')) {
+    if (input.contains('à¤œà¤®à¥€à¤¨') || input.contains('land') || input.contains('à¤­à¥‚à¤®à¤¿')) {
       extractedData['category'] = 'land_issue';
       
-      if (input.contains('हड़प') || input.contains('grab') || input.contains('कब्जा')) {
+      if (input.contains('à¤¹à¤¡à¤¼à¤ª') || input.contains('grab') || input.contains('à¤•à¤¬à¥à¤œà¤¾')) {
         extractedData['type'] = 'land_grabbing';
       }
       
-      if (input.contains('पटवारी') || input.contains('patwari')) {
+      if (input.contains('à¤ªà¤Ÿà¤µà¤¾à¤°à¥€') || input.contains('patwari')) {
         extractedData['involved_party'] = 'patwari';
       }
       
       // Extract time references
-      if (input.contains('आज') || input.contains('today')) {
+      if (input.contains('à¤†à¤œ') || input.contains('today')) {
         extractedData['when'] = 'today';
-      } else if (input.contains('कल') || input.contains('yesterday')) {
+      } else if (input.contains('à¤•à¤²') || input.contains('yesterday')) {
         extractedData['when'] = 'yesterday';
-      } else if (input.contains('दिन') || input.contains('days')) {
+      } else if (input.contains('à¤¦à¤¿à¤¨') || input.contains('days')) {
         final match = RegExp(r'(\d+)').firstMatch(input);
         if (match != null) {
           extractedData['days_ago'] = int.parse(match.group(1)!);
@@ -188,7 +188,7 @@ class CulturalService {
     }
 
     // Extract location information
-    final locationKeywords = ['गांव', 'village', 'मंडल', 'mandal', 'जिला', 'district'];
+    final locationKeywords = ['à¤—à¤¾à¤‚à¤µ', 'village', 'à¤®à¤‚à¤¡à¤²', 'mandal', 'à¤œà¤¿à¤²à¤¾', 'district'];
     for (String keyword in locationKeywords) {
       if (input.contains(keyword)) {
         extractedData['has_location'] = true;
@@ -205,16 +205,16 @@ class CulturalService {
     
     Map<String, Map<String, String>> greetings = {
       'hindi': {
-        'morning': 'सुप्रभात! आज कैसा दिन है?',
-        'afternoon': 'नमस्कार! दोपहर की शुभकामनाएं।',
-        'evening': 'शुभ संध्या! आज कैसा रहा?',
-        'night': 'शुभ रात्रि! कल मिलते हैं।',
+        'morning': 'à¤¸à¥à¤ªà¥à¤°à¤­à¤¾à¤¤! à¤†à¤œ à¤•à¥ˆà¤¸à¤¾ à¤¦à¤¿à¤¨ à¤¹à¥ˆ?',
+        'afternoon': 'à¤¨à¤®à¤¸à¥à¤•à¤¾à¤°! à¤¦à¥‹à¤ªà¤¹à¤° à¤•à¥€ à¤¶à¥à¤­à¤•à¤¾à¤®à¤¨à¤¾à¤à¤‚à¥¤',
+        'evening': 'à¤¶à¥à¤­ à¤¸à¤‚à¤§à¥à¤¯à¤¾! à¤†à¤œ à¤•à¥ˆà¤¸à¤¾ à¤°à¤¹à¤¾?',
+        'night': 'à¤¶à¥à¤­ à¤°à¤¾à¤¤à¥à¤°à¤¿! à¤•à¤² à¤®à¤¿à¤²à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤',
       },
       'telugu': {
-        'morning': 'శుభోదయం! ఈ రోజు ఎలా ఉంది?',
-        'afternoon': 'నమస్కారం! మధ్యాహ్న శుభాకాంక్షలు।',
-        'evening': 'శుభ సాయంత్రం! ఈ రోజు ఎలా గడిచింది?',
-        'night': 'శుభ రాత్రి! రేపు కలుద్దాం.',
+        'morning': 'à°¶à±à°­à±‹à°¦à°¯à°‚! à°ˆ à°°à±‹à°œà± à°Žà°²à°¾ à°‰à°‚à°¦à°¿?',
+        'afternoon': 'à°¨à°®à°¸à±à°•à°¾à°°à°‚! à°®à°§à±à°¯à°¾à°¹à±à°¨ à°¶à±à°­à°¾à°•à°¾à°‚à°•à±à°·à°²à±à¥¤',
+        'evening': 'à°¶à±à°­ à°¸à°¾à°¯à°‚à°¤à±à°°à°‚! à°ˆ à°°à±‹à°œà± à°Žà°²à°¾ à°—à°¡à°¿à°šà°¿à°‚à°¦à°¿?',
+        'night': 'à°¶à±à°­ à°°à°¾à°¤à±à°°à°¿! à°°à±‡à°ªà± à°•à°²à±à°¦à±à°¦à°¾à°‚.',
       },
       'english': {
         'morning': 'Good morning! How is your day?',
@@ -246,20 +246,20 @@ class CulturalService {
   }) {
     final achievements = {
       'referrals': {
-        5: 'गांव का नेता! आपने 5 लोगों को जोड़ा।',
-        10: 'समुदाय निर्माता! 10 सदस्य जुड़े।',
-        25: 'गांव समन्वयक बनने के लिए तैयार!',
-        50: 'महान नेता! 50 लोगों का नेटवर्क।',
+        5: 'à¤—à¤¾à¤‚à¤µ à¤•à¤¾ à¤¨à¥‡à¤¤à¤¾! à¤†à¤ªà¤¨à¥‡ 5 à¤²à¥‹à¤—à¥‹à¤‚ à¤•à¥‹ à¤œà¥‹à¤¡à¤¼à¤¾à¥¤',
+        10: 'à¤¸à¤®à¥à¤¦à¤¾à¤¯ à¤¨à¤¿à¤°à¥à¤®à¤¾à¤¤à¤¾! 10 à¤¸à¤¦à¤¸à¥à¤¯ à¤œà¥à¤¡à¤¼à¥‡à¥¤',
+        25: 'à¤—à¤¾à¤‚à¤µ à¤¸à¤®à¤¨à¥à¤µà¤¯à¤• à¤¬à¤¨à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤¤à¥ˆà¤¯à¤¾à¤°!',
+        50: 'à¤®à¤¹à¤¾à¤¨ à¤¨à¥‡à¤¤à¤¾! 50 à¤²à¥‹à¤—à¥‹à¤‚ à¤•à¤¾ à¤¨à¥‡à¤Ÿà¤µà¤°à¥à¤•à¥¤',
       },
       'land_protected': {
-        1: 'पहली जीत! 1 एकड़ जमीन सुरक्षित।',
-        5: 'बड़ी सफलता! 5 एकड़ जमीन बचाई।',
-        10: 'गांव का रक्षक! 10 एकड़ सुरक्षित।',
+        1: 'à¤ªà¤¹à¤²à¥€ à¤œà¥€à¤¤! 1 à¤à¤•à¤¡à¤¼ à¤œà¤®à¥€à¤¨ à¤¸à¥à¤°à¤•à¥à¤·à¤¿à¤¤à¥¤',
+        5: 'à¤¬à¤¡à¤¼à¥€ à¤¸à¤«à¤²à¤¤à¤¾! 5 à¤à¤•à¤¡à¤¼ à¤œà¤®à¥€à¤¨ à¤¬à¤šà¤¾à¤ˆà¥¤',
+        10: 'à¤—à¤¾à¤‚à¤µ à¤•à¤¾ à¤°à¤•à¥à¤·à¤•! 10 à¤à¤•à¤¡à¤¼ à¤¸à¥à¤°à¤•à¥à¤·à¤¿à¤¤à¥¤',
       },
       'cases_won': {
-        1: 'न्याय की जीत! पहला केस जीता।',
-        3: 'कानूनी योद्धा! 3 केस जीते।',
-        5: 'न्याय के चैंपियन! 5 केस जीते।',
+        1: 'à¤¨à¥à¤¯à¤¾à¤¯ à¤•à¥€ à¤œà¥€à¤¤! à¤ªà¤¹à¤²à¤¾ à¤•à¥‡à¤¸ à¤œà¥€à¤¤à¤¾à¥¤',
+        3: 'à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤¯à¥‹à¤¦à¥à¤§à¤¾! 3 à¤•à¥‡à¤¸ à¤œà¥€à¤¤à¥‡à¥¤',
+        5: 'à¤¨à¥à¤¯à¤¾à¤¯ à¤•à¥‡ à¤šà¥ˆà¤‚à¤ªà¤¿à¤¯à¤¨! 5 à¤•à¥‡à¤¸ à¤œà¥€à¤¤à¥‡à¥¤',
       },
     };
 
@@ -280,7 +280,7 @@ class CulturalService {
     if (message == null) return {};
 
     return {
-      'title': 'बधाई हो, $userName!',
+      'title': 'à¤¬à¤§à¤¾à¤ˆ à¤¹à¥‹, $userName!',
       'message': message,
       'type': type,
       'count': count,

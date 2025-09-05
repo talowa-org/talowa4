@@ -1,4 +1,4 @@
-// TALOWA Onboarding Screen
+﻿// TALOWA Onboarding Screen
 // Interactive tutorial for messaging and calling features
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 

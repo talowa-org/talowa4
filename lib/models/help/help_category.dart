@@ -1,4 +1,4 @@
-// TALOWA Help Category Model
+﻿// TALOWA Help Category Model
 // Represents a category of help articles
 
 import 'package:flutter/material.dart';

@@ -500,3 +500,4 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
     );
   }
 }
+

@@ -1,10 +1,10 @@
-class AppConfig {
+﻿class AppConfig {
   // Root admin configuration - Set by organization
   static const String rootAdminPhone = '+91XXXXXXXXXX'; // To be configured
 
   // Payment configuration
   static const double membershipFee = 100.0;
-  static const String currency = '₹';
+  static const String currency = 'â‚¹';
 
   // App configuration
   static const String appName = 'Talowa';

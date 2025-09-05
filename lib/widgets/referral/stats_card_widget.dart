@@ -323,3 +323,4 @@ class RoleProgressCard extends StatelessWidget {
     );
   }
 }
+

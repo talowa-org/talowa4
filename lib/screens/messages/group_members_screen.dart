@@ -1,4 +1,4 @@
-// Group Members Screen for TALOWA Messaging System
+﻿// Group Members Screen for TALOWA Messaging System
 // Reference: in-app-communication/requirements.md - Group Member Management
 
 import 'package:flutter/material.dart';

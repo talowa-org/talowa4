@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Web Payment Service for TALOWA
@@ -34,7 +34,7 @@ class WebPaymentService {
               ),
               const SizedBox(height: 16),
               Text('Phone: $phoneNumber'),
-              Text('Amount: ₹$amount'),
+              Text('Amount: â‚¹$amount'),
               const SizedBox(height: 16),
               const Text(
                 'This is a payment simulation for web development.\n'
@@ -122,7 +122,7 @@ class WebPaymentService {
               ),
               const SizedBox(height: 16),
               Text('Phone: $phoneNumber'),
-              Text('Amount: ₹$amount'),
+              Text('Amount: â‚¹$amount'),
               const SizedBox(height: 16),
               const Text(
                 'Your payment was successful!\n'
@@ -146,3 +146,4 @@ class WebPaymentService {
     );
   }
 }
+

@@ -1,12 +1,13 @@
-// Search Filters Widget for TALOWA
+﻿// Search Filters Widget for TALOWA
 // Implements Task 24: Add advanced search and discovery - Search Filters
 
 import 'package:flutter/material.dart';
-import '../../services/search/advanced_search_service.dart';
+import '../../core/theme/app_theme.dart';
+import '../../models/search/search_filter_model.dart';
 
 class SearchFiltersWidget extends StatefulWidget {
-  final SearchFilters filters;
-  final Function(SearchFilters) onFiltersChanged;
+  final SearchFilterModel filters;
+  final Function(SearchFilterModel) onFiltersChanged;
 
   const SearchFiltersWidget({
     super.key,
@@ -19,7 +20,7 @@ class SearchFiltersWidget extends StatefulWidget {
 }
 
 class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
-  late SearchFilters _currentFilters;
+  late SearchFilterModel _currentFilters;
 
   @override
   void initState() {
@@ -37,11 +38,11 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
           children: [
             _buildCategoryFilter(),
             const SizedBox(width: 8),
-            _buildDateFilter(),
+            _buildTypeFilter(),
             const SizedBox(width: 8),
             _buildLocationFilter(),
             const SizedBox(width: 8),
-            _buildAuthorFilter(),
+            _buildDateFilter(),
             const SizedBox(width: 8),
             _buildClearFiltersButton(),
           ],
@@ -51,17 +52,38 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   }
 
   Widget _buildCategoryFilter() {
+    final hasCategories = _currentFilters.categories?.isNotEmpty ?? false;
     return FilterChip(
-      label: Text(_currentFilters.category ?? 'Category'),
-      selected: _currentFilters.category != null,
+      label: Text(hasCategories ? 'Categories (${_currentFilters.categories!.length})' : 'Categories'),
+      selected: hasCategories,
       onSelected: (selected) {
         if (selected) {
           _showCategoryDialog();
         } else {
-          _updateFilters(_currentFilters.copyWith(category: null));
+          _updateFilters(_currentFilters.copyWith(categories: []));
         }
       },
       avatar: const Icon(Icons.category, size: 16),
+      backgroundColor: hasCategories ? AppTheme.primaryColor.withOpacity(0.1) : null,
+      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+    );
+  }
+
+  Widget _buildTypeFilter() {
+    final hasTypes = _currentFilters.types?.isNotEmpty ?? false;
+    return FilterChip(
+      label: Text(hasTypes ? 'Types (${_currentFilters.types!.length})' : 'Types'),
+      selected: hasTypes,
+      onSelected: (selected) {
+        if (selected) {
+          _showTypeDialog();
+        } else {
+          _updateFilters(_currentFilters.copyWith(types: []));
+        }
+      },
+      avatar: const Icon(Icons.filter_list, size: 16),
+      backgroundColor: hasTypes ? AppTheme.primaryColor.withOpacity(0.1) : null,
+      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
     );
   }
 

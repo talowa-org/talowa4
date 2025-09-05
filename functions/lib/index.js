@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
+exports.sendEmergencyAlert = exports.sendCampaignNotification = exports.sendSocialNotification = exports.sendReferralNotification = exports.sendWelcomeNotification = exports.processNotificationQueue = exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
 // functions/src/index.ts
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
@@ -61,6 +61,14 @@ Object.defineProperty(exports, "validateAdminAccess", { enumerable: true, get: f
 Object.defineProperty(exports, "getAdminAuditLogs", { enumerable: true, get: function () { return admin_system_1.getAdminAuditLogs; } });
 Object.defineProperty(exports, "moderateContent", { enumerable: true, get: function () { return admin_system_1.moderateContent; } });
 Object.defineProperty(exports, "bulkModerateUsers", { enumerable: true, get: function () { return admin_system_1.bulkModerateUsers; } });
+// Export notification system functions
+var notifications_1 = require("./notifications");
+Object.defineProperty(exports, "processNotificationQueue", { enumerable: true, get: function () { return notifications_1.processNotificationQueue; } });
+Object.defineProperty(exports, "sendWelcomeNotification", { enumerable: true, get: function () { return notifications_1.sendWelcomeNotification; } });
+Object.defineProperty(exports, "sendReferralNotification", { enumerable: true, get: function () { return notifications_1.sendReferralNotification; } });
+Object.defineProperty(exports, "sendSocialNotification", { enumerable: true, get: function () { return notifications_1.sendSocialNotification; } });
+Object.defineProperty(exports, "sendCampaignNotification", { enumerable: true, get: function () { return notifications_1.sendCampaignNotification; } });
+Object.defineProperty(exports, "sendEmergencyAlert", { enumerable: true, get: function () { return notifications_1.sendEmergencyAlert; } });
 // Export existing functions (if any)
 // Add your production-ready functions here
 //# sourceMappingURL=index.js.map

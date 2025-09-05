@@ -1,4 +1,4 @@
-// Draft Service - Handle post drafts
+﻿// Draft Service - Handle post drafts
 // Part of Task 9: Build PostCreationScreen for coordinators
 
 import 'package:cloud_firestore/cloud_firestore.dart';

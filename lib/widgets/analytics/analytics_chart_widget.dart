@@ -1,4 +1,4 @@
-// Analytics Chart Widget for TALOWA
+﻿// Analytics Chart Widget for TALOWA
 // Implements Task 23: Implement content analytics - Chart Visualization
 
 import 'package:flutter/material.dart';

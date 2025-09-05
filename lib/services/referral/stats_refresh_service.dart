@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'cloud_functions_service.dart';
 
@@ -39,7 +39,7 @@ class StatsRefreshService {
       return stats;
 
     } catch (e) {
-      debugPrint('❌ Error refreshing user stats: $e');
+      debugPrint('âŒ Error refreshing user stats: $e');
       return null;
     }
   }
@@ -105,7 +105,7 @@ class StatsRefreshService {
       return stats;
 
     } catch (e) {
-      debugPrint('❌ Error force refreshing stats: $e');
+      debugPrint('âŒ Error force refreshing stats: $e');
       return null;
     }
   }
@@ -129,7 +129,7 @@ class StatsRefreshService {
       return difference.inMinutes > 5;
 
     } catch (e) {
-      debugPrint('❌ Error checking stats update need: $e');
+      debugPrint('âŒ Error checking stats update need: $e');
       return true; // Default to needing update on error
     }
   }
@@ -148,7 +148,7 @@ class StatsRefreshService {
       }
 
     } catch (e) {
-      debugPrint('❌ Error in batch refresh: $e');
+      debugPrint('âŒ Error in batch refresh: $e');
     }
   }
 }

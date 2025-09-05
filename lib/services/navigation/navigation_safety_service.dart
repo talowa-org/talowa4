@@ -1,4 +1,4 @@
-// Navigation Safety Service
+﻿// Navigation Safety Service
 // Prevents accidental logout from navigation actions
 
 import 'package:flutter/material.dart';

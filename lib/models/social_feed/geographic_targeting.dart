@@ -1,4 +1,4 @@
-// Geographic Targeting Model for TALOWA Social Feed System
+﻿// Geographic Targeting Model for TALOWA Social Feed System
 // Handles location-based content targeting and filtering
 
 import 'dart:math' as math;
@@ -376,17 +376,17 @@ extension TargetingScopeExtension on TargetingScope {
   String get icon {
     switch (this) {
       case TargetingScope.village:
-        return '🏘️';
+        return 'ðŸ˜ï¸';
       case TargetingScope.mandal:
-        return '🏙️';
+        return 'ðŸ™ï¸';
       case TargetingScope.district:
-        return '🌆';
+        return 'ðŸŒ†';
       case TargetingScope.state:
-        return '🗺️';
+        return 'ðŸ—ºï¸';
       case TargetingScope.radius:
-        return '📍';
+        return 'ðŸ“';
       case TargetingScope.national:
-        return '🇮🇳';
+        return 'ðŸ‡®ðŸ‡³';
     }
   }
 }

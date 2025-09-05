@@ -1,4 +1,4 @@
-// Stories Row Widget for Feed
+﻿// Stories Row Widget for Feed
 // Reference: social-feed-implementation-plan.md - Stories Feature
 
 import 'package:flutter/material.dart';

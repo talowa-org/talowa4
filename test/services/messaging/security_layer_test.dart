@@ -1,4 +1,4 @@
-// Unit tests for message encryption and security layer
+﻿// Unit tests for message encryption and security layer
 // Tests all security components for comprehensive coverage
 
 import 'package:flutter_test/flutter_test.dart';

@@ -31,5 +31,15 @@ export {
   bulkModerateUsers
 } from './admin-system';
 
+// Export notification system functions
+export {
+  processNotificationQueue,
+  sendWelcomeNotification,
+  sendReferralNotification,
+  sendSocialNotification,
+  sendCampaignNotification,
+  sendEmergencyAlert
+} from './notifications';
+
 // Export existing functions (if any)
 // Add your production-ready functions here

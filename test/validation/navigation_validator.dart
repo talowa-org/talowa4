@@ -1,4 +1,4 @@
-// TALOWA Navigation Validator
+﻿// TALOWA Navigation Validator
 // Test Case A: Top-level navigation validation
 
 import 'dart:async';
@@ -14,7 +14,7 @@ class NavigationValidator {
   /// Test Case A: Top-level Navigation Validation
   static Future<ValidationResult> validateTopLevelNavigation() async {
     try {
-      debugPrint('🧪 Running Test Case A: Top-level Navigation...');
+      debugPrint('ðŸ§ª Running Test Case A: Top-level Navigation...');
       
       // Step 1: Validate welcome screen structure and buttons
       final welcomeResult = await _validateWelcomeScreen();
@@ -40,11 +40,11 @@ class NavigationValidator {
       final buttonResult = await validateButtonFunctionality();
       if (!buttonResult.passed) return buttonResult;
       
-      debugPrint('✅ Test Case A: Navigation validation completed successfully');
+      debugPrint('âœ… Test Case A: Navigation validation completed successfully');
       return ValidationResult.pass('Top-level navigation fully functional - Login and Register buttons visible and functional with proper routing');
       
     } catch (e) {
-      debugPrint('❌ Test Case A: Navigation validation failed: $e');
+      debugPrint('âŒ Test Case A: Navigation validation failed: $e');
       return ValidationResult.fail(
         'Top-level navigation validation failed',
         errorDetails: e.toString(),
@@ -57,7 +57,7 @@ class NavigationValidator {
   /// Validate welcome screen structure and buttons
   static Future<ValidationResult> _validateWelcomeScreen() async {
     try {
-      debugPrint('📱 Validating welcome screen structure and buttons...');
+      debugPrint('ðŸ“± Validating welcome screen structure and buttons...');
       
       // Check if welcome screen file exists and contains required elements
       final welcomeScreenFile = File('lib/screens/auth/welcome_screen.dart');
@@ -100,10 +100,10 @@ class NavigationValidator {
       
       // Validate responsive design elements
       if (!welcomeContent.contains('MediaQuery') && !welcomeContent.contains('ConstrainedBox')) {
-        debugPrint('⚠️ Warning: Welcome screen may not be fully responsive');
+        debugPrint('âš ï¸ Warning: Welcome screen may not be fully responsive');
       }
       
-      debugPrint('✅ Welcome screen structure and buttons validated');
+      debugPrint('âœ… Welcome screen structure and buttons validated');
       return ValidationResult.pass('Welcome screen has Login and Register buttons with proper navigation');
       
     } catch (e) {
@@ -118,7 +118,7 @@ class NavigationValidator {
   /// Validate login screen accessibility
   static Future<ValidationResult> _validateLoginScreen() async {
     try {
-      debugPrint('🔐 Validating login screen accessibility...');
+      debugPrint('ðŸ” Validating login screen accessibility...');
       
       final loginScreenFile = File('lib/screens/auth/new_login_screen.dart');
       if (!await loginScreenFile.exists()) {
@@ -160,7 +160,7 @@ class NavigationValidator {
         );
       }
 
-      debugPrint('✅ Login screen accessibility and functionality validated');
+      debugPrint('âœ… Login screen accessibility and functionality validated');
       return ValidationResult.pass('Login screen accessible with mobile/PIN authentication');
       
     } catch (e) {
@@ -175,7 +175,7 @@ class NavigationValidator {
   /// Validate registration screen accessibility
   static Future<ValidationResult> _validateRegistrationScreen() async {
     try {
-      debugPrint('📝 Validating registration screen accessibility...');
+      debugPrint('ðŸ“ Validating registration screen accessibility...');
       
       final registerScreenFile = File('lib/screens/auth/real_user_registration_screen.dart');
       if (!await registerScreenFile.exists()) {
@@ -222,10 +222,10 @@ class NavigationValidator {
       
       // Validate deep link handling for referral codes
       if (!registerContent.contains('UniversalLinkService') && !registerContent.contains('ReferralCodeHandler')) {
-        debugPrint('⚠️ Warning: Registration screen may not handle deep link referral codes');
+        debugPrint('âš ï¸ Warning: Registration screen may not handle deep link referral codes');
       }
 
-      debugPrint('✅ Registration screen accessibility and functionality validated');
+      debugPrint('âœ… Registration screen accessibility and functionality validated');
       return ValidationResult.pass('Registration screen accessible with comprehensive form and referral system');
       
     } catch (e) {
@@ -240,7 +240,7 @@ class NavigationValidator {
   /// Validate navigation routing configuration
   static Future<ValidationResult> _validateRouting() async {
     try {
-      debugPrint('🗺️ Validating navigation routing configuration...');
+      debugPrint('ðŸ—ºï¸ Validating navigation routing configuration...');
       
       final mainFile = File('lib/main.dart');
       if (!await mainFile.exists()) {
@@ -307,7 +307,7 @@ class NavigationValidator {
         );
       }
 
-      debugPrint('✅ Navigation routing configuration validated');
+      debugPrint('âœ… Navigation routing configuration validated');
       return ValidationResult.pass('Navigation routing properly configured with all required routes');
       
     } catch (e) {
@@ -322,7 +322,7 @@ class NavigationValidator {
   /// Validate responsive design elements
   static Future<ValidationResult> _validateResponsiveDesign() async {
     try {
-      debugPrint('📱💻 Validating responsive design elements...');
+      debugPrint('ðŸ“±ðŸ’» Validating responsive design elements...');
       
       final welcomeScreenFile = File('lib/screens/auth/welcome_screen.dart');
       final welcomeContent = await welcomeScreenFile.readAsString();
@@ -352,10 +352,10 @@ class NavigationValidator {
       
       // Check button sizing for different screen sizes
       if (!welcomeContent.contains('width: double.infinity') && !welcomeContent.contains('SizedBox')) {
-        debugPrint('⚠️ Warning: Buttons may not be properly sized for different screens');
+        debugPrint('âš ï¸ Warning: Buttons may not be properly sized for different screens');
       }
       
-      debugPrint('✅ Responsive design elements validated');
+      debugPrint('âœ… Responsive design elements validated');
       return ValidationResult.pass('Welcome screen has responsive design elements for desktop and mobile');
       
     } catch (e) {
@@ -370,7 +370,7 @@ class NavigationValidator {
   /// Validate navigation button functionality (static analysis)
   static Future<ValidationResult> validateButtonFunctionality() async {
     try {
-      debugPrint('🔘 Validating navigation button functionality...');
+      debugPrint('ðŸ”˜ Validating navigation button functionality...');
       
       final welcomeScreenFile = File('lib/screens/auth/welcome_screen.dart');
       final welcomeContent = await welcomeScreenFile.readAsString();
@@ -403,7 +403,7 @@ class NavigationValidator {
         );
       }
       
-      debugPrint('✅ Navigation button functionality validated');
+      debugPrint('âœ… Navigation button functionality validated');
       return ValidationResult.pass('Login and Register buttons have proper navigation functionality');
       
     } catch (e) {
@@ -418,7 +418,7 @@ class NavigationValidator {
   /// Comprehensive navigation validation including all sub-tests
   static Future<ValidationResult> runComprehensiveNavigationTest() async {
     try {
-      debugPrint('🧪 Running comprehensive navigation validation...');
+      debugPrint('ðŸ§ª Running comprehensive navigation validation...');
       
       final results = <String, ValidationResult>{};
       
@@ -445,7 +445,7 @@ class NavigationValidator {
         );
       }
       
-      debugPrint('✅ Comprehensive navigation validation completed successfully');
+      debugPrint('âœ… Comprehensive navigation validation completed successfully');
       return ValidationResult.pass(
         'All navigation components validated: Welcome screen with Login/Register buttons, proper routing, responsive design'
       );

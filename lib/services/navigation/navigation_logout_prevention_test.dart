@@ -1,4 +1,4 @@
-// Navigation Logout Prevention Test Service
+﻿// Navigation Logout Prevention Test Service
 // Specialized testing for logout prevention mechanisms
 
 import 'package:flutter/material.dart';
@@ -222,14 +222,14 @@ class NavigationLogoutPreventionTest {
   static String generateLogoutPreventionReport(LogoutPreventionTestResults results) {
     final buffer = StringBuffer();
     buffer.writeln('=== LOGOUT PREVENTION TEST REPORT ===');
-    buffer.writeln('Overall Success: ${results.overallSuccess ? "✅ PASS" : "❌ FAIL"}');
+    buffer.writeln('Overall Success: ${results.overallSuccess ? "âœ… PASS" : "âŒ FAIL"}');
     buffer.writeln('');
     buffer.writeln('Logout Prevention Tests:');
-    buffer.writeln('- Back Navigation Prevention: ${results.backNavigationPrevention ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Context Safety Checks: ${results.contextSafetyChecks ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Auth State Protection: ${results.authStateProtection ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Emergency Logout Prevention: ${results.emergencyLogoutPrevention ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Navigation Stack Validation: ${results.navigationStackValidation ? "✅ PASS" : "❌ FAIL"}');
+    buffer.writeln('- Back Navigation Prevention: ${results.backNavigationPrevention ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Context Safety Checks: ${results.contextSafetyChecks ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Auth State Protection: ${results.authStateProtection ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Emergency Logout Prevention: ${results.emergencyLogoutPrevention ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Navigation Stack Validation: ${results.navigationStackValidation ? "âœ… PASS" : "âŒ FAIL"}');
     
     if (results.error != null) {
       buffer.writeln('');
@@ -238,7 +238,7 @@ class NavigationLogoutPreventionTest {
     }
     
     buffer.writeln('');
-    buffer.writeln('Logout Prevention Status: ${results.allTestsPassed ? "🛡️ PROTECTED" : "⚠️ VULNERABLE"}');
+    buffer.writeln('Logout Prevention Status: ${results.allTestsPassed ? "ðŸ›¡ï¸ PROTECTED" : "âš ï¸ VULNERABLE"}');
     buffer.writeln('Test completed at: ${DateTime.now()}');
     
     return buffer.toString();

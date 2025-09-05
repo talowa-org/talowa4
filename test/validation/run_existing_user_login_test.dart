@@ -1,4 +1,4 @@
-// Standalone test runner for existing user login validation (Test Case C)
+﻿// Standalone test runner for existing user login validation (Test Case C)
 // Run this file to test only the existing user login functionality
 
 import 'package:flutter/foundation.dart';
@@ -10,61 +10,61 @@ import 'validation_framework.dart';
 void main() async {
   group('Existing User Login Validation (Test Case C)', () {
     setUpAll(() async {
-      debugPrint('🔧 Setting up test environment for existing user login validation...');
+      debugPrint('ðŸ”§ Setting up test environment for existing user login validation...');
       await TestEnvironment.initialize();
     });
 
     tearDownAll(() async {
-      debugPrint('🧹 Cleaning up test environment...');
+      debugPrint('ðŸ§¹ Cleaning up test environment...');
       await TestEnvironment.cleanup();
     });
 
     test('Test Case C: Existing User Login with Email Format + PIN', () async {
-      debugPrint('🧪 Starting Test Case C: Existing User Login Validation');
+      debugPrint('ðŸ§ª Starting Test Case C: Existing User Login Validation');
       
       final result = await ExistingUserLoginValidator.validateExistingUserLogin();
       
-      debugPrint('📊 Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
-      debugPrint('📝 Message: ${result.message}');
+      debugPrint('ðŸ“Š Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
+      debugPrint('ðŸ“ Message: ${result.message}');
       
       if (!result.passed) {
-        debugPrint('❌ Error Details: ${result.errorDetails}');
-        debugPrint('🔧 Suspected Module: ${result.suspectedModule}');
-        debugPrint('💡 Suggested Fix: ${result.suggestedFix}');
+        debugPrint('âŒ Error Details: ${result.errorDetails}');
+        debugPrint('ðŸ”§ Suspected Module: ${result.suspectedModule}');
+        debugPrint('ðŸ’¡ Suggested Fix: ${result.suggestedFix}');
       }
       
       expect(result.passed, isTrue, reason: result.message);
     });
 
     test('Quick Existing User Login Validation', () async {
-      debugPrint('⚡ Running quick existing user login validation...');
+      debugPrint('âš¡ Running quick existing user login validation...');
       
       final result = await ExistingUserLoginValidator.quickValidation();
       
-      debugPrint('📊 Quick Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
-      debugPrint('📝 Message: ${result.message}');
+      debugPrint('ðŸ“Š Quick Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
+      debugPrint('ðŸ“ Message: ${result.message}');
       
       if (!result.passed) {
-        debugPrint('❌ Error Details: ${result.errorDetails}');
-        debugPrint('🔧 Suspected Module: ${result.suspectedModule}');
-        debugPrint('💡 Suggested Fix: ${result.suggestedFix}');
+        debugPrint('âŒ Error Details: ${result.errorDetails}');
+        debugPrint('ðŸ”§ Suspected Module: ${result.suspectedModule}');
+        debugPrint('ðŸ’¡ Suggested Fix: ${result.suggestedFix}');
       }
       
       expect(result.passed, isTrue, reason: result.message);
     });
 
     test('Comprehensive Existing User Login Validation', () async {
-      debugPrint('🔍 Running comprehensive existing user login validation...');
+      debugPrint('ðŸ” Running comprehensive existing user login validation...');
       
       final result = await ExistingUserLoginValidator.runComprehensiveValidation();
       
-      debugPrint('📊 Comprehensive Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
-      debugPrint('📝 Message: ${result.message}');
+      debugPrint('ðŸ“Š Comprehensive Test Result: ${result.passed ? 'PASS' : 'FAIL'}');
+      debugPrint('ðŸ“ Message: ${result.message}');
       
       if (!result.passed) {
-        debugPrint('❌ Error Details: ${result.errorDetails}');
-        debugPrint('🔧 Suspected Module: ${result.suspectedModule}');
-        debugPrint('💡 Suggested Fix: ${result.suggestedFix}');
+        debugPrint('âŒ Error Details: ${result.errorDetails}');
+        debugPrint('ðŸ”§ Suspected Module: ${result.suspectedModule}');
+        debugPrint('ðŸ’¡ Suggested Fix: ${result.suggestedFix}');
       }
       
       // Allow warnings but not failures
@@ -75,7 +75,7 @@ void main() async {
 
 /// Standalone execution function for command line testing
 Future<void> runStandaloneTest() async {
-  debugPrint('🚀 Starting standalone existing user login validation...');
+  debugPrint('ðŸš€ Starting standalone existing user login validation...');
   
   try {
     // Initialize test environment
@@ -94,12 +94,12 @@ Future<void> runStandaloneTest() async {
     await TestEnvironment.cleanup();
     
     if (result.passed) {
-      debugPrint('✅ Existing user login validation PASSED');
+      debugPrint('âœ… Existing user login validation PASSED');
     } else {
-      debugPrint('❌ Existing user login validation FAILED');
+      debugPrint('âŒ Existing user login validation FAILED');
     }
     
   } catch (e) {
-    debugPrint('💥 Standalone test execution failed: $e');
+    debugPrint('ðŸ’¥ Standalone test execution failed: $e');
   }
 }

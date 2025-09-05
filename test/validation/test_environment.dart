@@ -1,4 +1,4 @@
-// TALOWA Test Environment Setup
+﻿// TALOWA Test Environment Setup
 // Manages test data, cleanup, and Firebase configuration for validation
 
 import 'dart:math';
@@ -20,11 +20,11 @@ class TestEnvironment {
   /// Initialize test environment with Firebase configuration
   static Future<void> initialize() async {
     if (_isInitialized) {
-      debugPrint('⚠️ Test environment already initialized');
+      debugPrint('âš ï¸ Test environment already initialized');
       return;
     }
 
-    debugPrint('🔧 Initializing test environment...');
+    debugPrint('ðŸ”§ Initializing test environment...');
     
     try {
       // Initialize Firebase if not already done
@@ -40,9 +40,9 @@ class TestEnvironment {
       await cleanup();
       
       _isInitialized = true;
-      debugPrint('✅ Test environment initialized successfully');
+      debugPrint('âœ… Test environment initialized successfully');
     } catch (e) {
-      debugPrint('❌ Test environment initialization failed: $e');
+      debugPrint('âŒ Test environment initialization failed: $e');
       rethrow;
     }
   }
@@ -58,19 +58,19 @@ class TestEnvironment {
           await Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform,
           );
-          debugPrint('✅ Firebase initialized for testing');
+          debugPrint('âœ… Firebase initialized for testing');
         } catch (e) {
           // In test environment, Firebase might not be available
           // This is expected and we should handle it gracefully
-          debugPrint('⚠️ Firebase initialization skipped in test environment: $e');
-          debugPrint('✅ Test environment will use mock Firebase services');
+          debugPrint('âš ï¸ Firebase initialization skipped in test environment: $e');
+          debugPrint('âœ… Test environment will use mock Firebase services');
         }
       } else {
-        debugPrint('✅ Firebase already initialized');
+        debugPrint('âœ… Firebase already initialized');
       }
     } catch (e) {
       // Don't throw in test environment - allow graceful degradation
-      debugPrint('⚠️ Firebase initialization warning: $e');
+      debugPrint('âš ï¸ Firebase initialization warning: $e');
     }
   }
 
@@ -83,21 +83,21 @@ class TestEnvironment {
         cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
       );
       
-      debugPrint('✅ Firestore configured for testing');
+      debugPrint('âœ… Firestore configured for testing');
     } catch (e) {
       // Persistence might already be enabled, continue
-      debugPrint('⚠️ Firestore persistence setup: $e');
+      debugPrint('âš ï¸ Firestore persistence setup: $e');
     }
   }
 
   /// Verify Firebase connection and project configuration
   static Future<void> _verifyFirebaseConnection() async {
     try {
-      debugPrint('🔍 Verifying Firebase connection...');
+      debugPrint('ðŸ” Verifying Firebase connection...');
       
       // Check if Firebase is available
       if (Firebase.apps.isEmpty) {
-        debugPrint('⚠️ Firebase not initialized - using test mode');
+        debugPrint('âš ï¸ Firebase not initialized - using test mode');
         return;
       }
       
@@ -123,21 +123,21 @@ class TestEnvironment {
         
         // Verify Firebase Auth is available
         final currentUser = _auth.currentUser;
-        debugPrint('🔐 Firebase Auth status: ${currentUser?.uid ?? 'No user signed in'}');
+        debugPrint('ðŸ” Firebase Auth status: ${currentUser?.uid ?? 'No user signed in'}');
         
         // Test project configuration
         final projectId = Firebase.app().options.projectId;
         if (projectId != 'talowa') {
-          debugPrint('⚠️ Warning: Connected to project "$projectId", expected "talowa"');
+          debugPrint('âš ï¸ Warning: Connected to project "$projectId", expected "talowa"');
         }
         
-        debugPrint('✅ Firebase connection verified (Project: $projectId)');
+        debugPrint('âœ… Firebase connection verified (Project: $projectId)');
       } catch (e) {
-        debugPrint('⚠️ Firebase connection test failed (expected in test environment): $e');
-        debugPrint('✅ Continuing with test environment setup');
+        debugPrint('âš ï¸ Firebase connection test failed (expected in test environment): $e');
+        debugPrint('âœ… Continuing with test environment setup');
       }
     } catch (e) {
-      debugPrint('⚠️ Firebase verification warning: $e');
+      debugPrint('âš ï¸ Firebase verification warning: $e');
     }
   }
 
@@ -153,7 +153,7 @@ class TestEnvironment {
     const testPin = '1234';
     
     try {
-      debugPrint('👤 Creating test user: $testPhone');
+      debugPrint('ðŸ‘¤ Creating test user: $testPhone');
       
       // Ensure unique phone number
       if (_testUserIds.contains(testPhone)) {
@@ -172,10 +172,10 @@ class TestEnvironment {
       
       _testUserIds.add(testUser.phoneNumber);
       
-      debugPrint('✅ Test user created: ${testUser.phoneNumber}');
+      debugPrint('âœ… Test user created: ${testUser.phoneNumber}');
       return testUser;
     } catch (e) {
-      debugPrint('❌ Test user creation failed: $e');
+      debugPrint('âŒ Test user creation failed: $e');
       rethrow;
     }
   }
@@ -194,7 +194,7 @@ class TestEnvironment {
       users.add(user);
     }
     
-    debugPrint('✅ Created $count test users');
+    debugPrint('âœ… Created $count test users');
     return users;
   }
 
@@ -216,7 +216,7 @@ class TestEnvironment {
   /// Simulate user registration
   static Future<Map<String, dynamic>> simulateUserRegistration(TestUser testUser) async {
     try {
-      debugPrint('📝 Simulating user registration for ${testUser.phoneNumber}');
+      debugPrint('ðŸ“ Simulating user registration for ${testUser.phoneNumber}');
       
       // Create user document
       final userDoc = {
@@ -273,11 +273,11 @@ class TestEnvironment {
       await _firestore.collection('users').doc(userId).set(userDoc);
       _testDocuments.add('users/$userId');
 
-      debugPrint('✅ Test user registration completed');
+      debugPrint('âœ… Test user registration completed');
       
       return userDoc;
     } catch (e) {
-      debugPrint('❌ User registration simulation failed: $e');
+      debugPrint('âŒ User registration simulation failed: $e');
       rethrow;
     }
   }
@@ -285,7 +285,7 @@ class TestEnvironment {
   /// Simulate payment success
   static Future<void> simulatePaymentSuccess(String userId) async {
     try {
-      debugPrint('💳 Simulating payment success for $userId');
+      debugPrint('ðŸ’³ Simulating payment success for $userId');
       
       await _firestore.collection('users').doc(userId).update({
         'membershipPaid': true,
@@ -294,9 +294,9 @@ class TestEnvironment {
         'status': 'active', // Remains active per requirements
       });
 
-      debugPrint('✅ Payment success simulation completed');
+      debugPrint('âœ… Payment success simulation completed');
     } catch (e) {
-      debugPrint('❌ Payment success simulation failed: $e');
+      debugPrint('âŒ Payment success simulation failed: $e');
       rethrow;
     }
   }
@@ -304,7 +304,7 @@ class TestEnvironment {
   /// Simulate payment failure
   static Future<void> simulatePaymentFailure(String userId) async {
     try {
-      debugPrint('💳 Simulating payment failure for $userId');
+      debugPrint('ðŸ’³ Simulating payment failure for $userId');
       
       // Per requirements: status remains 'active' even on payment failure
       await _firestore.collection('users').doc(userId).update({
@@ -314,9 +314,9 @@ class TestEnvironment {
         'paymentStatus': 'failed',
       });
 
-      debugPrint('✅ Payment failure simulation completed');
+      debugPrint('âœ… Payment failure simulation completed');
     } catch (e) {
-      debugPrint('❌ Payment failure simulation failed: $e');
+      debugPrint('âŒ Payment failure simulation failed: $e');
       rethrow;
     }
   }
@@ -324,7 +324,7 @@ class TestEnvironment {
   /// Simulate referral relationship
   static Future<void> simulateReferralRelationship(String referrerId, String referredUserId) async {
     try {
-      debugPrint('🔗 Simulating referral relationship: $referrerId -> $referredUserId');
+      debugPrint('ðŸ”— Simulating referral relationship: $referrerId -> $referredUserId');
       
       // Create referral relationship
       final relationshipDoc = await _firestore.collection('referrals').add({
@@ -345,9 +345,9 @@ class TestEnvironment {
         'lastReferralAt': FieldValue.serverTimestamp(),
       });
 
-      debugPrint('✅ Referral relationship simulation completed');
+      debugPrint('âœ… Referral relationship simulation completed');
     } catch (e) {
-      debugPrint('❌ Referral relationship simulation failed: $e');
+      debugPrint('âŒ Referral relationship simulation failed: $e');
       rethrow;
     }
   }
@@ -358,7 +358,7 @@ class TestEnvironment {
     bool checkRequiredFields = true,
   }) async {
     try {
-      debugPrint('🔍 Validating user document: $userId');
+      debugPrint('ðŸ” Validating user document: $userId');
       
       final userDoc = await _firestore.collection('users').doc(userId).get();
       
@@ -413,14 +413,14 @@ class TestEnvironment {
       }
       
       if (errors.isEmpty) {
-        debugPrint('✅ User document validation passed');
+        debugPrint('âœ… User document validation passed');
         return ValidationResult(
           success: true,
           message: 'User document validation passed',
           data: userData,
         );
       } else {
-        debugPrint('❌ User document validation failed: ${errors.join(', ')}');
+        debugPrint('âŒ User document validation failed: ${errors.join(', ')}');
         return ValidationResult(
           success: false,
           message: 'User document validation failed',
@@ -428,7 +428,7 @@ class TestEnvironment {
         );
       }
     } catch (e) {
-      debugPrint('❌ User document validation error: $e');
+      debugPrint('âŒ User document validation error: $e');
       return ValidationResult(
         success: false,
         message: 'User document validation error: $e',
@@ -439,7 +439,7 @@ class TestEnvironment {
   /// Validate user registry document
   static Future<ValidationResult> validateUserRegistryDocument(String phoneNumber) async {
     try {
-      debugPrint('🔍 Validating user registry document: $phoneNumber');
+      debugPrint('ðŸ” Validating user registry document: $phoneNumber');
       
       final registryDoc = await _firestore.collection('user_registry').doc(phoneNumber).get();
       
@@ -462,7 +462,7 @@ class TestEnvironment {
       }
       
       if (errors.isEmpty) {
-        debugPrint('✅ User registry validation passed');
+        debugPrint('âœ… User registry validation passed');
         return ValidationResult(
           success: true,
           message: 'User registry validation passed',
@@ -491,7 +491,7 @@ class TestEnvironment {
     final isValid = pattern.hasMatch(code) && code != 'Loading';
     
     if (!isValid) {
-      debugPrint('❌ Invalid referral code format: $code');
+      debugPrint('âŒ Invalid referral code format: $code');
     }
     
     return isValid;
@@ -502,7 +502,7 @@ class TestEnvironment {
   /// Test security rules
   static Future<bool> testSecurityRules() async {
     try {
-      debugPrint('🔒 Testing security rules...');
+      debugPrint('ðŸ”’ Testing security rules...');
       
       // Test unauthorized write (should fail)
       try {
@@ -513,16 +513,16 @@ class TestEnvironment {
         });
         
         // If we reach here, security rules are not working
-        debugPrint('❌ Security rules not enforced - unauthorized write succeeded');
+        debugPrint('âŒ Security rules not enforced - unauthorized write succeeded');
         return false;
       } catch (e) {
         // Expected to fail - security working
-        debugPrint('✅ Security rules enforced - unauthorized write blocked');
+        debugPrint('âœ… Security rules enforced - unauthorized write blocked');
       }
 
       return true;
     } catch (e) {
-      debugPrint('❌ Security rules test failed: $e');
+      debugPrint('âŒ Security rules test failed: $e');
       return false;
     }
   }
@@ -530,7 +530,7 @@ class TestEnvironment {
   /// Clean up test data with comprehensive cleanup procedures
   static Future<void> cleanup() async {
     try {
-      debugPrint('🧹 Starting comprehensive test data cleanup...');
+      debugPrint('ðŸ§¹ Starting comprehensive test data cleanup...');
       
       // Only attempt Firebase cleanup if Firebase is initialized
       if (Firebase.apps.isNotEmpty) {
@@ -543,19 +543,19 @@ class TestEnvironment {
         // Sign out any test users
         if (_auth.currentUser != null) {
           await _auth.signOut();
-          debugPrint('🔐 Signed out test user');
+          debugPrint('ðŸ” Signed out test user');
         }
       } else {
-        debugPrint('⚠️ Firebase not initialized - skipping Firestore cleanup');
+        debugPrint('âš ï¸ Firebase not initialized - skipping Firestore cleanup');
       }
       
       // Clear tracking lists (always do this)
       _testUserIds.clear();
       _testDocuments.clear();
       
-      debugPrint('✅ Test data cleanup completed');
+      debugPrint('âœ… Test data cleanup completed');
     } catch (e) {
-      debugPrint('❌ Test data cleanup failed: $e');
+      debugPrint('âŒ Test data cleanup failed: $e');
       // Clear tracking lists even if cleanup fails
       _testUserIds.clear();
       _testDocuments.clear();
@@ -576,7 +576,7 @@ class TestEnvironment {
       }
       
       await batch.commit();
-      debugPrint('🗑️ Cleaned up batch ${(i ~/ batchSize) + 1}');
+      debugPrint('ðŸ—‘ï¸ Cleaned up batch ${(i ~/ batchSize) + 1}');
     }
   }
 
@@ -584,7 +584,7 @@ class TestEnvironment {
   static Future<void> _cleanupOrphanedTestData() async {
     // Only run if Firebase is available
     if (Firebase.apps.isEmpty) {
-      debugPrint('⚠️ Skipping orphaned data cleanup - Firebase not available');
+      debugPrint('âš ï¸ Skipping orphaned data cleanup - Firebase not available');
       return;
     }
     
@@ -602,7 +602,7 @@ class TestEnvironment {
       }
       if (usersQuery.docs.isNotEmpty) {
         await userBatch.commit();
-        debugPrint('🗑️ Cleaned up ${usersQuery.docs.length} orphaned user documents');
+        debugPrint('ðŸ—‘ï¸ Cleaned up ${usersQuery.docs.length} orphaned user documents');
       }
       
       // Clean up test entries in user_registry
@@ -618,17 +618,17 @@ class TestEnvironment {
       }
       if (registryQuery.docs.isNotEmpty) {
         await registryBatch.commit();
-        debugPrint('🗑️ Cleaned up ${registryQuery.docs.length} orphaned registry documents');
+        debugPrint('ðŸ—‘ï¸ Cleaned up ${registryQuery.docs.length} orphaned registry documents');
       }
       
     } catch (e) {
-      debugPrint('⚠️ Orphaned data cleanup warning: $e');
+      debugPrint('âš ï¸ Orphaned data cleanup warning: $e');
     }
   }
 
   /// Force cleanup all test data (use with caution)
   static Future<void> forceCleanup() async {
-    debugPrint('⚠️ Force cleanup initiated - this will remove ALL test data');
+    debugPrint('âš ï¸ Force cleanup initiated - this will remove ALL test data');
     
     try {
       await _cleanupOrphanedTestData();
@@ -636,9 +636,9 @@ class TestEnvironment {
       _testDocuments.clear();
       _isInitialized = false;
       
-      debugPrint('✅ Force cleanup completed');
+      debugPrint('âœ… Force cleanup completed');
     } catch (e) {
-      debugPrint('❌ Force cleanup failed: $e');
+      debugPrint('âŒ Force cleanup failed: $e');
       rethrow;
     }
   }
@@ -667,7 +667,7 @@ class TestEnvironment {
   /// Verify test environment health
   static Future<ValidationResult> verifyEnvironmentHealth() async {
     try {
-      debugPrint('🏥 Checking test environment health...');
+      debugPrint('ðŸ¥ Checking test environment health...');
       
       final healthChecks = <String, bool>{};
       final errors = <String>[];
@@ -676,7 +676,7 @@ class TestEnvironment {
       healthChecks['firebase_initialized'] = Firebase.apps.isNotEmpty;
       if (!healthChecks['firebase_initialized']!) {
         // In test environment, this might be expected
-        debugPrint('⚠️ Firebase not initialized - test mode');
+        debugPrint('âš ï¸ Firebase not initialized - test mode');
       }
       
       // Check Firestore connection (only if Firebase is initialized)
@@ -689,11 +689,11 @@ class TestEnvironment {
           healthChecks['firestore_connection'] = true;
         } catch (e) {
           healthChecks['firestore_connection'] = false;
-          debugPrint('⚠️ Firestore connection test failed (expected in test environment): $e');
+          debugPrint('âš ï¸ Firestore connection test failed (expected in test environment): $e');
         }
       } else {
         healthChecks['firestore_connection'] = false;
-        debugPrint('⚠️ Firestore connection skipped - Firebase not initialized');
+        debugPrint('âš ï¸ Firestore connection skipped - Firebase not initialized');
       }
       
       // Check Auth availability
@@ -703,7 +703,7 @@ class TestEnvironment {
       final projectId = currentProjectId;
       healthChecks['correct_project'] = projectId == 'talowa' || projectId == null;
       if (projectId != null && projectId != 'talowa') {
-        debugPrint('⚠️ Connected to project: $projectId (expected: talowa)');
+        debugPrint('âš ï¸ Connected to project: $projectId (expected: talowa)');
       }
       
       final allHealthy = healthChecks.values.every((check) => check);
@@ -724,16 +724,16 @@ class TestEnvironment {
 
   /// Reset test environment to clean state
   static Future<void> reset() async {
-    debugPrint('🔄 Resetting test environment...');
+    debugPrint('ðŸ”„ Resetting test environment...');
     
     try {
       await cleanup();
       _isInitialized = false;
       await initialize();
       
-      debugPrint('✅ Test environment reset completed');
+      debugPrint('âœ… Test environment reset completed');
     } catch (e) {
-      debugPrint('❌ Test environment reset failed: $e');
+      debugPrint('âŒ Test environment reset failed: $e');
       rethrow;
     }
   }

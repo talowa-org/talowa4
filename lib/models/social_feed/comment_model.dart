@@ -1,4 +1,4 @@
-// Comment Model for TALOWA Social Feed System
+﻿// Comment Model for TALOWA Social Feed System
 // Represents comments and replies on social media posts
 
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -1,4 +1,4 @@
-// TALOWA Deep Link Auto-fill Validator
+﻿// TALOWA Deep Link Auto-fill Validator
 // Test Case D: Deep link referral auto-fill validation
 
 import 'dart:async';
@@ -15,7 +15,7 @@ class DeepLinkValidator {
   /// Test Case D: Deep Link Auto-fill Validation
   static Future<ValidationResult> validateDeepLinkAutoFill() async {
     try {
-      debugPrint('🧪 Running Test Case D: Deep Link Auto-fill...');
+      debugPrint('ðŸ§ª Running Test Case D: Deep Link Auto-fill...');
       
       // Step 1: Test referral link parsing
       final parsingResult = await _validateReferralLinkParsing();
@@ -37,11 +37,11 @@ class DeepLinkValidator {
       final urlFormatsResult = await _validateURLFormats();
       if (!urlFormatsResult.passed) return urlFormatsResult;
       
-      debugPrint('✅ Test Case D: Deep link auto-fill validation completed successfully');
+      debugPrint('âœ… Test Case D: Deep link auto-fill validation completed successfully');
       return ValidationResult.pass('Deep link auto-fill and fallback system fully functional');
       
     } catch (e) {
-      debugPrint('❌ Test Case D: Deep link auto-fill validation failed: $e');
+      debugPrint('âŒ Test Case D: Deep link auto-fill validation failed: $e');
       return ValidationResult.fail(
         'Deep link auto-fill validation failed',
         errorDetails: e.toString(),
@@ -54,7 +54,7 @@ class DeepLinkValidator {
   /// Validate referral link parsing
   static Future<ValidationResult> _validateReferralLinkParsing() async {
     try {
-      debugPrint('🔗 Validating referral link parsing...');
+      debugPrint('ðŸ”— Validating referral link parsing...');
       
       // Test various referral link formats
       final testLinks = [
@@ -86,7 +86,7 @@ class DeepLinkValidator {
         }
       }
 
-      debugPrint('✅ Referral link parsing validated');
+      debugPrint('âœ… Referral link parsing validated');
       return ValidationResult.pass('Referral link parsing works for all formats');
       
     } catch (e) {
@@ -101,7 +101,7 @@ class DeepLinkValidator {
   /// Validate auto-fill functionality
   static Future<ValidationResult> _validateAutoFillFunctionality() async {
     try {
-      debugPrint('📝 Validating auto-fill functionality...');
+      debugPrint('ðŸ“ Validating auto-fill functionality...');
       
       // Create test referral code
       final testReferralCode = TestEnvironment.generateTestReferralCode();
@@ -121,7 +121,7 @@ class DeepLinkValidator {
         );
       }
 
-      debugPrint('✅ Auto-fill functionality validated');
+      debugPrint('âœ… Auto-fill functionality validated');
       return ValidationResult.pass('Auto-fill functionality works correctly');
       
     } catch (e) {
@@ -136,7 +136,7 @@ class DeepLinkValidator {
   /// Validate pending code consumption
   static Future<ValidationResult> _validatePendingCodeConsumption() async {
     try {
-      debugPrint('🔄 Validating pending code consumption...');
+      debugPrint('ðŸ”„ Validating pending code consumption...');
       
       // Create test referral code
       final testReferralCode = TestEnvironment.generateTestReferralCode();
@@ -183,7 +183,7 @@ class DeepLinkValidator {
         );
       }
 
-      debugPrint('✅ Pending code consumption validated');
+      debugPrint('âœ… Pending code consumption validated');
       return ValidationResult.pass('Pending code one-time consumption works correctly');
       
     } catch (e) {
@@ -198,7 +198,7 @@ class DeepLinkValidator {
   /// Validate TALADMIN fallback
   static Future<ValidationResult> _validateTALADMINFallback() async {
     try {
-      debugPrint('🛡️ Validating TALADMIN fallback...');
+      debugPrint('ðŸ›¡ï¸ Validating TALADMIN fallback...');
       
       // Test scenarios that should fallback to TALADMIN
       final fallbackScenarios = [
@@ -221,7 +221,7 @@ class DeepLinkValidator {
         }
       }
 
-      debugPrint('✅ TALADMIN fallback validated');
+      debugPrint('âœ… TALADMIN fallback validated');
       return ValidationResult.pass('TALADMIN fallback works for all invalid scenarios');
       
     } catch (e) {
@@ -236,7 +236,7 @@ class DeepLinkValidator {
   /// Validate URL formats
   static Future<ValidationResult> _validateURLFormats() async {
     try {
-      debugPrint('🌐 Validating URL formats...');
+      debugPrint('ðŸŒ Validating URL formats...');
       
       final testCode = TestEnvironment.generateTestReferralCode();
       
@@ -283,7 +283,7 @@ class DeepLinkValidator {
         );
       }
 
-      debugPrint('✅ URL formats validated');
+      debugPrint('âœ… URL formats validated');
       return ValidationResult.pass('Both URL formats (?ref= and /join/CODE) work correctly');
       
     } catch (e) {
@@ -301,7 +301,7 @@ class DeepLinkValidator {
       // Use the actual UniversalLinkService to parse referral codes
       return UniversalLinkService.parseReferralCodeFromUrl(link);
     } catch (e) {
-      debugPrint('❌ Error parsing referral from link: $e');
+      debugPrint('âŒ Error parsing referral from link: $e');
       return null;
     }
   }

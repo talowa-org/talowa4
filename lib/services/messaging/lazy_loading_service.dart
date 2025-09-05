@@ -1,4 +1,4 @@
-// Lazy Loading Service for TALOWA
+﻿// Lazy Loading Service for TALOWA
 // Implements efficient lazy loading for large group member lists and conversation history
 // Requirements: 1.1, 8.4
 

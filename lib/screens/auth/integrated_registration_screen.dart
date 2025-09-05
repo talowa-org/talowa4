@@ -1,4 +1,4 @@
-// Real User Registration Screen for TALOWA
+﻿// Real User Registration Screen for TALOWA
 // Regional user experience with proper validation
 
 import 'package:flutter/material.dart';
@@ -87,7 +87,7 @@ class _IntegratedRegistrationScreenState
       // Check for pending referral code from deep link (don't consume it yet)
       final pendingCode = UniversalLinkService.getPendingReferralCode();
       if (pendingCode != null) {
-        debugPrint('📋 Auto-filling referral code from deep link: $pendingCode');
+        debugPrint('ðŸ“‹ Auto-filling referral code from deep link: $pendingCode');
         _setReferralCode(pendingCode);
         // Clear the pending code since we've used it
         UniversalLinkService.clearPendingReferralCode();
@@ -100,12 +100,12 @@ class _IntegratedRegistrationScreenState
         final urlCode = currentUrl.queryParameters['ref'];
         if (urlCode != null && urlCode.trim().isNotEmpty) {
           final cleanCode = urlCode.trim().toUpperCase();
-          debugPrint('📋 Auto-filling referral code from URL: $cleanCode');
+          debugPrint('ðŸ“‹ Auto-filling referral code from URL: $cleanCode');
           _setReferralCode(cleanCode);
         }
       }
     } catch (e) {
-      debugPrint('⚠️ Error initializing referral code handling: $e');
+      debugPrint('âš ï¸ Error initializing referral code handling: $e');
     }
   }
 
@@ -258,7 +258,7 @@ class _IntegratedRegistrationScreenState
                     child: _buildTextField(
                       controller: _phoneController,
                       label: widget.phoneNumber != null
-                          ? 'Mobile Number * (✓ Verified)'
+                          ? 'Mobile Number * (âœ“ Verified)'
                           : 'Mobile Number *',
                       hint: '9876543210',
                       icon: widget.phoneNumber != null 
@@ -840,15 +840,15 @@ class _IntegratedRegistrationScreenState
       // Get current Firebase Auth user (created during phone verification)
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
-        debugPrint('❌ No authenticated user found');
+        debugPrint('âŒ No authenticated user found');
         
-        // 🔧 CRITICAL FIX: Clean up phone verification if user was deleted
+        // ðŸ”§ CRITICAL FIX: Clean up phone verification if user was deleted
         if (widget.phoneNumber != null) {
           try {
             await RegistrationStateService.clearPhoneVerification(phoneNumber);
-            debugPrint('✅ Cleaned up phone verification for deleted user');
+            debugPrint('âœ… Cleaned up phone verification for deleted user');
           } catch (e) {
-            debugPrint('⚠️ Could not clean up phone verification: $e');
+            debugPrint('âš ï¸ Could not clean up phone verification: $e');
           }
         }
         
@@ -864,7 +864,7 @@ class _IntegratedRegistrationScreenState
         });
         return;
       }
-      debugPrint('✅ Found authenticated user: ${currentUser.uid}');
+      debugPrint('âœ… Found authenticated user: ${currentUser.uid}');
 
       // Create email/password credentials for login compatibility
       final fakeEmail = '$phoneNumber@talowa.app';
@@ -879,10 +879,10 @@ class _IntegratedRegistrationScreenState
 
         await currentUser.linkWithCredential(emailCredential);
         debugPrint(
-          '✅ Email/password credentials linked for login compatibility',
+          'âœ… Email/password credentials linked for login compatibility',
         );
       } catch (e) {
-        debugPrint('⚠️ Could not link email/password credentials: $e');
+        debugPrint('âš ï¸ Could not link email/password credentials: $e');
         // Continue with registration - PIN will be stored in Firestore
       }
 
@@ -890,9 +890,9 @@ class _IntegratedRegistrationScreenState
       if (widget.phoneNumber != null) {
         try {
           await RegistrationStateService.clearPhoneVerification(phoneNumber);
-          debugPrint('✅ Cleared phone verification state for completed registration');
+          debugPrint('âœ… Cleared phone verification state for completed registration');
         } catch (e) {
-          debugPrint('⚠️ Could not clear phone verification state: $e');
+          debugPrint('âš ï¸ Could not clear phone verification state: $e');
           // Non-critical, continue with registration
         }
       }
@@ -909,13 +909,13 @@ class _IntegratedRegistrationScreenState
       String newReferralCode;
       try {
         newReferralCode = await ReferralCodeGenerator.generateUniqueCode();
-        debugPrint('✅ Generated referral code: $newReferralCode');
+        debugPrint('âœ… Generated referral code: $newReferralCode');
       } catch (e) {
-        debugPrint('⚠️ Referral code generation failed: $e');
+        debugPrint('âš ï¸ Referral code generation failed: $e');
         // Fallback to a simple unique code
         newReferralCode =
             'TAL${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-        debugPrint('🔄 Using fallback referral code: $newReferralCode');
+        debugPrint('ðŸ”„ Using fallback referral code: $newReferralCode');
       }
 
       // Create user profile directly with error handling
@@ -942,9 +942,9 @@ class _IntegratedRegistrationScreenState
             pinHash: hashedPin, // Store PIN hash for authentication
           ),
         );
-        debugPrint('✅ User profile created successfully');
+        debugPrint('âœ… User profile created successfully');
       } catch (e) {
-        debugPrint('⚠️ User profile creation failed: $e');
+        debugPrint('âš ï¸ User profile creation failed: $e');
         _showErrorMessage('Failed to create user profile: $e');
         return;
       }
@@ -963,9 +963,9 @@ class _IntegratedRegistrationScreenState
           pinHash: hashedPin, // Pass PIN hash for login verification
           referralCode: newReferralCode, // Pass the already generated referral code
         );
-        debugPrint('✅ User registry created successfully');
+        debugPrint('âœ… User registry created successfully');
       } catch (e) {
-        debugPrint('⚠️ User registry creation failed: $e');
+        debugPrint('âš ï¸ User registry creation failed: $e');
         // Don't return here as profile is already created
       }
 
@@ -1075,3 +1075,4 @@ class _IntegratedRegistrationScreenState
 
 
 }
+

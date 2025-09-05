@@ -1,4 +1,4 @@
-// Feed Filter Widget - Filter and sort options for feed
+﻿// Feed Filter Widget - Filter and sort options for feed
 // Part of Task 5: Create FeedScreen main interface
 
 import 'package:flutter/material.dart';

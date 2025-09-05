@@ -1,49 +1,26 @@
 rules_version = '2';
-
-// Firebase Storage Security Rules for TALOWA
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow authenticated users to upload and read feed post images
-    match /feed_posts/images/{allPaths=**} {
-      allow read, write: if request.auth != null;
+
+    // Feed posts media - public reads
+    match /feed_posts/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
-    
-    // Allow authenticated users to upload and read feed documents
-    match /feed_documents/documents/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to upload and read feed videos
-    match /feed_videos/images/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to upload and read land records documents
-    match /land_records/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to upload and read legal case documents
-    match /legal_cases/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to upload and read emergency evidence
-    match /emergency_evidence/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to upload and read stories
+
+    // Stories media - public reads
     match /stories/{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read: if true;
+      allow write: if request.auth != null;
     }
-    
-    // Allow authenticated users to upload and read profile pictures
-    match /profile_pictures/{allPaths=**} {
-      allow read, write: if request.auth != null;
+
+    // Profile media - read public; write only by owner
+    match /profiles/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
-    
-    // Default rule - deny all other access
+
+    // Deny by default
     match /{allPaths=**} {
       allow read, write: if false;
     }

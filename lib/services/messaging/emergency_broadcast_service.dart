@@ -1,4 +1,4 @@
-// Emergency Broadcast Service - Priority message delivery system
+﻿// Emergency Broadcast Service - Priority message delivery system
 // Task 9: Build emergency broadcast system
 // Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
 
@@ -164,7 +164,7 @@ class EmergencyBroadcastService {
         try {
           await NotificationService.sendNotificationToUser(
             userId: userId,
-            title: '🚨 ${broadcast.title}',
+            title: 'ðŸš¨ ${broadcast.title}',
             body: broadcast.message,
             type: NotificationType.emergency,
             data: {
@@ -290,7 +290,7 @@ class EmergencyBroadcastService {
       if (phoneNumber == null) return;
 
       // Format SMS message
-      final smsMessage = '🚨 TALOWA EMERGENCY\n${broadcast.title}\n\n${broadcast.message}';
+      final smsMessage = 'ðŸš¨ TALOWA EMERGENCY\n${broadcast.title}\n\n${broadcast.message}';
 
       // TODO: Integrate with actual SMS service (Twilio, AWS SNS, etc.)
       debugPrint('SMS would be sent to $phoneNumber: $smsMessage');
@@ -325,7 +325,7 @@ class EmergencyBroadcastService {
       if (email == null) return;
 
       // Format email content
-      final emailSubject = '🚨 TALOWA Emergency Alert: ${broadcast.title}';
+      final emailSubject = 'ðŸš¨ TALOWA Emergency Alert: ${broadcast.title}';
       final emailBody = '''
 Dear TALOWA Member,
 

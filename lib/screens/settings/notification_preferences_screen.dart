@@ -667,3 +667,4 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     }
   }
 }
+

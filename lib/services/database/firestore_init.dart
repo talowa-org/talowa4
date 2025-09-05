@@ -1,4 +1,4 @@
-// Firestore Database Initialization for TALOWA Social Feed System
+﻿// Firestore Database Initialization for TALOWA Social Feed System
 // Sets up initial collections, documents, and data structure
 
 import 'package:cloud_firestore/cloud_firestore.dart';

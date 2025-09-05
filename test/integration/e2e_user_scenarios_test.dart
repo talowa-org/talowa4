@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import '../test_utils/test_data_generator.dart';
@@ -324,7 +324,7 @@ void main() {
       
       // Send message in Telugu
       final teluguMessage = await messagingService.sendMessage(
-        content: 'నమస్కారం అందరికీ! ఈ రోజు సమావేశం ఎలా ఉంది?',
+        content: 'à°¨à°®à°¸à±à°•à°¾à°°à°‚ à°…à°‚à°¦à°°à°¿à°•à±€! à°ˆ à°°à±‹à°œà± à°¸à°®à°¾à°µà±‡à°¶à°‚ à°Žà°²à°¾ à°‰à°‚à°¦à°¿?',
         senderId: teluguUser.id,
         groupId: group.id,
         type: 'text',

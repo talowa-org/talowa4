@@ -1,13 +1,19 @@
-// Advanced Search Screen for TALOWA
+﻿// Advanced Search Screen for TALOWA
 // Implements Task 24: Add advanced search and discovery - Search UI
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../services/search/advanced_search_service.dart';
+import '../../core/theme/app_theme.dart';
+import '../../models/search/search_result_model.dart';
+import '../../models/search/search_filter_model.dart';
+import '../../services/search/search_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/search/search_result_widget.dart';
-import '../../widgets/search/search_filters_widget.dart';
+import '../../widgets/search/simple_search_filters_widget.dart';
+import '../../widgets/search/search_bar_widget.dart';
+import '../../widgets/search/search_results_widget.dart';
 import '../../widgets/search/trending_topics_widget.dart';
 
 class AdvancedSearchScreen extends StatefulWidget {
@@ -24,20 +30,19 @@ class AdvancedSearchScreen extends StatefulWidget {
 
 class _AdvancedSearchScreenState extends State<AdvancedSearchScreen>
     with SingleTickerProviderStateMixin {
-  final AdvancedSearchService _searchService = AdvancedSearchService();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+  final FocusNode _searchFocusNode = FocusNode();
+
   late TabController _tabController;
-  SearchResults? _searchResults;
-  List<ContentRecommendation> _recommendations = [];
-  List<TrendingTopic> _trendingTopics = [];
-  List<SearchSuggestion> _suggestions = [];
-  
+  UniversalSearchResultModel? _searchResults;
+  List<String> _suggestions = [];
+
   bool _isLoading = false;
   bool _isLoadingMore = false;
+  bool _showSuggestions = false;
   String? _error;
-  SearchFilters _currentFilters = SearchFilters();
+  SearchFilterModel _currentFilters = const SearchFilterModel();
   bool _showFilters = false;
 
   @override

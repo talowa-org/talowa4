@@ -1,4 +1,4 @@
-// TALOWA Admin Bootstrap Validator
+﻿// TALOWA Admin Bootstrap Validator
 // Verifies admin user setup and TALADMIN referral code system
 
 import 'dart:async';
@@ -18,7 +18,7 @@ class AdminBootstrapValidator {
   /// Comprehensive admin bootstrap verification
   static Future<ValidationResult> verifyAdminBootstrap() async {
     try {
-      debugPrint('🔍 Starting admin bootstrap verification...');
+      debugPrint('ðŸ” Starting admin bootstrap verification...');
       
       // Step 1: Check user_registry
       final registryResult = await _verifyUserRegistry();
@@ -36,11 +36,11 @@ class AdminBootstrapValidator {
       final accessResult = await _verifyAdminAccess();
       if (!accessResult.passed) return accessResult;
       
-      debugPrint('✅ Admin bootstrap verification completed successfully');
+      debugPrint('âœ… Admin bootstrap verification completed successfully');
       return ValidationResult.pass('Admin bootstrap fully verified and functional');
       
     } catch (e) {
-      debugPrint('❌ Admin bootstrap verification failed: $e');
+      debugPrint('âŒ Admin bootstrap verification failed: $e');
       return ValidationResult.fail(
         'Admin bootstrap verification failed',
         errorDetails: e.toString(),
@@ -53,7 +53,7 @@ class AdminBootstrapValidator {
   /// Verify admin user in user_registry
   static Future<ValidationResult> _verifyUserRegistry() async {
     try {
-      debugPrint('📋 Checking admin user in user_registry...');
+      debugPrint('ðŸ“‹ Checking admin user in user_registry...');
       
       final registryDoc = await _firestore
           .collection('user_registry')
@@ -101,7 +101,7 @@ class AdminBootstrapValidator {
         );
       }
 
-      debugPrint('✅ Admin user_registry verification passed');
+      debugPrint('âœ… Admin user_registry verification passed');
       return ValidationResult.pass('Admin user_registry entry valid');
       
     } catch (e) {
@@ -116,7 +116,7 @@ class AdminBootstrapValidator {
   /// Verify admin user in users collection
   static Future<ValidationResult> _verifyUsersCollection() async {
     try {
-      debugPrint('👤 Checking admin user in users collection...');
+      debugPrint('ðŸ‘¤ Checking admin user in users collection...');
       
       // First get the UID from user_registry
       final registryDoc = await _firestore
@@ -182,7 +182,7 @@ class AdminBootstrapValidator {
         );
       }
 
-      debugPrint('✅ Admin users collection verification passed');
+      debugPrint('âœ… Admin users collection verification passed');
       return ValidationResult.pass('Admin users collection entry valid');
       
     } catch (e) {
@@ -197,7 +197,7 @@ class AdminBootstrapValidator {
   /// Verify TALADMIN referral code mapping
   static Future<ValidationResult> _verifyReferralCodeMapping() async {
     try {
-      debugPrint('🔗 Checking TALADMIN referral code mapping...');
+      debugPrint('ðŸ”— Checking TALADMIN referral code mapping...');
       
       // Check if TALADMIN code exists in referralCodes collection
       final codeDoc = await _firestore
@@ -241,7 +241,7 @@ class AdminBootstrapValidator {
         }
       }
 
-      debugPrint('✅ TALADMIN referral code mapping verification passed');
+      debugPrint('âœ… TALADMIN referral code mapping verification passed');
       return ValidationResult.pass('TALADMIN referral code properly mapped');
       
     } catch (e) {
@@ -256,7 +256,7 @@ class AdminBootstrapValidator {
   /// Verify admin access and functionality
   static Future<ValidationResult> _verifyAdminAccess() async {
     try {
-      debugPrint('🔐 Verifying admin access and functionality...');
+      debugPrint('ðŸ” Verifying admin access and functionality...');
       
       // Get admin UID
       final registryDoc = await _firestore
@@ -306,7 +306,7 @@ class AdminBootstrapValidator {
         );
       }
 
-      debugPrint('✅ Admin access verification passed');
+      debugPrint('âœ… Admin access verification passed');
       return ValidationResult.pass('Admin access and functionality verified');
       
     } catch (e) {
@@ -321,7 +321,7 @@ class AdminBootstrapValidator {
   /// Create admin bootstrap if missing (fix implementation)
   static Future<ValidationResult> createAdminBootstrap() async {
     try {
-      debugPrint('🔧 Creating admin bootstrap...');
+      debugPrint('ðŸ”§ Creating admin bootstrap...');
       
       // Generate admin UID
       final adminUid = 'admin_${DateTime.now().millisecondsSinceEpoch}';
@@ -396,11 +396,11 @@ class AdminBootstrapValidator {
         'lastUsedAt': null,
       });
 
-      debugPrint('✅ Admin bootstrap created successfully');
+      debugPrint('âœ… Admin bootstrap created successfully');
       return ValidationResult.pass('Admin bootstrap created and configured');
       
     } catch (e) {
-      debugPrint('❌ Admin bootstrap creation failed: $e');
+      debugPrint('âŒ Admin bootstrap creation failed: $e');
       return ValidationResult.fail(
         'Admin bootstrap creation failed',
         errorDetails: e.toString(),
@@ -451,12 +451,12 @@ class AdminBootstrapValidator {
 
 /// Main function for standalone testing
 void main() async {
-  print('🔍 TALOWA Admin Bootstrap Validator - Standalone Test');
+  print('ðŸ” TALOWA Admin Bootstrap Validator - Standalone Test');
   print('=' * 60);
   
   try {
     // Get current bootstrap status
-    print('\n📊 Checking current bootstrap status...');
+    print('\nðŸ“Š Checking current bootstrap status...');
     final status = await AdminBootstrapValidator.getBootstrapStatus();
     print('Bootstrap Status: ${status['fullyBootstrapped'] ? 'COMPLETE' : 'INCOMPLETE'}');
     print('Registry Exists: ${status['registryExists']}');
@@ -464,11 +464,11 @@ void main() async {
     print('Referral Code Exists: ${status['referralCodeExists']}');
     
     // Run comprehensive verification
-    print('\n🔍 Running comprehensive admin bootstrap verification...');
+    print('\nðŸ” Running comprehensive admin bootstrap verification...');
     final result = await AdminBootstrapValidator.verifyAdminBootstrap();
     
-    print('\n📋 VERIFICATION RESULT:');
-    print('Status: ${result.passed ? 'PASS ✅' : 'FAIL ❌'}');
+    print('\nðŸ“‹ VERIFICATION RESULT:');
+    print('Status: ${result.passed ? 'PASS âœ…' : 'FAIL âŒ'}');
     print('Message: ${result.message}');
     
     if (!result.passed) {
@@ -477,16 +477,16 @@ void main() async {
       print('Suggested Fix: ${result.suggestedFix}');
       
       // Attempt auto-fix if verification failed
-      print('\n🔧 Attempting to create admin bootstrap...');
+      print('\nðŸ”§ Attempting to create admin bootstrap...');
       final createResult = await AdminBootstrapValidator.createAdminBootstrap();
       
-      print('Auto-fix Result: ${createResult.passed ? 'SUCCESS ✅' : 'FAILED ❌'}');
+      print('Auto-fix Result: ${createResult.passed ? 'SUCCESS âœ…' : 'FAILED âŒ'}');
       print('Message: ${createResult.message}');
       
       if (createResult.passed) {
-        print('\n🔄 Re-running verification after auto-fix...');
+        print('\nðŸ”„ Re-running verification after auto-fix...');
         final reVerifyResult = await AdminBootstrapValidator.verifyAdminBootstrap();
-        print('Re-verification: ${reVerifyResult.passed ? 'PASS ✅' : 'FAIL ❌'}');
+        print('Re-verification: ${reVerifyResult.passed ? 'PASS âœ…' : 'FAIL âŒ'}');
         print('Message: ${reVerifyResult.message}');
       }
     }
@@ -495,6 +495,6 @@ void main() async {
     print('Admin Bootstrap Validation Complete');
     
   } catch (e) {
-    print('❌ Standalone test failed: $e');
+    print('âŒ Standalone test failed: $e');
   }
 }

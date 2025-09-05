@@ -1,4 +1,4 @@
-// Offline-Aware Feed Screen for TALOWA
+﻿// Offline-Aware Feed Screen for TALOWA
 // Implements Task 20: Offline functionality - UI Integration
 
 import 'package:flutter/material.dart';

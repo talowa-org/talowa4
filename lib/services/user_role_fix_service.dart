@@ -1,4 +1,4 @@
-// User Role Fix Service for TALOWA
+﻿// User Role Fix Service for TALOWA
 // Ensures users have proper roles for security rules
 
 import 'package:flutter/foundation.dart';
@@ -14,27 +14,27 @@ class UserRoleFixService {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        debugPrint('❌ No authenticated user found');
+        debugPrint('âŒ No authenticated user found');
         return;
       }
 
-      debugPrint('🔧 Checking user role for: ${user.uid}');
+      debugPrint('ðŸ”§ Checking user role for: ${user.uid}');
       
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
       
       if (!userDoc.exists) {
-        debugPrint('❌ User document does not exist');
+        debugPrint('âŒ User document does not exist');
         return;
       }
 
       final userData = userDoc.data()!;
       final currentRole = userData['role'] as String?;
       
-      debugPrint('👤 Current user role: $currentRole');
+      debugPrint('ðŸ‘¤ Current user role: $currentRole');
       
       // If user has no role or invalid role, set a default role
       if (currentRole == null || !_isValidRole(currentRole)) {
-        debugPrint('🔧 Fixing user role...');
+        debugPrint('ðŸ”§ Fixing user role...');
         
         await _firestore.collection('users').doc(user.uid).update({
           'role': 'member', // Default role that allows basic access
@@ -42,13 +42,13 @@ class UserRoleFixService {
           'role_updated_by': 'system_auto_fix'
         });
         
-        debugPrint('✅ User role fixed to: member');
+        debugPrint('âœ… User role fixed to: member');
       } else {
-        debugPrint('✅ User role is valid: $currentRole');
+        debugPrint('âœ… User role is valid: $currentRole');
       }
       
     } catch (e) {
-      debugPrint('❌ Error fixing user role: $e');
+      debugPrint('âŒ Error fixing user role: $e');
     }
   }
 
@@ -71,11 +71,11 @@ class UserRoleFixService {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        debugPrint('❌ No authenticated user for collection creation');
+        debugPrint('âŒ No authenticated user for collection creation');
         return;
       }
 
-      debugPrint('🔧 Creating missing collections with proper auth...');
+      debugPrint('ðŸ”§ Creating missing collections with proper auth...');
 
       // Create daily motivation with user context
       await _createDailyMotivationWithAuth(user.uid);
@@ -86,31 +86,31 @@ class UserRoleFixService {
       // Create analytics with user context
       await _createAnalyticsWithAuth(user.uid);
       
-      debugPrint('✅ Missing collections created successfully');
+      debugPrint('âœ… Missing collections created successfully');
       
     } catch (e) {
-      debugPrint('❌ Error creating collections: $e');
+      debugPrint('âŒ Error creating collections: $e');
       rethrow;
     }
   }
 
   static Future<void> _createDailyMotivationWithAuth(String userId) async {
     try {
-      debugPrint('📝 Creating daily motivation with auth...');
+      debugPrint('ðŸ“ Creating daily motivation with auth...');
       
       final motivationData = {
         'messages': [
-          "आज एक नया दिन है। अपनी भूमि के लिए लड़ते रहें।",
-          "एकजुट होकर हम अपने अधिकारों को पा सकते हैं।",
-          "हर छोटा कदम बड़े बदलाव की शुरुआत है।",
-          "आपकी आवाज़ मायने रखती है। बोलते रहें।",
-          "न्याय की लड़ाई में हम साथ हैं।"
+          "à¤†à¤œ à¤à¤• à¤¨à¤¯à¤¾ à¤¦à¤¿à¤¨ à¤¹à¥ˆà¥¤ à¤…à¤ªà¤¨à¥€ à¤­à¥‚à¤®à¤¿ à¤•à¥‡ à¤²à¤¿à¤ à¤²à¤¡à¤¼à¤¤à¥‡ à¤°à¤¹à¥‡à¤‚à¥¤",
+          "à¤à¤•à¤œà¥à¤Ÿ à¤¹à¥‹à¤•à¤° à¤¹à¤® à¤…à¤ªà¤¨à¥‡ à¤…à¤§à¤¿à¤•à¤¾à¤°à¥‹à¤‚ à¤•à¥‹ à¤ªà¤¾ à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤",
+          "à¤¹à¤° à¤›à¥‹à¤Ÿà¤¾ à¤•à¤¦à¤® à¤¬à¤¡à¤¼à¥‡ à¤¬à¤¦à¤²à¤¾à¤µ à¤•à¥€ à¤¶à¥à¤°à¥à¤†à¤¤ à¤¹à¥ˆà¥¤",
+          "à¤†à¤ªà¤•à¥€ à¤†à¤µà¤¾à¤œà¤¼ à¤®à¤¾à¤¯à¤¨à¥‡ à¤°à¤–à¤¤à¥€ à¤¹à¥ˆà¥¤ à¤¬à¥‹à¤²à¤¤à¥‡ à¤°à¤¹à¥‡à¤‚à¥¤",
+          "à¤¨à¥à¤¯à¤¾à¤¯ à¤•à¥€ à¤²à¤¡à¤¼à¤¾à¤ˆ à¤®à¥‡à¤‚ à¤¹à¤® à¤¸à¤¾à¤¥ à¤¹à¥ˆà¤‚à¥¤"
         ],
         'success_stories': [
           {
-            'title': "करीमनगर में भूमि वापसी",
-            'description': "सामूहिक प्रयास से किसानों को अपनी भूमि वापस मिली।",
-            'location': "करीमनगर, तेलंगाना",
+            'title': "à¤•à¤°à¥€à¤®à¤¨à¤—à¤° à¤®à¥‡à¤‚ à¤­à¥‚à¤®à¤¿ à¤µà¤¾à¤ªà¤¸à¥€",
+            'description': "à¤¸à¤¾à¤®à¥‚à¤¹à¤¿à¤• à¤ªà¥à¤°à¤¯à¤¾à¤¸ à¤¸à¥‡ à¤•à¤¿à¤¸à¤¾à¤¨à¥‹à¤‚ à¤•à¥‹ à¤…à¤ªà¤¨à¥€ à¤­à¥‚à¤®à¤¿ à¤µà¤¾à¤ªà¤¸ à¤®à¤¿à¤²à¥€à¥¤",
+            'location': "à¤•à¤°à¥€à¤®à¤¨à¤—à¤°, à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾",
             'date': "2024-01-15"
           }
         ],
@@ -120,22 +120,22 @@ class UserRoleFixService {
       };
 
       await _firestore.collection('content').doc('daily_motivation').set(motivationData);
-      debugPrint('✅ Daily motivation created successfully');
+      debugPrint('âœ… Daily motivation created successfully');
       
     } catch (e) {
-      debugPrint('❌ Error creating daily motivation: $e');
+      debugPrint('âŒ Error creating daily motivation: $e');
       rethrow;
     }
   }
 
   static Future<void> _createHashtagsWithAuth(String userId) async {
     try {
-      debugPrint('🏷️ Creating hashtags with auth...');
+      debugPrint('ðŸ·ï¸ Creating hashtags with auth...');
       
       final hashtags = [
-        {'tag': 'भूमिअधिकार', 'count': 0, 'category': 'land_rights'},
-        {'tag': 'किसानन्याय', 'count': 0, 'category': 'farmer_justice'},
-        {'tag': 'तेलंगानाकिसान', 'count': 0, 'category': 'telangana_farmers'},
+        {'tag': 'à¤­à¥‚à¤®à¤¿à¤…à¤§à¤¿à¤•à¤¾à¤°', 'count': 0, 'category': 'land_rights'},
+        {'tag': 'à¤•à¤¿à¤¸à¤¾à¤¨à¤¨à¥à¤¯à¤¾à¤¯', 'count': 0, 'category': 'farmer_justice'},
+        {'tag': 'à¤¤à¥‡à¤²à¤‚à¤—à¤¾à¤¨à¤¾à¤•à¤¿à¤¸à¤¾à¤¨', 'count': 0, 'category': 'telangana_farmers'},
       ];
 
       final batch = _firestore.batch();
@@ -150,17 +150,17 @@ class UserRoleFixService {
       }
 
       await batch.commit();
-      debugPrint('✅ Hashtags created successfully');
+      debugPrint('âœ… Hashtags created successfully');
       
     } catch (e) {
-      debugPrint('❌ Error creating hashtags: $e');
+      debugPrint('âŒ Error creating hashtags: $e');
       rethrow;
     }
   }
 
   static Future<void> _createAnalyticsWithAuth(String userId) async {
     try {
-      debugPrint('📊 Creating analytics with auth...');
+      debugPrint('ðŸ“Š Creating analytics with auth...');
       
       final analyticsData = {
         'total_users': 1,
@@ -177,10 +177,10 @@ class UserRoleFixService {
       };
 
       await _firestore.collection('analytics').doc('global_stats').set(analyticsData);
-      debugPrint('✅ Analytics created successfully');
+      debugPrint('âœ… Analytics created successfully');
       
     } catch (e) {
-      debugPrint('❌ Error creating analytics: $e');
+      debugPrint('âŒ Error creating analytics: $e');
       rethrow;
     }
   }
@@ -188,7 +188,7 @@ class UserRoleFixService {
   /// Complete fix - role + collections
   static Future<void> performCompleteFix() async {
     try {
-      debugPrint('🔧 Starting complete user and data fix...');
+      debugPrint('ðŸ”§ Starting complete user and data fix...');
       
       // First fix the user role
       await fixCurrentUserRole();
@@ -199,11 +199,12 @@ class UserRoleFixService {
       // Then create missing collections
       await createMissingCollectionsWithAuth();
       
-      debugPrint('✅ Complete fix performed successfully!');
+      debugPrint('âœ… Complete fix performed successfully!');
       
     } catch (e) {
-      debugPrint('❌ Error in complete fix: $e');
+      debugPrint('âŒ Error in complete fix: $e');
       rethrow;
     }
   }
 }
+

@@ -1,4 +1,4 @@
-// TALOWA Validation Report Service
+﻿// TALOWA Validation Report Service
 // Comprehensive reporting system for validation results
 //
 // This service provides:
@@ -32,17 +32,17 @@ class ValidationReportService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      debugPrint('📄 Generating comprehensive execution log...');
+      debugPrint('ðŸ“„ Generating comprehensive execution log...');
       
       final logContent = _generateExecutionLogContent(report, executionLog, metadata);
       
       // Save to validation_execution_log.md
       await _saveToFile(_executionLogFileName, logContent);
       
-      debugPrint('✅ Execution log saved to $_executionLogFileName');
+      debugPrint('âœ… Execution log saved to $_executionLogFileName');
       
     } catch (e) {
-      debugPrint('❌ Failed to generate execution log: $e');
+      debugPrint('âŒ Failed to generate execution log: $e');
       rethrow;
     }
   }
@@ -50,17 +50,17 @@ class ValidationReportService {
   /// Generate and save validation report
   static Future<void> generateValidationReport(ValidationReport report) async {
     try {
-      debugPrint('📊 Generating validation report...');
+      debugPrint('ðŸ“Š Generating validation report...');
       
       final reportContent = report.generateReport();
       
       // Save to validation_report.md
       await _saveToFile(_reportFileName, reportContent);
       
-      debugPrint('✅ Validation report saved to $_reportFileName');
+      debugPrint('âœ… Validation report saved to $_reportFileName');
       
     } catch (e) {
-      debugPrint('❌ Failed to generate validation report: $e');
+      debugPrint('âŒ Failed to generate validation report: $e');
       rethrow;
     }
   }
@@ -68,7 +68,7 @@ class ValidationReportService {
   /// Generate and save fix suggestions report
   static Future<void> generateFixSuggestionsReport(ValidationReport report) async {
     try {
-      debugPrint('🔧 Generating fix suggestions report...');
+      debugPrint('ðŸ”§ Generating fix suggestions report...');
       
       // Use the dedicated FixSuggestionService for detailed suggestions
       final fixContent = FixSuggestionService.generateFixSuggestionsReport(report);
@@ -76,10 +76,10 @@ class ValidationReportService {
       // Save to validation_fix_suggestions.md
       await _saveToFile(_fixSuggestionsFileName, fixContent);
       
-      debugPrint('✅ Fix suggestions report saved to $_fixSuggestionsFileName');
+      debugPrint('âœ… Fix suggestions report saved to $_fixSuggestionsFileName');
       
     } catch (e) {
-      debugPrint('❌ Failed to generate fix suggestions report: $e');
+      debugPrint('âŒ Failed to generate fix suggestions report: $e');
       rethrow;
     }
   }
@@ -89,7 +89,7 @@ class ValidationReportService {
     List<String>? executionLog,
     Map<String, dynamic>? metadata,
   }) async {
-    debugPrint('📋 Generating all validation reports...');
+    debugPrint('ðŸ“‹ Generating all validation reports...');
     
     await Future.wait([
       generateExecutionLog(report, executionLog: executionLog, metadata: metadata),
@@ -97,7 +97,7 @@ class ValidationReportService {
       generateFixSuggestionsReport(report),
     ]);
     
-    debugPrint('✅ All validation reports generated successfully');
+    debugPrint('âœ… All validation reports generated successfully');
   }
 
   /// Generate comprehensive execution log content
@@ -114,7 +114,7 @@ class ValidationReportService {
     buffer.writeln('**Generated**: ${DateTime.now().toIso8601String()}');
     buffer.writeln('**Suite Version**: ValidationFramework $_reportVersion');
     buffer.writeln('**Execution Duration**: ${report.executionEnd?.difference(report.executionStart).inSeconds ?? 0}s');
-    buffer.writeln('**Status**: ${report.allTestsPassed && report.adminBootstrapVerified ? "✅ SUCCESS" : "❌ FAILED"}');
+    buffer.writeln('**Status**: ${report.allTestsPassed && report.adminBootstrapVerified ? "âœ… SUCCESS" : "âŒ FAILED"}');
     buffer.writeln();
     
     // Executive Summary
@@ -125,31 +125,31 @@ class ValidationReportService {
     buffer.writeln('| Metric | Value | Status |');
     buffer.writeln('|--------|-------|--------|');
     buffer.writeln('| Total Tests | ${report.executionStats['totalTests']} | - |');
-    buffer.writeln('| Passed Tests | ${report.executionStats['passedTests']} | ${report.executionStats['passedTests']! > 0 ? '✅' : '⚪'} |');
-    buffer.writeln('| Failed Tests | ${report.executionStats['failedTests']} | ${report.executionStats['failedTests']! > 0 ? '❌' : '✅'} |');
-    buffer.writeln('| Warning Tests | ${report.executionStats['warningTests']} | ${report.executionStats['warningTests']! > 0 ? '⚠️' : '✅'} |');
-    buffer.writeln('| Success Rate | ${report._calculateSuccessRate()}% | ${double.parse(report._calculateSuccessRate()) >= 100.0 ? '✅' : '❌'} |');
-    buffer.writeln('| Admin Bootstrap | ${report.adminBootstrapVerified ? "Verified" : "Failed"} | ${report.adminBootstrapVerified ? '✅' : '❌'} |');
+    buffer.writeln('| Passed Tests | ${report.executionStats['passedTests']} | ${report.executionStats['passedTests']! > 0 ? 'âœ…' : 'âšª'} |');
+    buffer.writeln('| Failed Tests | ${report.executionStats['failedTests']} | ${report.executionStats['failedTests']! > 0 ? 'âŒ' : 'âœ…'} |');
+    buffer.writeln('| Warning Tests | ${report.executionStats['warningTests']} | ${report.executionStats['warningTests']! > 0 ? 'âš ï¸' : 'âœ…'} |');
+    buffer.writeln('| Success Rate | ${report._calculateSuccessRate()}% | ${double.parse(report._calculateSuccessRate()) >= 100.0 ? 'âœ…' : 'âŒ'} |');
+    buffer.writeln('| Admin Bootstrap | ${report.adminBootstrapVerified ? "Verified" : "Failed"} | ${report.adminBootstrapVerified ? 'âœ…' : 'âŒ'} |');
     buffer.writeln();
     
     // Production Readiness Assessment
     buffer.writeln('### Production Readiness Assessment');
     buffer.writeln();
     final isProductionReady = report.allTestsPassed && report.adminBootstrapVerified;
-    buffer.writeln('**Status**: ${isProductionReady ? "🚀 READY FOR PRODUCTION" : "🚫 NOT READY FOR PRODUCTION"}');
+    buffer.writeln('**Status**: ${isProductionReady ? "ðŸš€ READY FOR PRODUCTION" : "ðŸš« NOT READY FOR PRODUCTION"}');
     buffer.writeln();
     
     if (isProductionReady) {
-      buffer.writeln('✅ All validation tests passed successfully');
-      buffer.writeln('✅ Admin bootstrap verified and functional');
-      buffer.writeln('✅ Security rules properly enforced');
-      buffer.writeln('✅ Core functionality validated');
+      buffer.writeln('âœ… All validation tests passed successfully');
+      buffer.writeln('âœ… Admin bootstrap verified and functional');
+      buffer.writeln('âœ… Security rules properly enforced');
+      buffer.writeln('âœ… Core functionality validated');
       buffer.writeln();
       buffer.writeln('**Recommendation**: Deploy to production with confidence');
     } else {
-      buffer.writeln('❌ ${report.failedTests.length} test(s) failed');
+      buffer.writeln('âŒ ${report.failedTests.length} test(s) failed');
       if (!report.adminBootstrapVerified) {
-        buffer.writeln('❌ Admin bootstrap verification failed');
+        buffer.writeln('âŒ Admin bootstrap verification failed');
       }
       buffer.writeln();
       buffer.writeln('**Recommendation**: Address failed tests before production deployment');
@@ -176,7 +176,7 @@ class ValidationReportService {
     
     for (final (code, description, testKey) in testCases) {
       final result = report.testResults[testKey];
-      final statusIcon = result?.passed == true ? '✅' : result?.passed == false ? '❌' : '⏸️';
+      final statusIcon = result?.passed == true ? 'âœ…' : result?.passed == false ? 'âŒ' : 'â¸ï¸';
       final status = result?.passed == true ? 'PASS' : result?.passed == false ? 'FAIL' : 'NOT_RUN';
       
       buffer.writeln('### Test Case $code: $description $statusIcon');
@@ -209,7 +209,7 @@ class ValidationReportService {
     // Admin Bootstrap Details
     buffer.writeln('### Admin Bootstrap Verification');
     buffer.writeln();
-    buffer.writeln('- **Status**: ${report.adminBootstrapVerified ? "✅ VERIFIED" : "❌ FAILED"}');
+    buffer.writeln('- **Status**: ${report.adminBootstrapVerified ? "âœ… VERIFIED" : "âŒ FAILED"}');
     buffer.writeln('- **TALADMIN User**: ${report.adminBootstrapVerified ? "Active and accessible" : "Missing or inactive"}');
     
     final adminResult = report.testResults['Admin Bootstrap'];
@@ -259,7 +259,7 @@ class ValidationReportService {
           buffer.writeln();
         }
         
-        buffer.writeln('**Priority**: ${result.severity == ValidationSeverity.error ? '🔴 HIGH' : '🟡 MEDIUM'}');
+        buffer.writeln('**Priority**: ${result.severity == ValidationSeverity.error ? 'ðŸ”´ HIGH' : 'ðŸŸ¡ MEDIUM'}');
         buffer.writeln('**Impact**: ${result.severity == ValidationSeverity.error ? 'Blocks production deployment' : 'Should be addressed when possible'}');
         buffer.writeln();
       }
@@ -283,27 +283,27 @@ class ValidationReportService {
     if (report.allTestsPassed && report.adminBootstrapVerified) {
       buffer.writeln('## Success Summary');
       buffer.writeln();
-      buffer.writeln('🎉 **All validation tests passed successfully!**');
+      buffer.writeln('ðŸŽ‰ **All validation tests passed successfully!**');
       buffer.writeln();
       buffer.writeln('The TALOWA application has been comprehensively validated and is ready for production deployment.');
       buffer.writeln();
       buffer.writeln('### Validated Features');
       buffer.writeln();
-      buffer.writeln('- ✅ **Authentication System**: Complete OTP → Form → Payment (optional) flow');
-      buffer.writeln('- ✅ **Referral System**: TAL prefix codes, TALADMIN fallback, real-time updates');
-      buffer.writeln('- ✅ **Security**: Proper Firestore rules enforcement and access control');
-      buffer.writeln('- ✅ **Admin Bootstrap**: TALADMIN user verified and functional');
-      buffer.writeln('- ✅ **Payment Optional**: Users get full access regardless of payment status');
-      buffer.writeln('- ✅ **Real-time Features**: Network statistics update without manual refresh');
-      buffer.writeln('- ✅ **Deep Link Handling**: Referral auto-fill and fallback mechanisms');
+      buffer.writeln('- âœ… **Authentication System**: Complete OTP â†’ Form â†’ Payment (optional) flow');
+      buffer.writeln('- âœ… **Referral System**: TAL prefix codes, TALADMIN fallback, real-time updates');
+      buffer.writeln('- âœ… **Security**: Proper Firestore rules enforcement and access control');
+      buffer.writeln('- âœ… **Admin Bootstrap**: TALADMIN user verified and functional');
+      buffer.writeln('- âœ… **Payment Optional**: Users get full access regardless of payment status');
+      buffer.writeln('- âœ… **Real-time Features**: Network statistics update without manual refresh');
+      buffer.writeln('- âœ… **Deep Link Handling**: Referral auto-fill and fallback mechanisms');
       buffer.writeln();
       buffer.writeln('### Deployment Confidence');
       buffer.writeln();
-      buffer.writeln('- **Security Posture**: ✅ Validated');
-      buffer.writeln('- **Core Functionality**: ✅ Validated');
-      buffer.writeln('- **User Experience**: ✅ Validated');
-      buffer.writeln('- **Data Integrity**: ✅ Validated');
-      buffer.writeln('- **Business Logic**: ✅ Validated');
+      buffer.writeln('- **Security Posture**: âœ… Validated');
+      buffer.writeln('- **Core Functionality**: âœ… Validated');
+      buffer.writeln('- **User Experience**: âœ… Validated');
+      buffer.writeln('- **Data Integrity**: âœ… Validated');
+      buffer.writeln('- **Business Logic**: âœ… Validated');
       buffer.writeln();
     }
     
@@ -368,15 +368,15 @@ class ValidationReportService {
     try {
       // In a real implementation, this would write to the file system
       // For now, we'll simulate the file save operation
-      debugPrint('📝 Saving report to $fileName (${content.length} characters)');
+      debugPrint('ðŸ“ Saving report to $fileName (${content.length} characters)');
       
       // Simulate file write delay
       await Future.delayed(const Duration(milliseconds: 100));
       
-      debugPrint('✅ Report saved successfully to $fileName');
+      debugPrint('âœ… Report saved successfully to $fileName');
       
     } catch (e) {
-      debugPrint('❌ Failed to save report to $fileName: $e');
+      debugPrint('âŒ Failed to save report to $fileName: $e');
       rethrow;
     }
   }
@@ -433,7 +433,7 @@ class ValidationReportService {
     final overallStatus = report.allTestsPassed && report.adminBootstrapVerified;
     buffer.writeln('## Quick Status');
     buffer.writeln();
-    buffer.writeln('**Overall Result**: ${overallStatus ? "✅ PASS" : "❌ FAIL"}');
+    buffer.writeln('**Overall Result**: ${overallStatus ? "âœ… PASS" : "âŒ FAIL"}');
     buffer.writeln('**Production Ready**: ${overallStatus ? "YES" : "NO"}');
     buffer.writeln('**Success Rate**: ${report._calculateSuccessRate()}%');
     buffer.writeln();
@@ -461,10 +461,10 @@ class ValidationReportService {
     buffer.writeln('## Next Steps');
     buffer.writeln();
     if (overallStatus) {
-      buffer.writeln('✅ All tests passed - ready for production deployment');
+      buffer.writeln('âœ… All tests passed - ready for production deployment');
     } else {
-      buffer.writeln('❌ Address failed tests before production deployment');
-      buffer.writeln('📋 See detailed execution log for fix instructions');
+      buffer.writeln('âŒ Address failed tests before production deployment');
+      buffer.writeln('ðŸ“‹ See detailed execution log for fix instructions');
     }
     
     return buffer.toString();

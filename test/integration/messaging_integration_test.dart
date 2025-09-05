@@ -1,4 +1,4 @@
-// Integration tests for TALOWA Messaging Integration
+﻿// Integration tests for TALOWA Messaging Integration
 // Tests the integration between messaging system and existing TALOWA systems
 
 import 'package:flutter_test/flutter_test.dart';

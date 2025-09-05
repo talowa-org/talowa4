@@ -1,4 +1,4 @@
-// Post Comments Screen - Shows all comments for a specific post
+﻿// Post Comments Screen - Shows all comments for a specific post
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';

@@ -1,4 +1,4 @@
-// Core Multi-Language Support Test for TALOWA
+﻿// Core Multi-Language Support Test for TALOWA
 // Tests core functionality without Flutter bindings
 
 import 'package:flutter_test/flutter_test.dart';
@@ -20,17 +20,17 @@ void main() {
         expect(supportedLanguages.containsKey('ar'), true);
         
         expect(supportedLanguages['en'], 'English');
-        expect(supportedLanguages['hi'], 'हिंदी');
-        expect(supportedLanguages['te'], 'తెలుగు');
-        expect(supportedLanguages['ur'], 'اردو');
-        expect(supportedLanguages['ar'], 'العربية');
+        expect(supportedLanguages['hi'], 'à¤¹à¤¿à¤‚à¤¦à¥€');
+        expect(supportedLanguages['te'], 'à°¤à±†à°²à±à°—à±');
+        expect(supportedLanguages['ur'], 'Ø§Ø±Ø¯Ùˆ');
+        expect(supportedLanguages['ar'], 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©');
       });
 
       test('should detect language correctly', () {
         expect(LocalizationService.detectLanguage('Hello world'), 'en');
-        expect(LocalizationService.detectLanguage('नमस्ते दुनिया'), 'hi');
-        expect(LocalizationService.detectLanguage('హలో ప్రపంచం'), 'te');
-        expect(LocalizationService.detectLanguage('مرحبا بالعالم'), 'ar');
+        expect(LocalizationService.detectLanguage('à¤¨à¤®à¤¸à¥à¤¤à¥‡ à¤¦à¥à¤¨à¤¿à¤¯à¤¾'), 'hi');
+        expect(LocalizationService.detectLanguage('à°¹à°²à±‹ à°ªà±à°°à°ªà°‚à°šà°‚'), 'te');
+        expect(LocalizationService.detectLanguage('Ù…Ø±Ø­Ø¨Ø§ Ø¨Ø§Ù„Ø¹Ø§Ù„Ù…'), 'ar');
         expect(LocalizationService.detectLanguage(''), 'en'); // Default for empty
       });
 
@@ -90,7 +90,7 @@ void main() {
       });
 
       test('should format RTL text with proper markers', () {
-        final arabicText = RTLSupportService.formatRTLText('مرحبا 123 بالعالم', 'ar');
+        final arabicText = RTLSupportService.formatRTLText('Ù…Ø±Ø­Ø¨Ø§ 123 Ø¨Ø§Ù„Ø¹Ø§Ù„Ù…', 'ar');
         expect(arabicText.contains('\u200E'), true); // Contains LTR mark
         expect(arabicText.contains('\u200F'), true); // Contains RTL mark
         
@@ -268,8 +268,8 @@ void main() {
         
         for (int i = 0; i < 1000; i++) {
           LocalizationService.detectLanguage('Hello world $i');
-          LocalizationService.detectLanguage('नमस्ते दुनिया $i');
-          LocalizationService.detectLanguage('హలో ప్రపంచం $i');
+          LocalizationService.detectLanguage('à¤¨à¤®à¤¸à¥à¤¤à¥‡ à¤¦à¥à¤¨à¤¿à¤¯à¤¾ $i');
+          LocalizationService.detectLanguage('à°¹à°²à±‹ à°ªà±à°°à°ªà°‚à°šà°‚ $i');
         }
         
         stopwatch.stop();

@@ -1,4 +1,4 @@
-// Test script to verify the enhanced reporting system
+﻿// Test script to verify the enhanced reporting system
 // This demonstrates the new reporting capabilities
 
 import 'package:flutter/foundation.dart';
@@ -7,7 +7,7 @@ import 'validation_report_service.dart';
 
 /// Test the enhanced reporting system
 Future<void> testReportingSystem() async {
-  debugPrint('🧪 Testing Enhanced Reporting System...');
+  debugPrint('ðŸ§ª Testing Enhanced Reporting System...');
   
   // Create a sample validation report with mixed results
   final report = ValidationReport();
@@ -44,41 +44,41 @@ Future<void> testReportingSystem() async {
   // Set admin bootstrap status
   report.adminBootstrapVerified = true;
   
-  debugPrint('📊 Report Statistics:');
+  debugPrint('ðŸ“Š Report Statistics:');
   debugPrint('- Total Tests: ${report.executionStats['totalTests']}');
   debugPrint('- Passed: ${report.executionStats['passedTests']}');
   debugPrint('- Failed: ${report.executionStats['failedTests']}');
   debugPrint('- Warnings: ${report.executionStats['warningTests']}');
   
   // Test the enhanced report generation
-  debugPrint('\n📋 Testing Enhanced Report Generation...');
+  debugPrint('\nðŸ“‹ Testing Enhanced Report Generation...');
   
   try {
     // Generate comprehensive report
     final comprehensiveReport = report.generateReport();
-    debugPrint('✅ Comprehensive report generated (${comprehensiveReport.length} characters)');
+    debugPrint('âœ… Comprehensive report generated (${comprehensiveReport.length} characters)');
     
     // Generate detailed execution log
     final executionLog = report.generateDetailedExecutionLog();
-    debugPrint('✅ Detailed execution log generated (${executionLog.length} characters)');
+    debugPrint('âœ… Detailed execution log generated (${executionLog.length} characters)');
     
     // Generate fix suggestions report
     final fixSuggestions = report.generateFixSuggestionsReport();
-    debugPrint('✅ Fix suggestions report generated (${fixSuggestions.length} characters)');
+    debugPrint('âœ… Fix suggestions report generated (${fixSuggestions.length} characters)');
     
     // Test ValidationReportService
-    debugPrint('\n🔧 Testing ValidationReportService...');
+    debugPrint('\nðŸ”§ Testing ValidationReportService...');
     
     await ValidationReportService.generateAllReports(
       report,
       executionLog: [
-        '[2025-08-18T10:00:00] 🚀 Starting TALOWA Validation Suite...',
-        '[2025-08-18T10:00:01] 🔧 Initializing test environment...',
-        '[2025-08-18T10:00:02] 🧪 Running Test Case A: Navigation...',
-        '[2025-08-18T10:00:03] ✅ Test Case A passed',
-        '[2025-08-18T10:00:04] 🧪 Running Test Case C: Login...',
-        '[2025-08-18T10:00:05] ❌ Test Case C failed: Authentication error',
-        '[2025-08-18T10:00:06] 📊 Generating reports...',
+        '[2025-08-18T10:00:00] ðŸš€ Starting TALOWA Validation Suite...',
+        '[2025-08-18T10:00:01] ðŸ”§ Initializing test environment...',
+        '[2025-08-18T10:00:02] ðŸ§ª Running Test Case A: Navigation...',
+        '[2025-08-18T10:00:03] âœ… Test Case A passed',
+        '[2025-08-18T10:00:04] ðŸ§ª Running Test Case C: Login...',
+        '[2025-08-18T10:00:05] âŒ Test Case C failed: Authentication error',
+        '[2025-08-18T10:00:06] ðŸ“Š Generating reports...',
       ],
       metadata: {
         'testEnvironment': 'Development',
@@ -90,22 +90,22 @@ Future<void> testReportingSystem() async {
     
     // Test CI/CD export
     final cicdData = ValidationReportService.exportForCICD(report);
-    debugPrint('✅ CI/CD export generated with ${cicdData.keys.length} top-level keys');
+    debugPrint('âœ… CI/CD export generated with ${cicdData.keys.length} top-level keys');
     
     // Test summary report
     final summaryReport = ValidationReportService.generateSummaryReport(report);
-    debugPrint('✅ Summary report generated (${summaryReport.length} characters)');
+    debugPrint('âœ… Summary report generated (${summaryReport.length} characters)');
     
-    debugPrint('\n🎉 All reporting system tests passed!');
+    debugPrint('\nðŸŽ‰ All reporting system tests passed!');
     
     // Display sample output
-    debugPrint('\n📄 Sample Report Output:');
+    debugPrint('\nðŸ“„ Sample Report Output:');
     debugPrint('=' * 50);
     debugPrint(report.generateSummary());
     debugPrint('=' * 50);
     
   } catch (e) {
-    debugPrint('❌ Reporting system test failed: $e');
+    debugPrint('âŒ Reporting system test failed: $e');
     rethrow;
   }
 }

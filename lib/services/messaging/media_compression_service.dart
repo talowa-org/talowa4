@@ -1,4 +1,4 @@
-// Media Compression Service for TALOWA Messaging System
+﻿// Media Compression Service for TALOWA Messaging System
 // Handles compression and optimization for images, audio, and video files
 // Requirements: 4.2 - Create media compression and optimization
 
@@ -401,7 +401,7 @@ class CompressedImageResult {
 
   String get compressionInfo => 
     'Compressed ${(compressionRatio).toStringAsFixed(1)}% '
-    '(${_formatFileSize(originalSize)} → ${_formatFileSize(compressedSize)})';
+    '(${_formatFileSize(originalSize)} â†’ ${_formatFileSize(compressedSize)})';
 
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';

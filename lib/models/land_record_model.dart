@@ -1,4 +1,4 @@
-// Land Record Model for TALOWA
+﻿// Land Record Model for TALOWA
 // Reference: TECHNICAL_ARCHITECTURE.md - Land Records Collections
 
 import 'package:cloud_firestore/cloud_firestore.dart';

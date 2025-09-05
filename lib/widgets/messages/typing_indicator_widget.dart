@@ -1,4 +1,4 @@
-// Typing Indicator Widget for TALOWA Messaging
+﻿// Typing Indicator Widget for TALOWA Messaging
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 

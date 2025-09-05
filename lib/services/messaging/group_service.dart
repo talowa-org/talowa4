@@ -1,4 +1,4 @@
-// Group Service for TALOWA Messaging System
+﻿// Group Service for TALOWA Messaging System
 // Reference: in-app-communication/design.md - Group Management Component
 
 import 'dart:async';

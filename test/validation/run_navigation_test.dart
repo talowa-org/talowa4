@@ -1,9 +1,9 @@
-// Simple test runner for NavigationValidator
+﻿// Simple test runner for NavigationValidator
 import 'dart:io';
 import 'navigation_validator.dart';
 
 void main() async {
-  print('🧪 Running Navigation Validation Test...');
+  print('ðŸ§ª Running Navigation Validation Test...');
   
   try {
     final result = await NavigationValidator.validateTopLevelNavigation();
@@ -53,7 +53,7 @@ void main() async {
     exit(result.passed && comprehensiveResult.passed ? 0 : 1);
     
   } catch (e) {
-    print('❌ Navigation validation failed with error: $e');
+    print('âŒ Navigation validation failed with error: $e');
     exit(1);
   }
 }

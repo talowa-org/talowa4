@@ -1,4 +1,4 @@
-// Test file to verify validation framework functionality
+﻿// Test file to verify validation framework functionality
 import 'package:flutter_test/flutter_test.dart';
 import 'validation_framework.dart';
 

@@ -1,4 +1,4 @@
-// TALOWA Messages Screen - Real-time Communication
+﻿// TALOWA Messages Screen - Real-time Communication
 // Reference: in-app-communication/design.md - Messaging Architecture
 
 import 'package:flutter/material.dart';

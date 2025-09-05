@@ -1,4 +1,4 @@
-// Anonymous Messaging Service for TALOWA
+﻿// Anonymous Messaging Service for TALOWA
 // Implements anonymous reporting with proxy servers for identity protection
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 

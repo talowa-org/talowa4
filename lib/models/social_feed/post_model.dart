@@ -1,6 +1,7 @@
 // Post Model for TALOWA Social Feed
 // Complete post data model with all required fields
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'geographic_targeting.dart';
 
 class PostModel {
   final String id;
@@ -9,7 +10,10 @@ class PostModel {
   final String? authorRole;
   final String? title;
   final String content;
-  final List<String> mediaUrls;
+  final List<String> mediaUrls; // Legacy field - kept for backward compatibility
+  final List<String> imageUrls; // Specific image URLs
+  final List<String> videoUrls; // Specific video URLs
+  final List<String> documentUrls; // Specific document URLs
   final List<String> hashtags;
   final PostCategory category;
   final String location;
@@ -18,6 +22,7 @@ class PostModel {
   final int commentsCount;
   final int sharesCount;
   final bool isLikedByCurrentUser;
+  final GeographicTargeting? geographicTargeting;
 
   PostModel({
     required this.id,
@@ -26,7 +31,10 @@ class PostModel {
     this.authorRole,
     this.title,
     required this.content,
-    required this.mediaUrls,
+    this.mediaUrls = const [], // Legacy field - kept for backward compatibility
+    this.imageUrls = const [],
+    this.videoUrls = const [],
+    this.documentUrls = const [],
     required this.hashtags,
     required this.category,
     required this.location,
@@ -35,6 +43,7 @@ class PostModel {
     required this.commentsCount,
     required this.sharesCount,
     required this.isLikedByCurrentUser,
+    this.geographicTargeting,
   });
 
   // Convert from Firestore document
@@ -48,7 +57,10 @@ class PostModel {
       authorRole: data['authorRole'],
       title: data['title'],
       content: data['content'] ?? '',
-      mediaUrls: List<String>.from(data['mediaUrls'] ?? []),
+      mediaUrls: List<String>.from(data['mediaUrls'] ?? []), // Legacy support
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+      videoUrls: List<String>.from(data['videoUrls'] ?? []),
+      documentUrls: List<String>.from(data['documentUrls'] ?? []),
       hashtags: List<String>.from(data['hashtags'] ?? []),
       category: PostCategoryExtension.fromString(data['category'] ?? 'general_discussion'),
       location: data['location'] ?? '',
@@ -57,6 +69,9 @@ class PostModel {
       commentsCount: data['commentsCount'] ?? 0,
       sharesCount: data['sharesCount'] ?? 0,
       isLikedByCurrentUser: false, // This will be set separately
+      geographicTargeting: data['geographicTargeting'] != null 
+          ? GeographicTargeting.fromMap(data['geographicTargeting']) 
+          : null,
     );
   }
 
@@ -68,7 +83,10 @@ class PostModel {
       'authorRole': authorRole,
       'title': title,
       'content': content,
-      'mediaUrls': mediaUrls,
+      'mediaUrls': mediaUrls, // Legacy support
+      'imageUrls': imageUrls,
+      'videoUrls': videoUrls,
+      'documentUrls': documentUrls,
       'hashtags': hashtags,
       'category': category.value,
       'location': location,
@@ -76,6 +94,7 @@ class PostModel {
       'likesCount': likesCount,
       'commentsCount': commentsCount,
       'sharesCount': sharesCount,
+      'geographicTargeting': geographicTargeting?.toMap(),
     };
   }
 
@@ -88,6 +107,9 @@ class PostModel {
     String? title,
     String? content,
     List<String>? mediaUrls,
+    List<String>? imageUrls,
+    List<String>? videoUrls,
+    List<String>? documentUrls,
     List<String>? hashtags,
     PostCategory? category,
     String? location,
@@ -96,6 +118,7 @@ class PostModel {
     int? commentsCount,
     int? sharesCount,
     bool? isLikedByCurrentUser,
+    GeographicTargeting? geographicTargeting,
   }) {
     return PostModel(
       id: id ?? this.id,
@@ -105,6 +128,9 @@ class PostModel {
       title: title ?? this.title,
       content: content ?? this.content,
       mediaUrls: mediaUrls ?? this.mediaUrls,
+      imageUrls: imageUrls ?? this.imageUrls,
+      videoUrls: videoUrls ?? this.videoUrls,
+      documentUrls: documentUrls ?? this.documentUrls,
       hashtags: hashtags ?? this.hashtags,
       category: category ?? this.category,
       location: location ?? this.location,
@@ -113,8 +139,19 @@ class PostModel {
       commentsCount: commentsCount ?? this.commentsCount,
       sharesCount: sharesCount ?? this.sharesCount,
       isLikedByCurrentUser: isLikedByCurrentUser ?? this.isLikedByCurrentUser,
+      geographicTargeting: geographicTargeting ?? this.geographicTargeting,
     );
   }
+
+  // Convenience methods for media handling
+  bool get hasImages => imageUrls.isNotEmpty;
+  bool get hasVideos => videoUrls.isNotEmpty;
+  bool get hasDocuments => documentUrls.isNotEmpty;
+  bool get hasMedia => hasImages || hasVideos || hasDocuments;
+
+  int get totalMediaCount => imageUrls.length + videoUrls.length + documentUrls.length;
+
+  List<String> get allMediaUrls => [...imageUrls, ...videoUrls, ...documentUrls];
 
   @override
   String toString() {
@@ -225,6 +262,124 @@ extension PostCategoryExtension on PostCategory {
         return PostCategory.health;
       default:
         return PostCategory.generalDiscussion;
+    }
+  }
+}
+
+// Post visibility enum
+enum PostVisibility {
+  public,
+  coordinatorsOnly,
+  localCommunity,
+  private,
+}
+
+extension PostVisibilityExtension on PostVisibility {
+  String get value {
+    switch (this) {
+      case PostVisibility.public:
+        return 'public';
+      case PostVisibility.coordinatorsOnly:
+        return 'coordinators_only';
+      case PostVisibility.localCommunity:
+        return 'local_community';
+      case PostVisibility.private:
+        return 'private';
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case PostVisibility.public:
+        return 'Public';
+      case PostVisibility.coordinatorsOnly:
+        return 'Coordinators Only';
+      case PostVisibility.localCommunity:
+        return 'Local Community';
+      case PostVisibility.private:
+        return 'Private';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case PostVisibility.public:
+        return 'Everyone can see this post';
+      case PostVisibility.coordinatorsOnly:
+        return 'Only coordinators can see this post';
+      case PostVisibility.localCommunity:
+        return 'Only local community members can see this post';
+      case PostVisibility.private:
+        return 'Only you can see this post';
+    }
+  }
+
+  static PostVisibility fromString(String visibility) {
+    switch (visibility.toLowerCase()) {
+      case 'coordinators_only':
+        return PostVisibility.coordinatorsOnly;
+      case 'local_community':
+        return PostVisibility.localCommunity;
+      case 'private':
+        return PostVisibility.private;
+      default:
+        return PostVisibility.public;
+    }
+  }
+}
+
+// Post priority enum
+enum PostPriority {
+  low,
+  normal,
+  high,
+  urgent,
+  emergency,
+}
+
+extension PostPriorityExtension on PostPriority {
+  String get value {
+    switch (this) {
+      case PostPriority.low:
+        return 'low';
+      case PostPriority.normal:
+        return 'normal';
+      case PostPriority.high:
+        return 'high';
+      case PostPriority.urgent:
+        return 'urgent';
+      case PostPriority.emergency:
+        return 'emergency';
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case PostPriority.low:
+        return 'Low Priority';
+      case PostPriority.normal:
+        return 'Normal';
+      case PostPriority.high:
+        return 'High Priority';
+      case PostPriority.urgent:
+        return 'Urgent';
+      case PostPriority.emergency:
+        return 'Emergency';
+    }
+  }
+
+  static PostPriority fromString(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'low':
+        return PostPriority.low;
+      case 'high':
+        return PostPriority.high;
+      case 'urgent':
+        return PostPriority.urgent;
+      case 'emergency':
+        return PostPriority.emergency;
+      default:
+        return PostPriority.normal;
     }
   }
 }

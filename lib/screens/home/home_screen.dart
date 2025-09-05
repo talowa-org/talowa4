@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +15,11 @@ import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
 // Test imports removed for production
 import '../../services/cultural_service.dart';
 import '../../services/user_role_fix_service.dart';
+import '../../widgets/notifications/notification_badge_widget.dart';
+import '../../widgets/social_feed/live_activity_dashboard.dart';
+import '../../widgets/notifications/real_time_notification_widget.dart';
+import '../../widgets/performance/performance_dashboard_widget.dart';
+import '../../widgets/security/security_dashboard_widget.dart';
 // import '../../services/auth/auth_state_manager.dart';
 // import '../../generated/l10n/app_localizations.dart';
 
@@ -91,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               isDataCached = true;
             });
           }
-          debugPrint('✅ Loaded data from cache');
+          debugPrint('âœ… Loaded data from cache');
           return;
         }
       }
@@ -126,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Update cache
       await _updateCache(freshUserData, freshMotivation);
-      debugPrint('✅ Loaded fresh data and updated cache');
+      debugPrint('âœ… Loaded fresh data and updated cache');
 
     } catch (e) {
       debugPrint('Fresh data loading error: $e');
@@ -227,27 +232,27 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(Icons.emergency, color: AppTheme.emergencyRed),
               SizedBox(width: 8),
-              Text('इमरजेंसी सहायता'),
+              Text('à¤‡à¤®à¤°à¤œà¥‡à¤‚à¤¸à¥€ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾'),
             ],
           ),
           content: const Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('तुरंत सहायता के लिए:'),
+              Text('à¤¤à¥à¤°à¤‚à¤¤ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
               SizedBox(height: 8),
-              Text('• पुलिस: 100'),
-              Text('• एम्बुलेंस: 108'),
-              Text('• फायर ब्रिगेड: 101'),
-              Text('• महिला हेल्पलाइन: 1091'),
+              Text('â€¢ à¤ªà¥à¤²à¤¿à¤¸: 100'),
+              Text('â€¢ à¤à¤®à¥à¤¬à¥à¤²à¥‡à¤‚à¤¸: 108'),
+              Text('â€¢ à¤«à¤¾à¤¯à¤° à¤¬à¥à¤°à¤¿à¤—à¥‡à¤¡: 101'),
+              Text('â€¢ à¤®à¤¹à¤¿à¤²à¤¾ à¤¹à¥‡à¤²à¥à¤ªà¤²à¤¾à¤‡à¤¨: 1091'),
               SizedBox(height: 12),
-              Text('या होम स्क्रीन पर इमरजेंसी बटन का उपयोग करें।'),
+              Text('à¤¯à¤¾ à¤¹à¥‹à¤® à¤¸à¥à¤•à¥à¤°à¥€à¤¨ à¤ªà¤° à¤‡à¤®à¤°à¤œà¥‡à¤‚à¤¸à¥€ à¤¬à¤Ÿà¤¨ à¤•à¤¾ à¤‰à¤ªà¤¯à¥‹à¤— à¤•à¤°à¥‡à¤‚à¥¤'),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('समझ गया'),
+              child: const Text('à¤¸à¤®à¤ à¤—à¤¯à¤¾'),
             ),
           ],
         );
@@ -259,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _testDataPopulation() async {
     try {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🔄 Fixing user roles and populating data...')),
+        const SnackBar(content: Text('ðŸ”„ Fixing user roles and populating data...')),
       );
 
       // First fix user roles and permissions, then populate data
@@ -268,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ User roles fixed and data populated successfully!'),
+            content: Text('âœ… User roles fixed and data populated successfully!'),
             backgroundColor: AppTheme.successGreen,
           ),
         );
@@ -280,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Error fixing data: $e'),
+            content: Text('âŒ Error fixing data: $e'),
             backgroundColor: AppTheme.emergencyRed,
           ),
         );
@@ -384,6 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false, // Remove automatic back button
         actions: [
+          const NotificationBadgeWidget(),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -395,8 +401,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 await FirebaseAuth.instance.signOut();
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
-                    context, 
-                    '/welcome', 
+                    context,
+                    '/welcome',
                     (route) => false,
                   );
                 }
@@ -422,6 +428,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildCentralAIAssistant(),
                     
                     const SizedBox(height: 24),
+                    
+                    // Live Activity Dashboard
+                    _buildLiveActivitySection(),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Real-time Notifications
+                    _buildRealTimeNotifications(),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Performance Dashboard
+                    _buildPerformanceDashboard(),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Security Dashboard
+                    _buildSecurityDashboard(),
+                    
+                    const SizedBox(height: 16),
                     
                     // Cultural Greeting
                     _buildGreetingCard(),
@@ -652,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(width: 6),
                       Text(
-                        'Voice-First • English • हिंदी • తెలుగు',
+                        'Voice-First â€¢ English â€¢ à¤¹à¤¿à¤‚à¤¦à¥€ â€¢ à°¤à±†à°²à±à°—à±',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -1056,4 +1082,251 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  /// Build Live Activity Dashboard Section
+  Widget _buildLiveActivitySection() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.trending_up,
+                    color: AppTheme.talowaGreen,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Live Activity',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'LIVE',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const CompactLiveActivityDashboard(),
+        ],
+      ),
+    );
+  }
+
+  /// Build Real-time Notifications Section
+  Widget _buildRealTimeNotifications() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.notifications_active,
+                    color: Colors.blue,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Recent Notifications',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                const NotificationBellWidget(),
+              ],
+            ),
+          ),
+          Container(
+            height: 200,
+            child: const RealTimeNotificationWidget(
+              maxNotifications: 3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build Performance Dashboard Section
+  Widget _buildPerformanceDashboard() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.speed,
+                    color: AppTheme.talowaGreen,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Performance Metrics',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const PerformanceDashboardWidget(
+            showDetailedMetrics: false,
+            updateInterval: Duration(seconds: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build Security Dashboard Section
+  Widget _buildSecurityDashboard() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.security,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Enterprise Security',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SecurityDashboardWidget(
+            isCompact: true,
+          ),
+        ],
+      ),
+    );
+  }
 }
+

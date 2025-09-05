@@ -1,4 +1,4 @@
-// Test runner for Referral Code Policy Validation (Test Case E)
+﻿// Test runner for Referral Code Policy Validation (Test Case E)
 // This file allows testing the referral code policy validator independently
 
 import 'package:flutter_test/flutter_test.dart';
@@ -17,16 +17,16 @@ void main() {
     });
 
     test('Test Case E: Referral Code Policy Validation', () async {
-      print('🧪 Running Test Case E: Referral Code Policy Validation...');
+      print('ðŸ§ª Running Test Case E: Referral Code Policy Validation...');
       
       final result = await ReferralCodePolicyValidator.validateReferralCodePolicy();
       
       print('Result: ${result.toString()}');
       
       if (result.passed) {
-        print('✅ Test Case E PASSED: ${result.message}');
+        print('âœ… Test Case E PASSED: ${result.message}');
       } else {
-        print('❌ Test Case E FAILED: ${result.message}');
+        print('âŒ Test Case E FAILED: ${result.message}');
         if (result.errorDetails != null) {
           print('   Error Details: ${result.errorDetails}');
         }
@@ -39,7 +39,7 @@ void main() {
     });
 
     test('Validate specific referral code formats', () async {
-      print('🧪 Testing specific referral code formats...');
+      print('ðŸ§ª Testing specific referral code formats...');
       
       // Test valid codes
       final validCodes = [
@@ -79,7 +79,7 @@ void main() {
     });
 
     test('Get policy compliance summary', () async {
-      print('🧪 Getting policy compliance summary...');
+      print('ðŸ§ª Getting policy compliance summary...');
       
       final summary = await ReferralCodePolicyValidator.getPolicyComplianceSummary();
       

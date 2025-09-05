@@ -1,4 +1,4 @@
-// TALOWA Help Search Results Widget
+﻿// TALOWA Help Search Results Widget
 // Displays search results with relevance scoring
 
 import 'package:flutter/material.dart';

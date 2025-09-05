@@ -1,4 +1,4 @@
-// TALOWA Article Content Widget
+﻿// TALOWA Article Content Widget
 // Displays formatted article content
 
 import 'package:flutter/material.dart';

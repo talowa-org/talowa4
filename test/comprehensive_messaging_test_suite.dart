@@ -1,4 +1,4 @@
-// Comprehensive Messaging Test Suite Runner
+﻿// Comprehensive Messaging Test Suite Runner
 // Orchestrates all messaging tests including unit, integration, load, security, and performance tests
 
 import 'package:flutter_test/flutter_test.dart';

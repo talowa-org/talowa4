@@ -1,4 +1,4 @@
-// TALOWA Help Search Bar Widget
+﻿// TALOWA Help Search Bar Widget
 // Search interface for help articles
 
 import 'package:flutter/material.dart';

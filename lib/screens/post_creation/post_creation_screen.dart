@@ -15,6 +15,7 @@ import '../../widgets/social_feed/geographic_scope_widget.dart';
 import '../../widgets/social_feed/document_preview_widget.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../services/media/media_upload_service.dart';
+import '../../services/media/video_service.dart';
 import '../../services/social_feed/draft_service.dart';
 import '../../widgets/feed/post_widget.dart';
 
@@ -43,6 +44,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
   GeographicTargeting? _geographicTargeting;
   List<String> _hashtags = [];
   List<String> _selectedImages = [];
+  List<String> _selectedVideos = [];
   List<String> _selectedDocuments = [];
   bool _isPinned = false;
   bool _allowComments = true;
@@ -82,15 +84,10 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
     _titleController.text = post.title ?? '';
     _contentController.text = post.content;
     _selectedCategory = post.category;
-    _selectedVisibility = post.visibility;
-    _selectedPriority = post.priority;
-    _geographicTargeting = post.geographicTargeting;
     _hashtags = List.from(post.hashtags);
     _selectedImages = List.from(post.imageUrls);
+    _selectedVideos = List.from(post.videoUrls);
     _selectedDocuments = List.from(post.documentUrls);
-    _isPinned = post.isPinned;
-    _allowComments = post.allowComments;
-    _allowShares = post.allowShares;
   }
   
   @override
@@ -413,9 +410,139 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
+        // Videos section
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.videocam, color: AppTheme.talowaGreen),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Videos',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${_selectedVideos.length}/3',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Video picker buttons
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _selectedVideos.length < 3
+                          ? () => _pickVideos(ImageSource.gallery)
+                          : null,
+                      icon: const Icon(Icons.video_library, size: 18),
+                      label: const Text('Gallery'),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    ElevatedButton.icon(
+                      onPressed: _selectedVideos.length < 3
+                          ? () => _pickVideos(ImageSource.camera)
+                          : null,
+                      icon: const Icon(Icons.videocam, size: 18),
+                      label: const Text('Record'),
+                    ),
+                  ],
+                ),
+
+                // Selected videos preview
+                if (_selectedVideos.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedVideos.length,
+                      itemBuilder: (context, index) {
+                        final videoPath = _selectedVideos[index];
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  color: Colors.black,
+                                  child: const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.play_circle_filled,
+                                        color: Colors.white,
+                                        size: 32,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Video',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // Remove button
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: GestureDetector(
+                                  onTap: () => _removeVideo(index),
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
         // Documents section
         Card(
           child: Padding(
@@ -681,24 +808,18 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
       authorRole: 'coordinator', // Mock role
       title: _titleController.text.trim().isEmpty ? null : _titleController.text.trim(),
       content: _contentController.text.trim(),
+      mediaUrls: [], // Legacy field
       imageUrls: _selectedImages,
+      videoUrls: _selectedVideos,
       documentUrls: _selectedDocuments,
       hashtags: _hashtags,
       category: _selectedCategory,
-      visibility: _selectedVisibility,
-      priority: _selectedPriority,
-      targeting: _geographicTargeting,
+      location: '',
       createdAt: DateTime.now(),
       likesCount: 0,
       commentsCount: 0,
       sharesCount: 0,
       isLikedByCurrentUser: false,
-      recentComments: [],
-      isPinned: _isPinned,
-      allowComments: _allowComments,
-      allowShares: _allowShares,
-      isReported: false,
-      isHidden: false,
     );
     
     return SingleChildScrollView(
@@ -831,6 +952,29 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
       _selectedImages.removeAt(index);
     });
   }
+
+  Future<void> _pickVideos(ImageSource source) async {
+    try {
+      final XFile? video = await ImagePicker().pickVideo(
+        source: source,
+        maxDuration: const Duration(minutes: 10), // 10 minute limit
+      );
+
+      if (video != null) {
+        setState(() {
+          _selectedVideos.add(video.path);
+        });
+      }
+    } catch (e) {
+      _showError('Failed to pick video: $e');
+    }
+  }
+
+  void _removeVideo(int index) {
+    setState(() {
+      _selectedVideos.removeAt(index);
+    });
+  }
   
   Future<void> _pickDocuments() async {
     try {
@@ -940,6 +1084,31 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         }
       }
       
+      // Upload videos
+      List<String> uploadedVideoUrls = [];
+      if (_selectedVideos.isNotEmpty) {
+        try {
+          for (int i = 0; i < _selectedVideos.length; i++) {
+            final videoPath = _selectedVideos[i];
+            final videoFile = File(videoPath);
+
+            if (await videoFile.exists()) {
+              final result = await VideoService.uploadVideo(
+                videoFile: videoFile,
+                userId: currentUser.uid,
+                postId: DateTime.now().millisecondsSinceEpoch.toString(),
+                compression: VideoCompressionSettings.mediumQuality,
+                generateThumbnail: true,
+              );
+
+              uploadedVideoUrls.add(result.downloadUrl);
+            }
+          }
+        } catch (e) {
+          throw Exception('Failed to upload videos: $e');
+        }
+      }
+
       // Upload documents
       List<String> uploadedDocumentUrls = [];
       if (_selectedDocuments.isNotEmpty) {
@@ -956,46 +1125,37 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
       
       if (widget.editPost != null) {
         // Update existing post
-        await FeedService.updatePost(
+        await FeedService().updatePost(
           postId: widget.editPost!.id,
           title: _titleController.text.trim().isEmpty ? null : _titleController.text.trim(),
           content: _contentController.text.trim(),
           imageUrls: uploadedImageUrls,
+          videoUrls: uploadedVideoUrls,
           documentUrls: uploadedDocumentUrls,
           hashtags: _hashtags,
           category: _selectedCategory,
-          visibility: _selectedVisibility,
-          priority: _selectedPriority,
-          targeting: _geographicTargeting,
-          isPinned: _isPinned,
-          allowComments: _allowComments,
-          allowShares: _allowShares,
         );
         
         _showSuccess('Post updated successfully!');
       } else {
         // Create new post
-        await FeedService.createPost(
-          authorId: currentUser.uid,
+        await FeedService().createPost(
           title: _titleController.text.trim().isEmpty ? null : _titleController.text.trim(),
           content: _contentController.text.trim(),
           imageUrls: uploadedImageUrls,
+          videoUrls: uploadedVideoUrls,
           documentUrls: uploadedDocumentUrls,
           hashtags: _hashtags,
           category: _selectedCategory,
-          visibility: _selectedVisibility,
-          priority: _selectedPriority,
-          targeting: _geographicTargeting,
-          isPinned: _isPinned,
-          allowComments: _allowComments,
-          allowShares: _allowShares,
         );
         
         _showSuccess('Post published successfully!');
       }
       
       // Return to previous screen
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
       
     } catch (e) {
       _showError('Failed to publish post: $e');
@@ -1058,9 +1218,9 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
           'icon': Icons.school,
           'color': Colors.indigo,
         };
-      case PostCategory.healthAndSafety:
+      case PostCategory.health:
         return {
-          'label': 'Health & Safety',
+          'label': 'Health',
           'icon': Icons.health_and_safety,
           'color': Colors.pink,
         };
@@ -1069,6 +1229,12 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
           'label': 'Agriculture',
           'icon': Icons.agriculture,
           'color': Colors.lightGreen,
+        };
+      case PostCategory.governmentSchemes:
+        return {
+          'label': 'Government Schemes',
+          'icon': Icons.account_balance,
+          'color': Colors.teal,
         };
     }
   }
@@ -1081,8 +1247,8 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         return 'Coordinators Only';
       case PostVisibility.localCommunity:
         return 'Local Community';
-      case PostVisibility.directNetwork:
-        return 'Direct Network';
+      case PostVisibility.private:
+        return 'Private';
     }
   }
   
@@ -1096,6 +1262,8 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         return 'High Priority';
       case PostPriority.urgent:
         return 'Urgent';
+      case PostPriority.emergency:
+        return 'Emergency';
     }
   }
   
@@ -1109,6 +1277,8 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         return Icons.keyboard_arrow_up;
       case PostPriority.urgent:
         return Icons.priority_high;
+      case PostPriority.emergency:
+        return Icons.emergency;
     }
   }
   
@@ -1122,6 +1292,8 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         return Colors.orange;
       case PostPriority.urgent:
         return Colors.red;
+      case PostPriority.emergency:
+        return Colors.red[900]!;
     }
   }
   
@@ -1160,3 +1332,4 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
     }
   }
 }
+

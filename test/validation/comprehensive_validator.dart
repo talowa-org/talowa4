@@ -1,4 +1,4 @@
-// TALOWA Comprehensive Validation Suite
+﻿// TALOWA Comprehensive Validation Suite
 // Executes all validation tasks from Phase 1 through Phase 6
 
 import 'dart:async';
@@ -39,13 +39,13 @@ class ComprehensiveValidator {
     _enableRetries = enableRetries;
     _stopOnFirstFailure = stopOnFirstFailure;
     
-    _logExecution('🚀 Starting TALOWA Complete Validation Suite...');
-    _logExecution('📋 Executing all tasks from Phase 1 through Phase 6...');
-    _logExecution('⚙️ Configuration: retries=$enableRetries, stopOnFailure=$stopOnFirstFailure');
+    _logExecution('ðŸš€ Starting TALOWA Complete Validation Suite...');
+    _logExecution('ðŸ“‹ Executing all tasks from Phase 1 through Phase 6...');
+    _logExecution('âš™ï¸ Configuration: retries=$enableRetries, stopOnFailure=$stopOnFirstFailure');
     
     try {
       // Initialize test environment
-      _logExecution('🔧 Initializing test environment...');
+      _logExecution('ðŸ”§ Initializing test environment...');
       await TestEnvironment.initialize();
       
       // Execute phases sequentially
@@ -59,53 +59,53 @@ class ComprehensiveValidator {
       ];
       
       for (final (phaseName, phaseFunction) in phases) {
-        _logExecution('\n📍 Starting $phaseName');
+        _logExecution('\nðŸ“ Starting $phaseName');
         
         try {
           await _executeWithTimeout(phaseName, phaseFunction);
-          _logExecution('✅ $phaseName completed successfully');
+          _logExecution('âœ… $phaseName completed successfully');
           
           // Check if we should stop on failure
           if (_stopOnFirstFailure && _report.failedTests.isNotEmpty) {
-            _logExecution('🛑 Stopping execution due to failure (stopOnFirstFailure=true)');
+            _logExecution('ðŸ›‘ Stopping execution due to failure (stopOnFirstFailure=true)');
             break;
           }
         } catch (e) {
-          _logExecution('❌ $phaseName failed: $e');
+          _logExecution('âŒ $phaseName failed: $e');
           if (_stopOnFirstFailure) {
-            _logExecution('🛑 Stopping execution due to phase failure');
+            _logExecution('ðŸ›‘ Stopping execution due to phase failure');
             break;
           }
         }
       }
       
       // Generate final report
-      _logExecution('\n📊 Generating final validation report...');
+      _logExecution('\nðŸ“Š Generating final validation report...');
       final finalReport = _report.generateReport();
       debugPrint('\n$finalReport');
       
       // Apply fixes if needed and enabled
       if (!_report.allTestsPassed && enableRetries) {
-        _logExecution('🔧 Applying automated fixes for failed tests...');
+        _logExecution('ðŸ”§ Applying automated fixes for failed tests...');
         final fixResult = await AutomatedFixService.applyFixesForFailedTests(
           _report,
           dryRun: false,
           enableRollback: true,
         );
         
-        _logExecution('📊 Fix application completed: ${fixResult.successfulFixes}/${fixResult.totalFixes} successful');
+        _logExecution('ðŸ“Š Fix application completed: ${fixResult.successfulFixes}/${fixResult.totalFixes} successful');
         
         // Re-run failed tests after fixes
         await _rerunFailedTests();
       }
       
-      _logExecution('✅ TALOWA Validation Suite Completed');
-      _logExecution('📈 Final Statistics: ${_getExecutionSummary()}');
+      _logExecution('âœ… TALOWA Validation Suite Completed');
+      _logExecution('ðŸ“ˆ Final Statistics: ${_getExecutionSummary()}');
       
       return _report;
       
     } catch (e) {
-      _logExecution('❌ Validation Suite Failed: $e');
+      _logExecution('âŒ Validation Suite Failed: $e');
       _report.addResult('Suite Execution', ValidationResult.fail(
         'Complete validation suite failed',
         errorDetails: e.toString(),
@@ -114,7 +114,7 @@ class ComprehensiveValidator {
       return _report;
     } finally {
       // Cleanup test environment
-      _logExecution('🧹 Cleaning up test environment...');
+      _logExecution('ðŸ§¹ Cleaning up test environment...');
       await TestEnvironment.cleanup();
       
       // Save execution log
@@ -124,12 +124,12 @@ class ComprehensiveValidator {
 
   /// PHASE 1: Validation Framework Setup
   static Future<void> _executePhase1() async {
-    debugPrint('\n🔧 PHASE 1: Validation Framework Setup');
+    debugPrint('\nðŸ”§ PHASE 1: Validation Framework Setup');
     
-    // Task 1.1: Create Validation Test Infrastructure ✅ (Already implemented)
+    // Task 1.1: Create Validation Test Infrastructure âœ… (Already implemented)
     _report.addResult('Task 1.1', ValidationResult.pass('Validation test infrastructure created'));
     
-    // Task 1.2: Set Up Test Environment ✅ (Already implemented)
+    // Task 1.2: Set Up Test Environment âœ… (Already implemented)
     _report.addResult('Task 1.2', ValidationResult.pass('Test environment configured'));
     
     // Task 1.3: Implement Admin Bootstrap Verification
@@ -138,7 +138,7 @@ class ComprehensiveValidator {
     _report.adminBootstrapVerified = adminResult.passed;
     
     if (!adminResult.passed) {
-      debugPrint('🔧 Admin bootstrap missing - creating...');
+      debugPrint('ðŸ”§ Admin bootstrap missing - creating...');
       final createResult = await AdminBootstrapValidator.createAdminBootstrap();
       if (createResult.passed) {
         _report.adminBootstrapVerified = true;
@@ -149,7 +149,7 @@ class ComprehensiveValidator {
 
   /// PHASE 2: Core Flow Validation Implementation
   static Future<void> _executePhase2() async {
-    debugPrint('\n🧪 PHASE 2: Core Flow Validation Implementation');
+    debugPrint('\nðŸ§ª PHASE 2: Core Flow Validation Implementation');
     
     // Task 2.1: Implement Navigation Validation (Test Case A)
     final navResult = await NavigationValidator.validateTopLevelNavigation();
@@ -180,7 +180,7 @@ class ComprehensiveValidator {
 
   /// PHASE 3: Authentication & Deep Link Validation
   static Future<void> _executePhase3() async {
-    debugPrint('\n🔐 PHASE 3: Authentication & Deep Link Validation');
+    debugPrint('\nðŸ” PHASE 3: Authentication & Deep Link Validation');
     
     // Task 3.1: Implement Existing User Login Validation (Test Case C)
     final loginResult = await _validateExistingUserLogin();
@@ -193,7 +193,7 @@ class ComprehensiveValidator {
 
   /// PHASE 4: Policy & Real-time Validation
   static Future<void> _executePhase4() async {
-    debugPrint('\n📋 PHASE 4: Policy & Real-time Validation');
+    debugPrint('\nðŸ“‹ PHASE 4: Policy & Real-time Validation');
     
     // Task 4.1: Implement Referral Code Policy Validation (Test Case E)
     final policyResult = await _validateReferralCodePolicy();
@@ -206,21 +206,21 @@ class ComprehensiveValidator {
 
   /// PHASE 5: Security & Comprehensive Testing
   static Future<void> _executePhase5() async {
-    debugPrint('\n🛡️ PHASE 5: Security & Comprehensive Testing');
+    debugPrint('\nðŸ›¡ï¸ PHASE 5: Security & Comprehensive Testing');
     
     // Task 5.1: Implement Security Validation (Test Case G)
     final securityResult = await _validateSecurityRules();
     _report.addResult('Test Case G', securityResult);
     
-    // Task 5.2: Create Comprehensive Test Suite Runner ✅ (This class)
+    // Task 5.2: Create Comprehensive Test Suite Runner âœ… (This class)
     _report.addResult('Task 5.2', ValidationResult.pass('Comprehensive test suite runner implemented'));
   }
 
   /// PHASE 6: Reporting & Fix Implementation
   static Future<void> _executePhase6() async {
-    debugPrint('\n📊 PHASE 6: Reporting & Fix Implementation');
+    debugPrint('\nðŸ“Š PHASE 6: Reporting & Fix Implementation');
     
-    // Task 6.1: Implement Results Reporting System ✅ (ValidationReport class)
+    // Task 6.1: Implement Results Reporting System âœ… (ValidationReport class)
     _report.addResult('Task 6.1', ValidationResult.pass('Results reporting system implemented'));
     
     // Task 6.2: Implement Automated Fix Application
@@ -236,11 +236,11 @@ class ComprehensiveValidator {
     final accessResult = await _validatePostFormAccess();
     _report.addResult('Test Case B3', accessResult);
     
-    // Test Case B4: Payment success → activation + counters/roles
+    // Test Case B4: Payment success â†’ activation + counters/roles
     final successResult = await _validatePaymentSuccess();
     _report.addResult('Test Case B4', successResult);
     
-    // Test Case B5: Payment failure → access retained, active status
+    // Test Case B5: Payment failure â†’ access retained, active status
     final failureResult = await _validatePaymentFailure();
     _report.addResult('Test Case B5', failureResult);
   }
@@ -248,7 +248,7 @@ class ComprehensiveValidator {
   /// Validate Post-form Access (Test Case B3)
   static Future<ValidationResult> _validatePostFormAccess() async {
     try {
-      debugPrint('🚪 Running Test Case B3: Post-form Access...');
+      debugPrint('ðŸšª Running Test Case B3: Post-form Access...');
       
       // Create test user with no payment
       final testUser = await TestEnvironment.createTestUser();
@@ -284,7 +284,7 @@ class ComprehensiveValidator {
   /// Validate Payment Success (Test Case B4)
   static Future<ValidationResult> _validatePaymentSuccess() async {
     try {
-      debugPrint('💳 Running Test Case B4: Payment Success...');
+      debugPrint('ðŸ’³ Running Test Case B4: Payment Success...');
       
       // Create test user and simulate payment success
       final testUser = await TestEnvironment.createTestUser();
@@ -322,7 +322,7 @@ class ComprehensiveValidator {
   /// Validate Payment Failure (Test Case B5)
   static Future<ValidationResult> _validatePaymentFailure() async {
     try {
-      debugPrint('❌ Running Test Case B5: Payment Failure...');
+      debugPrint('âŒ Running Test Case B5: Payment Failure...');
       
       // Create test user and simulate payment failure
       final testUser = await TestEnvironment.createTestUser();
@@ -360,7 +360,7 @@ class ComprehensiveValidator {
   /// Validate Existing User Login (Test Case C)
   static Future<ValidationResult> _validateExistingUserLogin() async {
     try {
-      debugPrint('🔐 Running Test Case C: Existing User Login...');
+      debugPrint('ðŸ” Running Test Case C: Existing User Login...');
       
       // Use ExistingUserLoginValidator for comprehensive testing
       final result = await ExistingUserLoginValidator.validateExistingUserLogin();
@@ -378,7 +378,7 @@ class ComprehensiveValidator {
   /// Validate Deep Link Auto-fill (Test Case D)
   static Future<ValidationResult> _validateDeepLinkAutoFill() async {
     try {
-      debugPrint('🔗 Running Test Case D: Deep Link Auto-fill...');
+      debugPrint('ðŸ”— Running Test Case D: Deep Link Auto-fill...');
       
       // Use the dedicated DeepLinkValidator
       return await DeepLinkValidator.validateDeepLinkAutoFill();
@@ -396,7 +396,7 @@ class ComprehensiveValidator {
   /// Validate Referral Code Policy (Test Case E)
   static Future<ValidationResult> _validateReferralCodePolicy() async {
     try {
-      debugPrint('📋 Running Test Case E: Referral Code Policy...');
+      debugPrint('ðŸ“‹ Running Test Case E: Referral Code Policy...');
       
       // Generate multiple test codes and validate format
       for (int i = 0; i < 10; i++) {
@@ -415,7 +415,7 @@ class ComprehensiveValidator {
       // Validate TALADMIN exception
       if (!TestEnvironment.validateReferralCodeFormat('TALADMIN')) {
         // TALADMIN should be allowed as exception
-        debugPrint('ℹ️ TALADMIN exception handling needed');
+        debugPrint('â„¹ï¸ TALADMIN exception handling needed');
       }
 
       return ValidationResult.pass('Referral code policy compliance verified');
@@ -432,7 +432,7 @@ class ComprehensiveValidator {
   /// Validate Real-time Network Updates (Test Case F)
   static Future<ValidationResult> _validateRealTimeNetworkUpdates() async {
     try {
-      debugPrint('📊 Running Test Case F: Real-time Network Updates...');
+      debugPrint('ðŸ“Š Running Test Case F: Real-time Network Updates...');
       
       // Use the dedicated NetworkValidator for comprehensive testing
       return await NetworkValidator.validateRealTimeNetworkUpdates();
@@ -450,7 +450,7 @@ class ComprehensiveValidator {
   /// Validate Security Rules (Test Case G)
   static Future<ValidationResult> _validateSecurityRules() async {
     try {
-      debugPrint('🛡️ Running Test Case G: Security Validation...');
+      debugPrint('ðŸ›¡ï¸ Running Test Case G: Security Validation...');
       
       // Test security rules enforcement
       final securityPassed = await TestEnvironment.testSecurityRules();
@@ -477,7 +477,7 @@ class ComprehensiveValidator {
   /// Implement Automated Fix Application (Task 6.2)
   static Future<ValidationResult> _implementAutomatedFixApplication() async {
     try {
-      debugPrint('🔧 Implementing automated fix application...');
+      debugPrint('ðŸ”§ Implementing automated fix application...');
       
       // Test the automated fix service with a dry run
       final testReport = ValidationReport();
@@ -515,7 +515,7 @@ class ComprehensiveValidator {
 
   /// Apply automated fixes for failed tests (deprecated - now using AutomatedFixService)
   static Future<void> _applyAutomatedFixes() async {
-    debugPrint('🔧 Applying automated fixes for failed tests...');
+    debugPrint('ðŸ”§ Applying automated fixes for failed tests...');
     
     // Use the new AutomatedFixService for comprehensive fix application
     final fixResult = await AutomatedFixService.applyFixesForFailedTests(
@@ -524,9 +524,9 @@ class ComprehensiveValidator {
       enableRollback: true,
     );
     
-    _logExecution('📊 Automated fix application completed');
-    _logExecution('✅ Successful fixes: ${fixResult.successfulFixes}');
-    _logExecution('❌ Failed fixes: ${fixResult.failedFixes}');
+    _logExecution('ðŸ“Š Automated fix application completed');
+    _logExecution('âœ… Successful fixes: ${fixResult.successfulFixes}');
+    _logExecution('âŒ Failed fixes: ${fixResult.failedFixes}');
     
     // Log fix results
     for (final entry in fixResult.fixResults.entries) {
@@ -535,13 +535,13 @@ class ComprehensiveValidator {
       
       if (result.success) {
         _report.addResult('$testName Fix', ValidationResult.pass(result.message));
-        debugPrint('✅ Fix applied successfully for $testName: ${result.message}');
+        debugPrint('âœ… Fix applied successfully for $testName: ${result.message}');
       } else {
         _report.addResult('$testName Fix', ValidationResult.fail(
           result.message,
           errorDetails: result.errorDetails,
         ));
-        debugPrint('❌ Fix failed for $testName: ${result.message}');
+        debugPrint('âŒ Fix failed for $testName: ${result.message}');
       }
     }
   }
@@ -551,15 +551,15 @@ class ComprehensiveValidator {
     int attempts = 0;
     while (attempts < maxRetries) {
       try {
-        _logExecution('⏳ Executing $taskName (attempt ${attempts + 1}/$maxRetries)');
+        _logExecution('â³ Executing $taskName (attempt ${attempts + 1}/$maxRetries)');
         await taskFunction().timeout(testTimeout);
         return; // Success, exit retry loop
       } catch (e) {
         attempts++;
-        _logExecution('⚠️ $taskName attempt $attempts failed: $e');
+        _logExecution('âš ï¸ $taskName attempt $attempts failed: $e');
         
         if (attempts >= maxRetries || !_enableRetries) {
-          _logExecution('❌ $taskName failed after $attempts attempts');
+          _logExecution('âŒ $taskName failed after $attempts attempts');
           if (!_report.testResults.containsKey(taskName)) {
             _report.addResult(taskName, ValidationResult.fail(
               'Task execution failed after $attempts attempts',
@@ -569,7 +569,7 @@ class ComprehensiveValidator {
           }
           rethrow;
         } else {
-          _logExecution('🔄 Retrying $taskName in 2 seconds...');
+          _logExecution('ðŸ”„ Retrying $taskName in 2 seconds...');
           await Future.delayed(const Duration(seconds: 2));
         }
       }
@@ -593,11 +593,11 @@ class ComprehensiveValidator {
   /// Re-run failed tests after applying fixes
   static Future<void> _rerunFailedTests() async {
     if (_report.failedTests.isEmpty) {
-      _logExecution('ℹ️ No failed tests to re-run');
+      _logExecution('â„¹ï¸ No failed tests to re-run');
       return;
     }
 
-    _logExecution('🔄 Re-running ${_report.failedTests.length} failed tests...');
+    _logExecution('ðŸ”„ Re-running ${_report.failedTests.length} failed tests...');
     
     // Store original failed tests
     final originalFailedTests = Map<String, ValidationResult>.from(
@@ -606,7 +606,7 @@ class ComprehensiveValidator {
     
     for (final entry in originalFailedTests.entries) {
       final testName = entry.key;
-      _logExecution('🔄 Re-running: $testName');
+      _logExecution('ðŸ”„ Re-running: $testName');
       
       try {
         ValidationResult? newResult;
@@ -650,7 +650,7 @@ class ComprehensiveValidator {
             newResult = await SecurityValidator.validateSecurityRules();
             break;
           default:
-            _logExecution('⚠️ Unknown test case for re-run: $testName');
+            _logExecution('âš ï¸ Unknown test case for re-run: $testName');
             continue;
         }
         
@@ -658,23 +658,23 @@ class ComprehensiveValidator {
         _report.addResult('$testName (Re-run)', newResult);
         
         if (newResult.passed) {
-          _logExecution('✅ $testName passed on re-run');
+          _logExecution('âœ… $testName passed on re-run');
         } else {
-          _logExecution('❌ $testName still failing after re-run: ${newResult.message}');
+          _logExecution('âŒ $testName still failing after re-run: ${newResult.message}');
         }
               
       } catch (e) {
-        _logExecution('❌ Failed to re-run $testName: $e');
+        _logExecution('âŒ Failed to re-run $testName: $e');
       }
     }
     
-    _logExecution('🔄 Re-run completed. Updated results in report.');
+    _logExecution('ðŸ”„ Re-run completed. Updated results in report.');
   }
 
   /// Save execution log to file using ValidationReportService
   static Future<void> _saveExecutionLog() async {
     try {
-      _logExecution('📄 Generating comprehensive execution log...');
+      _logExecution('ðŸ“„ Generating comprehensive execution log...');
       
       // Generate all reports using the new ValidationReportService
       await ValidationReportService.generateAllReports(
@@ -689,10 +689,10 @@ class ComprehensiveValidator {
         },
       );
       
-      _logExecution('✅ All validation reports generated successfully');
+      _logExecution('âœ… All validation reports generated successfully');
       
     } catch (e) {
-      _logExecution('⚠️ Failed to save execution log: $e');
+      _logExecution('âš ï¸ Failed to save execution log: $e');
     }
   }
 
@@ -736,7 +736,7 @@ class ComprehensiveValidator {
   static Future<void> _writeExecutionLogToFile(String content) async {
     // In a real implementation, this would write to the file system
     // For now, we'll just log that it would be written
-    debugPrint('📝 Execution log content ready (${content.length} characters)');
+    debugPrint('ðŸ“ Execution log content ready (${content.length} characters)');
   }
 
   /// Run validation with specific configuration
@@ -749,16 +749,16 @@ class ComprehensiveValidator {
   }) async {
     if (timeout != null) {
       // Would set custom timeout
-      _logExecution('⚙️ Using custom timeout: ${timeout.inSeconds}s');
+      _logExecution('âš™ï¸ Using custom timeout: ${timeout.inSeconds}s');
     }
     
     if (onlyTests != null && onlyTests.isNotEmpty) {
-      _logExecution('🎯 Running only specific tests: ${onlyTests.join(', ')}');
+      _logExecution('ðŸŽ¯ Running only specific tests: ${onlyTests.join(', ')}');
       return await _runSpecificTests(onlyTests);
     }
     
     if (skipTests != null && skipTests.isNotEmpty) {
-      _logExecution('⏭️ Skipping tests: ${skipTests.join(', ')}');
+      _logExecution('â­ï¸ Skipping tests: ${skipTests.join(', ')}');
     }
     
     return await runCompleteValidationSuite(
@@ -769,13 +769,13 @@ class ComprehensiveValidator {
 
   /// Run only specific tests
   static Future<ValidationReport> _runSpecificTests(List<String> testNames) async {
-    _logExecution('🎯 Running specific tests: ${testNames.join(', ')}');
+    _logExecution('ðŸŽ¯ Running specific tests: ${testNames.join(', ')}');
     
     try {
       await TestEnvironment.initialize();
       
       for (final testName in testNames) {
-        _logExecution('🧪 Running specific test: $testName');
+        _logExecution('ðŸ§ª Running specific test: $testName');
         
         ValidationResult? result;
         switch (testName.toUpperCase()) {
@@ -841,21 +841,21 @@ class ComprehensiveValidator {
             _report.addResult('Test Case G', result);
             break;
           default:
-            _logExecution('⚠️ Unknown test name: $testName');
+            _logExecution('âš ï¸ Unknown test name: $testName');
             _report.addResult(testName, ValidationResult.fail('Unknown test case'));
         }
         
         if (result != null) {
           _logExecution(result.passed 
-              ? '✅ $testName: PASS - ${result.message}'
-              : '❌ $testName: FAIL - ${result.message}');
+              ? 'âœ… $testName: PASS - ${result.message}'
+              : 'âŒ $testName: FAIL - ${result.message}');
         }
       }
       
       return _report;
       
     } catch (e) {
-      _logExecution('❌ Specific tests execution failed: $e');
+      _logExecution('âŒ Specific tests execution failed: $e');
       _report.addResult('Specific Tests Execution', ValidationResult.fail(
         'Specific tests execution failed',
         errorDetails: e.toString(),
@@ -894,6 +894,6 @@ class ComprehensiveValidator {
     _report.adminBootstrapVerified = false;
     _executionLog.clear();
     _previousResults.clear();
-    _logExecution('🔄 Validation suite reset - ready for fresh execution');
+    _logExecution('ðŸ”„ Validation suite reset - ready for fresh execution');
   }
 }

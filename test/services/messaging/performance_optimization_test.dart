@@ -1,4 +1,4 @@
-// Performance Optimization Test for TALOWA
+﻿// Performance Optimization Test for TALOWA
 // Tests the performance optimization and caching features
 
 import 'package:flutter_test/flutter_test.dart';

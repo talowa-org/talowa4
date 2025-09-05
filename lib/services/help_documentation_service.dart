@@ -1,4 +1,4 @@
-// TALOWA Help Documentation Service
+﻿// TALOWA Help Documentation Service
 // Provides comprehensive help content with screenshots and guides
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 

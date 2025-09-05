@@ -16,18 +16,9 @@
 
     <!-- CanvasKit is default via build flag; don't add CDN here -->
 
-    <!-- IMPORTANT: load flutter.js so _flutter is defined -->
-    <script src="flutter.js" defer></script>
+
   </head>
   <body>
-    <script>
-      const serviceWorkerVersion = null;
-      window.addEventListener('load', function () {
-        _flutter.loader.loadEntrypoint({
-          entrypointUrl: "main.dart.js",
-          serviceWorker: { serviceWorkerVersion }
-        }).then(e => e.initializeEngine()).then(a => a.runApp());
-      });
-    </script>
+    <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>

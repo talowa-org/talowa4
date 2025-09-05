@@ -1,4 +1,4 @@
-// Local Database Service for TALOWA Offline Support
+﻿// Local Database Service for TALOWA Offline Support
 // Implements Task 20: Offline functionality - Local Storage
 
 import 'dart:async';

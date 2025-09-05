@@ -1,4 +1,4 @@
-// Test file for push notification system
+﻿// Test file for push notification system
 // Part of Task 12: Build push notification system
 
 import 'package:flutter_test/flutter_test.dart';
@@ -44,7 +44,7 @@ void main() {
           },
         );
 
-        expect(notification.title, '🚨 EMERGENCY ALERT');
+        expect(notification.title, 'ðŸš¨ EMERGENCY ALERT');
         expect(notification.body, 'Land grabbing reported in Village XYZ');
         expect(notification.type, NotificationType.emergency);
         expect(notification.data['type'], 'emergency');
@@ -77,7 +77,7 @@ void main() {
           },
         );
 
-        expect(notification.title, '⚖️ Court Date Reminder');
+        expect(notification.title, 'âš–ï¸ Court Date Reminder');
         expect(notification.body, 'Court hearing for Land Case #123 on 15/12/2024 at 10:30');
         expect(notification.type, NotificationType.courtDateReminder);
       });

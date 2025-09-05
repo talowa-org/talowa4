@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 enum VoiceCommandAction {
   navigateToLand,
@@ -29,28 +29,28 @@ class VoiceCommandHandler {
     final normalizedCommand = command.toLowerCase().trim();
     
     // Navigation commands
-    if (_containsAny(normalizedCommand, ['land', 'जमीन', 'भूमि', 'లాండ్'])) {
+    if (_containsAny(normalizedCommand, ['land', 'à¤œà¤®à¥€à¤¨', 'à¤­à¥‚à¤®à¤¿', 'à°²à°¾à°‚à°¡à±'])) {
       return VoiceCommandResponse(
         message: 'Opening Land Records',
         action: VoiceCommandAction.navigateToLand,
       );
     }
     
-    if (_containsAny(normalizedCommand, ['payment', 'पेमेंट', 'भुगतान', 'పేమెంట్'])) {
+    if (_containsAny(normalizedCommand, ['payment', 'à¤ªà¥‡à¤®à¥‡à¤‚à¤Ÿ', 'à¤­à¥à¤—à¤¤à¤¾à¤¨', 'à°ªà±‡à°®à±†à°‚à°Ÿà±'])) {
       return VoiceCommandResponse(
         message: 'Opening Payments',
         action: VoiceCommandAction.navigateToPayments,
       );
     }
     
-    if (_containsAny(normalizedCommand, ['community', 'समुदाय', 'कम्युनिटी', 'కమ్యూనిటీ'])) {
+    if (_containsAny(normalizedCommand, ['community', 'à¤¸à¤®à¥à¤¦à¤¾à¤¯', 'à¤•à¤®à¥à¤¯à¥à¤¨à¤¿à¤Ÿà¥€', 'à°•à°®à±à°¯à±‚à°¨à°¿à°Ÿà±€'])) {
       return VoiceCommandResponse(
         message: 'Opening Community',
         action: VoiceCommandAction.navigateToCommunity,
       );
     }
     
-    if (_containsAny(normalizedCommand, ['profile', 'प्रोफाइल', 'प्रोफ़ाइल', 'ప్రొఫైల్'])) {
+    if (_containsAny(normalizedCommand, ['profile', 'à¤ªà¥à¤°à¥‹à¤«à¤¾à¤‡à¤²', 'à¤ªà¥à¤°à¥‹à¤«à¤¼à¤¾à¤‡à¤²', 'à°ªà±à°°à±Šà°«à±ˆà°²à±'])) {
       return VoiceCommandResponse(
         message: 'Opening Profile',
         action: VoiceCommandAction.navigateToProfile,
@@ -58,7 +58,7 @@ class VoiceCommandHandler {
     }
     
     // Emergency commands
-    if (_containsAny(normalizedCommand, ['emergency', 'help', 'इमरजेंसी', 'मदद', 'ఎమర్జెన్సీ', 'సహాయం'])) {
+    if (_containsAny(normalizedCommand, ['emergency', 'help', 'à¤‡à¤®à¤°à¤œà¥‡à¤‚à¤¸à¥€', 'à¤®à¤¦à¤¦', 'à°Žà°®à°°à±à°œà±†à°¨à±à°¸à±€', 'à°¸à°¹à°¾à°¯à°‚'])) {
       return VoiceCommandResponse(
         message: 'Opening Emergency Help',
         action: VoiceCommandAction.showEmergencyHelp,

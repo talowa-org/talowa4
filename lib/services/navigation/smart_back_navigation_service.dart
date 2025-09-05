@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'navigation_safety_service.dart';
 
@@ -15,12 +15,12 @@ class SmartBackNavigationService {
     String? screenName,
   }) {
     try {
-      debugPrint('🔙 Smart back ($screenName): STRICT LOGOUT PREVENTION MODE');
+      debugPrint('ðŸ”™ Smart back ($screenName): STRICT LOGOUT PREVENTION MODE');
       
       // STRICT RULE: Always validate context before any navigation
       if (!NavigationSafetyService.isNavigationSafe(context)) {  
-        debugPrint('🚨 Smart back ($screenName): Navigation context unsafe - preventing logout');
-        _showSafetyMessage(context, '🚫 Navigation blocked for safety');
+        debugPrint('ðŸš¨ Smart back ($screenName): Navigation context unsafe - preventing logout');
+        _showSafetyMessage(context, 'ðŸš« Navigation blocked for safety');
         return true; // ALWAYS prevent default back action       
       }
 
@@ -28,7 +28,7 @@ class SmartBackNavigationService {
       if (Navigator.of(context).canPop()) {
         // There's a screen to go back to - use natural navigation (SAFE)
         Navigator.of(context).pop();
-        debugPrint('🔙 Smart back ($screenName): Safe navigation back in stack');
+        debugPrint('ðŸ”™ Smart back ($screenName): Safe navigation back in stack');
         return true; // Handled safely
       }
 
@@ -36,24 +36,24 @@ class SmartBackNavigationService {
       if (currentTabIndex != null && currentTabIndex != 0 && onNavigateToHome != null) {
         // Not on home tab - go to home tab (SAFE OPERATION)     
         onNavigateToHome();
-        _showNavigationFeedback(context, '🏠 Navigated to Home tab', AppTheme.legalBlue);
-        debugPrint('🔙 Smart back ($screenName): Safe switch to Home tab');
+        _showNavigationFeedback(context, 'ðŸ  Navigated to Home tab', AppTheme.legalBlue);
+        debugPrint('ðŸ”™ Smart back ($screenName): Safe switch to Home tab');
         return true; // Handled safely
       }
 
       // On home tab or no tab context - show message (SAFE OPERATION)
       _showNavigationFeedback(
         context,
-        '🏠 You are on the ${screenName ?? 'main'} screen. Use bottom navigation or logout button.',
+        'ðŸ  You are on the ${screenName ?? 'main'} screen. Use bottom navigation or logout button.',
         AppTheme.talowaGreen,
         duration: 3,
       );
-      debugPrint('🔙 Smart back ($screenName): On main screen, showed safe message');
+      debugPrint('ðŸ”™ Smart back ($screenName): On main screen, showed safe message');
       return true; // ALWAYS handled to prevent logout
     } catch (e) {
       // CRITICAL SAFETY: Any error MUST prevent logout
-      debugPrint('🚨 Smart back ($screenName): Error - PREVENTING LOGOUT: $e');
-      _showSafetyMessage(context, '🚫 Navigation error. Use bottom tabs or logout button.');
+      debugPrint('ðŸš¨ Smart back ($screenName): Error - PREVENTING LOGOUT: $e');
+      _showSafetyMessage(context, 'ðŸš« Navigation error. Use bottom tabs or logout button.');
       return true; // ALWAYS prevent default back action on error
     }
   }
@@ -66,11 +66,11 @@ class SmartBackNavigationService {
     VoidCallback? provideFeedback,
   ) {
     try {
-      debugPrint('🔙 Main navigation: STRICT LOGOUT PREVENTION MODE');
+      debugPrint('ðŸ”™ Main navigation: STRICT LOGOUT PREVENTION MODE');
       
       // STRICT RULE: Always validate context first
       if (!context.mounted) {
-        debugPrint('🚨 Main navigation: Context not mounted - preventing logout');
+        debugPrint('ðŸš¨ Main navigation: Context not mounted - preventing logout');
         return;
       }
 
@@ -78,37 +78,37 @@ class SmartBackNavigationService {
       if (Navigator.of(context).canPop()) {
         // There's a screen in the stack, go back naturally (SAFE)
         Navigator.of(context).pop();
-        debugPrint('🔙 Main navigation: Safe navigation back in stack');
+        debugPrint('ðŸ”™ Main navigation: Safe navigation back in stack');
       } else if (currentIndex != 0) {
         // Not on home tab, go to home tab (SAFE OPERATION)      
         setCurrentIndex(0);
         provideFeedback?.call();
-        _showNavigationFeedback(context, '🏠 Navigated to Home tab', AppTheme.legalBlue);
-        debugPrint('🔙 Main navigation: Safe switch to Home tab');
+        _showNavigationFeedback(context, 'ðŸ  Navigated to Home tab', AppTheme.legalBlue);
+        debugPrint('ðŸ”™ Main navigation: Safe switch to Home tab');
       } else {
         // On home tab with no stack - show message (SAFE OPERATION)
         _showNavigationFeedback(
           context,
-          '🏠 You are on the Home screen. Use bottom navigation or logout button.',
+          'ðŸ  You are on the Home screen. Use bottom navigation or logout button.',
           AppTheme.talowaGreen,
           duration: 3,
         );
-        debugPrint('🔙 Main navigation: On Home, showed safe message');
+        debugPrint('ðŸ”™ Main navigation: On Home, showed safe message');
       }
     } catch (e) {
       // CRITICAL SAFETY: If anything goes wrong, show message - NEVER logout
-      debugPrint('🚨 Main navigation: Error - PREVENTING LOGOUT: $e');
+      debugPrint('ðŸš¨ Main navigation: Error - PREVENTING LOGOUT: $e');
       try {
         if (context.mounted) {
           _showNavigationFeedback(
             context,
-            '🚫 Navigation error. Use bottom tabs or logout button.',
+            'ðŸš« Navigation error. Use bottom tabs or logout button.',
             AppTheme.emergencyRed,
             duration: 4,
           );
         }
       } catch (fallbackError) {
-        debugPrint('🚨 Main navigation: Even fallback failed - LOGOUT PREVENTED: $fallbackError');
+        debugPrint('ðŸš¨ Main navigation: Even fallback failed - LOGOUT PREVENTED: $fallbackError');
         // CRITICAL: Do absolutely nothing rather than risk logout
       }
     }
@@ -123,7 +123,7 @@ class SmartBackNavigationService {
     try {
       // SAFETY CHECK: Validate navigation context
       if (!NavigationSafetyService.isNavigationSafe(context)) {  
-        debugPrint('🚨 Sub-screen ($screenName): Navigation context unsafe');
+        debugPrint('ðŸš¨ Sub-screen ($screenName): Navigation context unsafe');
         _showSafetyMessage(context, 'Navigation temporarily unavailable');
         return;
       }
@@ -131,11 +131,11 @@ class SmartBackNavigationService {
       if (onCustomBack != null) {
         // Custom back behavior provided
         onCustomBack();
-        debugPrint('🔙 Sub-screen ($screenName): Custom back behavior executed');
+        debugPrint('ðŸ”™ Sub-screen ($screenName): Custom back behavior executed');
       } else if (Navigator.of(context).canPop()) {
         // Default back navigation
         Navigator.of(context).pop();
-        debugPrint('🔙 Sub-screen ($screenName): Navigated back');
+        debugPrint('ðŸ”™ Sub-screen ($screenName): Navigated back');
       } else {
         // No navigation stack - shouldn't happen in sub-screens 
         _showNavigationFeedback(
@@ -143,11 +143,11 @@ class SmartBackNavigationService {
           'Cannot go back from ${screenName ?? 'this screen'}',  
           AppTheme.warningOrange,
         );
-        debugPrint('🔙 Sub-screen ($screenName): No back navigation available');
+        debugPrint('ðŸ”™ Sub-screen ($screenName): No back navigation available');
       }
     } catch (e) {
       // SAFETY: Handle any navigation errors gracefully
-      debugPrint('🚨 Sub-screen ($screenName): Error in back navigation: $e');
+      debugPrint('ðŸš¨ Sub-screen ($screenName): Error in back navigation: $e');
       _showSafetyMessage(context, 'Navigation error. Please try again.');
     }
   }
@@ -175,7 +175,7 @@ class SmartBackNavigationService {
         ),
       );
     } catch (e) {
-      debugPrint('🚨 Failed to show navigation feedback: $e');   
+      debugPrint('ðŸš¨ Failed to show navigation feedback: $e');   
     }
   }
 
@@ -203,7 +203,7 @@ class SmartBackNavigationService {
         ),
       );
     } catch (e) {
-      debugPrint('🚨 Failed to show safety message: $e');        
+      debugPrint('ðŸš¨ Failed to show safety message: $e');        
     }
   }
   

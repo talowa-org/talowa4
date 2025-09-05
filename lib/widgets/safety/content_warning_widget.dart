@@ -285,3 +285,4 @@ bool shouldShowContentWarning({
 
   return !userAllowedWarnings.contains(warningType.toString());
 }
+

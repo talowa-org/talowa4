@@ -1,4 +1,4 @@
-// Database Service for TALOWA
+﻿// Database Service for TALOWA
 // Reference: TECHNICAL_ARCHITECTURE.md - Database Structure
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -106,9 +106,9 @@ class DatabaseService {
           newUserId: user.id,
           referralCode: user.referredBy,
         );
-        debugPrint('✅ Referral chain processed for user: ${user.fullName}');
+        debugPrint('âœ… Referral chain processed for user: ${user.fullName}');
       } catch (e) {
-        debugPrint('⚠️ Referral chain processing failed (non-critical): $e');
+        debugPrint('âš ï¸ Referral chain processing failed (non-critical): $e');
         // Don't throw - user creation should succeed even if referral processing fails
       }
 
@@ -497,3 +497,4 @@ class DatabaseService {
     }
   }
 }
+

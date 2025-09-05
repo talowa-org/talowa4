@@ -1,4 +1,4 @@
-// TALOWA Validation Suite Runner
+﻿// TALOWA Validation Suite Runner
 // Main entry point for executing complete validation suite
 
 import 'dart:async';
@@ -16,7 +16,7 @@ class ValidationSuiteRunner {
   
   /// Run complete TALOWA validation suite
   static Future<void> main() async {
-    print('🚀 TALOWA VALIDATION SUITE');
+    print('ðŸš€ TALOWA VALIDATION SUITE');
     print('=' * 50);
     print('Executing comprehensive validation for login, registration, and referral systems');
     print('Tasks: Phase 1 (1.1-1.3) through Phase 6 (6.1-6.2)');
@@ -29,13 +29,13 @@ class ValidationSuiteRunner {
       final report = await ComprehensiveValidator.runCompleteValidationSuite();
       
       // Print detailed results
-      print('\n📊 VALIDATION RESULTS');
+      print('\nðŸ“Š VALIDATION RESULTS');
       print('=' * 50);
       print(report.generateReport());
       
       // Print statistics
       final stats = ComprehensiveValidator.getValidationStatistics();
-      print('\n📈 EXECUTION STATISTICS');
+      print('\nðŸ“ˆ EXECUTION STATISTICS');
       print('=' * 30);
       print('Total Tests: ${stats['totalTests']}');
       print('Passed: ${stats['passedTests']}');
@@ -44,22 +44,22 @@ class ValidationSuiteRunner {
       print('Execution Time: ${stats['executionTime']}s');
       
       // Final verdict
-      print('\n🎯 FINAL VERDICT');
+      print('\nðŸŽ¯ FINAL VERDICT');
       print('=' * 20);
       if (stats['flowMatchesSpec'] == true) {
-        print('✅ FLOW MATCHES SPEC: YES');
-        print('🎉 All validation tests passed successfully!');
-        print('🚀 TALOWA is ready for production deployment.');
+        print('âœ… FLOW MATCHES SPEC: YES');
+        print('ðŸŽ‰ All validation tests passed successfully!');
+        print('ðŸš€ TALOWA is ready for production deployment.');
       } else {
-        print('❌ FLOW MATCHES SPEC: NO');
-        print('⚠️  Some validation tests failed.');
-        print('🔧 Review failed tests and apply suggested fixes.');
+        print('âŒ FLOW MATCHES SPEC: NO');
+        print('âš ï¸  Some validation tests failed.');
+        print('ðŸ”§ Review failed tests and apply suggested fixes.');
         
         // List failed tests
         if (report.failedTests.isNotEmpty) {
-          print('\n❌ FAILED TESTS:');
+          print('\nâŒ FAILED TESTS:');
           for (final entry in report.failedTests) {
-            print('  • ${entry.key}: ${entry.value.message}');
+            print('  â€¢ ${entry.key}: ${entry.value.message}');
             if (entry.value.suggestedFix != null) {
               print('    Fix: ${entry.value.suggestedFix}');
             }
@@ -72,10 +72,10 @@ class ValidationSuiteRunner {
       
       final endTime = DateTime.now();
       final totalDuration = endTime.difference(startTime);
-      print('\n⏱️  Total execution time: ${totalDuration.inSeconds}s');
+      print('\nâ±ï¸  Total execution time: ${totalDuration.inSeconds}s');
       
     } catch (e) {
-      print('\n❌ VALIDATION SUITE FAILED');
+      print('\nâŒ VALIDATION SUITE FAILED');
       print('Error: $e');
       exit(1);
     }
@@ -90,11 +90,11 @@ class ValidationSuiteRunner {
       final reportContent = _generateMarkdownReport(report, stats);
       
       // In a real implementation, this would save to file system
-      debugPrint('📄 Validation report would be saved to: $filename');
+      debugPrint('ðŸ“„ Validation report would be saved to: $filename');
       debugPrint('Report content length: ${reportContent.length} characters');
       
     } catch (e) {
-      debugPrint('⚠️ Failed to save report to file: $e');
+      debugPrint('âš ï¸ Failed to save report to file: $e');
     }
   }
 
@@ -112,11 +112,11 @@ class ValidationSuiteRunner {
     buffer.writeln('## Executive Summary');
     buffer.writeln();
     if (stats['flowMatchesSpec'] == true) {
-      buffer.writeln('✅ **FLOW MATCHES SPEC: YES**');
+      buffer.writeln('âœ… **FLOW MATCHES SPEC: YES**');
       buffer.writeln();
       buffer.writeln('All validation tests passed successfully. TALOWA is ready for production deployment.');
     } else {
-      buffer.writeln('❌ **FLOW MATCHES SPEC: NO**');
+      buffer.writeln('âŒ **FLOW MATCHES SPEC: NO**');
       buffer.writeln();
       buffer.writeln('Some validation tests failed. Review and apply suggested fixes before production deployment.');
     }
@@ -128,7 +128,7 @@ class ValidationSuiteRunner {
     buffer.writeln('|-----------|--------|---------|');
     
     for (final entry in report.testResults.entries) {
-      final status = entry.value.passed ? '✅ PASS' : '❌ FAIL';
+      final status = entry.value.passed ? 'âœ… PASS' : 'âŒ FAIL';
       final message = entry.value.message.replaceAll('|', '\\|');
       buffer.writeln('| ${entry.key} | $status | $message |');
     }
@@ -176,15 +176,15 @@ class ValidationSuiteRunner {
     buffer.writeln('## Next Steps');
     buffer.writeln();
     if (stats['flowMatchesSpec'] == true) {
-      buffer.writeln('1. ✅ All validation tests passed');
-      buffer.writeln('2. 🚀 TALOWA is ready for production deployment');
-      buffer.writeln('3. 📊 Monitor production metrics and user feedback');
-      buffer.writeln('4. 🔄 Schedule regular validation runs');
+      buffer.writeln('1. âœ… All validation tests passed');
+      buffer.writeln('2. ðŸš€ TALOWA is ready for production deployment');
+      buffer.writeln('3. ðŸ“Š Monitor production metrics and user feedback');
+      buffer.writeln('4. ðŸ”„ Schedule regular validation runs');
     } else {
-      buffer.writeln('1. 🔧 Apply suggested fixes for failed tests');
-      buffer.writeln('2. 🧪 Re-run validation suite after fixes');
-      buffer.writeln('3. ✅ Ensure all tests pass before production');
-      buffer.writeln('4. 📋 Update documentation with any changes');
+      buffer.writeln('1. ðŸ”§ Apply suggested fixes for failed tests');
+      buffer.writeln('2. ðŸ§ª Re-run validation suite after fixes');
+      buffer.writeln('3. âœ… Ensure all tests pass before production');
+      buffer.writeln('4. ðŸ“‹ Update documentation with any changes');
     }
     buffer.writeln();
     
@@ -197,7 +197,7 @@ class ValidationSuiteRunner {
   /// Quick validation check (subset of tests)
   static Future<bool> quickValidationCheck() async {
     try {
-      debugPrint('⚡ Running quick validation check...');
+      debugPrint('âš¡ Running quick validation check...');
       
       // Run critical tests only
       final report = ValidationReport();
@@ -220,13 +220,13 @@ class ValidationSuiteRunner {
       final allPassed = report.allTestsPassed && report.adminBootstrapVerified;
       
       debugPrint(allPassed 
-          ? '✅ Quick validation passed' 
-          : '❌ Quick validation failed');
+          ? 'âœ… Quick validation passed' 
+          : 'âŒ Quick validation failed');
       
       return allPassed;
       
     } catch (e) {
-      debugPrint('❌ Quick validation check failed: $e');
+      debugPrint('âŒ Quick validation check failed: $e');
       return false;
     }
   }
@@ -234,7 +234,7 @@ class ValidationSuiteRunner {
   /// Validate specific test case
   static Future<ValidationResult> validateSpecificTestCase(String testCase) async {
     try {
-      debugPrint('🎯 Running specific test case: $testCase');
+      debugPrint('ðŸŽ¯ Running specific test case: $testCase');
       
       switch (testCase.toUpperCase()) {
         case 'A':

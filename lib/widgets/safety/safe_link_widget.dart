@@ -529,3 +529,4 @@ class SafeTextWidget extends StatelessWidget {
     return TextSpan(children: spans);
   }
 }
+

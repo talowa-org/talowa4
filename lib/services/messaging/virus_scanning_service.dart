@@ -1,4 +1,4 @@
-// Virus Scanning Service for TALOWA Messaging System
+﻿// Virus Scanning Service for TALOWA Messaging System
 // Implements basic file security scanning and threat detection
 // Requirements: 4.1 - Implement secure file upload service with virus scanning
 

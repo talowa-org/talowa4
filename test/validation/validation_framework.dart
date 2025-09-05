@@ -1,4 +1,4 @@
-// TALOWA Validation Framework
+﻿// TALOWA Validation Framework
 // Comprehensive test infrastructure for login, registration, and referral validation
 //
 // This framework provides:
@@ -67,8 +67,8 @@ class ValidationResult {
   @override
   String toString() {
     final status = passed ? 'PASS' : 'FAIL';
-    final severityIcon = severity == ValidationSeverity.warning ? '⚠️' : 
-                        severity == ValidationSeverity.error ? '❌' : '✅';
+    final severityIcon = severity == ValidationSeverity.warning ? 'âš ï¸' : 
+                        severity == ValidationSeverity.error ? 'âŒ' : 'âœ…';
     return '$severityIcon $status: $message${errorDetails != null ? ' ($errorDetails)' : ''}';
   }
 }
@@ -139,17 +139,17 @@ class ValidationReport {
     final successRate = executionStats['totalTests']! > 0 
         ? (executionStats['passedTests']! / executionStats['totalTests']! * 100).toStringAsFixed(1)
         : '0.0';
-    buffer.writeln('📊 **Test Statistics:**');
+    buffer.writeln('ðŸ“Š **Test Statistics:**');
     buffer.writeln('- Total Tests Executed: ${executionStats['totalTests']}');
     buffer.writeln('- Tests Passed: ${executionStats['passedTests']} ($successRate%)');
     buffer.writeln('- Tests Failed: ${executionStats['failedTests']}');
     buffer.writeln('- Tests with Warnings: ${executionStats['warningTests']}');
-    buffer.writeln('- Admin Bootstrap: ${adminBootstrapVerified ? "✅ VERIFIED" : "❌ FAILED"}');
+    buffer.writeln('- Admin Bootstrap: ${adminBootstrapVerified ? "âœ… VERIFIED" : "âŒ FAILED"}');
     buffer.writeln();
     
-    final overallStatus = allTestsPassed && adminBootstrapVerified ? "✅ PASS" : "❌ FAIL";
-    buffer.writeln('🎯 **Overall Status:** $overallStatus');
-    buffer.writeln('📋 **Production Ready:** ${allTestsPassed && adminBootstrapVerified ? "YES" : "NO"}');
+    final overallStatus = allTestsPassed && adminBootstrapVerified ? "âœ… PASS" : "âŒ FAIL";
+    buffer.writeln('ðŸŽ¯ **Overall Status:** $overallStatus');
+    buffer.writeln('ðŸ“‹ **Production Ready:** ${allTestsPassed && adminBootstrapVerified ? "YES" : "NO"}');
     buffer.writeln();
 
     // Individual test results in required format with enhanced details
@@ -161,8 +161,8 @@ class ValidationReport {
       ('B1', 'OTP verify', 'Test Case B1'),
       ('B2', 'Form submit creates profile + referralCode (not "Loading")', 'Test Case B2'),
       ('B3', 'Post-form access allowed without payment', 'Test Case B3'),
-      ('B4', 'Payment success → activation + counters/roles', 'Test Case B4'),
-      ('B5', 'Payment failure → access retained, active status', 'Test Case B5'),
+      ('B4', 'Payment success â†’ activation + counters/roles', 'Test Case B4'),
+      ('B5', 'Payment failure â†’ access retained, active status', 'Test Case B5'),
       ('C', 'Existing user login (email alias + PIN)', 'Test Case C'),
       ('D', 'Deep link auto-fill + one-time pending code', 'Test Case D'),
       ('E', 'Referral code policy (TAL prefix; TALADMIN exempt)', 'Test Case E'),
@@ -173,7 +173,7 @@ class ValidationReport {
     for (final (code, description, testKey) in testCases) {
       final status = _getTestStatus(testKey);
       final result = testResults[testKey];
-      final icon = result?.passed == true ? '✅' : result?.passed == false ? '❌' : '⏸️';
+      final icon = result?.passed == true ? 'âœ…' : result?.passed == false ? 'âŒ' : 'â¸ï¸';
       
       buffer.writeln('**$code)** $description: $icon **$status**');
       
@@ -193,7 +193,7 @@ class ValidationReport {
 
     // Admin Bootstrap Status
     buffer.writeln('**Admin Bootstrap Verification:**');
-    buffer.writeln('- TALADMIN mapped and active: ${adminBootstrapVerified ? "✅ YES" : "❌ NO"}');
+    buffer.writeln('- TALADMIN mapped and active: ${adminBootstrapVerified ? "âœ… YES" : "âŒ NO"}');
     if (!adminBootstrapVerified) {
       final adminResult = testResults['Admin Bootstrap'];
       if (adminResult != null) {
@@ -209,7 +209,7 @@ class ValidationReport {
     buffer.writeln('## FINAL VERDICT');
     buffer.writeln();
     final verdict = allTestsPassed && adminBootstrapVerified ? "YES" : "NO";
-    final verdictIcon = verdict == "YES" ? "✅" : "❌";
+    final verdictIcon = verdict == "YES" ? "âœ…" : "âŒ";
     buffer.writeln('**FLOW MATCHES SPEC:** $verdictIcon **$verdict**');
     buffer.writeln();
 
@@ -255,25 +255,25 @@ class ValidationReport {
       final warningIssues = failedTests.where((e) => e.value.severity == ValidationSeverity.warning).length;
       
       if (criticalIssues > 0) {
-        buffer.writeln('🔴 **CRITICAL:** $criticalIssues issues require immediate attention before production deployment');
+        buffer.writeln('ðŸ”´ **CRITICAL:** $criticalIssues issues require immediate attention before production deployment');
       }
       if (warningIssues > 0) {
-        buffer.writeln('🟡 **WARNING:** $warningIssues issues should be addressed but do not block deployment');
+        buffer.writeln('ðŸŸ¡ **WARNING:** $warningIssues issues should be addressed but do not block deployment');
       }
       buffer.writeln();
     } else {
       buffer.writeln('## VALIDATION SUCCESS');
       buffer.writeln();
-      buffer.writeln('🎉 **All validation tests passed successfully!**');
+      buffer.writeln('ðŸŽ‰ **All validation tests passed successfully!**');
       buffer.writeln();
       buffer.writeln('The TALOWA application has been comprehensively validated and meets all specified requirements:');
       buffer.writeln();
-      buffer.writeln('✅ **Login & Registration Flow:** Complete OTP → Form → Payment (optional) flow working');
-      buffer.writeln('✅ **Referral System:** TAL prefix codes, TALADMIN fallback, real-time updates');
-      buffer.writeln('✅ **Security:** Proper Firestore rules enforcement');
-      buffer.writeln('✅ **Admin Bootstrap:** TALADMIN user verified and functional');
-      buffer.writeln('✅ **Payment Optional:** Users get full access regardless of payment status');
-      buffer.writeln('✅ **Real-time Features:** Network statistics update without manual refresh');
+      buffer.writeln('âœ… **Login & Registration Flow:** Complete OTP â†’ Form â†’ Payment (optional) flow working');
+      buffer.writeln('âœ… **Referral System:** TAL prefix codes, TALADMIN fallback, real-time updates');
+      buffer.writeln('âœ… **Security:** Proper Firestore rules enforcement');
+      buffer.writeln('âœ… **Admin Bootstrap:** TALADMIN user verified and functional');
+      buffer.writeln('âœ… **Payment Optional:** Users get full access regardless of payment status');
+      buffer.writeln('âœ… **Real-time Features:** Network statistics update without manual refresh');
       buffer.writeln();
     }
 
@@ -373,8 +373,8 @@ class ValidationReport {
     buffer.writeln('| Failed Tests | ${executionStats['failedTests']} |');
     buffer.writeln('| Warning Tests | ${executionStats['warningTests']} |');
     buffer.writeln('| Success Rate | ${_calculateSuccessRate()}% |');
-    buffer.writeln('| Admin Bootstrap | ${adminBootstrapVerified ? "✅ Verified" : "❌ Failed"} |');
-    buffer.writeln('| Overall Status | ${allTestsPassed && adminBootstrapVerified ? "✅ PASS" : "❌ FAIL"} |');
+    buffer.writeln('| Admin Bootstrap | ${adminBootstrapVerified ? "âœ… Verified" : "âŒ Failed"} |');
+    buffer.writeln('| Overall Status | ${allTestsPassed && adminBootstrapVerified ? "âœ… PASS" : "âŒ FAIL"} |');
     buffer.writeln();
     
     // Test Case Details
@@ -384,7 +384,7 @@ class ValidationReport {
     for (final entry in testResults.entries) {
       final testName = entry.key;
       final result = entry.value;
-      final statusIcon = result.passed ? '✅' : '❌';
+      final statusIcon = result.passed ? 'âœ…' : 'âŒ';
       
       buffer.writeln('### $testName $statusIcon');
       buffer.writeln();
@@ -475,16 +475,16 @@ class ValidationReport {
     if (allTestsPassed && adminBootstrapVerified) {
       buffer.writeln('## Success Summary');
       buffer.writeln();
-      buffer.writeln('🎉 **All validation tests passed successfully!**');
+      buffer.writeln('ðŸŽ‰ **All validation tests passed successfully!**');
       buffer.writeln();
       buffer.writeln('The TALOWA application is ready for production deployment with the following validated features:');
       buffer.writeln();
-      buffer.writeln('- ✅ Complete authentication and registration flow');
-      buffer.writeln('- ✅ Referral system with proper code generation and validation');
-      buffer.writeln('- ✅ Payment optional flow with full access regardless of payment status');
-      buffer.writeln('- ✅ Real-time network updates and statistics');
-      buffer.writeln('- ✅ Security rules properly enforced');
-      buffer.writeln('- ✅ Admin bootstrap functionality verified');
+      buffer.writeln('- âœ… Complete authentication and registration flow');
+      buffer.writeln('- âœ… Referral system with proper code generation and validation');
+      buffer.writeln('- âœ… Payment optional flow with full access regardless of payment status');
+      buffer.writeln('- âœ… Real-time network updates and statistics');
+      buffer.writeln('- âœ… Security rules properly enforced');
+      buffer.writeln('- âœ… Admin bootstrap functionality verified');
       buffer.writeln();
     }
     
@@ -531,13 +531,13 @@ class ValidationReport {
     
     buffer.writeln('| Priority | Count | Action Required |');
     buffer.writeln('|----------|-------|-----------------|');
-    buffer.writeln('| 🔴 Critical | ${criticalIssues.length} | Fix before production |');
-    buffer.writeln('| 🟡 Warning | ${warningIssues.length} | Fix when possible |');
+    buffer.writeln('| ðŸ”´ Critical | ${criticalIssues.length} | Fix before production |');
+    buffer.writeln('| ðŸŸ¡ Warning | ${warningIssues.length} | Fix when possible |');
     buffer.writeln();
     
     // Critical Issues First
     if (criticalIssues.isNotEmpty) {
-      buffer.writeln('## 🔴 Critical Issues (Fix Immediately)');
+      buffer.writeln('## ðŸ”´ Critical Issues (Fix Immediately)');
       buffer.writeln();
       
       for (int i = 0; i < criticalIssues.length; i++) {
@@ -548,7 +548,7 @@ class ValidationReport {
     
     // Warning Issues
     if (warningIssues.isNotEmpty) {
-      buffer.writeln('## 🟡 Warning Issues (Fix When Possible)');
+      buffer.writeln('## ðŸŸ¡ Warning Issues (Fix When Possible)');
       buffer.writeln();
       
       for (int i = 0; i < warningIssues.length; i++) {
@@ -652,13 +652,13 @@ class ValidationTestRunner {
       _firestore = FirebaseFirestore.instance;
       _auth = FirebaseAuth.instance;
     } catch (e) {
-      debugPrint('⚠️ Firebase not initialized, some tests may be skipped: $e');
+      debugPrint('âš ï¸ Firebase not initialized, some tests may be skipped: $e');
     }
   }
 
   /// Execute all validation tests
   Future<ValidationReport> runAllTests() async {
-    debugPrint('🚀 Starting TALOWA Validation Suite...');
+    debugPrint('ðŸš€ Starting TALOWA Validation Suite...');
     
     try {
       // Phase 1: Setup and Bootstrap Verification
@@ -673,9 +673,9 @@ class ValidationTestRunner {
       await _executeWithTimeout('Test Case F', _runTestCaseF); // Real-time Network Updates
       await _executeWithTimeout('Test Case G', _runTestCaseG); // Security Validation
       
-      debugPrint('✅ Validation suite completed');
+      debugPrint('âœ… Validation suite completed');
     } catch (e) {
-      debugPrint('❌ Validation suite failed: $e');
+      debugPrint('âŒ Validation suite failed: $e');
       report.addResult('Suite Execution', ValidationResult.fail(
         'Validation suite execution failed',
         errorDetails: e.toString(),
@@ -696,7 +696,7 @@ class ValidationTestRunner {
       } catch (e) {
         attempts++;
         if (attempts >= maxRetries) {
-          debugPrint('❌ $testName failed after $maxRetries attempts: $e');
+          debugPrint('âŒ $testName failed after $maxRetries attempts: $e');
           if (!report.testResults.containsKey(testName)) {
             report.addResult(testName, ValidationResult.fail(
               'Test execution failed after $maxRetries attempts',
@@ -705,7 +705,7 @@ class ValidationTestRunner {
             ));
           }
         } else {
-          debugPrint('⚠️ $testName attempt $attempts failed, retrying: $e');
+          debugPrint('âš ï¸ $testName attempt $attempts failed, retrying: $e');
           await Future.delayed(const Duration(seconds: 1)); // Brief delay before retry
         }
       }
@@ -715,7 +715,7 @@ class ValidationTestRunner {
   /// Verify admin bootstrap
   Future<void> _verifyAdminBootstrap() async {
     try {
-      debugPrint('🔍 Verifying admin bootstrap...');
+      debugPrint('ðŸ” Verifying admin bootstrap...');
       
       // Check admin user exists
       final adminQuery = await _firestore
@@ -770,7 +770,7 @@ class ValidationTestRunner {
   /// Test Case A: Top-level Navigation
   Future<void> _runTestCaseA() async {
     try {
-      debugPrint('🧪 Running Test Case A: Top-level Navigation...');
+      debugPrint('ðŸ§ª Running Test Case A: Top-level Navigation...');
       
       // This would typically involve widget testing
       // For now, we'll validate the screen files exist and are properly configured
@@ -812,7 +812,7 @@ class ValidationTestRunner {
   /// Test Case B1: OTP Verification
   Future<void> _runTestCaseB1() async {
     try {
-      debugPrint('🧪 Running Test Case B1: OTP Verification...');
+      debugPrint('ðŸ§ª Running Test Case B1: OTP Verification...');
       
       // Check if OTP service exists and is configured
       final otpServiceExists = await _checkFileExists('lib/services/verification_service.dart');
@@ -841,7 +841,7 @@ class ValidationTestRunner {
   /// Test Case B2: Form Submission
   Future<void> _runTestCaseB2() async {
     try {
-      debugPrint('🧪 Running Test Case B2: Registration Form Submission...');
+      debugPrint('ðŸ§ª Running Test Case B2: Registration Form Submission...');
       
       // Check auth service and referral code generation
       final authServiceExists = await _checkFileExists('lib/services/auth_service.dart');
@@ -871,7 +871,7 @@ class ValidationTestRunner {
   /// Test Case B3: Post-form Access
   Future<void> _runTestCaseB3() async {
     try {
-      debugPrint('🧪 Running Test Case B3: Post-form Access...');
+      debugPrint('ðŸ§ª Running Test Case B3: Post-form Access...');
       
       // Use PaymentFlowValidator for comprehensive testing
       final result = await PaymentFlowValidator.validatePostFormAccessWithoutPayment();
@@ -889,7 +889,7 @@ class ValidationTestRunner {
   /// Test Case B4: Payment Success
   Future<void> _runTestCaseB4() async {
     try {
-      debugPrint('🧪 Running Test Case B4: Payment Success Flow...');
+      debugPrint('ðŸ§ª Running Test Case B4: Payment Success Flow...');
       
       // Use PaymentFlowValidator for comprehensive testing
       final result = await PaymentFlowValidator.validatePaymentSuccessScenario();
@@ -907,7 +907,7 @@ class ValidationTestRunner {
   /// Test Case B5: Payment Failure
   Future<void> _runTestCaseB5() async {
     try {
-      debugPrint('🧪 Running Test Case B5: Payment Failure Flow...');
+      debugPrint('ðŸ§ª Running Test Case B5: Payment Failure Flow...');
       
       // Use PaymentFlowValidator for comprehensive testing
       final result = await PaymentFlowValidator.validatePaymentFailureScenario();
@@ -925,7 +925,7 @@ class ValidationTestRunner {
   /// Test Case C: Existing User Login
   Future<void> _runTestCaseC() async {
     try {
-      debugPrint('🧪 Running Test Case C: Existing User Login...');
+      debugPrint('ðŸ§ª Running Test Case C: Existing User Login...');
       
       // Use ExistingUserLoginValidator for comprehensive testing
       final result = await ExistingUserLoginValidator.validateExistingUserLogin();
@@ -943,7 +943,7 @@ class ValidationTestRunner {
   /// Test Case D: Deep Link Auto-fill
   Future<void> _runTestCaseD() async {
     try {
-      debugPrint('🧪 Running Test Case D: Deep Link Auto-fill...');
+      debugPrint('ðŸ§ª Running Test Case D: Deep Link Auto-fill...');
       
       // Check deep link handler
       final deepLinkServiceExists = await _checkFileExists('lib/services/referral/web_referral_router.dart');
@@ -971,7 +971,7 @@ class ValidationTestRunner {
   /// Test Case E: Referral Code Policy
   Future<void> _runTestCaseE() async {
     try {
-      debugPrint('🧪 Running Test Case E: Referral Code Policy...');
+      debugPrint('ðŸ§ª Running Test Case E: Referral Code Policy...');
       
       // Use ReferralCodePolicyValidator for comprehensive testing
       final result = await ReferralCodePolicyValidator.validateReferralCodePolicy();
@@ -989,7 +989,7 @@ class ValidationTestRunner {
   /// Test Case F: Real-time Network Updates
   Future<void> _runTestCaseF() async {
     try {
-      debugPrint('🧪 Running Test Case F: Real-time Network Updates...');
+      debugPrint('ðŸ§ª Running Test Case F: Real-time Network Updates...');
       
       // Check network screen and statistics service
       final networkScreenExists = await _checkFileExists('lib/screens/network/network_screen.dart');
@@ -1019,7 +1019,7 @@ class ValidationTestRunner {
   /// Test Case G: Security Validation
   Future<void> _runTestCaseG() async {
     try {
-      debugPrint('🧪 Running Test Case G: Security Validation...');
+      debugPrint('ðŸ§ª Running Test Case G: Security Validation...');
       
       // Use SecurityValidator for comprehensive testing
       final result = await SecurityValidator.validateSecurityRules();
@@ -1051,7 +1051,7 @@ class ValidationTestRunner {
       await _firestore.collection('_test').limit(1).get().timeout(const Duration(seconds: 5));
       return true;
     } catch (e) {
-      debugPrint('❌ Firestore connection failed: $e');
+      debugPrint('âŒ Firestore connection failed: $e');
       return false;
     }
   }
@@ -1063,7 +1063,7 @@ class ValidationTestRunner {
       _auth.currentUser; // This will throw if not initialized
       return true;
     } catch (e) {
-      debugPrint('❌ Firebase Auth connection failed: $e');
+      debugPrint('âŒ Firebase Auth connection failed: $e');
       return false;
     }
   }
@@ -1102,9 +1102,9 @@ class ValidationTestRunner {
         await doc.reference.delete();
       }
       
-      debugPrint('🧹 Cleaned up test data for $phoneNumber');
+      debugPrint('ðŸ§¹ Cleaned up test data for $phoneNumber');
     } catch (e) {
-      debugPrint('⚠️ Failed to cleanup test data: $e');
+      debugPrint('âš ï¸ Failed to cleanup test data: $e');
     }
   }
 }

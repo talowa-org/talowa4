@@ -1,4 +1,4 @@
-// Category Filter Widget - Filter content by categories
+﻿// Category Filter Widget - Filter content by categories
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/referral/qr_code_widget.dart';
 import '../../services/referral/referral_sharing_service.dart';

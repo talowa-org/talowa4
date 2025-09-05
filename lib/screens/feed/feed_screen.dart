@@ -1,5 +1,6 @@
 // Clean Feed Screen - Main social feed interface
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
@@ -10,8 +11,12 @@ import '../post_creation/simple_post_creation_screen.dart';
 import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/notifications/notification_badge_widget.dart';
+import '../../widgets/media/enhanced_feed_media_widget.dart';
 import 'stories_screen.dart';
 import 'story_creation_screen.dart';
+import '../debug/feed_debug_screen.dart';
+import '../../services/social_feed/test_post_creation_service.dart';
 import 'post_comments_screen.dart';
 import '../../widgets/stories/story_ring.dart';
 
@@ -116,6 +121,7 @@ class _FeedScreenState extends State<FeedScreen>
       foregroundColor: Colors.white,
       elevation: 0,
       actions: [
+        const NotificationBadgeWidget(),
         IconButton(
           onPressed: _openSearch,
           icon: const Icon(Icons.search),
@@ -125,6 +131,19 @@ class _FeedScreenState extends State<FeedScreen>
           onPressed: _showFilterOptions,
           icon: const Icon(Icons.filter_list),
           tooltip: 'Filter',
+        ),
+        // Debug button (temporarily always visible for testing)
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FeedDebugScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.bug_report),
+          tooltip: 'Debug Feed',
         ),
       ],
     );
@@ -251,10 +270,10 @@ class _FeedScreenState extends State<FeedScreen>
               style: const TextStyle(fontSize: 16, height: 1.4),
             ),
 
-            // Media (Images, Videos, Documents)
-            if (post.mediaUrls.isNotEmpty) ...[
+            // Media (Images, Videos, Documents) - Using Enhanced Media Widgets
+            if (post.hasMedia || post.mediaUrls.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _buildMediaSection(post.mediaUrls),
+              _buildMediaSection(post.allMediaUrls.isNotEmpty ? post.allMediaUrls : post.mediaUrls, post.id),
             ],
 
             // Hashtags
@@ -268,10 +287,10 @@ class _FeedScreenState extends State<FeedScreen>
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppTheme.talowaGreen.withOpacity(0.1),
+                      color: AppTheme.talowaGreen.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.talowaGreen.withOpacity(0.3),
+                        color: AppTheme.talowaGreen.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(
@@ -466,7 +485,7 @@ class _FeedScreenState extends State<FeedScreen>
     return ScaleTransition(
       scale: _fabAnimation,
       child: FloatingActionButton(
-        onPressed: _createPost,
+        onPressed: _showCreateOptions,
         backgroundColor: AppTheme.talowaGreen,
         foregroundColor: Colors.white,
         tooltip: 'Create Post',
@@ -474,6 +493,110 @@ class _FeedScreenState extends State<FeedScreen>
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _showCreateOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Create Options',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.edit, color: AppTheme.talowaGreen),
+                title: const Text('Create New Post'),
+                subtitle: const Text('Write a new post'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _createPost();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.science, color: Colors.orange),
+                title: const Text('Create Test Posts'),
+                subtitle: const Text('Add sample posts with media for testing'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _createTestPosts();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.bug_report, color: Colors.blue),
+                title: const Text('Debug Feed'),
+                subtitle: const Text('Open debug tools'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FeedDebugScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _createTestPosts() async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Creating test posts...'),
+            ],
+          ),
+        );
+      },
+    );
+
+    try {
+      await TestPostCreationService.createTestPosts();
+
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Test posts created successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Refresh the feed
+      _loadFeed();
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Error creating test posts: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   // Data loading methods
@@ -486,12 +609,25 @@ class _FeedScreenState extends State<FeedScreen>
     });
 
     try {
-      final posts = await FeedService().getFeedPosts(
-        limit: _postsPerPage,
-        category: _selectedCategory,
-        searchQuery: _searchQuery,
-        sortOption: _sortOption,
-      );
+      List<PostModel> posts;
+      
+      // Use personalized feed if no filters are applied, otherwise use filtered feed
+      if (_selectedCategory == null && 
+          (_searchQuery == null || _searchQuery!.isEmpty) && 
+          _sortOption == FeedSortOption.newest) {
+        // Use enterprise personalized algorithm
+        posts = await FeedService().getPersonalizedFeedPosts(
+          limit: _postsPerPage,
+        );
+      } else {
+        // Use filtered feed for specific queries
+        posts = await FeedService().getFeedPosts(
+          limit: _postsPerPage,
+          category: _selectedCategory,
+          searchQuery: _searchQuery,
+          sortOption: _sortOption,
+        );
+      }
 
       setState(() {
         _posts = posts;
@@ -521,13 +657,27 @@ class _FeedScreenState extends State<FeedScreen>
           .doc(lastPost.id)
           .get();
 
-      final morePosts = await FeedService().getFeedPosts(
-        limit: _postsPerPage,
-        lastDocument: lastDoc,
-        category: _selectedCategory,
-        searchQuery: _searchQuery,
-        sortOption: _sortOption,
-      );
+      List<PostModel> morePosts;
+      
+      // Use personalized feed if no filters are applied, otherwise use filtered feed
+      if (_selectedCategory == null && 
+          (_searchQuery == null || _searchQuery!.isEmpty) && 
+          _sortOption == FeedSortOption.newest) {
+        // Use enterprise personalized algorithm
+        morePosts = await FeedService().getPersonalizedFeedPosts(
+          limit: _postsPerPage,
+          lastDocument: lastDoc,
+        );
+      } else {
+        // Use filtered feed for specific queries
+        morePosts = await FeedService().getFeedPosts(
+          limit: _postsPerPage,
+          lastDocument: lastDoc,
+          category: _selectedCategory,
+          searchQuery: _searchQuery,
+          sortOption: _sortOption,
+        );
+      }
 
       setState(() {
         _posts.addAll(morePosts);
@@ -726,6 +876,16 @@ class _FeedScreenState extends State<FeedScreen>
 
   void _handleShare(PostModel post) async {
     _showShareDialog(post);
+  }
+
+  void _handleUserTap(PostModel post) {
+    // TODO: Navigate to user profile
+    debugPrint('User tapped: ${post.authorName}');
+  }
+
+  void _handlePostTap(PostModel post) {
+    // TODO: Navigate to post detail screen
+    debugPrint('Post tapped: ${post.id}');
   }
 
   void _showShareDialog(PostModel post) {
@@ -995,56 +1155,31 @@ class _FeedScreenState extends State<FeedScreen>
     );
   }
   // Media display section
-  Widget _buildMediaSection(List<String> mediaUrls) {
+  Widget _buildMediaSection(List<String> mediaUrls, String postId) {
     if (mediaUrls.isEmpty) return const SizedBox.shrink();
 
     return Container(
       constraints: const BoxConstraints(maxHeight: 300),
       child: mediaUrls.length == 1
-          ? _buildSingleMedia(mediaUrls.first)
-          : _buildMultipleMedia(mediaUrls),
+          ? _buildSingleMedia(mediaUrls.first, postId)
+          : _buildMultipleMedia(mediaUrls, postId),
     );
   }
 
-  Widget _buildSingleMedia(String mediaUrl) {
-    if (_isImageUrl(mediaUrl)) {
+  Widget _buildSingleMedia(String mediaUrl, String postId) {
+    if (_isImageUrl(mediaUrl) || _isVideoUrl(mediaUrl)) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          mediaUrl,
+        child: EnhancedFeedMediaWidget(
+          mediaUrl: mediaUrl,
+          contentType: _isVideoUrl(mediaUrl) ? 'video/mp4' : 'image/jpeg',
+          postId: postId,
+          mediaIndex: 0,
           width: double.infinity,
           height: 300,
           fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              height: 300,
-              color: Colors.grey[200],
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              height: 300,
-              color: Colors.grey[200],
-              child: const Center(
-                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-              ),
-            );
-          },
-        ),
-      );
-    } else if (_isVideoUrl(mediaUrl)) {
-      return Container(
-        height: 300,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Center(
-          child: Icon(Icons.play_circle_outline, size: 60, color: Colors.white),
+          showControls: _isVideoUrl(mediaUrl),
+          autoPlay: false,
         ),
       );
     } else {
@@ -1052,7 +1187,7 @@ class _FeedScreenState extends State<FeedScreen>
     }
   }
 
-  Widget _buildMultipleMedia(List<String> mediaUrls) {
+  Widget _buildMultipleMedia(List<String> mediaUrls, String postId) {
     return SizedBox(
       height: 200,
       child: ListView.builder(
@@ -1065,25 +1200,19 @@ class _FeedScreenState extends State<FeedScreen>
             margin: const EdgeInsets.only(right: 8),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: _isImageUrl(mediaUrl)
-                  ? Image.network(
-                      mediaUrl,
+              child: (_isImageUrl(mediaUrl) || _isVideoUrl(mediaUrl))
+                  ? EnhancedFeedMediaWidget(
+                      mediaUrl: mediaUrl,
+                      contentType: _isVideoUrl(mediaUrl) ? 'video/mp4' : 'image/jpeg',
+                      postId: postId,
+                      mediaIndex: index,
+                      width: 150,
+                      height: 200,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
-                        );
-                      },
+                      showControls: _isVideoUrl(mediaUrl),
+                      autoPlay: false,
                     )
-                  : _isVideoUrl(mediaUrl)
-                      ? Container(
-                          color: Colors.black,
-                          child: const Center(
-                            child: Icon(Icons.play_circle_outline, color: Colors.white),
-                          ),
-                        )
-                      : _buildDocumentPreview(mediaUrl),
+                  : _buildDocumentPreview(mediaUrl),
             ),
           );
         },
@@ -1359,3 +1488,4 @@ class FeedSearchDelegate extends SearchDelegate<String> {
     );
   }
 }
+

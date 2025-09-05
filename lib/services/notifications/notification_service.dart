@@ -1,10 +1,12 @@
-// Notification Service - Handle push notifications and in-app notifications
+﻿// Notification Service - Handle push notifications and in-app notifications
 // Part of Task 12: Build push notification system
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
+import 'dart:async';
 
 // Conditional import for local notifications (not supported on web)
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
@@ -38,15 +40,24 @@ class NotificationService {
   static String? _fcmToken;
   static final List<NotificationModel> _inAppNotifications = [];
   
-  /// Initialize notification service
+  // Stream controllers
+  static final StreamController<NotificationModel> _notificationController = 
+      StreamController<NotificationModel>.broadcast();
+  static final StreamController<int> _unreadCountController = 
+      StreamController<int>.broadcast();
+  
+  /// Initialize notification service with enhanced FCM features
   static Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     try {
-      debugPrint('NotificationService: Initializing...');
-      
+      debugPrint('ðŸ”” NotificationService: Initializing with enhanced FCM...');
+
       // Initialize preferences service
       await NotificationPreferencesService.initialize();
+
+      // Initialize advanced FCM features
+      await _initializeAdvancedFCM();
       
       // Initialize batching service
       await NotificationBatchingService().initialize();
@@ -634,9 +645,41 @@ class NotificationService {
   /// Get in-app notifications
   static List<NotificationModel> get inAppNotifications => _inAppNotifications;
   
+  /// Get notification stream
+  static Stream<NotificationModel>? get notificationStream => 
+      _notificationController.stream;
+  
+  /// Get unread count stream
+  static Stream<int>? get unreadCountStream => 
+      _unreadCountController.stream;
+  
   /// Clear in-app notifications
   static void clearInAppNotifications() {
     _inAppNotifications.clear();
+  }
+  
+  /// Get recent notifications for a user
+  static Future<List<NotificationModel>> getRecentNotifications({
+    int limit = 20,
+  }) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return [];
+      
+      final querySnapshot = await _userNotificationsCollection
+          .doc(user.uid)
+          .collection('notifications')
+          .orderBy('createdAt', descending: true)
+          .limit(limit)
+          .get();
+      
+      return querySnapshot.docs
+          .map((doc) => NotificationModel.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      debugPrint('NotificationService: Error getting recent notifications: $e');
+      return [];
+    }
   }
 
   /// Send notification using template
@@ -878,6 +921,466 @@ class NotificationService {
         return Priority.low;
       default:
         return Priority.defaultPriority;
+    }
+  }
+
+  /// Mark a notification as read
+  static Future<void> markAsRead(String notificationId) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('notifications')
+          .doc(notificationId)
+          .update({
+        'isRead': true,
+        'readAt': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint('NotificationService: Marked notification as read: $notificationId');
+    } catch (e) {
+      debugPrint('NotificationService: Error marking notification as read: $e');
+    }
+  }
+
+  /// Mark all notifications as read
+  static Future<void> markAllAsRead() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final batch = _firestore.batch();
+      final notifications = await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('notifications')
+          .where('isRead', isEqualTo: false)
+          .get();
+
+      for (final doc in notifications.docs) {
+        batch.update(doc.reference, {
+          'isRead': true,
+          'readAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      await batch.commit();
+      debugPrint('NotificationService: Marked all notifications as read');
+    } catch (e) {
+      debugPrint('NotificationService: Error marking all notifications as read: $e');
+    }
+  }
+
+  /// Initialize advanced FCM features
+  static Future<void> _initializeAdvancedFCM() async {
+    try {
+      debugPrint('ðŸš€ Initializing advanced FCM features...');
+
+      // Enable auto-initialization
+      await _messaging.setAutoInitEnabled(true);
+
+      // Configure foreground notification presentation options
+      await _messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // Subscribe to topic-based notifications
+      await _subscribeToTopics();
+
+      // Setup advanced message handlers
+      await _setupAdvancedMessageHandlers();
+
+      // Initialize notification analytics
+      await _initializeNotificationAnalytics();
+
+      debugPrint('âœ… Advanced FCM features initialized');
+
+    } catch (e) {
+      debugPrint('âŒ Failed to initialize advanced FCM: $e');
+    }
+  }
+
+
+
+  /// Setup advanced message handlers
+  static Future<void> _setupAdvancedMessageHandlers() async {
+    try {
+      // Handle messages when app is in foreground
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        debugPrint('ðŸ”” Received foreground message: ${message.messageId}');
+
+        // Track notification analytics
+        await _trackNotificationReceived(message);
+
+        // Show custom in-app notification
+        await _showInAppNotification(message);
+
+        // Process notification based on type
+        await _processAdvancedNotification(message);
+      });
+
+      // Handle notification taps when app is in background
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+        debugPrint('ðŸ”” Notification tapped (background): ${message.messageId}');
+
+        // Track notification interaction
+        await _trackNotificationOpened(message);
+
+        // Handle navigation
+        await _handleNotificationNavigation(message);
+      });
+
+      // Handle notification when app is terminated
+      final initialMessage = await _messaging.getInitialMessage();
+      if (initialMessage != null) {
+        debugPrint('ðŸ”” App opened from notification: ${initialMessage.messageId}');
+
+        // Track notification interaction
+        await _trackNotificationOpened(initialMessage);
+
+        // Handle navigation
+        await _handleNotificationNavigation(initialMessage);
+      }
+
+      debugPrint('âœ… Advanced message handlers setup complete');
+
+    } catch (e) {
+      debugPrint('âŒ Failed to setup advanced message handlers: $e');
+    }
+  }
+
+  /// Show custom in-app notification
+  static Future<void> _showInAppNotification(RemoteMessage message) async {
+    try {
+      // Create notification model
+      final notification = NotificationModel(
+        id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        title: message.notification?.title ?? 'New Notification',
+        body: message.notification?.body ?? '',
+        type: _getNotificationTypeFromData(message.data),
+        data: message.data,
+        createdAt: DateTime.now(),
+        isRead: false,
+      );
+
+      // Add to in-app notifications
+      _inAppNotifications.insert(0, notification);
+
+      // Show custom notification UI
+      await _showCustomNotificationUI(notification);
+
+    } catch (e) {
+      debugPrint('âŒ Failed to show in-app notification: $e');
+    }
+  }
+
+  /// Process advanced notification based on type
+  static Future<void> _processAdvancedNotification(RemoteMessage message) async {
+    try {
+      final notificationType = message.data['type'];
+
+      switch (notificationType) {
+        case 'emergency_alert':
+          await _handleEmergencyAlert(message);
+          break;
+        case 'legal_update':
+          await _handleLegalUpdate(message);
+          break;
+        case 'campaign_update':
+          await _handleCampaignUpdate(message);
+          break;
+        case 'social_interaction':
+          await _handleSocialInteraction(message);
+          break;
+        case 'system_announcement':
+          await _handleSystemAnnouncement(message);
+          break;
+        default:
+          debugPrint('ðŸ”” Unknown notification type: $notificationType');
+      }
+
+    } catch (e) {
+      debugPrint('âŒ Failed to process advanced notification: $e');
+    }
+  }
+
+  /// Handle emergency alert notifications
+  static Future<void> _handleEmergencyAlert(RemoteMessage message) async {
+    try {
+      debugPrint('ðŸš¨ Processing emergency alert notification');
+
+      // Show high-priority local notification
+      await _showHighPriorityNotification(
+        title: message.notification?.title ?? 'Emergency Alert',
+        body: message.notification?.body ?? '',
+        payload: jsonEncode(message.data),
+        channelId: _emergencyChannelId,
+      );
+
+      // Store in emergency alerts collection
+      await _firestore.collection('emergency_alerts').add({
+        'title': message.notification?.title,
+        'body': message.notification?.body,
+        'data': message.data,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageId': message.messageId,
+      });
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle emergency alert: $e');
+    }
+  }
+
+  /// Initialize notification analytics
+  static Future<void> _initializeNotificationAnalytics() async {
+    try {
+      debugPrint('ðŸ“Š Initializing notification analytics...');
+
+      // Setup analytics collection
+      await _firestore.collection('notification_analytics').doc('config').set({
+        'initialized': true,
+        'timestamp': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('âœ… Notification analytics initialized');
+
+    } catch (e) {
+      debugPrint('âŒ Failed to initialize notification analytics: $e');
+    }
+  }
+
+  /// Track notification received
+  static Future<void> _trackNotificationReceived(RemoteMessage message) async {
+    try {
+      await _firestore.collection('notification_analytics').add({
+        'event': 'notification_received',
+        'messageId': message.messageId,
+        'type': message.data['type'],
+        'timestamp': FieldValue.serverTimestamp(),
+        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'platform': 'flutter_web',
+      });
+    } catch (e) {
+      debugPrint('âŒ Failed to track notification received: $e');
+    }
+  }
+
+  /// Track notification opened
+  static Future<void> _trackNotificationOpened(RemoteMessage message) async {
+    try {
+      await _firestore.collection('notification_analytics').add({
+        'event': 'notification_opened',
+        'messageId': message.messageId,
+        'type': message.data['type'],
+        'timestamp': FieldValue.serverTimestamp(),
+        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'platform': 'flutter_web',
+      });
+    } catch (e) {
+      debugPrint('âŒ Failed to track notification opened: $e');
+    }
+  }
+
+  /// Handle notification navigation
+  static Future<void> _handleNotificationNavigation(RemoteMessage message) async {
+    try {
+      final notificationType = message.data['type'];
+      final targetId = message.data['targetId'];
+
+      debugPrint('ðŸ§­ Handling navigation for: $notificationType');
+
+      // Navigation logic will be implemented based on app structure
+      switch (notificationType) {
+        case 'post_like':
+        case 'post_comment':
+        case 'post_share':
+          // Navigate to specific post
+          debugPrint('ðŸ“± Navigate to post: $targetId');
+          break;
+        case 'new_follower':
+        case 'follow_request':
+          // Navigate to user profile
+          debugPrint('ðŸ‘¤ Navigate to profile: $targetId');
+          break;
+        case 'legal_update':
+        case 'court_case':
+          // Navigate to legal section
+          debugPrint('âš–ï¸ Navigate to legal section: $targetId');
+          break;
+        case 'emergency_alert':
+          // Navigate to emergency alerts
+          debugPrint('ðŸš¨ Navigate to emergency alerts');
+          break;
+        default:
+          debugPrint('ðŸ”” Default navigation for: $notificationType');
+      }
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle notification navigation: $e');
+    }
+  }
+
+  /// Get notification type from message data
+  static NotificationType _getNotificationTypeFromData(Map<String, dynamic> data) {
+    final typeString = data['type'] as String?;
+
+    switch (typeString) {
+      case 'post_like':
+        return NotificationType.postLike;
+      case 'post_comment':
+        return NotificationType.postComment;
+      case 'post_share':
+        return NotificationType.postShare;
+      case 'new_follower':
+        return NotificationType.newFollower;
+      case 'emergency_alert':
+        return NotificationType.emergency;
+      case 'legal_update':
+        return NotificationType.legalUpdate;
+      case 'announcement':
+        return NotificationType.announcement;
+      case 'campaign_update':
+        return NotificationType.campaignUpdate;
+      case 'land_rights_alert':
+        return NotificationType.landRightsAlert;
+      case 'court_date_reminder':
+        return NotificationType.courtDateReminder;
+      default:
+        return NotificationType.general;
+    }
+  }
+
+  /// Show custom notification UI
+  static Future<void> _showCustomNotificationUI(NotificationModel notification) async {
+    try {
+      // This would integrate with your app's notification UI system
+      debugPrint('ðŸŽ¨ Showing custom notification UI: ${notification.title}');
+
+      // For now, just log the notification
+      // In a real implementation, this would trigger UI updates
+
+    } catch (e) {
+      debugPrint('âŒ Failed to show custom notification UI: $e');
+    }
+  }
+
+  /// Handle legal update notifications
+  static Future<void> _handleLegalUpdate(RemoteMessage message) async {
+    try {
+      debugPrint('âš–ï¸ Processing legal update notification');
+
+      // Store in legal updates collection
+      await _firestore.collection('legal_updates').add({
+        'title': message.notification?.title,
+        'body': message.notification?.body,
+        'data': message.data,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageId': message.messageId,
+      });
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle legal update: $e');
+    }
+  }
+
+  /// Handle campaign update notifications
+  static Future<void> _handleCampaignUpdate(RemoteMessage message) async {
+    try {
+      debugPrint('ðŸ“¢ Processing campaign update notification');
+
+      // Store in campaign updates collection
+      await _firestore.collection('campaign_updates').add({
+        'title': message.notification?.title,
+        'body': message.notification?.body,
+        'data': message.data,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageId': message.messageId,
+      });
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle campaign update: $e');
+    }
+  }
+
+  /// Handle social interaction notifications
+  static Future<void> _handleSocialInteraction(RemoteMessage message) async {
+    try {
+      debugPrint('ðŸ‘¥ Processing social interaction notification');
+
+      // Store in social interactions collection
+      await _firestore.collection('social_interactions').add({
+        'title': message.notification?.title,
+        'body': message.notification?.body,
+        'data': message.data,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageId': message.messageId,
+      });
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle social interaction: $e');
+    }
+  }
+
+  /// Handle system announcement notifications
+  static Future<void> _handleSystemAnnouncement(RemoteMessage message) async {
+    try {
+      debugPrint('ðŸ“£ Processing system announcement notification');
+
+      // Store in system announcements collection
+      await _firestore.collection('system_announcements').add({
+        'title': message.notification?.title,
+        'body': message.notification?.body,
+        'data': message.data,
+        'timestamp': FieldValue.serverTimestamp(),
+        'messageId': message.messageId,
+      });
+
+    } catch (e) {
+      debugPrint('âŒ Failed to handle system announcement: $e');
+    }
+  }
+
+  /// Show high-priority notification
+  static Future<void> _showHighPriorityNotification({
+    required String title,
+    required String body,
+    required String payload,
+    required String channelId,
+  }) async {
+    try {
+      if (kIsWeb) {
+        // Web notifications are handled differently
+        debugPrint('ðŸŒ Web high-priority notification: $title');
+        return;
+      }
+
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        'emergency_channel',
+        'Emergency Alerts',
+        channelDescription: 'Critical emergency alerts and notifications',
+        enableVibration: true,
+        playSound: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+      );
+
+      await _localNotifications.show(
+        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title,
+        body,
+        notificationDetails,
+        payload: payload,
+      );
+
+    } catch (e) {
+      debugPrint('âŒ Failed to show high-priority notification: $e');
     }
   }
 }

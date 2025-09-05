@@ -1,4 +1,4 @@
-// Engagement Service for TALOWA Social Feed System
+﻿// Engagement Service for TALOWA Social Feed System
 // Handles user interactions like likes, comments, shares, and notifications
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -256,19 +256,19 @@ class EngagementService {
       
       switch (type) {
         case EngagementType.like:
-          message = '$actorName ने आपकी पोस्ट को पसंद किया: "$shortContent"';
+          message = '$actorName à¤¨à¥‡ à¤†à¤ªà¤•à¥€ à¤ªà¥‹à¤¸à¥à¤Ÿ à¤•à¥‹ à¤ªà¤¸à¤‚à¤¦ à¤•à¤¿à¤¯à¤¾: "$shortContent"';
           notificationType = 'post_liked';
           break;
         case EngagementType.comment:
-          message = '$actorName ने आपकी पोस्ट पर टिप्पणी की: "$shortContent"';
+          message = '$actorName à¤¨à¥‡ à¤†à¤ªà¤•à¥€ à¤ªà¥‹à¤¸à¥à¤Ÿ à¤ªà¤° à¤Ÿà¤¿à¤ªà¥à¤ªà¤£à¥€ à¤•à¥€: "$shortContent"';
           notificationType = 'post_commented';
           break;
         case EngagementType.share:
-          message = '$actorName ने आपकी पोस्ट को साझा किया: "$shortContent"';
+          message = '$actorName à¤¨à¥‡ à¤†à¤ªà¤•à¥€ à¤ªà¥‹à¤¸à¥à¤Ÿ à¤•à¥‹ à¤¸à¤¾à¤à¤¾ à¤•à¤¿à¤¯à¤¾: "$shortContent"';
           notificationType = 'post_shared';
           break;
         case EngagementType.reply:
-          message = '$actorName ने आपकी टिप्पणी का जवाब दिया';
+          message = '$actorName à¤¨à¥‡ à¤†à¤ªà¤•à¥€ à¤Ÿà¤¿à¤ªà¥à¤ªà¤£à¥€ à¤•à¤¾ à¤œà¤µà¤¾à¤¬ à¤¦à¤¿à¤¯à¤¾';
           notificationType = 'comment_replied';
           break;
       }

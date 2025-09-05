@@ -1,4 +1,4 @@
-// TALOWA Onboarding Service
+﻿// TALOWA Onboarding Service
 // Manages user onboarding flow and feature discovery
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 
@@ -269,7 +269,7 @@ class OnboardingService {
       case 'chat_screen':
         return [
           'Tap and hold to record voice messages',
-          'Double-tap a message to quickly react with ❤️',
+          'Double-tap a message to quickly react with â¤ï¸',
           'Swipe right on a message to reply to it',
           'Tap the camera icon to share photos or documents',
         ];

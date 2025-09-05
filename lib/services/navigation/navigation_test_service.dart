@@ -1,4 +1,4 @@
-// Navigation Test Service
+﻿// Navigation Test Service
 // Automated testing for navigation system functionality
 
 import 'package:flutter/material.dart';
@@ -179,13 +179,13 @@ class NavigationTestService {
   static String generateTestReport(NavigationTestResults results) {
     final buffer = StringBuffer();
     buffer.writeln('=== NAVIGATION SYSTEM TEST REPORT ===');
-    buffer.writeln('Overall Success: ${results.overallSuccess ? "✅ PASS" : "❌ FAIL"}');
+    buffer.writeln('Overall Success: ${results.overallSuccess ? "âœ… PASS" : "âŒ FAIL"}');
     buffer.writeln('');
     buffer.writeln('Individual Tests:');
-    buffer.writeln('- Safety Service: ${results.safetyServiceTest ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Smart Back Navigation: ${results.smartBackTest ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Context Validation: ${results.contextValidationTest ? "✅ PASS" : "❌ FAIL"}');
-    buffer.writeln('- Logout Prevention: ${results.logoutPreventionTest ? "✅ PASS" : "❌ FAIL"}');
+    buffer.writeln('- Safety Service: ${results.safetyServiceTest ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Smart Back Navigation: ${results.smartBackTest ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Context Validation: ${results.contextValidationTest ? "âœ… PASS" : "âŒ FAIL"}');
+    buffer.writeln('- Logout Prevention: ${results.logoutPreventionTest ? "âœ… PASS" : "âŒ FAIL"}');
     
     if (results.error != null) {
       buffer.writeln('');

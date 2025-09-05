@@ -1,4 +1,4 @@
-// Universal Voice Recognition Service for TALOWA
+﻿// Universal Voice Recognition Service for TALOWA
 // Works on both mobile and web platforms with graceful fallbacks
 
 import 'dart:async';
@@ -24,7 +24,7 @@ class UniversalVoiceService {
   /// Initialize voice recognition service with platform detection
   Future<bool> initialize() async {
     try {
-      debugPrint('🎤 Initializing universal voice recognition service...');
+      debugPrint('ðŸŽ¤ Initializing universal voice recognition service...');
       
       // Check platform and initialize accordingly
       if (kIsWeb) {
@@ -33,7 +33,7 @@ class UniversalVoiceService {
         return await _initializeMobile();
       }
     } catch (e) {
-      debugPrint('❌ Error initializing voice service: $e');
+      debugPrint('âŒ Error initializing voice service: $e');
       _isInitialized = true;
       _isAvailable = false;
       return true; // Still return true to allow text input
@@ -43,17 +43,17 @@ class UniversalVoiceService {
   /// Initialize for web platform using Web Speech API
   Future<bool> _initializeWeb() async {
     try {
-      debugPrint('🌐 Initializing web voice recognition...');
+      debugPrint('ðŸŒ Initializing web voice recognition...');
       
       // For web, we'll use a simple fallback approach
       // The Web Speech API would need to be implemented in JavaScript
       _isAvailable = false; // Disable for now on web
       _isInitialized = true;
       
-      debugPrint('ℹ️ Voice recognition not available on web - text-only mode');
+      debugPrint('â„¹ï¸ Voice recognition not available on web - text-only mode');
       return true;
     } catch (e) {
-      debugPrint('❌ Web voice initialization error: $e');
+      debugPrint('âŒ Web voice initialization error: $e');
       _isAvailable = false;
       _isInitialized = true;
       return true;
@@ -63,12 +63,12 @@ class UniversalVoiceService {
   /// Initialize for mobile platforms
   Future<bool> _initializeMobile() async {
     try {
-      debugPrint('📱 Initializing mobile voice recognition...');
+      debugPrint('ðŸ“± Initializing mobile voice recognition...');
       
       // Check permissions first
       final permissionGranted = await _checkPermissions();
       if (!permissionGranted) {
-        debugPrint('❌ Voice recognition: Permissions not granted');
+        debugPrint('âŒ Voice recognition: Permissions not granted');
         _isInitialized = true;
         _isAvailable = false;
         return true;
@@ -78,23 +78,23 @@ class UniversalVoiceService {
       try {
         const MethodChannel channel = MethodChannel('com.talowa.speech_recognition');
         _isAvailable = await channel.invokeMethod('isAvailable');
-        debugPrint('📱 Native voice recognition available: $_isAvailable');
+        debugPrint('ðŸ“± Native voice recognition available: $_isAvailable');
       } catch (e) {
-        debugPrint('❌ Native voice service not available: $e');
+        debugPrint('âŒ Native voice service not available: $e');
         _isAvailable = false;
       }
 
       _isInitialized = true;
       
       if (_isAvailable) {
-        debugPrint('✅ Voice recognition initialized successfully');
+        debugPrint('âœ… Voice recognition initialized successfully');
       } else {
-        debugPrint('ℹ️ Voice recognition not available - text-only mode');
+        debugPrint('â„¹ï¸ Voice recognition not available - text-only mode');
       }
       
       return true;
     } catch (e) {
-      debugPrint('❌ Mobile voice initialization error: $e');
+      debugPrint('âŒ Mobile voice initialization error: $e');
       _isAvailable = false;
       _isInitialized = true;
       return true;
@@ -111,22 +111,22 @@ class UniversalVoiceService {
 
       final status = await Permission.microphone.status;
       if (status.isGranted) {
-        debugPrint('🔒 Microphone permission granted');
+        debugPrint('ðŸ”’ Microphone permission granted');
         return true;
       }
 
       if (status.isDenied) {
         final result = await Permission.microphone.request();
         if (result.isGranted) {
-          debugPrint('✅ Microphone permission granted');
+          debugPrint('âœ… Microphone permission granted');
           return true;
         }
       }
 
-      debugPrint('❌ Microphone permission denied');
+      debugPrint('âŒ Microphone permission denied');
       return false;
     } catch (e) {
-      debugPrint('❌ Error checking permissions: $e');
+      debugPrint('âŒ Error checking permissions: $e');
       return false;
     }
   }
@@ -134,7 +134,7 @@ class UniversalVoiceService {
   /// Set language for voice recognition
   Future<void> setLanguage(String language) async {
     _currentLanguage = language;
-    debugPrint('🌍 Language set to: $language');
+    debugPrint('ðŸŒ Language set to: $language');
   }
 
   /// Start listening for voice input
@@ -143,17 +143,17 @@ class UniversalVoiceService {
     required Function(String) onError,
   }) async {
     if (!_isInitialized) {
-      onError('🔧 Voice service not initialized. Please restart the app.');
+      onError('ðŸ”§ Voice service not initialized. Please restart the app.');
       return;
     }
 
     if (!_isAvailable) {
-      onError('🎤 Voice recognition is not available on this device. Please use text input.');
+      onError('ðŸŽ¤ Voice recognition is not available on this device. Please use text input.');
       return;
     }
 
     if (kIsWeb) {
-      onError('🌐 Voice input not supported on web. Please type your question.');
+      onError('ðŸŒ Voice input not supported on web. Please type your question.');
       return;
     }
 
@@ -172,24 +172,24 @@ class UniversalVoiceService {
       if (result.isNotEmpty && result.trim().length > 1) {
         onResult(result.trim());
       } else {
-        onError('🔇 No clear speech detected. Please speak louder and more clearly.');
+        onError('ðŸ”‡ No clear speech detected. Please speak louder and more clearly.');
       }
       
     } catch (e) {
       _isListening = false;
-      debugPrint('❌ Voice recognition error: $e');
+      debugPrint('âŒ Voice recognition error: $e');
       
       // Provide user-friendly error messages
       final errorString = e.toString().toLowerCase();
       
       if (errorString.contains('permission')) {
-        onError('🎤 Microphone permission required. Please enable it in Settings.');
+        onError('ðŸŽ¤ Microphone permission required. Please enable it in Settings.');
       } else if (errorString.contains('network')) {
-        onError('🌐 Internet connection needed. Please check your connection.');
+        onError('ðŸŒ Internet connection needed. Please check your connection.');
       } else if (errorString.contains('not available') || errorString.contains('missing')) {
-        onError('🎤 Voice recognition not supported on this device. Please use text input.');
+        onError('ðŸŽ¤ Voice recognition not supported on this device. Please use text input.');
       } else {
-        onError('🎤 Voice input unavailable right now. Please type your question instead.');
+        onError('ðŸŽ¤ Voice input unavailable right now. Please type your question instead.');
       }
     }
   }
@@ -243,3 +243,4 @@ class UniversalVoiceService {
     }
   }
 }
+

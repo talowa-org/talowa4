@@ -1,4 +1,4 @@
-// Offline Sync Service for TALOWA Social Feed
+﻿// Offline Sync Service for TALOWA Social Feed
 // Implements Task 20: Implement offline functionality
 
 import 'dart:async';

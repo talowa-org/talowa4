@@ -1,4 +1,4 @@
-// Test file for FeedService
+﻿// Test file for FeedService
 // Comprehensive tests for social feed functionality
 
 import 'package:flutter_test/flutter_test.dart';

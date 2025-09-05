@@ -1,4 +1,4 @@
-// Goal Progress Card Widget
+﻿// Goal Progress Card Widget
 // Reference: complete-app-structure.md - Network Features
 
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// Verification Service for TALOWA
+﻿// Verification Service for TALOWA
 // Tests all the urgent fixes for registration, referral codes, and navigation
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -301,11 +301,12 @@ class VerificationService {
     debugPrint('\nOVERALL: $passed/$total tests passed');
     
     if (passed == total) {
-      debugPrint('🎉 ALL URGENT FIXES VERIFIED SUCCESSFULLY!');
+      debugPrint('ðŸŽ‰ ALL URGENT FIXES VERIFIED SUCCESSFULLY!');
     } else {
-      debugPrint('⚠️  Some tests failed. Please review and fix.');
+      debugPrint('âš ï¸  Some tests failed. Please review and fix.');
     }
     
     debugPrint('=====================================\n');
   }
 }
+

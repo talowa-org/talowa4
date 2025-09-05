@@ -1,4 +1,4 @@
-// Performance Integration Service for TALOWA
+﻿// Performance Integration Service for TALOWA
 // Integrates all performance optimization services for messaging
 // Requirements: 1.1, 8.4
 

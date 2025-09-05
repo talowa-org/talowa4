@@ -1,4 +1,4 @@
-// Document Viewer Screen - View documents and files
+﻿// Document Viewer Screen - View documents and files
 // Part of Task 6: Implement PostWidget for individual posts
 
 import 'package:flutter/material.dart';

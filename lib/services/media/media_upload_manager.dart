@@ -1,4 +1,4 @@
-// Media Upload Manager - Handle batch uploads with progress tracking
+﻿// Media Upload Manager - Handle batch uploads with progress tracking
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';

@@ -1,4 +1,4 @@
-// Communication Monitoring Service for TALOWA In-App Communication System
+﻿// Communication Monitoring Service for TALOWA In-App Communication System
 // Implements Task 16: Implement monitoring and analytics - Real-time Monitoring
 
 import 'dart:async';

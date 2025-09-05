@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:talowa/services/auth_service.dart';
@@ -19,3 +19,4 @@ void main() {
     expect(result.user?.fullName, 'Test User');
   });
 }
+

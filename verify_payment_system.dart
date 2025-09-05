@@ -1,7 +1,7 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 void main() {
-  print('🎯 PAYMENT SYSTEM VERIFICATION');
+  print('ðŸŽ¯ PAYMENT SYSTEM VERIFICATION');
   print('==============================');
   
   // Check key files for correct payment implementation
@@ -16,12 +16,12 @@ void main() {
   bool allCorrect = true;
   
   for (final filePath in filesToCheck) {
-    print('\n📁 Checking: $filePath');
+    print('\nðŸ“ Checking: $filePath');
     
     try {
       final file = File(filePath);
       if (!file.existsSync()) {
-        print('❌ File not found');
+        print('âŒ File not found');
         allCorrect = false;
         continue;
       }
@@ -37,7 +37,7 @@ void main() {
       bool fileHasIssues = false;
       for (final pattern in problematicPatterns) {
         if (content.contains(pattern)) {
-          print('❌ Found problematic pattern: $pattern');
+          print('âŒ Found problematic pattern: $pattern');
           fileHasIssues = true;
           allCorrect = false;
         }
@@ -58,32 +58,32 @@ void main() {
       }
       
       if (!fileHasIssues && hasCorrectPattern) {
-        print('✅ File looks correct');
+        print('âœ… File looks correct');
       } else if (!fileHasIssues) {
-        print('⚠️  File may not have payment-related code');
+        print('âš ï¸  File may not have payment-related code');
       }
       
     } catch (e) {
-      print('❌ Error reading file: $e');
+      print('âŒ Error reading file: $e');
       allCorrect = false;
     }
   }
   
-  print('\n🎯 VERIFICATION SUMMARY');
+  print('\nðŸŽ¯ VERIFICATION SUMMARY');
   print('======================');
   
   if (allCorrect) {
-    print('✅ PAYMENT SYSTEM VERIFICATION PASSED');
-    print('✅ All users will register with membershipPaid: false');
-    print('✅ All app features are available without payment');
-    print('✅ Payment is optional for supporting the movement');
+    print('âœ… PAYMENT SYSTEM VERIFICATION PASSED');
+    print('âœ… All users will register with membershipPaid: false');
+    print('âœ… All app features are available without payment');
+    print('âœ… Payment is optional for supporting the movement');
   } else {
-    print('❌ PAYMENT SYSTEM VERIFICATION FAILED');
-    print('❌ Some files still have hardcoded membershipPaid: true');
-    print('❌ This needs to be fixed for proper free app behavior');
+    print('âŒ PAYMENT SYSTEM VERIFICATION FAILED');
+    print('âŒ Some files still have hardcoded membershipPaid: true');
+    print('âŒ This needs to be fixed for proper free app behavior');
   }
   
-  print('\n📋 EXPECTED BEHAVIOR:');
+  print('\nðŸ“‹ EXPECTED BEHAVIOR:');
   print('- New users register with membershipPaid: false');
   print('- All 5 main tabs work without payment');
   print('- Referral system works for all users');

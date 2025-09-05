@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/land_records_service.dart';
 import '../../models/land_record_model.dart';
 import '../../core/theme/app_theme.dart';
@@ -42,8 +42,8 @@ class LandRecordsListScreen extends StatelessWidget {
               return Card(
                 child: ListTile(
                   leading: const Icon(Icons.landscape),
-                  title: Text('${r.surveyNumber} • ${r.location.village}'),
-                  subtitle: Text('${r.area} ${r.unit} • ${r.landType}'),
+                  title: Text('${r.surveyNumber} â€¢ ${r.location.village}'),
+                  subtitle: Text('${r.area} ${r.unit} â€¢ ${r.landType}'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.pushNamed(
                     context,
@@ -81,4 +81,5 @@ class LandRecordsListScreen extends StatelessWidget {
     );
   }
 }
+
 

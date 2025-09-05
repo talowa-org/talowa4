@@ -1,4 +1,4 @@
-// TALOWA Help Search Result Model
+﻿// TALOWA Help Search Result Model
 // Represents a search result with relevance scoring
 
 import 'help_article.dart';

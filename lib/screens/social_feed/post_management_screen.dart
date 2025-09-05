@@ -1,4 +1,4 @@
-// Post Management Screen - Dashboard for managing user's posts
+﻿// Post Management Screen - Dashboard for managing user's posts
 // Part of Task 11: Add post editing and management
 
 import 'package:flutter/material.dart';

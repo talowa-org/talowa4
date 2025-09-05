@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:talowa/services/referral_code_cache_service.dart';
 
 void main() {
@@ -11,3 +11,4 @@ void main() {
     expect(ReferralCodeCacheService.currentCode, 'TAL654321');
   });
 }
+

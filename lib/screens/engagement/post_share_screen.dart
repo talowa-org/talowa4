@@ -1,4 +1,4 @@
-// Post Share Screen - Share post with network options
+﻿// Post Share Screen - Share post with network options
 // Part of Task 7: Build post engagement interface
 
 import 'package:flutter/material.dart';

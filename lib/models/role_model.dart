@@ -1,4 +1,4 @@
-// Role Model for Talowa Referral System
+﻿// Role Model for Talowa Referral System
 // Adapted from BSS webapp but simplified for Talowa's needs
 
 import 'package:flutter/material.dart';

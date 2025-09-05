@@ -1,4 +1,4 @@
-// Real-time Network Updates Validator (Test Case F)
+﻿// Real-time Network Updates Validator (Test Case F)
 // Validates that network statistics update in real-time using Firestore streams
 
 import 'dart:async';
@@ -13,7 +13,7 @@ class NetworkValidator {
 
   /// Validate real-time network updates with Firestore streams
   static Future<ValidationResult> validateRealTimeNetworkUpdates() async {
-    print('📊 Running $_testTag: Real-time Network Updates...');
+    print('ðŸ“Š Running $_testTag: Real-time Network Updates...');
     
     try {
       // Test 1: Validate Firestore streams setup (no mocks)
@@ -46,7 +46,7 @@ class NetworkValidator {
 
   /// Validate that Firestore streams are properly set up (no mocks)
   static Future<ValidationResult> _validateFirestoreStreams() async {
-    print('🔄 Validating Firestore streams setup...');
+    print('ðŸ”„ Validating Firestore streams setup...');
     
     try {
       // Create test user to validate streams
@@ -98,7 +98,7 @@ class NetworkValidator {
 
   /// Validate direct referral count updates in real-time
   static Future<ValidationResult> _validateDirectReferralCountUpdates() async {
-    print('👥 Validating direct referral count updates...');
+    print('ðŸ‘¥ Validating direct referral count updates...');
     
     try {
       // Create referrer and referred users
@@ -165,7 +165,7 @@ class NetworkValidator {
 
   /// Validate total team size updates in real-time
   static Future<ValidationResult> _validateTotalTeamSizeUpdates() async {
-    print('📈 Validating total team size updates...');
+    print('ðŸ“ˆ Validating total team size updates...');
     
     try {
       // Create multi-level referral chain
@@ -236,7 +236,7 @@ class NetworkValidator {
 
   /// Validate real-time updates work without manual refresh
   static Future<ValidationResult> _validateRealTimeUpdatesWithoutRefresh() async {
-    print('🔄 Validating real-time updates without refresh...');
+    print('ðŸ”„ Validating real-time updates without refresh...');
     
     try {
       // Create test users
@@ -323,7 +323,7 @@ class NetworkValidator {
 
   /// Test network screen components for real-time functionality
   static Future<ValidationResult> validateNetworkScreenRealTimeComponents() async {
-    print('🖥️ Validating Network Screen real-time components...');
+    print('ðŸ–¥ï¸ Validating Network Screen real-time components...');
     
     try {
       // Test that network screen uses Firestore streams, not static data
@@ -364,7 +364,7 @@ class NetworkValidator {
 
   /// Validate specific network statistics accuracy
   static Future<ValidationResult> validateNetworkStatisticsAccuracy() async {
-    print('📊 Validating network statistics accuracy...');
+    print('ðŸ“Š Validating network statistics accuracy...');
     
     try {
       // Create test network with known structure
@@ -430,7 +430,7 @@ class NetworkValidator {
 
   /// Comprehensive real-time network validation
   static Future<ValidationResult> runComprehensiveNetworkValidation() async {
-    print('🔍 Running comprehensive real-time network validation...');
+    print('ðŸ” Running comprehensive real-time network validation...');
     
     final results = <ValidationResult>[];
     

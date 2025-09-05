@@ -486,3 +486,4 @@ Future<bool?> showReportUserDialog({
     ),
   );
 }
+

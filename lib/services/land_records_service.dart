@@ -1,14 +1,15 @@
-// Land Records Service for TALOWA
+﻿// Land Records Service for TALOWA
 // Comprehensive land record management with GPS integration
 // Reference: TALOWA_APP_BLUEPRINT.md - Land Records System
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
+// import 'dart:io';  // Not supported on web
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';  // Not supported on web
 import '../models/land_record_model.dart';
 import '../core/constants/app_constants.dart';
 
@@ -81,7 +82,8 @@ class LandRecordsService {
     required PattaStatus pattaStatus,
     String? description,
     List<String>? documentUrls,
-    Position? gpsLocation,
+    // Position? gpsLocation, // Not supported on web
+    Map<String, double>? coordinates, // {"latitude": 0.0, "longitude": 0.0}
   }) async {
     try {
       final user = _auth.currentUser;
@@ -103,10 +105,10 @@ class LandRecordsService {
           mandal: mandal,
           district: district,
           state: 'Telangana',
-          coordinates: gpsLocation != null
+          coordinates: coordinates != null
               ? GeoCoordinates(
-                  latitude: gpsLocation.latitude,
-                  longitude: gpsLocation.longitude,
+                  latitude: coordinates['latitude']!,
+                  longitude: coordinates['longitude']!,
                 )
               : null,
         ),
@@ -159,7 +161,8 @@ class LandRecordsService {
     PattaStatus? pattaStatus,
     String? description,
     List<String>? documentUrls,
-    Position? gpsLocation,
+    // Position? gpsLocation, // Not supported on web
+    Map<String, double>? coordinates, // {"latitude": 0.0, "longitude": 0.0}
   }) async {
     try {
       final user = _auth.currentUser;
@@ -181,10 +184,10 @@ class LandRecordsService {
       if (pattaStatus != null) updates['legalStatus'] = pattaStatus.toString().split('.').last;
       if (description != null) updates['issues.description'] = description;
       if (documentUrls != null) updates['documents.photos'] = documentUrls;
-      if (gpsLocation != null) {
+      if (coordinates != null) {
         updates['location.coordinates'] = {
-          'latitude': gpsLocation.latitude,
-          'longitude': gpsLocation.longitude,
+          'latitude': coordinates['latitude']!,
+          'longitude': coordinates['longitude']!,
         };
       }
 
@@ -245,7 +248,9 @@ class LandRecordsService {
   /// Upload document for land record
   Future<String?> uploadDocument({
     required String recordId,
-    required File documentFile,
+    // required File documentFile, // Not supported on web
+    required Uint8List documentBytes,
+    required String fileName,
     required String documentType,
   }) async {
     try {
@@ -256,17 +261,17 @@ class LandRecordsService {
 
       // Create unique filename
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final extension = documentFile.path.split('.').last;
-      final fileName = '${recordId}_${documentType}_$timestamp.$extension';
+      final extension = fileName.split('.').last;
+      final uniqueFileName = '${recordId}_${documentType}_$timestamp.$extension';
 
       // Upload to Firebase Storage
       final ref = _storage
           .ref()
           .child('land_records')
           .child(user.uid)
-          .child(fileName);
+          .child(uniqueFileName);
 
-      final uploadTask = ref.putFile(documentFile);
+      final uploadTask = ref.putData(documentBytes);
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
@@ -294,26 +299,33 @@ class LandRecordsService {
   }
 
   /// Get current GPS location
-  Future<Position?> getCurrentLocation() async {
+  Future<Map<String, double>?> getCurrentLocation() async {
     try {
       // Check permissions
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return null;
-        }
-      }
+      // Web-compatible location handling
+      // LocationPermission permission = await Geolocator.checkPermission();
+      // if (permission == LocationPermission.denied) {
+      //   permission = await Geolocator.requestPermission();
+      //   if (permission == LocationPermission.denied) {
+      //     return null;
+      //   }
+      // }
 
-      if (permission == LocationPermission.deniedForever) {
-        return null;
-      }
+      // if (permission == LocationPermission.deniedForever) {
+      //   return null;
+      // }
 
-      // Get current position
-      return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
+      // Get current position (web fallback)
+      if (kIsWeb) {
+        // For web, return a default position or use browser geolocation API
+        return null; // Implement web geolocation if needed
+      }
+      
+      // return await Geolocator.getCurrentPosition(
+      //   desiredAccuracy: LocationAccuracy.high,
+      //   timeLimit: const Duration(seconds: 10),
+      // );
+      return null; // Disabled for web compatibility
     } catch (e) {
       debugPrint('Error getting location: $e');
       return null;

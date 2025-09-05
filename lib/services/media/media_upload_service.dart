@@ -1,11 +1,13 @@
-// Media Upload Service - Handle image and document uploads
+﻿// Media Upload Service - Handle image and document uploads
 // Part of Task 9: Build PostCreationScreen for coordinators
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
+import 'comprehensive_media_service.dart';
 
 class MediaUploadService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -117,21 +119,46 @@ class MediaUploadService {
       final fileName = _generateFileName(imagePath, userId);
       final storageRef = _storage.ref().child('$folder/images/$fileName');
       
-      // Upload with metadata
+      // Determine proper content type based on file extension
+      final extension = path.extension(imagePath).toLowerCase();
+      String contentType;
+      switch (extension) {
+        case '.jpg':
+        case '.jpeg':
+          contentType = 'image/jpeg';
+          break;
+        case '.png':
+          contentType = 'image/png';
+          break;
+        case '.webp':
+          contentType = 'image/webp';
+          break;
+        default:
+          contentType = 'image/jpeg'; // Default to JPEG
+      }
+
+      // Upload with enforced metadata
       final metadata = SettableMetadata(
-        contentType: 'image/jpeg',
+        contentType: contentType,
         customMetadata: {
           'uploadedBy': userId,
           'uploadedAt': DateTime.now().toIso8601String(),
           'originalName': path.basename(imagePath),
+          'platform': kIsWeb ? 'web' : 'mobile',
         },
       );
-      
+
       final uploadTask = storageRef.putData(compressedBytes, metadata);
       final snapshot = await uploadTask;
-      
-      // Get download URL
+
+      // ALWAYS get download URL - never store paths or gs:// URLs
       final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Validate URL format
+      if (!downloadUrl.contains('firebasestorage.googleapis.com') ||
+          !downloadUrl.contains('token=')) {
+        throw Exception('Invalid download URL format: $downloadUrl');
+      }
       
       debugPrint('MediaUploadService: Image uploaded to $downloadUrl');
       return downloadUrl;

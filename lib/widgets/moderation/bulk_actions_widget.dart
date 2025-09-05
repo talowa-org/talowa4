@@ -439,3 +439,4 @@ class _BulkActionsWidgetState extends State<BulkActionsWidget> {
     }
   }
 }
+

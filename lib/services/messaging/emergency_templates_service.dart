@@ -1,4 +1,4 @@
-// Emergency Templates Service - Pre-defined emergency broadcast templates
+﻿// Emergency Templates Service - Pre-defined emergency broadcast templates
 // Task 9: Build emergency broadcast system - Templates
 // Requirements: 5.5 - Quick templates for coordinators
 

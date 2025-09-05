@@ -1,4 +1,4 @@
-// Enhanced Post Creation Screen for TALOWA
+﻿// Enhanced Post Creation Screen for TALOWA
 // Full-featured post creation with media upload and stories
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -10,7 +10,12 @@ import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/media/media_upload_service.dart';
-import '../../services/media/mock_media_upload_service.dart';
+// removed: import '../../services/media/mock_media_upload_service.dart';
+import '../../services/media/comprehensive_media_service.dart';
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as path;
 
 class SimplePostCreationScreen extends StatefulWidget {
   const SimplePostCreationScreen({super.key});
@@ -99,54 +104,146 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
           _isUploadingMedia = true;
         });
 
-        // Upload images (use mock service for web)
+        // Upload images using real Firebase Storage service
         if (_selectedImages.isNotEmpty) {
-          if (kIsWeb) {
-            uploadedImageUrls = await MockMediaUploadService.uploadImages(
-              imagePaths: _selectedImages,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_posts',
-            );
-          } else {
-            uploadedImageUrls = await MediaUploadService.uploadImages(
-              imagePaths: _selectedImages,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_posts',
-            );
+          final comprehensiveService = ComprehensiveMediaService.instance;
+          uploadedImageUrls = [];
+          
+          for (int i = 0; i < _selectedImages.length; i++) {
+            final imagePath = _selectedImages[i];
+            
+            try {
+              Uint8List imageBytes;
+              String fileName;
+              
+              if (kIsWeb) {
+                // On web, we need to use FilePicker to get bytes
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.image,
+                  allowMultiple: false,
+                );
+                
+                if (result != null && result.files.isNotEmpty) {
+                  final file = result.files.first;
+                  imageBytes = file.bytes!;
+                  fileName = file.name;
+                } else {
+                  continue; // Skip if no file selected
+                }
+              } else {
+                // On mobile, read from file path
+                final file = File(imagePath);
+                imageBytes = await file.readAsBytes();
+                fileName = path.basename(imagePath);
+              }
+              
+              final uploadResult = await comprehensiveService.uploadImage(
+                imageBytes: imageBytes,
+                fileName: fileName,
+                folder: 'feed_posts',
+                userId: AuthService.currentUser!.uid,
+              );
+              
+              uploadedImageUrls.add(uploadResult.downloadUrl);
+            } catch (e) {
+              debugPrint('Error uploading image $i: $e');
+            }
           }
         }
 
-        // Upload videos (use mock service for web)
+        // Upload videos using real Firebase Storage service
         if (_selectedVideos.isNotEmpty) {
-          if (kIsWeb) {
-            uploadedVideoUrls = await MockMediaUploadService.uploadImages(
-              imagePaths: _selectedVideos,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_videos',
-            );
-          } else {
-            uploadedVideoUrls = await MediaUploadService.uploadImages(
-              imagePaths: _selectedVideos,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_videos',
-            );
+          final comprehensiveService = ComprehensiveMediaService.instance;
+          uploadedVideoUrls = [];
+          
+          for (int i = 0; i < _selectedVideos.length; i++) {
+            final videoPath = _selectedVideos[i];
+            
+            try {
+              Uint8List videoBytes;
+              String fileName;
+              
+              if (kIsWeb) {
+                // On web, use FilePicker to get bytes
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.video,
+                  allowMultiple: false,
+                );
+                
+                if (result != null && result.files.isNotEmpty) {
+                  final file = result.files.first;
+                  videoBytes = file.bytes!;
+                  fileName = file.name;
+                } else {
+                  continue; // Skip if no file selected
+                }
+              } else {
+                // On mobile, read from file path
+                final file = File(videoPath);
+                videoBytes = await file.readAsBytes();
+                fileName = path.basename(videoPath);
+              }
+              
+              final uploadResult = await comprehensiveService.uploadVideo(
+                videoBytes: videoBytes,
+                fileName: fileName,
+                folder: 'feed_posts',
+                userId: AuthService.currentUser!.uid,
+              );
+              
+              uploadedVideoUrls.add(uploadResult.downloadUrl);
+            } catch (e) {
+              debugPrint('Error uploading video $i: $e');
+            }
           }
         }
 
-        // Upload documents (use mock service for web)
+        // Upload documents using real Firebase Storage service
         if (_selectedDocuments.isNotEmpty) {
-          if (kIsWeb) {
-            uploadedDocumentUrls = await MockMediaUploadService.uploadDocuments(
-              documentPaths: _selectedDocuments,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_documents',
-            );
-          } else {
-            uploadedDocumentUrls = await MediaUploadService.uploadDocuments(
-              documentPaths: _selectedDocuments,
-              userId: AuthService.currentUser!.uid,
-              folder: 'feed_documents',
-            );
+          final comprehensiveService = ComprehensiveMediaService.instance;
+          uploadedDocumentUrls = [];
+          
+          for (int i = 0; i < _selectedDocuments.length; i++) {
+            final documentPath = _selectedDocuments[i];
+            
+            try {
+              Uint8List documentBytes;
+              String fileName;
+              
+              if (kIsWeb) {
+                // On web, use FilePicker to get bytes
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'rtf'],
+                  allowMultiple: false,
+                );
+                
+                if (result != null && result.files.isNotEmpty) {
+                  final file = result.files.first;
+                  documentBytes = file.bytes!;
+                  fileName = file.name;
+                } else {
+                  continue; // Skip if no file selected
+                }
+              } else {
+                // On mobile, read from file path
+                final file = File(documentPath);
+                documentBytes = await file.readAsBytes();
+                fileName = path.basename(documentPath);
+              }
+              
+              final uploadResult = await comprehensiveService.uploadMedia(
+                fileBytes: documentBytes,
+                fileName: fileName,
+                mediaType: MediaType.document,
+                folder: 'feed_posts',
+                userId: AuthService.currentUser!.uid,
+              );
+              
+              uploadedDocumentUrls.add(uploadResult.downloadUrl);
+            } catch (e) {
+              debugPrint('Error uploading document $i: $e');
+            }
           }
         }
 
@@ -1146,3 +1243,4 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
     );
   }
 }
+

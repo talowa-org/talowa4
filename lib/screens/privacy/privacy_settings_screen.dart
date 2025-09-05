@@ -1,4 +1,4 @@
-// Privacy Settings Screen for TALOWA Users
+﻿// Privacy Settings Screen for TALOWA Users
 // Implements Task 17: Privacy protection system - User Interface
 
 import 'package:flutter/material.dart';
@@ -539,11 +539,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 12),
-                Text('• Process your profile information'),
-                Text('• Store your posts and messages'),
-                Text('• Analyze usage patterns to improve the app'),
-                Text('• Send you relevant notifications'),
-                Text('• Maintain your network connections'),
+                Text('â€¢ Process your profile information'),
+                Text('â€¢ Store your posts and messages'),
+                Text('â€¢ Analyze usage patterns to improve the app'),
+                Text('â€¢ Send you relevant notifications'),
+                Text('â€¢ Maintain your network connections'),
                 SizedBox(height: 12),
                 Text(
                   'Your data will be processed securely and never shared with third parties without your explicit consent.',

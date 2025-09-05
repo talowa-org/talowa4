@@ -1,4 +1,4 @@
-// TALOWA Payment Flow Validation (Test Cases B3-B5)
+﻿// TALOWA Payment Flow Validation (Test Cases B3-B5)
 // Comprehensive validation for payment optional flow, success/failure scenarios
 //
 // This validator implements:
@@ -28,7 +28,7 @@ class PaymentFlowValidator {
   /// Validate complete payment flow (Test Cases B3-B5)
   static Future<ValidationResult> validatePaymentFlow() async {
     try {
-      debugPrint('💳 Starting Payment Flow Validation (Test Cases B3-B5)...');
+      debugPrint('ðŸ’³ Starting Payment Flow Validation (Test Cases B3-B5)...');
       
       // Initialize test environment
       await TestEnvironment.initialize();
@@ -70,7 +70,7 @@ class PaymentFlowValidator {
   /// Test Case B3: Post-form access without payment
   static Future<ValidationResult> validatePostFormAccessWithoutPayment() async {
     try {
-      debugPrint('🧪 Test Case B3: Post-form access without payment...');
+      debugPrint('ðŸ§ª Test Case B3: Post-form access without payment...');
       
       // Create test user (simulating completed registration)
       final testUser = await TestEnvironment.createTestUser(
@@ -124,7 +124,7 @@ class PaymentFlowValidator {
         );
       }
       
-      debugPrint('✅ Test Case B3 passed: Post-form access without payment works correctly');
+      debugPrint('âœ… Test Case B3 passed: Post-form access without payment works correctly');
       return ValidationResult.pass('Post-form access without payment validated successfully');
       
     } catch (e) {
@@ -139,7 +139,7 @@ class PaymentFlowValidator {
   /// Test Case B4: Payment success scenario
   static Future<ValidationResult> validatePaymentSuccessScenario() async {
     try {
-      debugPrint('🧪 Test Case B4: Payment success scenario...');
+      debugPrint('ðŸ§ª Test Case B4: Payment success scenario...');
       
       // Create test user with referrer
       final referrerUser = await TestEnvironment.createTestUser(
@@ -210,7 +210,7 @@ class PaymentFlowValidator {
         );
       }
       
-      debugPrint('✅ Test Case B4 passed: Payment success scenario works correctly');
+      debugPrint('âœ… Test Case B4 passed: Payment success scenario works correctly');
       return ValidationResult.pass('Payment success scenario validated successfully');
       
     } catch (e) {
@@ -225,7 +225,7 @@ class PaymentFlowValidator {
   /// Test Case B5: Payment failure scenario
   static Future<ValidationResult> validatePaymentFailureScenario() async {
     try {
-      debugPrint('🧪 Test Case B5: Payment failure scenario...');
+      debugPrint('ðŸ§ª Test Case B5: Payment failure scenario...');
       
       // Create test user
       final testUser = await TestEnvironment.createTestUser(
@@ -278,7 +278,7 @@ class PaymentFlowValidator {
         );
       }
       
-      debugPrint('✅ Test Case B5 passed: Payment failure scenario works correctly');
+      debugPrint('âœ… Test Case B5 passed: Payment failure scenario works correctly');
       return ValidationResult.pass('Payment failure scenario validated successfully');
       
     } catch (e) {
@@ -393,7 +393,7 @@ class PaymentFlowValidator {
   /// Simulate payment success
   static Future<ValidationResult> _simulatePaymentSuccess(String userId) async {
     try {
-      debugPrint('💳 Simulating payment success for user: $userId');
+      debugPrint('ðŸ’³ Simulating payment success for user: $userId');
       
       // Create mock payment data
       // final paymentId = 'test_payment_${DateTime.now().millisecondsSinceEpoch}';
@@ -467,7 +467,7 @@ class PaymentFlowValidator {
       if (userData.containsKey('referralChain')) {
         final chain = userData['referralChain'] as List?;
         if (chain != null && chain.isNotEmpty) {
-          debugPrint('✅ Referral chain populated: ${chain.length} levels');
+          debugPrint('âœ… Referral chain populated: ${chain.length} levels');
         }
       }
       
@@ -510,7 +510,7 @@ class PaymentFlowValidator {
   /// Simulate payment failure
   static Future<ValidationResult> _simulatePaymentFailure(String userId) async {
     try {
-      debugPrint('💳 Simulating payment failure for user: $userId');
+      debugPrint('ðŸ’³ Simulating payment failure for user: $userId');
       
       // Simulate payment failure via TestEnvironment
       await TestEnvironment.simulatePaymentFailure(userId);
@@ -789,7 +789,7 @@ class PaymentFlowValidator {
     required bool success,
   }) async {
     try {
-      debugPrint('🔗 Testing payment webhook processing for $provider...');
+      debugPrint('ðŸ”— Testing payment webhook processing for $provider...');
       
       // Create mock webhook data
       final webhookData = await simulatePaymentMethod(
@@ -811,4 +811,5 @@ class PaymentFlowValidator {
     }
   }
 }
+
 

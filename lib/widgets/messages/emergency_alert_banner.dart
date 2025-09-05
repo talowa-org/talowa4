@@ -1,4 +1,4 @@
-// Emergency Alert Banner Widget for TALOWA Messages
+﻿// Emergency Alert Banner Widget for TALOWA Messages
 import 'package:flutter/material.dart';
 
 class EmergencyAlertBanner extends StatelessWidget {

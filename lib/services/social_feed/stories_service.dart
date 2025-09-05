@@ -1,4 +1,4 @@
-// Stories Service for TALOWA Social Feed
+﻿// Stories Service for TALOWA Social Feed
 // Handle 24-hour temporary stories functionality
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';

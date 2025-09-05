@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -351,12 +351,12 @@ class RecognitionRetentionService {
       'type': type,
       'platforms': {
         'facebook': {
-          'text': '🎉 $description\n\nJoin the movement! ${allHashtags.join(' ')}',
+          'text': 'ðŸŽ‰ $description\n\nJoin the movement! ${allHashtags.join(' ')}',
           'imageUrl': imageUrl,
           'link': 'https://talowa.app/join',
         },
         'twitter': {
-          'text': '🚀 $title\n\n$description\n\n${allHashtags.join(' ')}\n\nJoin: https://talowa.app/join',
+          'text': 'ðŸš€ $title\n\n$description\n\n${allHashtags.join(' ')}\n\nJoin: https://talowa.app/join',
           'imageUrl': imageUrl,
         },
         'instagram': {
@@ -368,7 +368,7 @@ class RecognitionRetentionService {
           'imageUrl': imageUrl,
         },
         'whatsapp': {
-          'text': '🎉 $description\n\nCheck out Talowa: https://talowa.app/join',
+          'text': 'ðŸŽ‰ $description\n\nCheck out Talowa: https://talowa.app/join',
         },
       },
       'brandedGraphics': {
@@ -444,7 +444,7 @@ class RecognitionRetentionService {
         batch.set(notificationRef, {
           'userId': memberId,
           'type': 'team_leader_promotion',
-          'title': 'Team Leader Promoted! 🎊',
+          'title': 'Team Leader Promoted! ðŸŽŠ',
           'message': '$promotedUserName has been promoted to ${_formatRoleName(newRole)}!',
           'data': {
             'promotedUserId': promotedUserId,
@@ -857,3 +857,4 @@ class RecognitionRetentionService {
     return 'post_template_${type}_${DateTime.now().millisecondsSinceEpoch}.png';
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/messaging/data_backup_service.dart';
 import '../../services/messaging/disaster_recovery_service.dart';
 import '../../services/messaging/backup_scheduler_service.dart';
@@ -238,7 +238,7 @@ class _BackupRecoveryWidgetState extends State<BackupRecoveryWidget>
           children: [
             if (createdAt != null)
               Text('Created: ${_formatDateTime(createdAt)}'),
-            Text('Size: ${_formatBytes(size)} • Status: $status'),
+            Text('Size: ${_formatBytes(size)} â€¢ Status: $status'),
           ],
         ),
         trailing: PopupMenuButton<String>(

@@ -1,4 +1,4 @@
-// Message Model for TALOWA
+﻿// Message Model for TALOWA
 // Reference: in-app-communication/design.md - Message Storage Schema
 
 import 'package:cloud_firestore/cloud_firestore.dart';

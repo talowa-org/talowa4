@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'simplified_referral_service.dart';
 
 /// Service to migrate existing users from two-step to simplified referral system

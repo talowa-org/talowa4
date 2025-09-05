@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/admin/enhanced_admin_auth_service.dart';
 import '../../services/admin/admin_dashboard_enhanced_service.dart';
 import 'enhanced_moderation_screen.dart';
+import 'enhanced_moderation_dashboard_screen.dart';
 import 'admin_role_management_screen.dart';
 import 'admin_audit_logs_screen.dart';
 import 'admin_analytics_screen.dart';
@@ -442,7 +443,7 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EnhancedModerationScreen(),
+                    builder: (context) => EnhancedModerationDashboardScreen(),
                   ),
                 ),
               ),
@@ -1022,3 +1023,4 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
     }
   }
 }
+

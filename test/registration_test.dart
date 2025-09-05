@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -157,3 +157,4 @@ Future<void> _fillAllRequiredFields(WidgetTester tester) async {
   final districtField = find.byKey(const Key('district_field'));
   await tester.enterText(districtField, 'Test District');
 }
+

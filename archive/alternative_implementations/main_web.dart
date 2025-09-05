@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -26,7 +26,7 @@ void main() async {
     print('Uncaught Flutter error: ${details.exceptionAsString()}');
   };
   
-  debugPrint('🌐 Starting TALOWA Web App (Firebase disabled for compatibility)');
+  debugPrint('ðŸŒ Starting TALOWA Web App (Firebase disabled for compatibility)');
   
   // Initialize performance monitoring (works without Firebase)
   PerformanceMonitor.logMemoryUsage('app_startup');

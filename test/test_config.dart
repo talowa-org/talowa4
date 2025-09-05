@@ -1,4 +1,4 @@
-// Test Configuration for Messaging System Tests
+﻿// Test Configuration for Messaging System Tests
 // Provides configuration and utilities for all messaging tests
 
 import 'package:flutter_test/flutter_test.dart';

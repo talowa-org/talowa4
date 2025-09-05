@@ -1,4 +1,4 @@
-// End-to-End Integration Tests for Messaging System
+﻿// End-to-End Integration Tests for Messaging System
 // Tests complete message flow and call setup scenarios
 
 import 'package:flutter_test/flutter_test.dart';

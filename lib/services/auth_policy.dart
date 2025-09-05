@@ -1,11 +1,11 @@
-// lib/auth_policy.dart
+﻿// lib/auth_policy.dart
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 /// Keep this identical across registration AND login.
 /// If you ever change the version/scheme, bump HASH_VERSION
 /// and migrate old users (don't just change the string).
-const String kHybridEmailDomain = 'talowa.app'; // <— keep this CONSISTENT
+const String kHybridEmailDomain = 'talowa.app'; // <â€” keep this CONSISTENT
 const String HASH_VERSION = 'v1';
 
 /// Minimal E.164 normalizer for India-first.
@@ -17,9 +17,9 @@ String normalizePhoneE164(String raw, {String defaultCountryCode = '+91'}) {
   p = p.replaceAll(RegExp(r'[^0-9\+]'), '');
   // Already E.164
   if (p.startsWith('+')) return p;
-  // 10 digits → assume Indian mobile
+  // 10 digits â†’ assume Indian mobile
   if (RegExp(r'^[0-9]{10}$').hasMatch(p)) return '$defaultCountryCode$p';
-  // 12 digits starting with 91 → add '+'
+  // 12 digits starting with 91 â†’ add '+'
   if (RegExp(r'^91[0-9]{10}$').hasMatch(p)) return '+$p';
   // Fallback: prefix default code
   if (!p.startsWith('+')) return '$defaultCountryCode$p';

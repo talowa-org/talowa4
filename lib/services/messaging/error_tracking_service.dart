@@ -1,4 +1,4 @@
-// Error Tracking and Alerting Service for TALOWA In-App Communication System
+﻿// Error Tracking and Alerting Service for TALOWA In-App Communication System
 // Implements Task 16: Implement monitoring and analytics - Error Tracking & Alerting
 
 import 'dart:async';

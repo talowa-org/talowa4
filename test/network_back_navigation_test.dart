@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:talowa/screens/network_screen.dart';
 import 'package:talowa/services/auth_service.dart';
@@ -12,3 +12,4 @@ void main() {
     expect(AuthService.currentUser != null, true);
   });
 }
+

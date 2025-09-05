@@ -1,4 +1,4 @@
-// Message Search Widget for TALOWA Messaging
+﻿// Message Search Widget for TALOWA Messaging
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
@@ -279,7 +279,7 @@ class _MessageSearchWidgetState extends State<MessageSearchWidget> {
                 ),
               ),
               Text(
-                ' • ${_formatDate(result.message.sentAt)}',
+                ' â€¢ ${_formatDate(result.message.sentAt)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],

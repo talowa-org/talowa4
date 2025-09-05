@@ -1,4 +1,4 @@
-// Notification Test Utils - Utilities for testing notification system
+﻿// Notification Test Utils - Utilities for testing notification system
 // Part of Task 12: Build push notification system
 
 import 'package:flutter/foundation.dart';

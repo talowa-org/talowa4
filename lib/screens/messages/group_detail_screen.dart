@@ -589,3 +589,4 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     }
   }
 }
+

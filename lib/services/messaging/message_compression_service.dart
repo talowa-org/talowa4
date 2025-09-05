@@ -1,4 +1,4 @@
-// Message Compression Service for TALOWA
+﻿// Message Compression Service for TALOWA
 // Implements Task 8: Create offline messaging and synchronization - Data Compression
 // Reference: in-app-communication/requirements.md - Requirements 8.4
 

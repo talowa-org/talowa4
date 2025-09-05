@@ -1,4 +1,4 @@
-// Report Content Dialog Widget for TALOWA Messaging System
+﻿// Report Content Dialog Widget for TALOWA Messaging System
 import 'package:flutter/material.dart';
 import '../../models/messaging/content_report_model.dart';
 import '../../services/messaging/content_moderation_service.dart';

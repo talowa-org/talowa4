@@ -1,4 +1,4 @@
-// Profile Summary Card Widget
+﻿// Profile Summary Card Widget
 // Reference: complete-app-structure.md - Profile Section
 
 import 'package:flutter/material.dart';

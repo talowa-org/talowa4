@@ -1,10 +1,10 @@
-// ⚠️ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION ⚠️
+// âš ï¸ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION âš ï¸
 // This file contains the WORKING authentication routing from Checkpoint 7
 // DO NOT MODIFY authentication-related code without explicit user approval
 // See: AUTHENTICATION_PROTECTION_STRATEGY.md
 // Working commit: 3a00144 (Checkpoint 6 base)
 // Last verified: September 3rd, 2025
-// Current working flow: WelcomeScreen → Login/Register → UnifiedAuthService → MainApp
+// Current working flow: WelcomeScreen â†’ Login/Register â†’ UnifiedAuthService â†’ MainApp
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -25,9 +25,9 @@ import 'screens/land_records/land_records_list_screen.dart';
 import 'screens/land_records/land_record_detail_screen.dart';
 import 'screens/land_records/land_record_form_screen.dart';
 import 'screens/admin/admin_login_screen.dart';
-import 'screens/admin/enhanced_admin_dashboard_screen.dart';
-import 'services/admin/enhanced_admin_auth_service.dart';
+
 import 'widgets/admin/admin_route_guard.dart';
+import 'views/debug/migration_debug_page.dart';
 import 'services/performance_monitor.dart';
 // import 'services/localization_service.dart';
 // import 'services/rtl_support_service.dart';
@@ -201,6 +201,8 @@ class _TalowaAppState extends State<TalowaApp> {
               // Admin routes
               '/admin': (context) => const AdminRouteGuard(),
               '/admin/login': (context) => const AdminLoginScreen(),
+              // Debug routes (only in debug mode)
+              if (kDebugMode) '/debug/migration': (context) => const MigrationDebugPage(),
             },
             // onGenerateRoute for dynamic routes with arguments
             onGenerateRoute: (settings) {
@@ -230,3 +232,4 @@ class _TalowaAppState extends State<TalowaApp> {
     );
   }
 }
+

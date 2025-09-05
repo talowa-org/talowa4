@@ -1,4 +1,4 @@
-// Verification Test for TALOWA Urgent Fixes
+﻿// Verification Test for TALOWA Urgent Fixes
 // Tests the fixes for registration, referral codes, and navigation
 
 import 'package:flutter_test/flutter_test.dart';
@@ -125,3 +125,4 @@ void main() {
     });
   });
 }
+

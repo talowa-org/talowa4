@@ -1,4 +1,4 @@
-// Legal Case Service for TALOWA
+﻿// Legal Case Service for TALOWA
 // Comprehensive legal case management and tracking system
 // Reference: TALOWA_APP_BLUEPRINT.md - Legal Support Features
 

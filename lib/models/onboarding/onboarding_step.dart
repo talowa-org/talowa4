@@ -1,4 +1,4 @@
-// TALOWA Onboarding Step Model
+﻿// TALOWA Onboarding Step Model
 // Represents a single step in the onboarding tutorial
 
 import 'package:flutter/material.dart';

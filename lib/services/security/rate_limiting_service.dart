@@ -1,4 +1,4 @@
-// Rate Limiting Service for TALOWA
+﻿// Rate Limiting Service for TALOWA
 // Implements rate limiting to prevent spam and abuse
 // Requirements: 6.6, 10.2
 

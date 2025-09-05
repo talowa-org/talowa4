@@ -1,4 +1,4 @@
-// Simplified Messaging Service for TALOWA
+﻿// Simplified Messaging Service for TALOWA
 // Eliminates complex Firebase index requirements
 
 import 'dart:async';

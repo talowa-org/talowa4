@@ -1,4 +1,4 @@
-// TALOWA Existing User Login Validation (Test Case C)
+﻿// TALOWA Existing User Login Validation (Test Case C)
 // Validates login with mobilenumber@talowa.com format and PIN authentication
 
 import 'dart:async';
@@ -17,7 +17,7 @@ class ExistingUserLoginValidator {
   /// Main validation method for Test Case C
   static Future<ValidationResult> validateExistingUserLogin() async {
     try {
-      debugPrint('🧪 Running Test Case C: Existing User Login Validation...');
+      debugPrint('ðŸ§ª Running Test Case C: Existing User Login Validation...');
       
       // Step 1: Create a test user to login with
       final testUser = await _createTestUserForLogin();
@@ -54,7 +54,7 @@ class ExistingUserLoginValidator {
       );
       
     } catch (e) {
-      debugPrint('❌ Existing user login validation failed: $e');
+      debugPrint('âŒ Existing user login validation failed: $e');
       return ValidationResult.fail(
         'Existing user login validation failed',
         errorDetails: e.toString(),
@@ -67,7 +67,7 @@ class ExistingUserLoginValidator {
   /// Create a test user for login testing
   static Future<TestUser> _createTestUserForLogin() async {
     try {
-      debugPrint('👤 Creating test user for login validation...');
+      debugPrint('ðŸ‘¤ Creating test user for login validation...');
       
       // Create test user with known credentials
       final testUser = await TestEnvironment.createTestUser(
@@ -81,11 +81,11 @@ class ExistingUserLoginValidator {
       // Set the user ID for later cleanup
       testUser.userId = 'test_${testUser.phoneNumber}';
       
-      debugPrint('✅ Test user created for login: ${testUser.phoneNumber}');
+      debugPrint('âœ… Test user created for login: ${testUser.phoneNumber}');
       return testUser;
       
     } catch (e) {
-      debugPrint('❌ Failed to create test user for login: $e');
+      debugPrint('âŒ Failed to create test user for login: $e');
       rethrow;
     }
   }
@@ -93,7 +93,7 @@ class ExistingUserLoginValidator {
   /// Test login with mobilenumber@talowa.com format
   static Future<ValidationResult> _testLoginWithEmailFormat(TestUser testUser) async {
     try {
-      debugPrint('🔐 Testing login with email format: ${testUser.phoneNumber}@talowa.app');
+      debugPrint('ðŸ” Testing login with email format: ${testUser.phoneNumber}@talowa.app');
       
       // Test login using the email alias format
       final loginResult = await AuthService.loginUser(
@@ -129,11 +129,11 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ Login with email format successful');
+      debugPrint('âœ… Login with email format successful');
       return ValidationResult.pass('Login with email format working correctly');
       
     } catch (e) {
-      debugPrint('❌ Login with email format test failed: $e');
+      debugPrint('âŒ Login with email format test failed: $e');
       return ValidationResult.fail(
         'Login with email format test failed',
         errorDetails: e.toString(),
@@ -146,7 +146,7 @@ class ExistingUserLoginValidator {
   /// Verify successful access to app features after login
   static Future<ValidationResult> _verifyAppAccess(TestUser testUser) async {
     try {
-      debugPrint('🏠 Verifying app access after login...');
+      debugPrint('ðŸ  Verifying app access after login...');
       
       // Check if user can access their profile
       final currentUser = FirebaseAuth.instance.currentUser;
@@ -187,11 +187,11 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ App access verification successful');
+      debugPrint('âœ… App access verification successful');
       return ValidationResult.pass('User can access app features after login');
       
     } catch (e) {
-      debugPrint('❌ App access verification failed: $e');
+      debugPrint('âŒ App access verification failed: $e');
       return ValidationResult.fail(
         'App access verification failed',
         errorDetails: e.toString(),
@@ -204,7 +204,7 @@ class ExistingUserLoginValidator {
   /// Test PIN authentication specifically
   static Future<ValidationResult> _testPinAuthentication(TestUser testUser) async {
     try {
-      debugPrint('🔢 Testing PIN authentication...');
+      debugPrint('ðŸ”¢ Testing PIN authentication...');
       
       // First logout to test fresh login
       await AuthService.logout();
@@ -251,11 +251,11 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ PIN authentication test successful');
+      debugPrint('âœ… PIN authentication test successful');
       return ValidationResult.pass('PIN authentication working correctly');
       
     } catch (e) {
-      debugPrint('❌ PIN authentication test failed: $e');
+      debugPrint('âŒ PIN authentication test failed: $e');
       return ValidationResult.fail(
         'PIN authentication test failed',
         errorDetails: e.toString(),
@@ -268,7 +268,7 @@ class ExistingUserLoginValidator {
   /// Test invalid credentials handling
   static Future<ValidationResult> _testInvalidCredentials(TestUser testUser) async {
     try {
-      debugPrint('🚫 Testing invalid credentials handling...');
+      debugPrint('ðŸš« Testing invalid credentials handling...');
       
       // Test with non-existent phone number
       final nonExistentResult = await AuthService.loginUser(
@@ -320,11 +320,11 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ Invalid credentials handling test successful');
+      debugPrint('âœ… Invalid credentials handling test successful');
       return ValidationResult.pass('Invalid credentials handling working correctly');
       
     } catch (e) {
-      debugPrint('❌ Invalid credentials test failed: $e');
+      debugPrint('âŒ Invalid credentials test failed: $e');
       return ValidationResult.fail(
         'Invalid credentials test failed',
         errorDetails: e.toString(),
@@ -337,7 +337,7 @@ class ExistingUserLoginValidator {
   /// Test login with both phone number formats
   static Future<ValidationResult> testBothLoginFormats(TestUser testUser) async {
     try {
-      debugPrint('📱 Testing both login formats...');
+      debugPrint('ðŸ“± Testing both login formats...');
       
       // Test 1: Login with plain phone number
       await AuthService.logout();
@@ -369,7 +369,7 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ Both login formats working');
+      debugPrint('âœ… Both login formats working');
       return ValidationResult.pass('Both phone and email alias login formats working');
       
     } catch (e) {
@@ -384,7 +384,7 @@ class ExistingUserLoginValidator {
   /// Test session persistence after login
   static Future<ValidationResult> testSessionPersistence(TestUser testUser) async {
     try {
-      debugPrint('🔄 Testing session persistence...');
+      debugPrint('ðŸ”„ Testing session persistence...');
       
       // Login user
       final loginResult = await AuthService.loginUser(
@@ -420,7 +420,7 @@ class ExistingUserLoginValidator {
         );
       }
       
-      debugPrint('✅ Session persistence working');
+      debugPrint('âœ… Session persistence working');
       return ValidationResult.pass('User session persists correctly after login');
       
     } catch (e) {
@@ -435,7 +435,7 @@ class ExistingUserLoginValidator {
   /// Cleanup test user data
   static Future<void> _cleanupTestUser(TestUser testUser) async {
     try {
-      debugPrint('🧹 Cleaning up test user: ${testUser.phoneNumber}');
+      debugPrint('ðŸ§¹ Cleaning up test user: ${testUser.phoneNumber}');
       
       // Sign out first
       await AuthService.logout();
@@ -448,16 +448,16 @@ class ExistingUserLoginValidator {
         await _firestore.collection('users').doc(testUser.userId!).delete();
       }
       
-      debugPrint('✅ Test user cleanup completed');
+      debugPrint('âœ… Test user cleanup completed');
     } catch (e) {
-      debugPrint('⚠️ Test user cleanup failed (non-blocking): $e');
+      debugPrint('âš ï¸ Test user cleanup failed (non-blocking): $e');
     }
   }
 
   /// Comprehensive existing user login validation
   static Future<ValidationResult> runComprehensiveValidation() async {
     try {
-      debugPrint('🔍 Running comprehensive existing user login validation...');
+      debugPrint('ðŸ” Running comprehensive existing user login validation...');
       
       // Create test user
       final testUser = await _createTestUserForLogin();
@@ -502,7 +502,7 @@ class ExistingUserLoginValidator {
       );
       
     } catch (e) {
-      debugPrint('❌ Comprehensive validation failed: $e');
+      debugPrint('âŒ Comprehensive validation failed: $e');
       return ValidationResult.fail(
         'Comprehensive existing user login validation failed',
         errorDetails: e.toString(),
@@ -514,7 +514,7 @@ class ExistingUserLoginValidator {
   /// Quick validation for integration with main test suite
   static Future<ValidationResult> quickValidation() async {
     try {
-      debugPrint('⚡ Running quick existing user login validation...');
+      debugPrint('âš¡ Running quick existing user login validation...');
       
       // Check if auth service exists and is properly configured
       final authServiceExists = await _checkAuthServiceConfiguration();

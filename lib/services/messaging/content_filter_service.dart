@@ -1,4 +1,4 @@
-// Content Filter Service for TALOWA Messaging System
+﻿// Content Filter Service for TALOWA Messaging System
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
@@ -7,9 +7,9 @@ class ContentFilterService {
     // Add inappropriate words in Telugu, Hindi, and English
     'spam', 'scam', 'fake', 'fraud',
     // Telugu inappropriate words (examples)
-    'దుర్మార్గుడు', 'మోసగాడు',
+    'à°¦à±à°°à±à°®à°¾à°°à±à°—à±à°¡à±', 'à°®à±‹à°¸à°—à°¾à°¡à±',
     // Hindi inappropriate words (examples)  
-    'धोखाधड़ी', 'झूठा',
+    'à¤§à¥‹à¤–à¤¾à¤§à¤¡à¤¼à¥€', 'à¤à¥‚à¤ à¤¾',
   ];
 
   static const List<String> _spamPatterns = [

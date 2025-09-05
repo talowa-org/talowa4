@@ -1,4 +1,4 @@
-// Advanced Search Service for TALOWA
+﻿// Advanced Search Service for TALOWA
 // Implements Task 24: Add advanced search and discovery - Search Engine
 
 import 'dart:async';

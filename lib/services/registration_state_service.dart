@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'auth_policy.dart';
@@ -52,7 +52,7 @@ class RegistrationStateService {
           final hoursSinceVerification = now.difference(verificationTime).inHours;
           
           if (hoursSinceVerification < 24) {
-            // 🔧 CRITICAL FIX: Validate that the Firebase Auth user still exists
+            // ðŸ”§ CRITICAL FIX: Validate that the Firebase Auth user still exists
             if (tempUid != null) {
               final isValidUser = await _validateFirebaseAuthUser(tempUid);
               if (isValidUser) {
@@ -65,16 +65,16 @@ class RegistrationStateService {
                 );
               } else {
                 // User is not authenticated or was deleted from Firebase Auth
-                debugPrint('🧹 Firebase Auth user deleted/invalid, cleaning up phone verification for: $normalizedPhone');
+                debugPrint('ðŸ§¹ Firebase Auth user deleted/invalid, cleaning up phone verification for: $normalizedPhone');
                 await _firestore
                     .collection('phone_verifications')
                     .doc(normalizedPhone)
                     .delete();
-                debugPrint('✅ Cleaned up orphaned phone verification');
+                debugPrint('âœ… Cleaned up orphaned phone verification');
               }
             } else {
               // No tempUid stored, clean up invalid verification
-              debugPrint('🧹 No tempUid in verification record, cleaning up');
+              debugPrint('ðŸ§¹ No tempUid in verification record, cleaning up');
               await _firestore
                   .collection('phone_verifications')
                   .doc(normalizedPhone)
@@ -82,7 +82,7 @@ class RegistrationStateService {
             }
           } else {
             // Verification expired, need to verify again
-            debugPrint('⏰ Phone verification expired, cleaning up');
+            debugPrint('â° Phone verification expired, cleaning up');
             await _firestore
                 .collection('phone_verifications')
                 .doc(normalizedPhone)
@@ -205,7 +205,7 @@ class RegistrationStateService {
             // Firebase Auth user doesn't exist, clean up verification
             batch.delete(doc.reference);
             cleanedCount++;
-            debugPrint('🧹 Cleaning up orphaned verification for phone: ${doc.id}');
+            debugPrint('ðŸ§¹ Cleaning up orphaned verification for phone: ${doc.id}');
           }
         } else {
           // No tempUid, invalid verification
@@ -216,7 +216,7 @@ class RegistrationStateService {
       
       if (cleanedCount > 0) {
         await batch.commit();
-        debugPrint('✅ Cleaned up $cleanedCount orphaned phone verifications');
+        debugPrint('âœ… Cleaned up $cleanedCount orphaned phone verifications');
       }
     } catch (e) {
       debugPrint('Error cleaning up orphaned verifications: $e');

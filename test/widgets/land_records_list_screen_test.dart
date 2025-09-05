@@ -1,4 +1,4 @@
-library;
+﻿library;
 @Skip('Skips Firebase-dependent widget; covered via service tests and golden tests elsewhere')
 
 @Skip('Skips Firebase-dependent widget; covered via service tests and golden tests elsewhere')
@@ -15,4 +15,5 @@ void main() {
     expect(find.byIcon(Icons.add), findsOneWidget);
   });
 }
+
 

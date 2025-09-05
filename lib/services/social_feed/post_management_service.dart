@@ -1,4 +1,4 @@
-// Post Management Service - Handle post editing, deletion, and management
+﻿// Post Management Service - Handle post editing, deletion, and management
 // Part of Task 11: Add post editing and management
 
 import 'package:cloud_firestore/cloud_firestore.dart';

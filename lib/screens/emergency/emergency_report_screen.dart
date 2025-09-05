@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/emergency_service.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -87,4 +87,5 @@ class _EmergencyReportScreenState extends State<EmergencyReportScreen> {
     );
   }
 }
+
 

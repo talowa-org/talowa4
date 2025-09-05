@@ -1,4 +1,4 @@
-// Cached Network Image Widget for TALOWA
+﻿// Cached Network Image Widget for TALOWA
 // Implements Task 21: Performance optimization - Efficient Image Loading
 
 import 'package:flutter/foundation.dart';

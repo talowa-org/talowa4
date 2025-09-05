@@ -1,4 +1,4 @@
-// Moderation Action Model for TALOWA Messaging System
+﻿// Moderation Action Model for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ModerationActionModel {

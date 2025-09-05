@@ -1,4 +1,4 @@
-// Trending Hashtags Widget - Display trending hashtags
+﻿// Trending Hashtags Widget - Display trending hashtags
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';

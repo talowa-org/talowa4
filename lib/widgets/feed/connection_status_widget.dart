@@ -122,3 +122,4 @@ class ConnectionStatusStreamWidget extends StatelessWidget {
     );
   }
 }
+

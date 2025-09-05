@@ -547,3 +547,4 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
     }
   }
 }
+

@@ -1,4 +1,4 @@
-// TALOWA More Screen - Additional Features & Settings
+﻿// TALOWA More Screen - Additional Features & Settings
 // Reference: complete-app-structure.md - More Tab
 
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import '../onboarding/onboarding_screen.dart';
 import '../onboarding/coordinator_training_screen.dart';
 import '../admin/admin_login_screen.dart';
 import '../home/payments_screen.dart';
+import '../security/security_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -186,8 +187,14 @@ class _MoreScreenState extends State<MoreScreen> {
                         onTap: _openPrivacySettings,
                       ),
                       FeatureItem(
+                        title: 'Security Center',
+                        subtitle: 'Enterprise security & compliance',
+                        icon: Icons.security,
+                        onTap: _openSecurityCenter,
+                      ),
+                      FeatureItem(
                         title: 'Language & Region',
-                        subtitle: 'English, हिंदी, తెలుగు',
+                        subtitle: 'English, à¤¹à¤¿à¤‚à¤¦à¥€, à°¤à±†à°²à±à°—à±',
                         icon: Icons.language,
                         onTap: _openLanguageSettings,
                       ),
@@ -461,17 +468,17 @@ class _MoreScreenState extends State<MoreScreen> {
           children: [
             Text('App Usage Statistics:', style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('• Daily Active Users: 1,234'),
-            Text('• Posts Created: 567'),
-            Text('• Messages Sent: 2,345'),
-            Text('• Network Growth: +15%'),
+            Text('â€¢ Daily Active Users: 1,234'),
+            Text('â€¢ Posts Created: 567'),
+            Text('â€¢ Messages Sent: 2,345'),
+            Text('â€¢ Network Growth: +15%'),
             SizedBox(height: 16),
             Text('Your Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('• Posts: 12'),
-            Text('• Likes Received: 89'),
-            Text('• Comments: 34'),
-            Text('• Referrals: 5'),
+            Text('â€¢ Posts: 12'),
+            Text('â€¢ Likes Received: 89'),
+            Text('â€¢ Comments: 34'),
+            Text('â€¢ Referrals: 5'),
           ],
         ),
         actions: [
@@ -625,6 +632,17 @@ class _MoreScreenState extends State<MoreScreen> {
             child: const Text('Close'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openSecurityCenter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SecurityScreen(
+          isAdminMode: false, // Regular users get view-only mode
+        ),
       ),
     );
   }

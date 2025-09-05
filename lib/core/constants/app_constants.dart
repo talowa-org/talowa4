@@ -1,4 +1,4 @@
-// TALOWA App Constants
+﻿// TALOWA App Constants
 // Reference: docs/TALOWA_APP_BLUEPRINT.md - App Vision & Strategy
 
 class AppConstants {

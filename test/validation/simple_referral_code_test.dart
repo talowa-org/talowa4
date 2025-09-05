@@ -1,4 +1,4 @@
-// Simple test for referral code policy validation logic
+﻿// Simple test for referral code policy validation logic
 // Tests the core validation logic without Firebase dependencies
 
 import 'package:flutter_test/flutter_test.dart';

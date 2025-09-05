@@ -1,4 +1,4 @@
-// Content Moderation Service for TALOWA Social Feed
+﻿// Content Moderation Service for TALOWA Social Feed
 // Implements Task 12: Create content moderation tools
 
 import 'dart:async';

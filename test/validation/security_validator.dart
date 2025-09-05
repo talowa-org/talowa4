@@ -1,4 +1,4 @@
-// TALOWA Security Validation (Test Case G)
+﻿// TALOWA Security Validation (Test Case G)
 // Comprehensive security rules testing for Firestore and client-side restrictions
 //
 // This validator tests:
@@ -27,7 +27,7 @@ class SecurityValidator {
   /// Main security validation entry point
   static Future<ValidationResult> validateSecurityRules() async {
     try {
-      debugPrint('🔒 Starting comprehensive security validation...');
+      debugPrint('ðŸ”’ Starting comprehensive security validation...');
       
       // Initialize test environment
       await TestEnvironment.initialize();
@@ -84,7 +84,7 @@ class SecurityValidator {
   /// Test 1: Protected field write restrictions
   static Future<ValidationResult> testProtectedFieldRestrictions() async {
     try {
-      debugPrint('🔒 Testing protected field write restrictions...');
+      debugPrint('ðŸ”’ Testing protected field write restrictions...');
       
       // Create test user
       final testUser = await TestEnvironment.createTestUser();
@@ -119,11 +119,11 @@ class SecurityValidator {
           
           // If we reach here, the write succeeded (security violation)
           violations.add(field);
-          debugPrint('❌ Security violation: Client was able to write protected field: $field');
+          debugPrint('âŒ Security violation: Client was able to write protected field: $field');
           
         } catch (e) {
           // Expected to fail - security working correctly
-          debugPrint('✅ Protected field $field correctly blocked');
+          debugPrint('âœ… Protected field $field correctly blocked');
         }
       }
       
@@ -150,7 +150,7 @@ class SecurityValidator {
   /// Test 2: Authorized read access
   static Future<ValidationResult> testAuthorizedReadAccess() async {
     try {
-      debugPrint('🔒 Testing authorized read access...');
+      debugPrint('ðŸ”’ Testing authorized read access...');
       
       // Create test user
       final testUser = await TestEnvironment.createTestUser();
@@ -211,7 +211,7 @@ class SecurityValidator {
   /// Test 3: Unauthorized access attempts
   static Future<ValidationResult> testUnauthorizedAccess() async {
     try {
-      debugPrint('🔒 Testing unauthorized access attempts...');
+      debugPrint('ðŸ”’ Testing unauthorized access attempts...');
       
       // Create two test users
       final testUser1 = await TestEnvironment.createTestUser();
@@ -237,7 +237,7 @@ class SecurityValidator {
         
       } catch (e) {
         // Expected to fail - security working correctly
-        debugPrint('✅ Unauthorized write correctly blocked');
+        debugPrint('âœ… Unauthorized write correctly blocked');
       }
       
       // Test unauthorized read of sensitive data
@@ -259,15 +259,15 @@ class SecurityValidator {
           }
           
           if (exposedFields.isNotEmpty) {
-            debugPrint('⚠️ Warning: Sensitive fields exposed in cross-user read: ${exposedFields.join(', ')}');
+            debugPrint('âš ï¸ Warning: Sensitive fields exposed in cross-user read: ${exposedFields.join(', ')}');
             // This might be acceptable depending on privacy requirements
           }
         }
         
-        debugPrint('✅ Cross-user read access handled appropriately');
+        debugPrint('âœ… Cross-user read access handled appropriately');
       } catch (e) {
         // Expected to fail for sensitive data - security working correctly
-        debugPrint('✅ Cross-user read correctly restricted');
+        debugPrint('âœ… Cross-user read correctly restricted');
       }
       
       return ValidationResult.pass('Unauthorized access attempts properly blocked');
@@ -284,7 +284,7 @@ class SecurityValidator {
   /// Test 4: Server-only collection protection
   static Future<ValidationResult> testServerOnlyCollections() async {
     try {
-      debugPrint('🔒 Testing server-only collection protection...');
+      debugPrint('ðŸ”’ Testing server-only collection protection...');
       
       // Collections that should be server-only
       final serverOnlyCollections = [
@@ -312,11 +312,11 @@ class SecurityValidator {
           
           // If we reach here, unauthorized write succeeded (security violation)
           violations.add(collection);
-          debugPrint('❌ Security violation: Client can write to server-only collection: $collection');
+          debugPrint('âŒ Security violation: Client can write to server-only collection: $collection');
           
         } catch (e) {
           // Expected to fail - security working correctly
-          debugPrint('✅ Server-only collection $collection correctly protected');
+          debugPrint('âœ… Server-only collection $collection correctly protected');
         }
       }
       
@@ -343,7 +343,7 @@ class SecurityValidator {
   /// Test 5: Cross-user data access restrictions
   static Future<ValidationResult> testCrossUserAccessRestrictions() async {
     try {
-      debugPrint('🔒 Testing cross-user data access restrictions...');
+      debugPrint('ðŸ”’ Testing cross-user data access restrictions...');
       
       // Create test users with different roles
       final regularUser = await TestEnvironment.createTestUser(
@@ -367,7 +367,7 @@ class SecurityValidator {
             .get();
         
         // Regular users should be able to read but not write
-        debugPrint('✅ Emergency broadcasts read access working');
+        debugPrint('âœ… Emergency broadcasts read access working');
         
         // Test write access (should fail for regular users)
         try {
@@ -384,11 +384,11 @@ class SecurityValidator {
           
         } catch (e) {
           // Expected to fail - security working correctly
-          debugPrint('✅ Emergency broadcast write correctly restricted');
+          debugPrint('âœ… Emergency broadcast write correctly restricted');
         }
         
       } catch (e) {
-        debugPrint('⚠️ Emergency broadcast access test: $e');
+        debugPrint('âš ï¸ Emergency broadcast access test: $e');
       }
       
       return ValidationResult.pass('Cross-user access restrictions working correctly');
@@ -405,7 +405,7 @@ class SecurityValidator {
   /// Test 6: Role-based access control
   static Future<ValidationResult> testRoleBasedAccess() async {
     try {
-      debugPrint('🔒 Testing role-based access control...');
+      debugPrint('ðŸ”’ Testing role-based access control...');
       
       // Test user registry access (should allow unauthenticated read for login)
       try {
@@ -415,7 +415,7 @@ class SecurityValidator {
             .get();
         
         // This should work even without authentication for login verification
-        debugPrint('✅ User registry read access working (required for login)');
+        debugPrint('âœ… User registry read access working (required for login)');
         
       } catch (e) {
         return ValidationResult.fail(
@@ -437,11 +437,11 @@ class SecurityValidator {
               .limit(1)
               .get();
           
-          debugPrint('✅ Collection $collection access handled appropriately');
+          debugPrint('âœ… Collection $collection access handled appropriately');
           
         } catch (e) {
           // Some restriction is expected
-          debugPrint('✅ Collection $collection properly secured');
+          debugPrint('âœ… Collection $collection properly secured');
         }
       }
       
@@ -459,7 +459,7 @@ class SecurityValidator {
   /// Test specific security rule functions
   static Future<ValidationResult> testSecurityRuleFunctions() async {
     try {
-      debugPrint('🔒 Testing security rule functions...');
+      debugPrint('ðŸ”’ Testing security rule functions...');
       
       // Create test user for function testing
       final testUser = await TestEnvironment.createTestUser();
@@ -475,7 +475,7 @@ class SecurityValidator {
           'lastLoginAt': FieldValue.serverTimestamp(),
         });
         
-        debugPrint('✅ Allowed client fields update working');
+        debugPrint('âœ… Allowed client fields update working');
         
       } catch (e) {
         return ValidationResult.fail(
@@ -497,7 +497,7 @@ class SecurityValidator {
           },
         });
         
-        debugPrint('✅ Login patch validation working');
+        debugPrint('âœ… Login patch validation working');
         
       } catch (e) {
         return ValidationResult.fail(
@@ -522,7 +522,7 @@ class SecurityValidator {
   /// Test registration data validation
   static Future<ValidationResult> testRegistrationDataValidation() async {
     try {
-      debugPrint('🔒 Testing registration data validation...');
+      debugPrint('ðŸ”’ Testing registration data validation...');
       
       final testUser = await TestEnvironment.createTestUser();
       
@@ -553,7 +553,7 @@ class SecurityValidator {
         final userId = 'test_${testUser.phoneNumber}';
         await _firestore.collection('users').doc(userId).set(validRegistrationData);
         
-        debugPrint('✅ Valid registration data accepted');
+        debugPrint('âœ… Valid registration data accepted');
         
       } catch (e) {
         return ValidationResult.fail(
@@ -585,7 +585,7 @@ class SecurityValidator {
         
       } catch (e) {
         // Expected to fail - security working correctly
-        debugPrint('✅ Invalid registration data correctly rejected');
+        debugPrint('âœ… Invalid registration data correctly rejected');
       }
       
       return ValidationResult.pass('Registration data validation working correctly');
@@ -602,7 +602,7 @@ class SecurityValidator {
   /// Comprehensive security audit
   static Future<ValidationResult> performSecurityAudit() async {
     try {
-      debugPrint('🔒 Performing comprehensive security audit...');
+      debugPrint('ðŸ”’ Performing comprehensive security audit...');
       
       final auditResults = <String, ValidationResult>{};
       
@@ -662,14 +662,14 @@ class SecurityValidator {
       
       buffer.writeln();
       buffer.writeln('=== SECURITY CHECKLIST ===');
-      buffer.writeln('✅ Protected fields secured from client writes');
-      buffer.writeln('✅ Authorized read access working');
-      buffer.writeln('✅ Unauthorized access attempts blocked');
-      buffer.writeln('✅ Server-only collections protected');
-      buffer.writeln('✅ Cross-user access restrictions enforced');
-      buffer.writeln('✅ Role-based access control implemented');
-      buffer.writeln('✅ Registration data validation active');
-      buffer.writeln('✅ Security rule functions operational');
+      buffer.writeln('âœ… Protected fields secured from client writes');
+      buffer.writeln('âœ… Authorized read access working');
+      buffer.writeln('âœ… Unauthorized access attempts blocked');
+      buffer.writeln('âœ… Server-only collections protected');
+      buffer.writeln('âœ… Cross-user access restrictions enforced');
+      buffer.writeln('âœ… Role-based access control implemented');
+      buffer.writeln('âœ… Registration data validation active');
+      buffer.writeln('âœ… Security rule functions operational');
       
       return buffer.toString();
     } catch (e) {

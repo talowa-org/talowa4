@@ -1,4 +1,4 @@
-// Anonymous Reporting Unit Tests for TALOWA
+﻿// Anonymous Reporting Unit Tests for TALOWA
 // Tests core functionality without Firebase dependencies
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 

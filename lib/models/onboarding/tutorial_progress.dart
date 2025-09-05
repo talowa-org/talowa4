@@ -1,4 +1,4 @@
-// TALOWA Tutorial Progress Model
+﻿// TALOWA Tutorial Progress Model
 // Tracks user progress through various tutorials
 
 class TutorialProgress {

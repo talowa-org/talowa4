@@ -1,4 +1,4 @@
-// Audit Logging Service for TALOWA
+﻿// Audit Logging Service for TALOWA
 // Implements comprehensive audit logging for security monitoring and legal compliance
 // Requirements: 10.2, 7.4
 

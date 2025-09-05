@@ -1,4 +1,4 @@
-// TALOWA Registration Form Validator
+﻿// TALOWA Registration Form Validator
 // Test Case B2: Registration form validation
 
 import 'dart:async';
@@ -15,7 +15,7 @@ class RegistrationFormValidator {
   /// Test Case B2: Registration Form Validation
   static Future<ValidationResult> validateRegistrationForm() async {
     try {
-      debugPrint('🧪 Running Test Case B2: Registration Form Validation...');
+      debugPrint('ðŸ§ª Running Test Case B2: Registration Form Validation...');
       
       // Step 1: Test form field validation
       final fieldResult = await _validateFormFieldValidation();
@@ -41,11 +41,11 @@ class RegistrationFormValidator {
       final accessResult = await _validatePostRegistrationAccess();
       if (!accessResult.passed) return accessResult;
       
-      debugPrint('✅ Test Case B2: Registration form validation completed successfully');
+      debugPrint('âœ… Test Case B2: Registration form validation completed successfully');
       return ValidationResult.pass('Registration form creates complete active profile with valid referral code');
       
     } catch (e) {
-      debugPrint('❌ Test Case B2: Registration form validation failed: $e');
+      debugPrint('âŒ Test Case B2: Registration form validation failed: $e');
       return ValidationResult.fail(
         'Registration form validation failed',
         errorDetails: e.toString(),
@@ -58,7 +58,7 @@ class RegistrationFormValidator {
   /// Validate form field validation
   static Future<ValidationResult> _validateFormFieldValidation() async {
     try {
-      debugPrint('📝 Validating form field validation...');
+      debugPrint('ðŸ“ Validating form field validation...');
       
       // Test required fields validation
       final requiredFieldsResult = await _testRequiredFields();
@@ -72,7 +72,7 @@ class RegistrationFormValidator {
       final addressResult = await _testAddressHierarchyValidation();
       if (!addressResult.passed) return addressResult;
       
-      debugPrint('✅ Form field validation passed');
+      debugPrint('âœ… Form field validation passed');
       return ValidationResult.pass('Form field validation working correctly');
       
     } catch (e) {
@@ -88,7 +88,7 @@ class RegistrationFormValidator {
   /// Test required fields validation
   static Future<ValidationResult> _testRequiredFields() async {
     try {
-      debugPrint('🔍 Testing required fields validation...');
+      debugPrint('ðŸ” Testing required fields validation...');
       
       // Test cases for required fields
       final testCases = [
@@ -152,10 +152,10 @@ class RegistrationFormValidator {
           );
         }
         
-        debugPrint('    ✓ $description - ${validationResult.isValid ? 'PASS' : 'FAIL (expected)'}');
+        debugPrint('    âœ“ $description - ${validationResult.isValid ? 'PASS' : 'FAIL (expected)'}');
       }
 
-      debugPrint('✅ Required fields validation tests passed');
+      debugPrint('âœ… Required fields validation tests passed');
       return ValidationResult.pass('Required fields validation working correctly');
       
     } catch (e) {
@@ -170,7 +170,7 @@ class RegistrationFormValidator {
   /// Test field format validation
   static Future<ValidationResult> _testFieldFormatValidation() async {
     try {
-      debugPrint('🔍 Testing field format validation...');
+      debugPrint('ðŸ” Testing field format validation...');
       
       // Test PIN format validation (must be 4 digits)
       final pinTestCases = [
@@ -229,7 +229,7 @@ class RegistrationFormValidator {
           );
         }
         
-        debugPrint('    ✓ PIN $pin - ${isValid ? 'VALID' : 'INVALID'} (expected)');
+        debugPrint('    âœ“ PIN $pin - ${isValid ? 'VALID' : 'INVALID'} (expected)');
       }
 
       // Test phone number format validation
@@ -274,10 +274,10 @@ class RegistrationFormValidator {
           );
         }
         
-        debugPrint('    ✓ Phone $phone - ${isValid ? 'VALID' : 'INVALID'} (expected)');
+        debugPrint('    âœ“ Phone $phone - ${isValid ? 'VALID' : 'INVALID'} (expected)');
       }
 
-      debugPrint('✅ Field format validation tests passed');
+      debugPrint('âœ… Field format validation tests passed');
       return ValidationResult.pass('Field format validation working correctly');
       
     } catch (e) {
@@ -292,9 +292,9 @@ class RegistrationFormValidator {
   /// Test address hierarchy validation
   static Future<ValidationResult> _testAddressHierarchyValidation() async {
     try {
-      debugPrint('🔍 Testing address hierarchy validation...');
+      debugPrint('ðŸ” Testing address hierarchy validation...');
       
-      // Test address hierarchy: state → district → mandal → village
+      // Test address hierarchy: state â†’ district â†’ mandal â†’ village
       final addressTestCases = [
         {
           'address': {
@@ -362,14 +362,14 @@ class RegistrationFormValidator {
             'Address hierarchy validation failed for: $description',
             errorDetails: 'Expected valid: $expectedValid, Got: $isValid',
             suspectedModule: 'RegistrationForm/AddressValidation',
-            suggestedFix: 'lib/screens/auth/real_user_registration_screen.dart - Fix address hierarchy validation (state → district → mandal → village)',
+            suggestedFix: 'lib/screens/auth/real_user_registration_screen.dart - Fix address hierarchy validation (state â†’ district â†’ mandal â†’ village)',
           );
         }
         
-        debugPrint('    ✓ Address - ${isValid ? 'VALID' : 'INVALID'} (expected)');
+        debugPrint('    âœ“ Address - ${isValid ? 'VALID' : 'INVALID'} (expected)');
       }
 
-      debugPrint('✅ Address hierarchy validation tests passed');
+      debugPrint('âœ… Address hierarchy validation tests passed');
       return ValidationResult.pass('Address hierarchy validation working correctly');
       
     } catch (e) {
@@ -384,7 +384,7 @@ class RegistrationFormValidator {
   /// Validate form submission process
   static Future<ValidationResult> _validateFormSubmissionProcess() async {
     try {
-      debugPrint('📤 Validating form submission process...');
+      debugPrint('ðŸ“¤ Validating form submission process...');
       
       // Generate test user data
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -416,7 +416,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('✅ Form submission process validation passed');
+      debugPrint('âœ… Form submission process validation passed');
       return ValidationResult.pass('Form submission process working correctly');
       
     } catch (e) {
@@ -431,7 +431,7 @@ class RegistrationFormValidator {
   /// Validate user document creation
   static Future<ValidationResult> _validateUserDocumentCreation() async {
     try {
-      debugPrint('📄 Validating user document creation...');
+      debugPrint('ðŸ“„ Validating user document creation...');
       
       // Generate test user data
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -507,7 +507,7 @@ class RegistrationFormValidator {
           );
         }
         
-        debugPrint('    ✓ Field $field: $actual (expected)');
+        debugPrint('    âœ“ Field $field: $actual (expected)');
       }
 
       // Check timestamps
@@ -520,13 +520,13 @@ class RegistrationFormValidator {
             suggestedFix: 'lib/services/auth_service.dart:_createClientUserProfile - Add $field timestamp',
           );
         }
-        debugPrint('    ✓ Timestamp $field: present');
+        debugPrint('    âœ“ Timestamp $field: present');
       }
 
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('✅ User document creation validation passed');
+      debugPrint('âœ… User document creation validation passed');
       return ValidationResult.pass('User document created with correct fields and timestamps');
       
     } catch (e) {
@@ -541,7 +541,7 @@ class RegistrationFormValidator {
   /// Validate referral code generation
   static Future<ValidationResult> _validateReferralCodeGeneration() async {
     try {
-      debugPrint('🔗 Validating referral code generation...');
+      debugPrint('ðŸ”— Validating referral code generation...');
       
       // Generate test user data
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -601,7 +601,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('✅ Referral code generation validation passed');
+      debugPrint('âœ… Referral code generation validation passed');
       return ValidationResult.pass('Referral code generated with TAL prefix, valid format, and uniqueness');
       
     } catch (e) {
@@ -616,7 +616,7 @@ class RegistrationFormValidator {
   /// Test referral code uniqueness
   static Future<ValidationResult> _testReferralCodeUniqueness(String referralCode) async {
     try {
-      debugPrint('🔍 Testing referral code uniqueness for: $referralCode');
+      debugPrint('ðŸ” Testing referral code uniqueness for: $referralCode');
       
       // Check if code exists in referralCodes collection
       final codeDoc = await _firestore.collection('referralCodes').doc(referralCode).get();
@@ -644,7 +644,7 @@ class RegistrationFormValidator {
         );
       }
 
-      debugPrint('    ✓ Referral code is unique and properly reserved');
+      debugPrint('    âœ“ Referral code is unique and properly reserved');
       return ValidationResult.pass('Referral code uniqueness verified');
       
     } catch (e) {
@@ -659,7 +659,7 @@ class RegistrationFormValidator {
   /// Validate provisionalRef assignment
   static Future<ValidationResult> _validateProvisionalRefAssignment() async {
     try {
-      debugPrint('🔗 Validating provisionalRef assignment...');
+      debugPrint('ðŸ”— Validating provisionalRef assignment...');
       
       // Test 1: Deep link referral code assignment
       final deepLinkResult = await _testDeepLinkReferralAssignment();
@@ -673,7 +673,7 @@ class RegistrationFormValidator {
       final persistenceResult = await _testProvisionalRefPersistence();
       if (!persistenceResult.passed) return persistenceResult;
       
-      debugPrint('✅ ProvisionalRef assignment validation passed');
+      debugPrint('âœ… ProvisionalRef assignment validation passed');
       return ValidationResult.pass('ProvisionalRef assignment working correctly with deep link and fallback');
       
     } catch (e) {
@@ -688,7 +688,7 @@ class RegistrationFormValidator {
   /// Test deep link referral code assignment
   static Future<ValidationResult> _testDeepLinkReferralAssignment() async {
     try {
-      debugPrint('🔍 Testing deep link referral code assignment...');
+      debugPrint('ðŸ” Testing deep link referral code assignment...');
       
       // Generate test user data with referral code
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -727,7 +727,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('    ✓ Deep link referral code assigned correctly');
+      debugPrint('    âœ“ Deep link referral code assigned correctly');
       return ValidationResult.pass('Deep link referral code assignment working');
       
     } catch (e) {
@@ -742,7 +742,7 @@ class RegistrationFormValidator {
   /// Test TALADMIN fallback
   static Future<ValidationResult> _testTALADMINFallback() async {
     try {
-      debugPrint('🔍 Testing TALADMIN fallback...');
+      debugPrint('ðŸ” Testing TALADMIN fallback...');
       
       // Generate test user data without referral code
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -778,7 +778,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('    ✓ TALADMIN fallback working correctly');
+      debugPrint('    âœ“ TALADMIN fallback working correctly');
       return ValidationResult.pass('TALADMIN fallback working');
       
     } catch (e) {
@@ -793,7 +793,7 @@ class RegistrationFormValidator {
   /// Test provisionalRef persistence
   static Future<ValidationResult> _testProvisionalRefPersistence() async {
     try {
-      debugPrint('🔍 Testing provisionalRef persistence...');
+      debugPrint('ðŸ” Testing provisionalRef persistence...');
       
       // Generate test user data with referral code
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -842,7 +842,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('    ✓ ProvisionalRef persisted correctly');
+      debugPrint('    âœ“ ProvisionalRef persisted correctly');
       return ValidationResult.pass('ProvisionalRef persistence working');
       
     } catch (e) {
@@ -857,7 +857,7 @@ class RegistrationFormValidator {
   /// Validate post-registration app access
   static Future<ValidationResult> _validatePostRegistrationAccess() async {
     try {
-      debugPrint('📱 Validating post-registration app access...');
+      debugPrint('ðŸ“± Validating post-registration app access...');
       
       // Generate test user data
       final testPhone = '+919876543${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
@@ -890,7 +890,7 @@ class RegistrationFormValidator {
       // Clean up test data
       await _cleanupTestUser(testPhone);
 
-      debugPrint('✅ Post-registration app access validation passed');
+      debugPrint('âœ… Post-registration app access validation passed');
       return ValidationResult.pass('User can access all main app features after registration');
       
     } catch (e) {
@@ -905,7 +905,7 @@ class RegistrationFormValidator {
   /// Test main app navigation access
   static Future<ValidationResult> _testMainAppNavigation(String userUid) async {
     try {
-      debugPrint('🔍 Testing main app navigation access...');
+      debugPrint('ðŸ” Testing main app navigation access...');
       
       // Check if user document allows navigation (status: active, profileCompleted: true)
       final userDoc = await _firestore.collection('users').doc(userUid).get();
@@ -932,7 +932,7 @@ class RegistrationFormValidator {
         );
       }
 
-      debugPrint('    ✓ User can navigate to main app screens');
+      debugPrint('    âœ“ User can navigate to main app screens');
       return ValidationResult.pass('Main app navigation accessible');
       
     } catch (e) {
@@ -947,7 +947,7 @@ class RegistrationFormValidator {
   /// Test user profile data access
   static Future<ValidationResult> _testUserProfileAccess(String userUid) async {
     try {
-      debugPrint('🔍 Testing user profile data access...');
+      debugPrint('ðŸ” Testing user profile data access...');
       
       // Try to access user profile data
       final userDoc = await _firestore.collection('users').doc(userUid).get();
@@ -974,7 +974,7 @@ class RegistrationFormValidator {
         }
       }
 
-      debugPrint('    ✓ User profile data is accessible');
+      debugPrint('    âœ“ User profile data is accessible');
       return ValidationResult.pass('User profile data accessible');
       
     } catch (e) {
@@ -989,7 +989,7 @@ class RegistrationFormValidator {
   /// Test referral code sharing capability
   static Future<ValidationResult> _testReferralCodeSharing(String userUid) async {
     try {
-      debugPrint('🔍 Testing referral code sharing capability...');
+      debugPrint('ðŸ” Testing referral code sharing capability...');
       
       // Get user's referral code
       final userDoc = await _firestore.collection('users').doc(userUid).get();
@@ -1021,7 +1021,7 @@ class RegistrationFormValidator {
         );
       }
 
-      debugPrint('    ✓ User can share referral code: $referralCode');
+      debugPrint('    âœ“ User can share referral code: $referralCode');
       return ValidationResult.pass('Referral code sharing capability working');
       
     } catch (e) {
@@ -1143,7 +1143,7 @@ class RegistrationFormValidator {
   /// Simulate form submission
   static Future<RegistrationResult> _simulateFormSubmission(Map<String, dynamic> data) async {
     try {
-      debugPrint('📤 Simulating form submission...');
+      debugPrint('ðŸ“¤ Simulating form submission...');
       
       // Validate form data first
       final validationResult = _validateFormData(data);
@@ -1210,9 +1210,9 @@ class RegistrationFormValidator {
         }
       }
       
-      debugPrint('🧹 Cleaned up test user data for $phoneNumber');
+      debugPrint('ðŸ§¹ Cleaned up test user data for $phoneNumber');
     } catch (e) {
-      debugPrint('⚠️ Failed to cleanup test user data: $e');
+      debugPrint('âš ï¸ Failed to cleanup test user data: $e');
     }
   }
 }

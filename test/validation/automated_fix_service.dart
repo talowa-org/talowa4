@@ -1,4 +1,4 @@
-// TALOWA Automated Fix Application Service
+﻿// TALOWA Automated Fix Application Service
 // Implements safe fix application with rollback capability and validation
 
 import 'dart:async';
@@ -28,9 +28,9 @@ class AutomatedFixService {
     bool dryRun = false,
     bool enableRollback = true,
   }) async {
-    debugPrint('🔧 Starting automated fix application...');
-    debugPrint('📊 Failed tests: ${report.failedTests.length}');
-    debugPrint('⚙️ Configuration: dryRun=$dryRun, enableRollback=$enableRollback');
+    debugPrint('ðŸ”§ Starting automated fix application...');
+    debugPrint('ðŸ“Š Failed tests: ${report.failedTests.length}');
+    debugPrint('âš™ï¸ Configuration: dryRun=$dryRun, enableRollback=$enableRollback');
     
     final result = FixApplicationResult();
     
@@ -44,7 +44,7 @@ class AutomatedFixService {
         final testName = entry.key;
         final validationResult = entry.value;
         
-        debugPrint('\n🔍 Processing fix for: $testName');
+        debugPrint('\nðŸ” Processing fix for: $testName');
         
         final fixResult = await _applyFixForTest(
           testName, 
@@ -56,33 +56,33 @@ class AutomatedFixService {
         result.addFixResult(testName, fixResult);
         
         if (!fixResult.success && fixResult.severity == FixSeverity.critical) {
-          debugPrint('❌ Critical fix failed for $testName, stopping fix application');
+          debugPrint('âŒ Critical fix failed for $testName, stopping fix application');
           break;
         }
       }
       
       // Validate all fixes if not dry run
       if (!dryRun && result.hasSuccessfulFixes) {
-        debugPrint('\n🔍 Validating applied fixes...');
+        debugPrint('\nðŸ” Validating applied fixes...');
         final validationResult = await _validateAppliedFixes(result);
         result.validationResult = validationResult;
         
         if (!validationResult.allFixesValid && enableRollback) {
-          debugPrint('⚠️ Fix validation failed, initiating rollback...');
+          debugPrint('âš ï¸ Fix validation failed, initiating rollback...');
           final rollbackResult = await rollbackAllFixes();
           result.rollbackResult = rollbackResult;
         }
       }
       
-      debugPrint('✅ Automated fix application completed');
+      debugPrint('âœ… Automated fix application completed');
       return result;
       
     } catch (e) {
-      debugPrint('❌ Automated fix application failed: $e');
+      debugPrint('âŒ Automated fix application failed: $e');
       
       // Attempt rollback on error if enabled
       if (enableRollback && _appliedFixes.isNotEmpty) {
-        debugPrint('🔄 Attempting rollback due to error...');
+        debugPrint('ðŸ”„ Attempting rollback due to error...');
         final rollbackResult = await rollbackAllFixes();
         result.rollbackResult = rollbackResult;
       }
@@ -104,7 +104,7 @@ class AutomatedFixService {
     bool enableRollback = true,
   }) async {
     try {
-      debugPrint('🔧 Applying fix for: $testName');
+      debugPrint('ðŸ”§ Applying fix for: $testName');
       
       // Determine fix strategy based on test name and suspected module
       final fixStrategy = _determineFixStrategy(testName, validationResult);
@@ -116,7 +116,7 @@ class AutomatedFixService {
         );
       }
       
-      debugPrint('📋 Fix strategy: ${fixStrategy.description}');
+      debugPrint('ðŸ“‹ Fix strategy: ${fixStrategy.description}');
       
       if (dryRun) {
         return FixResult.success(
@@ -146,7 +146,7 @@ class AutomatedFixService {
       return fixResult;
       
     } catch (e) {
-      debugPrint('❌ Fix application failed for $testName: $e');
+      debugPrint('âŒ Fix application failed for $testName: $e');
       return FixResult.error(
         'Fix application failed',
         errorDetails: e.toString(),
@@ -288,10 +288,10 @@ class AutomatedFixService {
     final appliedActions = <String>[];
     
     try {
-      debugPrint('🔧 Executing fix: ${strategy.description}');
+      debugPrint('ðŸ”§ Executing fix: ${strategy.description}');
       
       for (final action in strategy.actions) {
-        debugPrint('⚙️ Executing action: $action');
+        debugPrint('âš™ï¸ Executing action: $action');
         
         final actionResult = await _executeFixAction(testName, action, strategy);
         appliedActions.add(action);
@@ -304,14 +304,14 @@ class AutomatedFixService {
         }
       }
       
-      debugPrint('✅ Fix executed successfully: ${strategy.description}');
+      debugPrint('âœ… Fix executed successfully: ${strategy.description}');
       return FixResult.success(
         strategy.description,
         appliedActions: appliedActions,
       );
       
     } catch (e) {
-      debugPrint('❌ Fix execution failed: $e');
+      debugPrint('âŒ Fix execution failed: $e');
       return FixResult.error(
         'Fix execution failed',
         errorDetails: e.toString(),
@@ -388,11 +388,11 @@ class AutomatedFixService {
           return await _verifySecurityConfig();
           
         default:
-          debugPrint('⚠️ Unknown fix action: $action');
+          debugPrint('âš ï¸ Unknown fix action: $action');
           return false;
       }
     } catch (e) {
-      debugPrint('❌ Fix action failed: $action - $e');
+      debugPrint('âŒ Fix action failed: $action - $e');
       return false;
     }
   }
@@ -400,7 +400,7 @@ class AutomatedFixService {
   /// Create backup for rollback
   static Future<void> _createBackupForFix(String testName, FixStrategy strategy) async {
     try {
-      debugPrint('💾 Creating backup for: $testName');
+      debugPrint('ðŸ’¾ Creating backup for: $testName');
       
       switch (strategy.type) {
         case FixType.databaseOperation:
@@ -417,15 +417,15 @@ class AutomatedFixService {
           break;
       }
       
-      debugPrint('✅ Backup created for: $testName');
+      debugPrint('âœ… Backup created for: $testName');
     } catch (e) {
-      debugPrint('⚠️ Backup creation failed for $testName: $e');
+      debugPrint('âš ï¸ Backup creation failed for $testName: $e');
     }
   }
 
   /// Validate applied fixes
   static Future<FixValidationResult> _validateAppliedFixes(FixApplicationResult result) async {
-    debugPrint('🔍 Validating applied fixes...');
+    debugPrint('ðŸ” Validating applied fixes...');
     
     final validationResult = FixValidationResult();
     
@@ -436,24 +436,24 @@ class AutomatedFixService {
         
         if (!fixResult.success) continue;
         
-        debugPrint('🧪 Re-validating: $testName');
+        debugPrint('ðŸ§ª Re-validating: $testName');
         
         // Re-run the specific test to validate fix
         final reValidationResult = await _reRunTest(testName);
         validationResult.addTestResult(testName, reValidationResult);
         
         if (!reValidationResult.passed) {
-          debugPrint('❌ Fix validation failed for: $testName');
+          debugPrint('âŒ Fix validation failed for: $testName');
         } else {
-          debugPrint('✅ Fix validation passed for: $testName');
+          debugPrint('âœ… Fix validation passed for: $testName');
         }
       }
       
-      debugPrint('📊 Fix validation completed: ${validationResult.passedTests}/${validationResult.totalTests} passed');
+      debugPrint('ðŸ“Š Fix validation completed: ${validationResult.passedTests}/${validationResult.totalTests} passed');
       return validationResult;
       
     } catch (e) {
-      debugPrint('❌ Fix validation failed: $e');
+      debugPrint('âŒ Fix validation failed: $e');
       validationResult.validationError = e.toString();
       return validationResult;
     }
@@ -500,7 +500,7 @@ class AutomatedFixService {
 
   /// Rollback all applied fixes
   static Future<RollbackResult> rollbackAllFixes() async {
-    debugPrint('🔄 Starting rollback of all applied fixes...');
+    debugPrint('ðŸ”„ Starting rollback of all applied fixes...');
     
     final rollbackResult = RollbackResult();
     
@@ -509,15 +509,15 @@ class AutomatedFixService {
       final reversedFixes = _appliedFixes.reversed.toList();
       
       for (final fixOperation in reversedFixes) {
-        debugPrint('🔄 Rolling back: ${fixOperation.testName}');
+        debugPrint('ðŸ”„ Rolling back: ${fixOperation.testName}');
         
         final rollbackSuccess = await _rollbackFix(fixOperation);
         rollbackResult.addRollbackResult(fixOperation.testName, rollbackSuccess);
         
         if (!rollbackSuccess) {
-          debugPrint('❌ Rollback failed for: ${fixOperation.testName}');
+          debugPrint('âŒ Rollback failed for: ${fixOperation.testName}');
         } else {
-          debugPrint('✅ Rollback successful for: ${fixOperation.testName}');
+          debugPrint('âœ… Rollback successful for: ${fixOperation.testName}');
         }
       }
       
@@ -525,11 +525,11 @@ class AutomatedFixService {
       _appliedFixes.clear();
       _backupData.clear();
       
-      debugPrint('🔄 Rollback completed: ${rollbackResult.successfulRollbacks}/${rollbackResult.totalRollbacks} successful');
+      debugPrint('ðŸ”„ Rollback completed: ${rollbackResult.successfulRollbacks}/${rollbackResult.totalRollbacks} successful');
       return rollbackResult;
       
     } catch (e) {
-      debugPrint('❌ Rollback failed: $e');
+      debugPrint('âŒ Rollback failed: $e');
       rollbackResult.rollbackError = e.toString();
       return rollbackResult;
     }
@@ -539,13 +539,13 @@ class AutomatedFixService {
   static Future<bool> _rollbackFix(FixOperation fixOperation) async {
     try {
       if (fixOperation.backupKey == null) {
-        debugPrint('⚠️ No backup available for rollback: ${fixOperation.testName}');
+        debugPrint('âš ï¸ No backup available for rollback: ${fixOperation.testName}');
         return false;
       }
       
       final backupData = _backupData[fixOperation.backupKey];
       if (backupData == null) {
-        debugPrint('⚠️ Backup data not found: ${fixOperation.backupKey}');
+        debugPrint('âš ï¸ Backup data not found: ${fixOperation.backupKey}');
         return false;
       }
       
@@ -553,14 +553,14 @@ class AutomatedFixService {
       for (final action in fixOperation.strategy.rollbackActions) {
         final success = await _executeRollbackAction(action, backupData);
         if (!success) {
-          debugPrint('❌ Rollback action failed: $action');
+          debugPrint('âŒ Rollback action failed: $action');
           return false;
         }
       }
       
       return true;
     } catch (e) {
-      debugPrint('❌ Rollback failed for ${fixOperation.testName}: $e');
+      debugPrint('âŒ Rollback failed for ${fixOperation.testName}: $e');
       return false;
     }
   }
@@ -594,11 +594,11 @@ class AutomatedFixService {
         case 'restore_firestore_rules':
           return await _restoreFirestoreRules(backupData);
         default:
-          debugPrint('⚠️ Unknown rollback action: $action');
+          debugPrint('âš ï¸ Unknown rollback action: $action');
           return false;
       }
     } catch (e) {
-      debugPrint('❌ Rollback action failed: $action - $e');
+      debugPrint('âŒ Rollback action failed: $action - $e');
       return false;
     }
   }
@@ -609,128 +609,128 @@ class AutomatedFixService {
       final result = await AdminBootstrapValidator.createAdminBootstrap();
       return result.passed;
     } catch (e) {
-      debugPrint('❌ Create admin user failed: $e');
+      debugPrint('âŒ Create admin user failed: $e');
       return false;
     }
   }
 
   static Future<bool> _createAdminRegistry() async {
     // Implementation would create admin registry entry
-    debugPrint('✅ Admin registry creation simulated');
+    debugPrint('âœ… Admin registry creation simulated');
     return true;
   }
 
   static Future<bool> _createTaladminCode() async {
     // Implementation would create TALADMIN referral code
-    debugPrint('✅ TALADMIN code creation simulated');
+    debugPrint('âœ… TALADMIN code creation simulated');
     return true;
   }
 
   static Future<bool> _verifyScreenFiles() async {
     // Implementation would verify screen files exist
-    debugPrint('✅ Screen files verification simulated');
+    debugPrint('âœ… Screen files verification simulated');
     return true;
   }
 
   static Future<bool> _updateNavigationConfig() async {
     // Implementation would update navigation configuration
-    debugPrint('✅ Navigation config update simulated');
+    debugPrint('âœ… Navigation config update simulated');
     return true;
   }
 
   static Future<bool> _updateOtpConfig() async {
     // Implementation would update OTP configuration
-    debugPrint('✅ OTP config update simulated');
+    debugPrint('âœ… OTP config update simulated');
     return true;
   }
 
   static Future<bool> _verifyFirebaseAuth() async {
     // Implementation would verify Firebase Auth configuration
-    debugPrint('✅ Firebase Auth verification simulated');
+    debugPrint('âœ… Firebase Auth verification simulated');
     return true;
   }
 
   static Future<bool> _fixProfileCreation() async {
     // Implementation would fix profile creation logic
-    debugPrint('✅ Profile creation fix simulated');
+    debugPrint('âœ… Profile creation fix simulated');
     return true;
   }
 
   static Future<bool> _fixReferralCodeGeneration() async {
     // Implementation would fix referral code generation
-    debugPrint('✅ Referral code generation fix simulated');
+    debugPrint('âœ… Referral code generation fix simulated');
     return true;
   }
 
   static Future<bool> _updatePaymentConfig() async {
     // Implementation would update payment configuration
-    debugPrint('✅ Payment config update simulated');
+    debugPrint('âœ… Payment config update simulated');
     return true;
   }
 
   static Future<bool> _fixMembershipLogic() async {
     // Implementation would fix membership logic
-    debugPrint('✅ Membership logic fix simulated');
+    debugPrint('âœ… Membership logic fix simulated');
     return true;
   }
 
   static Future<bool> _updateLoginConfig() async {
     // Implementation would update login configuration
-    debugPrint('✅ Login config update simulated');
+    debugPrint('âœ… Login config update simulated');
     return true;
   }
 
   static Future<bool> _verifyEmailAlias() async {
     // Implementation would verify email alias functionality
-    debugPrint('✅ Email alias verification simulated');
+    debugPrint('âœ… Email alias verification simulated');
     return true;
   }
 
   static Future<bool> _updateDeeplinkConfig() async {
     // Implementation would update deep link configuration
-    debugPrint('✅ Deep link config update simulated');
+    debugPrint('âœ… Deep link config update simulated');
     return true;
   }
 
   static Future<bool> _fixReferralAutofill() async {
     // Implementation would fix referral auto-fill
-    debugPrint('✅ Referral auto-fill fix simulated');
+    debugPrint('âœ… Referral auto-fill fix simulated');
     return true;
   }
 
   static Future<bool> _fixCodeGeneration() async {
     // Implementation would fix code generation
-    debugPrint('✅ Code generation fix simulated');
+    debugPrint('âœ… Code generation fix simulated');
     return true;
   }
 
   static Future<bool> _updatePolicyValidation() async {
     // Implementation would update policy validation
-    debugPrint('✅ Policy validation update simulated');
+    debugPrint('âœ… Policy validation update simulated');
     return true;
   }
 
   static Future<bool> _updateNetworkStreams() async {
     // Implementation would update network streams
-    debugPrint('✅ Network streams update simulated');
+    debugPrint('âœ… Network streams update simulated');
     return true;
   }
 
   static Future<bool> _fixRealtimeConfig() async {
     // Implementation would fix real-time configuration
-    debugPrint('✅ Real-time config fix simulated');
+    debugPrint('âœ… Real-time config fix simulated');
     return true;
   }
 
   static Future<bool> _updateFirestoreRules() async {
     // Implementation would update Firestore rules
-    debugPrint('✅ Firestore rules update simulated');
+    debugPrint('âœ… Firestore rules update simulated');
     return true;
   }
 
   static Future<bool> _verifySecurityConfig() async {
     // Implementation would verify security configuration
-    debugPrint('✅ Security config verification simulated');
+    debugPrint('âœ… Security config verification simulated');
     return true;
   }
 
@@ -753,62 +753,62 @@ class AutomatedFixService {
 
   // Rollback implementations
   static Future<bool> _deleteAdminUser() async {
-    debugPrint('🔄 Admin user deletion simulated');
+    debugPrint('ðŸ”„ Admin user deletion simulated');
     return true;
   }
 
   static Future<bool> _deleteAdminRegistry() async {
-    debugPrint('🔄 Admin registry deletion simulated');
+    debugPrint('ðŸ”„ Admin registry deletion simulated');
     return true;
   }
 
   static Future<bool> _deleteTaladminCode() async {
-    debugPrint('🔄 TALADMIN code deletion simulated');
+    debugPrint('ðŸ”„ TALADMIN code deletion simulated');
     return true;
   }
 
   static Future<bool> _restoreNavigationConfig(dynamic backupData) async {
-    debugPrint('🔄 Navigation config restoration simulated');
+    debugPrint('ðŸ”„ Navigation config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreOtpConfig(dynamic backupData) async {
-    debugPrint('🔄 OTP config restoration simulated');
+    debugPrint('ðŸ”„ OTP config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreProfileService(dynamic backupData) async {
-    debugPrint('🔄 Profile service restoration simulated');
+    debugPrint('ðŸ”„ Profile service restoration simulated');
     return true;
   }
 
   static Future<bool> _restorePaymentConfig(dynamic backupData) async {
-    debugPrint('🔄 Payment config restoration simulated');
+    debugPrint('ðŸ”„ Payment config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreLoginConfig(dynamic backupData) async {
-    debugPrint('🔄 Login config restoration simulated');
+    debugPrint('ðŸ”„ Login config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreDeeplinkConfig(dynamic backupData) async {
-    debugPrint('🔄 Deep link config restoration simulated');
+    debugPrint('ðŸ”„ Deep link config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreCodeGeneration(dynamic backupData) async {
-    debugPrint('🔄 Code generation restoration simulated');
+    debugPrint('ðŸ”„ Code generation restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreNetworkConfig(dynamic backupData) async {
-    debugPrint('🔄 Network config restoration simulated');
+    debugPrint('ðŸ”„ Network config restoration simulated');
     return true;
   }
 
   static Future<bool> _restoreFirestoreRules(dynamic backupData) async {
-    debugPrint('🔄 Firestore rules restoration simulated');
+    debugPrint('ðŸ”„ Firestore rules restoration simulated');
     return true;
   }
 }
@@ -878,7 +878,7 @@ class FixApplicationResult {
     for (final entry in fixResults.entries) {
       final testName = entry.key;
       final result = entry.value;
-      final statusIcon = result.success ? '✅' : '❌';
+      final statusIcon = result.success ? 'âœ…' : 'âŒ';
       
       buffer.writeln('### $testName $statusIcon');
       buffer.writeln();

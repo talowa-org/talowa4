@@ -1,4 +1,4 @@
-// Performance Tests for Message Delivery and Voice Call Quality
+﻿// Performance Tests for Message Delivery and Voice Call Quality
 // Tests message delivery speed, voice call quality, and system responsiveness
 
 import 'package:flutter_test/flutter_test.dart';

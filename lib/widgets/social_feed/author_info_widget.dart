@@ -238,3 +238,4 @@ class AuthorInfoWidget extends StatelessWidget {
     }
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:talowa/services/localization_service.dart';
 import 'package:talowa/services/localization_performance_monitor.dart';

@@ -1,4 +1,4 @@
-// Media Cache Service - Handle media caching for offline support
+﻿// Media Cache Service - Handle media caching for offline support
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';

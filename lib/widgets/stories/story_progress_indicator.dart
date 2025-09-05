@@ -1,4 +1,4 @@
-// Story Progress Indicator - Instagram-like progress bars for stories
+﻿// Story Progress Indicator - Instagram-like progress bars for stories
 import 'package:flutter/material.dart';
 
 class StoryProgressIndicator extends StatelessWidget {

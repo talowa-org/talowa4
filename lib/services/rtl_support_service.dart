@@ -1,4 +1,4 @@
-// RTL (Right-to-Left) Support Service for TALOWA
+﻿// RTL (Right-to-Left) Support Service for TALOWA
 // Handles text direction, layout, and UI adjustments for Arabic and Urdu
 
 import 'package:flutter/material.dart';

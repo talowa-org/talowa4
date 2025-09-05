@@ -1,4 +1,4 @@
-// Referral Chain Service for Talowa
+﻿// Referral Chain Service for Talowa
 // Implements BSS webapp referral chain logic in Flutter
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,14 +16,14 @@ class ReferralChainService {
     required String? referralCode,
   }) async {
     try {
-      debugPrint('🔍 Processing referral for new user: $newUserId');
+      debugPrint('ðŸ” Processing referral for new user: $newUserId');
       debugPrint('   Referral code: ${referralCode ?? "null"}');
 
       // Use Cloud Functions for referral processing and auto-promotion
       await CloudFunctionsService.processReferralAndPromote(newUserId);
 
     } catch (e) {
-      debugPrint('❌ Error processing referral chain: $e');
+      debugPrint('âŒ Error processing referral chain: $e');
       // Don't throw - registration should succeed even if referral processing fails
     }
   }
@@ -34,7 +34,7 @@ class ReferralChainService {
     required String newUserId,
     required String referralCode,
   }) async {
-    debugPrint('🔗 Updating referral chain for code: $referralCode');
+    debugPrint('ðŸ”— Updating referral chain for code: $referralCode');
 
     String? currentReferrerCode = referralCode;
     bool isDirectReferral = true;
@@ -53,7 +53,7 @@ class ReferralChainService {
             .get();
 
         if (referrerQuery.docs.isEmpty) {
-          debugPrint('⚠️ Referrer with code $currentReferrerCode not found. Stopping chain.');
+          debugPrint('âš ï¸ Referrer with code $currentReferrerCode not found. Stopping chain.');
           break;
         }
 
@@ -70,7 +70,7 @@ class ReferralChainService {
             'teamReferrals': FieldValue.increment(1),
             'lastStatsUpdate': FieldValue.serverTimestamp(),
           });
-          debugPrint('   ✅ Credited direct referral to ${referrerData['fullName']}');
+          debugPrint('   âœ… Credited direct referral to ${referrerData['fullName']}');
           isDirectReferral = false;
         } else {
           // Upline members only get team referral credit
@@ -78,12 +78,12 @@ class ReferralChainService {
             'teamReferrals': FieldValue.increment(1),
             'lastStatsUpdate': FieldValue.serverTimestamp(),
           });
-          debugPrint('   ✅ Credited team referral to ${referrerData['fullName']}');
+          debugPrint('   âœ… Credited team referral to ${referrerData['fullName']}');
         }
 
         // Stop if we reach admin (admin has no upline)
         if (currentReferrerCode == 'TALADMIN') {
-          debugPrint('   🛑 Reached admin. Stopping chain traversal.');
+          debugPrint('   ðŸ›‘ Reached admin. Stopping chain traversal.');
           break;
         }
 
@@ -93,10 +93,10 @@ class ReferralChainService {
 
       // Commit all updates in a single batch
       await batch.commit();
-      debugPrint('✅ Successfully updated referral chain');
+      debugPrint('âœ… Successfully updated referral chain');
 
     } catch (e) {
-      debugPrint('❌ Error updating referral chain: $e');
+      debugPrint('âŒ Error updating referral chain: $e');
       throw e;
     }
   }
@@ -157,14 +157,14 @@ class ReferralChainService {
           'lastRoleUpdate': FieldValue.serverTimestamp(),
         });
 
-        debugPrint('🎉 Promoted user ${userData['fullName']} to $newRoleName (level $newRoleLevel)');
+        debugPrint('ðŸŽ‰ Promoted user ${userData['fullName']} to $newRoleName (level $newRoleLevel)');
         
         // TODO: Send promotion notification
         await _sendPromotionNotification(userId, newRoleName);
       }
 
     } catch (e) {
-      debugPrint('❌ Error checking role promotion: $e');
+      debugPrint('âŒ Error checking role promotion: $e');
     }
   }
 
@@ -178,15 +178,15 @@ class ReferralChainService {
           .collection('notifications')
           .add({
         'type': 'promotion',
-        'title': 'Congratulations! 🎉',
+        'title': 'Congratulations! ðŸŽ‰',
         'message': 'You have been promoted to $newRole!',
         'read': false,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      debugPrint('📧 Promotion notification sent for $newRole');
+      debugPrint('ðŸ“§ Promotion notification sent for $newRole');
     } catch (e) {
-      debugPrint('⚠️ Failed to send promotion notification: $e');
+      debugPrint('âš ï¸ Failed to send promotion notification: $e');
     }
   }
 
@@ -194,7 +194,7 @@ class ReferralChainService {
   /// Adapted from BSS fix-orphans functionality
   static Future<int> fixOrphanedUsers() async {
     try {
-      debugPrint('🔧 Starting orphan user fix...');
+      debugPrint('ðŸ”§ Starting orphan user fix...');
 
       // Find users with no referrer
       final orphanQuery = await _firestore
@@ -203,7 +203,7 @@ class ReferralChainService {
           .get();
 
       if (orphanQuery.docs.isEmpty) {
-        debugPrint('✅ No orphaned users found');
+        debugPrint('âœ… No orphaned users found');
         return 0;
       }
 
@@ -230,13 +230,13 @@ class ReferralChainService {
 
       if (updateCount > 0) {
         await batch.commit();
-        debugPrint('✅ Fixed $updateCount orphaned users');
+        debugPrint('âœ… Fixed $updateCount orphaned users');
       }
 
       return updateCount;
 
     } catch (e) {
-      debugPrint('❌ Error fixing orphaned users: $e');
+      debugPrint('âŒ Error fixing orphaned users: $e');
       return 0;
     }
   }
@@ -265,7 +265,7 @@ class ReferralChainService {
       };
 
     } catch (e) {
-      debugPrint('❌ Error getting referral stats: $e');
+      debugPrint('âŒ Error getting referral stats: $e');
       return {
         'directReferrals': 0,
         'teamReferrals': 0,
@@ -288,7 +288,7 @@ class ReferralChainService {
 
       return query.docs.isNotEmpty;
     } catch (e) {
-      debugPrint('❌ Error validating referral code: $e');
+      debugPrint('âŒ Error validating referral code: $e');
       return false;
     }
   }

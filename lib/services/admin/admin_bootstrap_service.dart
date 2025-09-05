@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart'; // Added for debugPrint
 
@@ -24,7 +24,7 @@ class AdminBootstrapService {
       // First, check if admin is already properly bootstrapped
       if (await isAdminBootstrapped()) {
         final adminUid = await _findAdminByEmail();
-        debugPrint('✅ Admin already properly bootstrapped with UID: $adminUid');
+        debugPrint('âœ… Admin already properly bootstrapped with UID: $adminUid');
         return adminUid!;
       }
       
@@ -32,7 +32,7 @@ class AdminBootstrapService {
       String? adminUid = await _findAdminByEmail();
       
       if (adminUid != null) {
-        debugPrint('✅ Admin user already exists with UID: $adminUid');
+        debugPrint('âœ… Admin user already exists with UID: $adminUid');
       } else {
         // Check if admin exists in Firebase Auth but not in Firestore
         adminUid = await _findOrCreateAdminUser();
@@ -44,20 +44,20 @@ class AdminBootstrapService {
       // Ensure TALADMIN referral code is reserved
       await _ensureAdminReferralCode(adminUid);
       
-      debugPrint('✅ Admin bootstrap completed successfully for UID: $adminUid');
+      debugPrint('âœ… Admin bootstrap completed successfully for UID: $adminUid');
       return adminUid;
     } catch (e) {
-      debugPrint('❌ Admin bootstrap failed: $e');
+      debugPrint('âŒ Admin bootstrap failed: $e');
       
       // If bootstrap fails, try to find existing admin and return it
       try {
         final existingAdminUid = await _findAdminByEmail();
         if (existingAdminUid != null) {
-          debugPrint('⚠️ Bootstrap failed but found existing admin: $existingAdminUid');
+          debugPrint('âš ï¸ Bootstrap failed but found existing admin: $existingAdminUid');
           return existingAdminUid;
         }
       } catch (findError) {
-        debugPrint('❌ Could not find existing admin: $findError');
+        debugPrint('âŒ Could not find existing admin: $findError');
       }
       
       throw AdminBootstrapException(
@@ -93,17 +93,17 @@ class AdminBootstrapService {
   static Future<String> _findOrCreateAdminUser() async {
     try {
       // First try to create new admin user
-      debugPrint('📝 Attempting to create new admin user...');
+      debugPrint('ðŸ“ Attempting to create new admin user...');
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: ADMIN_EMAIL,
         password: 'AdminPassword123!', // Should be changed immediately
       );
       
-      debugPrint('✅ New admin user created with UID: ${userCredential.user!.uid}');
+      debugPrint('âœ… New admin user created with UID: ${userCredential.user!.uid}');
       return userCredential.user!.uid;
     } catch (e) {
       if (e.toString().contains('email-already-in-use')) {
-        debugPrint('⚠️ Admin email already in use, trying to find existing user...');
+        debugPrint('âš ï¸ Admin email already in use, trying to find existing user...');
         
         // Try to sign in with existing credentials to get UID
         try {
@@ -113,11 +113,11 @@ class AdminBootstrapService {
           );
           
           if (signInResult.user != null) {
-            debugPrint('✅ Found existing admin user with UID: ${signInResult.user!.uid}');
+            debugPrint('âœ… Found existing admin user with UID: ${signInResult.user!.uid}');
             return signInResult.user!.uid;
           }
         } catch (signInError) {
-          debugPrint('⚠️ Could not sign in with admin credentials: $signInError');
+          debugPrint('âš ï¸ Could not sign in with admin credentials: $signInError');
         }
         
         // Try to find admin in Firestore by email
@@ -130,16 +130,16 @@ class AdminBootstrapService {
           
           if (usersQuery.docs.isNotEmpty) {
             final adminUid = usersQuery.docs.first.id;
-            debugPrint('✅ Found existing admin in Firestore with UID: $adminUid');
+            debugPrint('âœ… Found existing admin in Firestore with UID: $adminUid');
             return adminUid;
           }
         } catch (firestoreError) {
-          debugPrint('⚠️ Could not find admin in Firestore: $firestoreError');
+          debugPrint('âš ï¸ Could not find admin in Firestore: $firestoreError');
         }
         
         // If all else fails, generate a deterministic UID for admin
         const fallbackAdminUid = 'ADMIN_FALLBACK_UID_001';
-        debugPrint('⚠️ Using fallback admin UID: $fallbackAdminUid');
+        debugPrint('âš ï¸ Using fallback admin UID: $fallbackAdminUid');
         return fallbackAdminUid;
       }
       
@@ -256,3 +256,4 @@ class AdminBootstrapException implements Exception {
   @override
   String toString() => 'AdminBootstrapException: $message';
 }
+

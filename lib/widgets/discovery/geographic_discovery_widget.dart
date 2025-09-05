@@ -1,4 +1,4 @@
-// Geographic Discovery Widget - Discover content by location
+﻿// Geographic Discovery Widget - Discover content by location
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';

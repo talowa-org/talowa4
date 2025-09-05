@@ -1,4 +1,4 @@
-// Anonymous Reporting Screen for TALOWA
+﻿// Anonymous Reporting Screen for TALOWA
 // Allows users to submit anonymous reports about land rights violations
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 
@@ -472,11 +472,11 @@ class _AnonymousReportingScreenState extends State<AnonymousReportingScreen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        '• Your identity will remain completely anonymous\n'
-                        '• Save the case ID to track responses\n'
-                        '• Coordinators can respond without knowing who you are\n'
-                        '• Location data is generalized for privacy protection\n'
-                        '• False reports may result in account restrictions',
+                        'â€¢ Your identity will remain completely anonymous\n'
+                        'â€¢ Save the case ID to track responses\n'
+                        'â€¢ Coordinators can respond without knowing who you are\n'
+                        'â€¢ Location data is generalized for privacy protection\n'
+                        'â€¢ False reports may result in account restrictions',
                         style: TextStyle(fontSize: 12),
                       ),
                     ],

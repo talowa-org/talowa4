@@ -1,4 +1,4 @@
-// Navigation Helper - Utility functions for app navigation
+﻿// Navigation Helper - Utility functions for app navigation
 // Part of Task 9: Build PostCreationScreen for coordinators
 
 import 'package:flutter/material.dart';

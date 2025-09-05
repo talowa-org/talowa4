@@ -1,4 +1,4 @@
-// Network Error Handler Service
+﻿// Network Error Handler Service
 // Handles CORS, Firebase, and network connectivity issues
 
 import 'package:flutter/foundation.dart';

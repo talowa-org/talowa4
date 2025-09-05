@@ -1,4 +1,4 @@
-// Emergency Broadcast Service for TALOWA Social Feed
+﻿// Emergency Broadcast Service for TALOWA Social Feed
 // Implements Task 16: Create emergency content system
 
 import 'dart:async';
@@ -199,7 +199,7 @@ class EmergencyBroadcastService {
             'action': 'show_emergency_alert',
           },
           notification: RemoteNotification(
-            title: '🚨 $title',
+            title: 'ðŸš¨ $title',
             body: message,
             android: AndroidNotification(
               channelId: 'emergency_alerts',
@@ -234,7 +234,7 @@ class EmergencyBroadcastService {
                 'action': 'show_emergency_alert',
               },
               notification: RemoteNotification(
-                title: '🚨 $title',
+                title: 'ðŸš¨ $title',
                 body: message,
               ),
             );
@@ -557,7 +557,7 @@ class EmergencyBroadcastService {
     return [
       EmergencyTemplate(
         id: 'land_grabbing_alert',
-        title: '🚨 Land Grabbing Alert',
+        title: 'ðŸš¨ Land Grabbing Alert',
         message: 'Urgent: Land grabbing incident reported in {location}. All members please stay alert and report any suspicious activity.',
         type: typeLandGrabbing,
         priority: priorityHigh,
@@ -565,7 +565,7 @@ class EmergencyBroadcastService {
       ),
       EmergencyTemplate(
         id: 'legal_deadline_reminder',
-        title: '⚖️ Legal Deadline Alert',
+        title: 'âš–ï¸ Legal Deadline Alert',
         message: 'Important: Legal deadline approaching for {case_type} on {date}. Please ensure all documents are submitted.',
         type: typeLegalDeadline,
         priority: priorityMedium,
@@ -573,7 +573,7 @@ class EmergencyBroadcastService {
       ),
       EmergencyTemplate(
         id: 'coordinator_urgent_call',
-        title: '📞 Urgent Coordinator Call',
+        title: 'ðŸ“ž Urgent Coordinator Call',
         message: 'Emergency meeting called by {coordinator_name}. All coordinators please join immediately.',
         type: typeCoordinatorCall,
         priority: priorityHigh,
@@ -581,7 +581,7 @@ class EmergencyBroadcastService {
       ),
       EmergencyTemplate(
         id: 'weather_alert',
-        title: '🌧️ Weather Alert',
+        title: 'ðŸŒ§ï¸ Weather Alert',
         message: 'Severe weather warning for {location}. Please take necessary precautions to protect crops and property.',
         type: typeWeatherAlert,
         priority: priorityMedium,

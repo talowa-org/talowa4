@@ -1,4 +1,4 @@
-// Media Service - Handle image and document uploads for social feed
+﻿// Media Service - Handle image and document uploads for social feed
 // Part of Task 10: Implement media handling system
 
 import 'dart:io';

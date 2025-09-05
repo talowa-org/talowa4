@@ -1,4 +1,4 @@
-// ignore: unused_import
+﻿// ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
@@ -9,365 +9,366 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appName => 'تالاوا';
+  String get appName => 'ØªØ§Ù„Ø§ÙˆØ§';
 
   @override
-  String get welcomeBack => 'مرحباً بعودتك!';
+  String get welcomeBack => 'Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ø¹ÙˆØ¯ØªÙƒ!';
 
   @override
-  String get signInToYourAccount => 'سجل الدخول إلى حسابك';
+  String get signInToYourAccount => 'Ø³Ø¬Ù„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¥Ù„Ù‰ Ø­Ø³Ø§Ø¨Ùƒ';
 
   @override
-  String get mobileNumber => 'رقم الهاتف المحمول';
+  String get mobileNumber => 'Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ Ø§Ù„Ù…Ø­Ù…ÙˆÙ„';
 
   @override
-  String get sixDigitPin => 'رقم سري من 6 أرقام';
+  String get sixDigitPin => 'Ø±Ù‚Ù… Ø³Ø±ÙŠ Ù…Ù† 6 Ø£Ø±Ù‚Ø§Ù…';
 
   @override
-  String get signIn => 'تسجيل الدخول';
+  String get signIn => 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„';
 
   @override
-  String get register => 'التسجيل';
+  String get register => 'Ø§Ù„ØªØ³Ø¬ÙŠÙ„';
 
   @override
-  String get dontHaveAccount => 'ليس لديك حساب؟ ';
+  String get dontHaveAccount => 'Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ ';
 
   @override
-  String get loginSuccessful => 'تم تسجيل الدخول بنجاح!';
+  String get loginSuccessful => 'ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù†Ø¬Ø§Ø­!';
 
   @override
-  String get loginFailed => 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+  String get loginFailed => 'ÙØ´Ù„ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.';
 
   @override
   String get invalidCredentials =>
-      'بيانات الاعتماد المقدمة غير صحيحة أو تالفة أو منتهية الصلاحية.';
+      'Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø§Ø¹ØªÙ…Ø§Ø¯ Ø§Ù„Ù…Ù‚Ø¯Ù…Ø© ØºÙŠØ± ØµØ­ÙŠØ­Ø© Ø£Ùˆ ØªØ§Ù„ÙØ© Ø£Ùˆ Ù…Ù†ØªÙ‡ÙŠØ© Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©.';
 
   @override
-  String get home => 'الرئيسية';
+  String get home => 'Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©';
 
   @override
-  String get feed => 'التغذية';
+  String get feed => 'Ø§Ù„ØªØºØ°ÙŠØ©';
 
   @override
-  String get messages => 'الرسائل';
+  String get messages => 'Ø§Ù„Ø±Ø³Ø§Ø¦Ù„';
 
   @override
-  String get network => 'الشبكة';
+  String get network => 'Ø§Ù„Ø´Ø¨ÙƒØ©';
 
   @override
-  String get more => 'المزيد';
+  String get more => 'Ø§Ù„Ù…Ø²ÙŠØ¯';
 
   @override
-  String get goodMorning => 'صباح الخير! كيف يومك؟';
+  String get goodMorning => 'ØµØ¨Ø§Ø­ Ø§Ù„Ø®ÙŠØ±! ÙƒÙŠÙ ÙŠÙˆÙ…ÙƒØŸ';
 
   @override
-  String get welcomeToTalowa => 'مرحباً بك في تالاوا';
+  String get welcomeToTalowa => 'Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ ØªØ§Ù„Ø§ÙˆØ§';
 
   @override
-  String get member => 'عضو';
+  String get member => 'Ø¹Ø¶Ùˆ';
 
   @override
-  String get askAnything => 'اسأل أي شيء...';
+  String get askAnything => 'Ø§Ø³Ø£Ù„ Ø£ÙŠ Ø´ÙŠØ¡...';
 
   @override
-  String get landIssues => 'قضايا الأراضي';
+  String get landIssues => 'Ù‚Ø¶Ø§ÙŠØ§ Ø§Ù„Ø£Ø±Ø§Ø¶ÙŠ';
 
   @override
-  String get myNetwork => 'شبكتي';
+  String get myNetwork => 'Ø´Ø¨ÙƒØªÙŠ';
 
   @override
-  String get legalHelp => 'المساعدة القانونية';
+  String get legalHelp => 'Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø© Ø§Ù„Ù‚Ø§Ù†ÙˆÙ†ÙŠØ©';
 
   @override
-  String get support => 'الدعم';
+  String get support => 'Ø§Ù„Ø¯Ø¹Ù…';
 
   @override
-  String get todaysInspirationMessage => 'رسالة إلهام اليوم';
+  String get todaysInspirationMessage => 'Ø±Ø³Ø§Ù„Ø© Ø¥Ù„Ù‡Ø§Ù… Ø§Ù„ÙŠÙˆÙ…';
 
   @override
   String get unitedWeStandProtectOurLand =>
-      'متحدون نقف، دعونا نحمي أرضنا معاً.';
+      'Ù…ØªØ­Ø¯ÙˆÙ† Ù†Ù‚ÙØŒ Ø¯Ø¹ÙˆÙ†Ø§ Ù†Ø­Ù…ÙŠ Ø£Ø±Ø¶Ù†Ø§ Ù…Ø¹Ø§Ù‹.';
 
   @override
-  String get sambuddhaVictory => 'انتصار سامبودا';
+  String get sambuddhaVictory => 'Ø§Ù†ØªØµØ§Ø± Ø³Ø§Ù…Ø¨ÙˆØ¯Ø§';
 
   @override
   String get telanganaSambuddhaLandVictoryStory =>
-      'بعد 15 عاماً، استعاد سامبودا من تيلانجانا أرضه أخيراً.';
+      'Ø¨Ø¹Ø¯ 15 Ø¹Ø§Ù…Ø§Ù‹ØŒ Ø§Ø³ØªØ¹Ø§Ø¯ Ø³Ø§Ù…Ø¨ÙˆØ¯Ø§ Ù…Ù† ØªÙŠÙ„Ø§Ù†Ø¬Ø§Ù†Ø§ Ø£Ø±Ø¶Ù‡ Ø£Ø®ÙŠØ±Ø§Ù‹.';
 
   @override
-  String get debugTools => 'أدوات التصحيح';
+  String get debugTools => 'Ø£Ø¯ÙˆØ§Øª Ø§Ù„ØªØµØ­ÙŠØ­';
 
   @override
-  String get createTestUser => 'إنشاء مستخدم تجريبي';
+  String get createTestUser => 'Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø³ØªØ®Ø¯Ù… ØªØ¬Ø±ÙŠØ¨ÙŠ';
 
   @override
-  String get checkUser => 'فحص المستخدم';
+  String get checkUser => 'ÙØ­Øµ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…';
 
   @override
-  String get testFirebase => 'اختبار Firebase';
+  String get testFirebase => 'Ø§Ø®ØªØ¨Ø§Ø± Firebase';
 
   @override
-  String get fillTestData => 'ملء البيانات التجريبية';
+  String get fillTestData => 'Ù…Ù„Ø¡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªØ¬Ø±ÙŠØ¨ÙŠØ©';
 
   @override
-  String get mainServices => 'الخدمات الرئيسية';
+  String get mainServices => 'Ø§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©';
 
   @override
-  String get myLand => 'أرضي';
+  String get myLand => 'Ø£Ø±Ø¶ÙŠ';
 
   @override
-  String get viewLandDetails => 'عرض تفاصيل الأرض';
+  String get viewLandDetails => 'Ø¹Ø±Ø¶ ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ø£Ø±Ø¶';
 
   @override
-  String get payments => 'المدفوعات';
+  String get payments => 'Ø§Ù„Ù…Ø¯ÙÙˆØ¹Ø§Øª';
 
   @override
-  String get viewTransactions => 'عرض المعاملات';
+  String get viewTransactions => 'Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø¹Ø§Ù…Ù„Ø§Øª';
 
   @override
-  String get community => 'المجتمع';
+  String get community => 'Ø§Ù„Ù…Ø¬ØªÙ…Ø¹';
 
   @override
-  String get connectWithPeople => 'التواصل مع الناس';
+  String get connectWithPeople => 'Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ù†Ø§Ø³';
 
   @override
-  String get profile => 'الملف الشخصي';
+  String get profile => 'Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ';
 
   @override
-  String get accountManagement => 'إدارة الحساب';
+  String get accountManagement => 'Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø­Ø³Ø§Ø¨';
 
   @override
-  String get myReferrals => 'إحالاتي';
+  String get myReferrals => 'Ø¥Ø­Ø§Ù„Ø§ØªÙŠ';
 
   @override
-  String get teamSize => 'حجم الفريق';
+  String get teamSize => 'Ø­Ø¬Ù… Ø§Ù„ÙØ±ÙŠÙ‚';
 
   @override
-  String get landStatus => 'حالة الأرض';
+  String get landStatus => 'Ø­Ø§Ù„Ø© Ø§Ù„Ø£Ø±Ø¶';
 
   @override
-  String get active => 'نشط';
+  String get active => 'Ù†Ø´Ø·';
 
   @override
-  String get emergencyServices => 'الخدمات الطارئة';
+  String get emergencyServices => 'Ø§Ù„Ø®Ø¯Ù…Ø§Øª Ø§Ù„Ø·Ø§Ø±Ø¦Ø©';
 
   @override
-  String get reportLandGrabbing => 'الإبلاغ عن الاستيلاء على الأراضي';
+  String get reportLandGrabbing => 'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ø§Ù„Ø§Ø³ØªÙŠÙ„Ø§Ø¡ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ø±Ø§Ø¶ÙŠ';
 
   @override
-  String get languageSettings => 'إعدادات اللغة';
+  String get languageSettings => 'Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ù„ØºØ©';
 
   @override
-  String get selectPreferredLanguage => 'اختر لغتك المفضلة:';
+  String get selectPreferredLanguage => 'Ø§Ø®ØªØ± Ù„ØºØªÙƒ Ø§Ù„Ù…ÙØ¶Ù„Ø©:';
 
   @override
-  String get applyChanges => 'تطبيق التغييرات';
+  String get applyChanges => 'ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª';
 
   @override
-  String get languagePreview => 'معاينة اللغة';
+  String get languagePreview => 'Ù…Ø¹Ø§ÙŠÙ†Ø© Ø§Ù„Ù„ØºØ©';
 
   @override
-  String get welcomeToTalowaPreview => 'مرحباً بك في تالاوا! حقوق أرضك محمية.';
+  String get welcomeToTalowaPreview => 'Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ ØªØ§Ù„Ø§ÙˆØ§! Ø­Ù‚ÙˆÙ‚ Ø£Ø±Ø¶Ùƒ Ù…Ø­Ù…ÙŠØ©.';
 
   @override
   String languageChangedTo(String language) {
-    return 'تم تغيير اللغة إلى $language';
+    return 'ØªÙ… ØªØºÙŠÙŠØ± Ø§Ù„Ù„ØºØ© Ø¥Ù„Ù‰ $language';
   }
 
   @override
   String failedToChangeLanguage(String error) {
-    return 'فشل في تغيير اللغة: $error';
+    return 'ÙØ´Ù„ ÙÙŠ ØªØºÙŠÙŠØ± Ø§Ù„Ù„ØºØ©: $error';
   }
 
   @override
-  String get goodAfternoon => 'مساء الخير! أتمنى أن يكون يومك رائعاً.';
+  String get goodAfternoon => 'Ù…Ø³Ø§Ø¡ Ø§Ù„Ø®ÙŠØ±! Ø£ØªÙ…Ù†Ù‰ Ø£Ù† ÙŠÙƒÙˆÙ† ÙŠÙˆÙ…Ùƒ Ø±Ø§Ø¦Ø¹Ø§Ù‹.';
 
   @override
-  String get goodEvening => 'مساء الخير! كيف كان يومك؟';
+  String get goodEvening => 'Ù…Ø³Ø§Ø¡ Ø§Ù„Ø®ÙŠØ±! ÙƒÙŠÙ ÙƒØ§Ù† ÙŠÙˆÙ…ÙƒØŸ';
 
   @override
-  String get hardWorkWillPayOff => 'عملك الشاق سيؤتي ثماره. معاً نقف أقوياء!';
+  String get hardWorkWillPayOff => 'Ø¹Ù…Ù„Ùƒ Ø§Ù„Ø´Ø§Ù‚ Ø³ÙŠØ¤ØªÙŠ Ø«Ù…Ø§Ø±Ù‡. Ù…Ø¹Ø§Ù‹ Ù†Ù‚Ù Ø£Ù‚ÙˆÙŠØ§Ø¡!';
 
   @override
-  String get togetherWeProtectLand => 'معاً سنحمي أرضنا.';
+  String get togetherWeProtectLand => 'Ù…Ø¹Ø§Ù‹ Ø³Ù†Ø­Ù…ÙŠ Ø£Ø±Ø¶Ù†Ø§.';
 
   @override
-  String get yourRightYourLand => 'حقك، أرضك، كرامتك.';
+  String get yourRightYourLand => 'Ø­Ù‚ÙƒØŒ Ø£Ø±Ø¶ÙƒØŒ ÙƒØ±Ø§Ù…ØªÙƒ.';
 
   @override
-  String get rameshwarVictory => 'انتصار راميشوار';
+  String get rameshwarVictory => 'Ø§Ù†ØªØµØ§Ø± Ø±Ø§Ù…ÙŠØ´ÙˆØ§Ø±';
 
   @override
   String get rameshwarVictoryStory =>
-      'بعد 15 عاماً، حصل راميشوار من تيلانجانا أخيراً على سند أرضه.';
+      'Ø¨Ø¹Ø¯ 15 Ø¹Ø§Ù…Ø§Ù‹ØŒ Ø­ØµÙ„ Ø±Ø§Ù…ÙŠØ´ÙˆØ§Ø± Ù…Ù† ØªÙŠÙ„Ø§Ù†Ø¬Ø§Ù†Ø§ Ø£Ø®ÙŠØ±Ø§Ù‹ Ø¹Ù„Ù‰ Ø³Ù†Ø¯ Ø£Ø±Ø¶Ù‡.';
 
   @override
-  String get sunitaLandRights => 'حقوق سونيتا في الأرض';
+  String get sunitaLandRights => 'Ø­Ù‚ÙˆÙ‚ Ø³ÙˆÙ†ÙŠØªØ§ ÙÙŠ Ø§Ù„Ø£Ø±Ø¶';
 
   @override
   String get sunitaLandRightsStory =>
-      'دافعت سونيتا من كارناتاكا بنجاح عن مزرعتها البالغة 3 أفدنة من الاحتلال غير القانوني.';
+      'Ø¯Ø§ÙØ¹Øª Ø³ÙˆÙ†ÙŠØªØ§ Ù…Ù† ÙƒØ§Ø±Ù†Ø§ØªØ§ÙƒØ§ Ø¨Ù†Ø¬Ø§Ø­ Ø¹Ù† Ù…Ø²Ø±Ø¹ØªÙ‡Ø§ Ø§Ù„Ø¨Ø§Ù„ØºØ© 3 Ø£ÙØ¯Ù†Ø© Ù…Ù† Ø§Ù„Ø§Ø­ØªÙ„Ø§Ù„ ØºÙŠØ± Ø§Ù„Ù‚Ø§Ù†ÙˆÙ†ÙŠ.';
 
   @override
-  String get fullName => 'الاسم الكامل';
+  String get fullName => 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„';
 
   @override
-  String get village => 'القرية/المدينة';
+  String get village => 'Ø§Ù„Ù‚Ø±ÙŠØ©/Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©';
 
   @override
-  String get mandal => 'المندل/التحصيل';
+  String get mandal => 'Ø§Ù„Ù…Ù†Ø¯Ù„/Ø§Ù„ØªØ­ØµÙŠÙ„';
 
   @override
-  String get district => 'المقاطعة';
+  String get district => 'Ø§Ù„Ù…Ù‚Ø§Ø·Ø¹Ø©';
 
   @override
-  String get state => 'الولاية';
+  String get state => 'Ø§Ù„ÙˆÙ„Ø§ÙŠØ©';
 
   @override
-  String get referralCode => 'رمز الإحالة (اختياري)';
+  String get referralCode => 'Ø±Ù…Ø² Ø§Ù„Ø¥Ø­Ø§Ù„Ø© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)';
 
   @override
-  String get completeRegistration => 'إكمال التسجيل';
+  String get completeRegistration => 'Ø¥ÙƒÙ…Ø§Ù„ Ø§Ù„ØªØ³Ø¬ÙŠÙ„';
 
   @override
-  String get registrationSuccessful => 'تم التسجيل بنجاح!';
+  String get registrationSuccessful => 'ØªÙ… Ø§Ù„ØªØ³Ø¬ÙŠÙ„ Ø¨Ù†Ø¬Ø§Ø­!';
 
   @override
-  String get registrationFailed => 'فشل التسجيل. يرجى المحاولة مرة أخرى.';
+  String get registrationFailed => 'ÙØ´Ù„ Ø§Ù„ØªØ³Ø¬ÙŠÙ„. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.';
 
   @override
-  String get phoneNumberAlreadyRegistered => 'رقم الهاتف مسجل بالفعل';
+  String get phoneNumberAlreadyRegistered => 'Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ Ù…Ø³Ø¬Ù„ Ø¨Ø§Ù„ÙØ¹Ù„';
 
   @override
-  String get invalidPhoneNumber => 'تنسيق رقم الهاتف غير صحيح';
+  String get invalidPhoneNumber => 'ØªÙ†Ø³ÙŠÙ‚ Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ ØºÙŠØ± ØµØ­ÙŠØ­';
 
   @override
-  String get pinTooShort => 'يجب أن يكون الرقم السري 6 أرقام على الأقل';
+  String get pinTooShort => 'ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø³Ø±ÙŠ 6 Ø£Ø±Ù‚Ø§Ù… Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„';
 
   @override
-  String get fieldRequired => 'هذا الحقل مطلوب';
+  String get fieldRequired => 'Ù‡Ø°Ø§ Ø§Ù„Ø­Ù‚Ù„ Ù…Ø·Ù„ÙˆØ¨';
 
   @override
-  String get networkError => 'خطأ في الشبكة. يرجى فحص اتصالك.';
+  String get networkError => 'Ø®Ø·Ø£ ÙÙŠ Ø§Ù„Ø´Ø¨ÙƒØ©. ÙŠØ±Ø¬Ù‰ ÙØ­Øµ Ø§ØªØµØ§Ù„Ùƒ.';
 
   @override
-  String get somethingWentWrong => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+  String get somethingWentWrong => 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ù…Ø§. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.';
 
   @override
-  String get loading => 'جاري التحميل...';
+  String get loading => 'Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...';
 
   @override
-  String get retry => 'إعادة المحاولة';
+  String get retry => 'Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©';
 
   @override
-  String get cancel => 'إلغاء';
+  String get cancel => 'Ø¥Ù„ØºØ§Ø¡';
 
   @override
-  String get save => 'حفظ';
+  String get save => 'Ø­ÙØ¸';
 
   @override
-  String get edit => 'تحرير';
+  String get edit => 'ØªØ­Ø±ÙŠØ±';
 
   @override
-  String get delete => 'حذف';
+  String get delete => 'Ø­Ø°Ù';
 
   @override
-  String get confirm => 'تأكيد';
+  String get confirm => 'ØªØ£ÙƒÙŠØ¯';
 
   @override
-  String get yes => 'نعم';
+  String get yes => 'Ù†Ø¹Ù…';
 
   @override
-  String get no => 'لا';
+  String get no => 'Ù„Ø§';
 
   @override
-  String get ok => 'موافق';
+  String get ok => 'Ù…ÙˆØ§ÙÙ‚';
 
   @override
-  String get close => 'إغلاق';
+  String get close => 'Ø¥ØºÙ„Ø§Ù‚';
 
   @override
-  String get search => 'بحث';
+  String get search => 'Ø¨Ø­Ø«';
 
   @override
-  String get noResultsFound => 'لم يتم العثور على نتائج';
+  String get noResultsFound => 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù†ØªØ§Ø¦Ø¬';
 
   @override
-  String get pullToRefresh => 'اسحب للتحديث';
+  String get pullToRefresh => 'Ø§Ø³Ø­Ø¨ Ù„Ù„ØªØ­Ø¯ÙŠØ«';
 
   @override
-  String get refreshing => 'جاري التحديث...';
+  String get refreshing => 'Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ø¯ÙŠØ«...';
 
   @override
-  String get offline => 'غير متصل';
+  String get offline => 'ØºÙŠØ± Ù…ØªØµÙ„';
 
   @override
-  String get online => 'متصل';
+  String get online => 'Ù…ØªØµÙ„';
 
   @override
-  String get settings => 'الإعدادات';
+  String get settings => 'Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª';
 
   @override
-  String get notifications => 'الإشعارات';
+  String get notifications => 'Ø§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª';
 
   @override
-  String get privacy => 'الخصوصية';
+  String get privacy => 'Ø§Ù„Ø®ØµÙˆØµÙŠØ©';
 
   @override
-  String get security => 'الأمان';
+  String get security => 'Ø§Ù„Ø£Ù…Ø§Ù†';
 
   @override
-  String get about => 'حول';
+  String get about => 'Ø­ÙˆÙ„';
 
   @override
-  String get help => 'المساعدة';
+  String get help => 'Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯Ø©';
 
   @override
-  String get contactSupport => 'اتصل بالدعم';
+  String get contactSupport => 'Ø§ØªØµÙ„ Ø¨Ø§Ù„Ø¯Ø¹Ù…';
 
   @override
-  String get logout => 'تسجيل الخروج';
+  String get logout => 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬';
 
   @override
-  String get logoutConfirmation => 'هل أنت متأكد من أنك تريد تسجيل الخروج؟';
+  String get logoutConfirmation => 'Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø£Ù†Ùƒ ØªØ±ÙŠØ¯ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬ØŸ';
 
   @override
-  String get version => 'الإصدار';
+  String get version => 'Ø§Ù„Ø¥ØµØ¯Ø§Ø±';
 
   @override
-  String get buildNumber => 'البناء';
+  String get buildNumber => 'Ø§Ù„Ø¨Ù†Ø§Ø¡';
 
   @override
-  String get termsOfService => 'شروط الخدمة';
+  String get termsOfService => 'Ø´Ø±ÙˆØ· Ø§Ù„Ø®Ø¯Ù…Ø©';
 
   @override
-  String get privacyPolicy => 'سياسة الخصوصية';
+  String get privacyPolicy => 'Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©';
 
   @override
-  String get shareApp => 'مشاركة التطبيق';
+  String get shareApp => 'Ù…Ø´Ø§Ø±ÙƒØ© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚';
 
   @override
-  String get rateApp => 'تقييم التطبيق';
+  String get rateApp => 'ØªÙ‚ÙŠÙŠÙ… Ø§Ù„ØªØ·Ø¨ÙŠÙ‚';
 
   @override
-  String get sendFeedback => 'إرسال ملاحظات';
+  String get sendFeedback => 'Ø¥Ø±Ø³Ø§Ù„ Ù…Ù„Ø§Ø­Ø¸Ø§Øª';
 
   @override
-  String get reportBug => 'الإبلاغ عن خطأ';
+  String get reportBug => 'Ø§Ù„Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ø®Ø·Ø£';
 
   @override
-  String get checkForUpdates => 'فحص التحديثات';
+  String get checkForUpdates => 'ÙØ­Øµ Ø§Ù„ØªØ­Ø¯ÙŠØ«Ø§Øª';
 
   @override
-  String get appUpToDate => 'التطبيق محدث';
+  String get appUpToDate => 'Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ù…Ø­Ø¯Ø«';
 
   @override
-  String get updateAvailable => 'تحديث متاح';
+  String get updateAvailable => 'ØªØ­Ø¯ÙŠØ« Ù…ØªØ§Ø­';
 
   @override
-  String get updateNow => 'تحديث الآن';
+  String get updateNow => 'ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø¢Ù†';
 
   @override
-  String get updateLater => 'تحديث لاحقاً';
+  String get updateLater => 'ØªØ­Ø¯ÙŠØ« Ù„Ø§Ø­Ù‚Ø§Ù‹';
 }
+

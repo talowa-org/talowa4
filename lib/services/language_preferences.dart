@@ -1,4 +1,4 @@
-// Language Preferences Service for TALOWA
+﻿// Language Preferences Service for TALOWA
 // Handles persistent storage of user language preferences
 
 import 'package:flutter/foundation.dart';

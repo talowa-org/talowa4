@@ -1,4 +1,4 @@
-// AI Assistant Service for TALOWA
+﻿// AI Assistant Service for TALOWA
 // Implements intelligent text assistance for land rights queries
 // Reference: TALOWA_APP_BLUEPRINT.md - AI Assistant Features
 
@@ -664,31 +664,31 @@ class AIAssistantService {
       );
     } else if (_containsKeywords(query, ['test voice', 'voice test'])) {
       return AIResponse(
-        text: '🧪 Voice Recognition Test\n\nI\'ll start listening in a moment. Please say "Hello TALOWA" clearly when you see the microphone button turn red and start pulsing.\n\nMake sure you:\n• Speak clearly and at normal volume\n• Are in a quiet environment\n• Have granted microphone permission\n• Have a stable internet connection',
+        text: 'ðŸ§ª Voice Recognition Test\n\nI\'ll start listening in a moment. Please say "Hello TALOWA" clearly when you see the microphone button turn red and start pulsing.\n\nMake sure you:\nâ€¢ Speak clearly and at normal volume\nâ€¢ Are in a quiet environment\nâ€¢ Have granted microphone permission\nâ€¢ Have a stable internet connection',
         actions: [],
         confidence: 0.95,
       );
     } else if (_containsKeywords(query, ['voice help', 'voice problem', 'microphone help'])) {
-      String helpText = '🎤 Voice Recognition Help\n\n';
+      String helpText = 'ðŸŽ¤ Voice Recognition Help\n\n';
 
       if (_speechAvailable) {
-        helpText += '✅ Voice recognition is available on your device.\n\n';
+        helpText += 'âœ… Voice recognition is available on your device.\n\n';
         helpText += 'How to use voice input:\n';
         helpText += '1. Tap the green microphone button\n';
         helpText += '2. Wait for it to turn red and start pulsing\n';
         helpText += '3. Speak clearly in English, Hindi, or Telugu\n';
         helpText += '4. Wait for the response\n\n';
         helpText += 'Troubleshooting:\n';
-        helpText += '• Ensure microphone permission is granted\n';
-        helpText += '• Check your internet connection\n';
-        helpText += '• Speak in a quiet environment\n';
-        helpText += '• Try speaking louder or closer to the microphone';
+        helpText += 'â€¢ Ensure microphone permission is granted\n';
+        helpText += 'â€¢ Check your internet connection\n';
+        helpText += 'â€¢ Speak in a quiet environment\n';
+        helpText += 'â€¢ Try speaking louder or closer to the microphone';
       } else {
-        helpText += '❌ Voice recognition is not available on your device.\n\n';
+        helpText += 'âŒ Voice recognition is not available on your device.\n\n';
         helpText += 'This could be because:\n';
-        helpText += '• Your device doesn\'t support speech recognition\n';
-        helpText += '• Microphone permission was denied\n';
-        helpText += '• No internet connection available\n\n';
+        helpText += 'â€¢ Your device doesn\'t support speech recognition\n';
+        helpText += 'â€¢ Microphone permission was denied\n';
+        helpText += 'â€¢ No internet connection available\n\n';
         helpText += 'Please use the text input box to chat with me instead.';
       }
 
@@ -705,7 +705,7 @@ class AIAssistantService {
       );
     } else if (_containsKeywords(query, ['help'])) {
       return AIResponse(
-        text: 'I\'m here to help! I can assist you with:\n• Land records and patta applications\n• Legal support and court procedures\n• Network and referral management\n• Emergency reporting\n• App navigation\n\nWhat specific help do you need?',
+        text: 'I\'m here to help! I can assist you with:\nâ€¢ Land records and patta applications\nâ€¢ Legal support and court procedures\nâ€¢ Network and referral management\nâ€¢ Emergency reporting\nâ€¢ App navigation\n\nWhat specific help do you need?',
         actions: [
           AIAction(
             type: AIActionType.suggestions,
@@ -724,7 +724,7 @@ class AIAssistantService {
     } else if (_containsKeywords(query, ['what', 'how', 'where', 'when', 'why', 'can you', 'tell me'])) {
       // Handle question-type queries
       return AIResponse(
-        text: 'I understand you have a question! I can help you with:\n\n• Land Records: View, add, or manage your land documents\n• Legal Support: Find lawyers, understand procedures\n• Patta Applications: Step-by-step guidance\n• Network Management: View your referrals and team\n• Emergency Help: Report issues or get immediate assistance\n\nWhat specific topic would you like to know about?',
+        text: 'I understand you have a question! I can help you with:\n\nâ€¢ Land Records: View, add, or manage your land documents\nâ€¢ Legal Support: Find lawyers, understand procedures\nâ€¢ Patta Applications: Step-by-step guidance\nâ€¢ Network Management: View your referrals and team\nâ€¢ Emergency Help: Report issues or get immediate assistance\n\nWhat specific topic would you like to know about?',
         actions: [
           AIAction(
             type: AIActionType.suggestions,
@@ -738,7 +738,7 @@ class AIAssistantService {
 
     // Default response for unrecognized queries
     return AIResponse(
-      text: 'I\'m here to help you with land rights and TALOWA app features. I can assist with:\n\n🏞️ Land Records Management\n⚖️ Legal Support & Guidance\n📋 Patta Applications\n👥 Network & Referrals\n🚨 Emergency Reporting\n\nPlease ask me about any of these topics, or type "help" for more information.',
+      text: 'I\'m here to help you with land rights and TALOWA app features. I can assist with:\n\nðŸžï¸ Land Records Management\nâš–ï¸ Legal Support & Guidance\nðŸ“‹ Patta Applications\nðŸ‘¥ Network & Referrals\nðŸš¨ Emergency Reporting\n\nPlease ask me about any of these topics, or type "help" for more information.',
       actions: [
         AIAction(
           type: AIActionType.suggestions,

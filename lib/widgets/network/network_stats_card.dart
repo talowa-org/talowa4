@@ -1,4 +1,4 @@
-// Network Stats Card Widget
+﻿// Network Stats Card Widget
 // Reference: complete-app-structure.md - Network Features
 
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-// Notification Preferences Service - Manage user notification preferences
+﻿// Notification Preferences Service - Manage user notification preferences
 // Part of Task 12: Build push notification system
 
 import 'package:flutter/foundation.dart';

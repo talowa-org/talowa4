@@ -540,3 +540,4 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
     }
   }
 }
+

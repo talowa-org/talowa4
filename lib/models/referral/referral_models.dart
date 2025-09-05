@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Referral status enumeration
 enum ReferralStatus {
@@ -280,3 +280,4 @@ class ReferralAnalytics {
     };
   }
 }
+

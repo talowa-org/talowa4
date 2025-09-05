@@ -1,4 +1,4 @@
-// TALOWA Article Steps Widget
+﻿// TALOWA Article Steps Widget
 // Displays step-by-step instructions
 
 import 'package:flutter/material.dart';

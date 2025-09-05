@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../services/localization_service.dart';
 
 class LocalizationProvider extends ChangeNotifier {
@@ -22,9 +22,9 @@ class LocalizationProvider extends ChangeNotifier {
     try {
       await _localizationService.initialize();
       _isInitialized = true;
-      debugPrint('✅ Localization initialized successfully');
+      debugPrint('âœ… Localization initialized successfully');
     } catch (e) {
-      debugPrint('⚠️ Error initializing localization: $e');
+      debugPrint('âš ï¸ Error initializing localization: $e');
       // Continue with default locale on error
       _isInitialized = true;
     } finally {

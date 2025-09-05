@@ -1,4 +1,4 @@
-// Safe Browsing Service for TALOWA
+﻿// Safe Browsing Service for TALOWA
 // Implements Task 19: Build user safety features - Safe Browsing
 
 import 'dart:async';

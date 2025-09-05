@@ -1,14 +1,16 @@
-// Story Creation Screen for TALOWA
+﻿// Story Creation Screen for TALOWA
 // Instagram-like story creation with media selection and editing
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/social_feed/stories_service.dart';
 import '../../services/media/media_upload_service.dart';
-import '../../services/media/mock_media_upload_service.dart';
+// removed: import '../../services/media/mock_media_upload_service.dart';
 import '../../services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+import '../../services/media/comprehensive_media_service.dart';
 
 class StoryCreationScreen extends StatefulWidget {
   const StoryCreationScreen({super.key});
@@ -25,6 +27,10 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
   String _mediaType = 'image';
   bool _isUploading = false;
   double _uploadProgress = 0.0;
+  
+  // Web-only selected bytes and file name
+  Uint8List? _webSelectedBytes;
+  String? _webSelectedFileName;
   
   // Text overlay properties
   String _textOverlay = '';
@@ -147,10 +153,20 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       );
       
       if (image != null) {
-        setState(() {
-          _selectedMedia = File(image.path);
-          _mediaType = 'image';
-        });
+        if (kIsWeb) {
+          final bytes = await image.readAsBytes();
+          setState(() {
+            _webSelectedBytes = bytes;
+            _webSelectedFileName = image.name;
+            _selectedMedia = null; // not used on web
+            _mediaType = 'image';
+          });
+        } else {
+          setState(() {
+            _selectedMedia = File(image.path);
+            _mediaType = 'image';
+          });
+        }
       }
     } catch (e) {
       _showError('Failed to pick image: $e');
@@ -165,11 +181,22 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       );
       
       if (video != null) {
-        setState(() {
-          _selectedMedia = File(video.path);
-          _mediaType = 'video';
-          _storyDuration = 15; // Default duration for videos
-        });
+        if (kIsWeb) {
+          final bytes = await video.readAsBytes();
+          setState(() {
+            _webSelectedBytes = bytes;
+            _webSelectedFileName = video.name;
+            _selectedMedia = null; // not used on web
+            _mediaType = 'video';
+            _storyDuration = 15;
+          });
+        } else {
+          setState(() {
+            _selectedMedia = File(video.path);
+            _mediaType = 'video';
+            _storyDuration = 15; // Default duration for videos
+          });
+        }
       }
     } catch (e) {
       _showError('Failed to pick video: $e');
@@ -286,7 +313,11 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
   }
   
   Future<void> _createStory() async {
-    if (_selectedMedia == null) {
+    if (!kIsWeb && _selectedMedia == null) {
+      _showError('Please select media first');
+      return;
+    }
+    if (kIsWeb && (_webSelectedBytes == null || _webSelectedFileName == null)) {
       _showError('Please select media first');
       return;
     }
@@ -300,15 +331,33 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       // Upload media
       String mediaUrl;
       if (kIsWeb) {
-        // Use mock service for web
-        final urls = await MockMediaUploadService.uploadImages(
-          imagePaths: [_selectedMedia!.path],
-          userId: AuthService.currentUser!.uid,
-          folder: 'stories',
-        );
-        mediaUrl = urls.first;
+        // Use real Firebase Storage upload with bytes on web
+        final service = ComprehensiveMediaService.instance;
+        if (_mediaType == 'video') {
+          final result = await service.uploadVideo(
+            videoBytes: _webSelectedBytes!,
+            fileName: _webSelectedFileName!,
+            folder: 'stories',
+            userId: AuthService.currentUser!.uid,
+            onProgress: (p) {
+              setState(() { _uploadProgress = p; });
+            },
+          );
+          mediaUrl = result.downloadUrl;
+        } else {
+          final result = await service.uploadImage(
+            imageBytes: _webSelectedBytes!,
+            fileName: _webSelectedFileName!,
+            folder: 'stories',
+            userId: AuthService.currentUser!.uid,
+            onProgress: (p) {
+              setState(() { _uploadProgress = p; });
+            },
+          );
+          mediaUrl = result.downloadUrl;
+        }
       } else {
-        // Use real Firebase Storage for mobile
+        // Use real Firebase Storage for mobile (existing flow)
         final urls = await MediaUploadService.uploadImages(
           imagePaths: [_selectedMedia!.path],
           userId: AuthService.currentUser!.uid,

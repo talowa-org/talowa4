@@ -1,4 +1,4 @@
-// TALOWA Fix Suggestion Service
+﻿// TALOWA Fix Suggestion Service
 // Provides detailed fix suggestions with file:function references
 
 import 'validation_framework.dart';
@@ -690,9 +690,9 @@ service cloud.firestore {
     buffer.writeln();
     buffer.writeln('| Priority | Count | Action Required |');
     buffer.writeln('|----------|-------|-----------------|');
-    buffer.writeln('| 🔴 Critical | $criticalCount | Fix immediately before production |');
-    buffer.writeln('| 🟠 High | $highCount | Fix before next release |');
-    buffer.writeln('| 🟡 Medium | $mediumCount | Fix when possible |');
+    buffer.writeln('| ðŸ”´ Critical | $criticalCount | Fix immediately before production |');
+    buffer.writeln('| ðŸŸ  High | $highCount | Fix before next release |');
+    buffer.writeln('| ðŸŸ¡ Medium | $mediumCount | Fix when possible |');
     buffer.writeln();
     
     // Detailed suggestions
@@ -701,12 +701,12 @@ service cloud.firestore {
       buffer.writeln('## $suggestionNumber. ${suggestion.testName}');
       buffer.writeln();
       
-      final priorityIcon = suggestion.priority == FixPriority.critical ? '🔴' :
-                          suggestion.priority == FixPriority.high ? '🟠' : '🟡';
+      final priorityIcon = suggestion.priority == FixPriority.critical ? 'ðŸ”´' :
+                          suggestion.priority == FixPriority.high ? 'ðŸŸ ' : 'ðŸŸ¡';
       
       buffer.writeln('**Priority**: $priorityIcon ${suggestion.priority.toString().toUpperCase()}');
       buffer.writeln('**Category**: ${suggestion.category.toString().split('.').last.toUpperCase()}');
-      buffer.writeln('**Automation Available**: ${suggestion.automationAvailable ? '✅ Yes' : '❌ No'}');
+      buffer.writeln('**Automation Available**: ${suggestion.automationAvailable ? 'âœ… Yes' : 'âŒ No'}');
       buffer.writeln();
       
       buffer.writeln('### Problem Description');
@@ -755,8 +755,8 @@ service cloud.firestore {
     buffer.writeln();
     
     for (final suggestion in suggestions.values) {
-      final priorityIcon = suggestion.priority == FixPriority.critical ? '🔴' :
-                          suggestion.priority == FixPriority.high ? '🟠' : '🟡';
+      final priorityIcon = suggestion.priority == FixPriority.critical ? 'ðŸ”´' :
+                          suggestion.priority == FixPriority.high ? 'ðŸŸ ' : 'ðŸŸ¡';
       buffer.writeln('- [ ] $priorityIcon ${suggestion.testName}: ${suggestion.description}');
     }
     

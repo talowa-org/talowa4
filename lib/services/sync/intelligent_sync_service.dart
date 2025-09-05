@@ -1,4 +1,4 @@
-// Intelligent Sync Service for TALOWA
+﻿// Intelligent Sync Service for TALOWA
 // Implements Task 22: Add sync and conflict resolution - Intelligent Sync
 
 import 'dart:async';

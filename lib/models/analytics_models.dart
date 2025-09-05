@@ -1,4 +1,4 @@
-// Analytics Data Models for TALOWA
+﻿// Analytics Data Models for TALOWA
 // Implements Task 23: Implement content analytics - Data Models
 
 class PostAnalytics {

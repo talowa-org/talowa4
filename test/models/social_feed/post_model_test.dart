@@ -1,4 +1,4 @@
-// Test file for PostModel
+﻿// Test file for PostModel
 // Tests for post model functionality and validation
 
 import 'package:flutter_test/flutter_test.dart';
@@ -71,15 +71,15 @@ void main() {
 
       test('should extract Hindi hashtags', () {
         // Arrange
-        const content = 'यह पोस्ट में #भूमि_अधिकार और #किसान_अधिकार है';
+        const content = 'à¤¯à¤¹ à¤ªà¥‹à¤¸à¥à¤Ÿ à¤®à¥‡à¤‚ #à¤­à¥‚à¤®à¤¿_à¤…à¤§à¤¿à¤•à¤¾à¤° à¤”à¤° #à¤•à¤¿à¤¸à¤¾à¤¨_à¤…à¤§à¤¿à¤•à¤¾à¤° à¤¹à¥ˆ';
 
         // Act
         final hashtags = PostModel.extractHashtags(content);
 
         // Assert
         expect(hashtags, hasLength(2));
-        expect(hashtags, contains('भूमि_अधिकार'));
-        expect(hashtags, contains('किसान_अधिकार'));
+        expect(hashtags, contains('à¤­à¥‚à¤®à¤¿_à¤…à¤§à¤¿à¤•à¤¾à¤°'));
+        expect(hashtags, contains('à¤•à¤¿à¤¸à¤¾à¤¨_à¤…à¤§à¤¿à¤•à¤¾à¤°'));
       });
 
       test('should handle content without hashtags', () {
@@ -365,16 +365,16 @@ void main() {
       });
 
       test('should have appropriate icons for categories', () {
-        expect(PostCategory.successStory.icon, equals('🏆'));
-        expect(PostCategory.legalUpdate.icon, equals('⚖️'));
-        expect(PostCategory.announcement.icon, equals('📢'));
-        expect(PostCategory.emergency.icon, equals('🚨'));
-        expect(PostCategory.generalDiscussion.icon, equals('💬'));
-        expect(PostCategory.landRights.icon, equals('🏞️'));
-        expect(PostCategory.communityNews.icon, equals('📰'));
-        expect(PostCategory.education.icon, equals('📚'));
-        expect(PostCategory.healthAndSafety.icon, equals('🏥'));
-        expect(PostCategory.agriculture.icon, equals('🌾'));
+        expect(PostCategory.successStory.icon, equals('ðŸ†'));
+        expect(PostCategory.legalUpdate.icon, equals('âš–ï¸'));
+        expect(PostCategory.announcement.icon, equals('ðŸ“¢'));
+        expect(PostCategory.emergency.icon, equals('ðŸš¨'));
+        expect(PostCategory.generalDiscussion.icon, equals('ðŸ’¬'));
+        expect(PostCategory.landRights.icon, equals('ðŸžï¸'));
+        expect(PostCategory.communityNews.icon, equals('ðŸ“°'));
+        expect(PostCategory.education.icon, equals('ðŸ“š'));
+        expect(PostCategory.healthAndSafety.icon, equals('ðŸ¥'));
+        expect(PostCategory.agriculture.icon, equals('ðŸŒ¾'));
       });
     });
 

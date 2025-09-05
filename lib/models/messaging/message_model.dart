@@ -1,4 +1,4 @@
-// Message Model for TALOWA Messaging System
+﻿// Message Model for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {

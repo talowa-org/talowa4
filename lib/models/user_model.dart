@@ -1,4 +1,4 @@
-// User Model for TALOWA
+﻿// User Model for TALOWA
 // Reference: TECHNICAL_ARCHITECTURE.md - Database Design
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -359,3 +359,4 @@ class PrivacyPreferences {
     };
   }
 }
+

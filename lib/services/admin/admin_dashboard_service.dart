@@ -1,4 +1,4 @@
-// Admin Dashboard Service for TALOWA Messaging System
+﻿// Admin Dashboard Service for TALOWA Messaging System
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/messaging/conversation_model.dart';

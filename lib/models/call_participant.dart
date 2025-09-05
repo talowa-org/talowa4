@@ -1,4 +1,4 @@
-/// Call participant model
+﻿/// Call participant model
 class CallParticipant {
   final String userId;
   final String name;

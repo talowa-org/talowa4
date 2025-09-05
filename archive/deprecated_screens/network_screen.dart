@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class NetworkScreen extends StatelessWidget {
   const NetworkScreen({super.key});
@@ -17,3 +17,4 @@ class NetworkScreen extends StatelessWidget {
     );
   }
 }
+

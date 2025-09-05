@@ -403,3 +403,4 @@ class EngagementUser {
     this.avatarUrl,
   });
 }
+

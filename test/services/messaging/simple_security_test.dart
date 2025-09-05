@@ -1,4 +1,4 @@
-// Simple unit tests for security layer components
+﻿// Simple unit tests for security layer components
 // Tests core functionality without complex dependencies
 
 import 'package:flutter_test/flutter_test.dart';

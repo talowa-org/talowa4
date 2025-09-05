@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/admin/admin_access_service.dart';
 import '../../screens/admin/admin_dashboard_screen.dart';
+import '../../screens/admin/enhanced_moderation_dashboard_screen.dart';
 
 class AdminAccessWidget extends StatefulWidget {
   const AdminAccessWidget({super.key});
@@ -195,11 +196,10 @@ class _AdminAccessWidgetState extends State<AdminAccessWidget> {
   }
 
   void _openContentModeration() {
-    // Navigate to content moderation screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Opening Content Moderation...'),
-        backgroundColor: Colors.orange,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EnhancedModerationDashboardScreen(),
       ),
     );
   }
@@ -234,3 +234,4 @@ class _AdminAccessWidgetState extends State<AdminAccessWidget> {
     );
   }
 }
+
