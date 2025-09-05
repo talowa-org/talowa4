@@ -157,3 +157,9 @@ jspm_packages/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Secrets
+serviceAccountKey.json
+*.serviceAccount.json
+*.firebase.key.json
+*.secrets.json

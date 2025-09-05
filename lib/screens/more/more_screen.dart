@@ -14,8 +14,9 @@ import '../help/help_center_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../onboarding/coordinator_training_screen.dart';
 import '../admin/admin_login_screen.dart';
+- import '../security/security_screen.dart';
++ // Removed enterprise Security Center access for end-users per product requirements
 import '../home/payments_screen.dart';
-import '../security/security_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -186,12 +187,13 @@ class _MoreScreenState extends State<MoreScreen> {
                         icon: Icons.privacy_tip,
                         onTap: _openPrivacySettings,
                       ),
-                      FeatureItem(
-                        title: 'Security Center',
-                        subtitle: 'Enterprise security & compliance',
-                        icon: Icons.security,
-                        onTap: _openSecurityCenter,
-                      ),
+-                     FeatureItem(
+-                       title: 'Security Center',
+-                       subtitle: 'Enterprise security & compliance',
+-                       icon: Icons.security,
+-                       onTap: _openSecurityCenter,
+-                     ),
++                     // Enterprise Security Center removed from More screen for end-users
                       FeatureItem(
                         title: 'Language & Region',
                         subtitle: 'English, à¤¹à¤¿à¤‚à¤¦à¥€, à°¤à±†à°²à±à°—à±',
@@ -968,6 +970,40 @@ class _MoreScreenState extends State<MoreScreen> {
       ),
     );
   }
++  // void _showAdminAccessDialog() {
++  //   showDialog(
++  //     context: context,
++  //     builder: (context) => AlertDialog(
++  //       title: const Row(
++  //         children: [
++  //           Icon(Icons.admin_panel_settings, color: Colors.red),
++  //           SizedBox(width: 8),
++  //           Text('Admin Access'),
++  //         ],
++  //       ),
++  //       content: const Text(
++  //         'Access the secure admin portal with Firebase Authentication and role-based access control.',
++  //       ),
++  //       actions: [
++  //         TextButton(
++  //           onPressed: () => Navigator.pop(context),
++  //           child: const Text('Cancel'),
++  //         ),
++  //         ElevatedButton(
++  //           onPressed: () {
++  //             Navigator.pop(context);
++  //             AdminRoute.navigateToAdmin(context);
++  //           },
++  //           style: ElevatedButton.styleFrom(
++  //             backgroundColor: Colors.red[800],
++  //             foregroundColor: Colors.white,
++  //           ),
++  //           child: const Text('Secure Admin Portal'),
++  //         ),
++  //       ],
++  //     ),
++  //   );
++  // }
 
   // Tutorial Methods
   void _openMessagingTutorial() {

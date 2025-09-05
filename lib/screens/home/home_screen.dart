@@ -239,14 +239,14 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('à¤¤à¥à¤°à¤‚à¤¤ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
+              Text('à¤¤à¥à¤°à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
               SizedBox(height: 8),
               Text('â€¢ à¤ªà¥à¤²à¤¿à¤¸: 100'),
-              Text('â€¢ à¤à¤®à¥à¤¬à¥à¤²à¥‡à¤‚à¤¸: 108'),
+              Text('â€¢ à¤à¤®à¥à¤±à¥à¤²à¥‡à¤‚à¤¸: 108'),
               Text('â€¢ à¤«à¤¾à¤¯à¤° à¤¬à¥à¤°à¤¿à¤—à¥‡à¤¡: 101'),
               Text('â€¢ à¤®à¤¹à¤¿à¤²à¤¾ à¤¹à¥‡à¤²à¥à¤ªà¤²à¤¾à¤‡à¤¨: 1091'),
               SizedBox(height: 12),
-              Text('à¤¯à¤¾ à¤¹à¥‹à¤® à¤¸à¥à¤•à¥à¤°à¥€à¤¨ à¤ªà¤° à¤‡à¤®à¤°à¤œà¥‡à¤‚à¤¸à¥€ à¤¬à¤Ÿà¤¨ à¤•à¤¾ à¤‰à¤ªà¤¯à¥‹à¤— à¤•à¤°à¥‡à¤‚à¥¤'),
+              Text('à¤¯à¤¾ à¤¹à¥‹à¤®à¤¸à¥à¤•à¥à¤°à¤¨à¤ªà¤°à¤‡à¤¨à¤ªà¥‹à¤—à¤•à¤°à¤¤'),
             ],
           ),
           actions: [
@@ -444,10 +444,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     
                     const SizedBox(height: 16),
                     
-                    // Security Dashboard
-                    _buildSecurityDashboard(),
+                    // Enterprise Security section has been removed from Home for end-users per product requirements
+                    // _buildSecurityDashboard(),
                     
-                    const SizedBox(height: 16),
+                    // const SizedBox(height: 16),
                     
                     // Cultural Greeting
                     _buildGreetingCard(),
@@ -1329,4 +1329,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

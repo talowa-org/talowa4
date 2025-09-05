@@ -8,6 +8,7 @@ import 'enhanced_moderation_dashboard_screen.dart';
 import 'admin_role_management_screen.dart';
 import 'admin_audit_logs_screen.dart';
 import 'admin_analytics_screen.dart';
+import 'enterprise_admin_dashboard_screen.dart';
 
 class EnhancedAdminDashboardScreen extends StatefulWidget {
   const EnhancedAdminDashboardScreen({super.key});
@@ -457,6 +458,20 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                   context,
                   MaterialPageRoute(
                     builder: (context) => const AdminRoleManagementScreen(),
+                  ),
+                ),
+              ),
+            
+            // Admin-only Enterprise Security controls
+            if (isSuperAdmin)
+              _buildActionCard(
+                'Enterprise Security',
+                Icons.shield,
+                Colors.redAccent,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EnterpriseAdminDashboardScreen(),
                   ),
                 ),
               ),
@@ -1023,4 +1038,3 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
     }
   }
 }
-
