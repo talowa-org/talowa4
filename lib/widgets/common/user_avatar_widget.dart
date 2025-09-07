@@ -1,1 +1,297 @@
-﻿// User Avatar Widget - Display user profile pictures with fallbacks\n// Part of Task 6: Implement PostWidget for individual posts\n\nimport 'package:flutter/material.dart';\nimport 'package:cached_network_image/cached_network_image.dart';\nimport '../../core/theme/app_theme.dart';\n\nclass UserAvatarWidget extends StatelessWidget {\n  final String? imageUrl;\n  final String name;\n  final double size;\n  final VoidCallback? onTap;\n  final bool showOnlineIndicator;\n  final bool isOnline;\n  final Color? backgroundColor;\n  final Color? textColor;\n  final Widget? badge;\n\n  const UserAvatarWidget({\n    super.key,\n    this.imageUrl,\n    required this.name,\n    this.size = 40,\n    this.onTap,\n    this.showOnlineIndicator = false,\n    this.isOnline = false,\n    this.backgroundColor,\n    this.textColor,\n    this.badge,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    return GestureDetector(\n      onTap: onTap,\n      child: Stack(\n        children: [\n          Container(\n            width: size,\n            height: size,\n            decoration: BoxDecoration(\n              shape: BoxShape.circle,\n              color: backgroundColor ?? _getBackgroundColor(),\n              border: Border.all(\n                color: Colors.grey[300]!,\n                width: 1,\n              ),\n            ),\n            child: ClipOval(\n              child: imageUrl != null && imageUrl!.isNotEmpty\n                  ? CachedNetworkImage(\n                      imageUrl: imageUrl!,\n                      width: size,\n                      height: size,\n                      fit: BoxFit.cover,\n                      placeholder: (context, url) => _buildPlaceholder(),\n                      errorWidget: (context, url, error) => _buildInitials(),\n                    )\n                  : _buildInitials(),\n            ),\n          ),\n          \n          // Online indicator\n          if (showOnlineIndicator)\n            Positioned(\n              right: 0,\n              bottom: 0,\n              child: Container(\n                width: size * 0.25,\n                height: size * 0.25,\n                decoration: BoxDecoration(\n                  color: isOnline ? Colors.green : Colors.grey,\n                  shape: BoxShape.circle,\n                  border: Border.all(\n                    color: Colors.white,\n                    width: 2,\n                  ),\n                ),\n              ),\n            ),\n          \n          // Badge (e.g., role indicator)\n          if (badge != null)\n            Positioned(\n              right: -2,\n              top: -2,\n              child: badge!,\n            ),\n        ],\n      ),\n    );\n  }\n\n  Widget _buildPlaceholder() {\n    return Container(\n      width: size,\n      height: size,\n      color: Colors.grey[200],\n      child: Center(\n        child: CircularProgressIndicator(\n          strokeWidth: 2,\n          valueColor: AlwaysStoppedAnimation<Color>(\n            AppTheme.talowaGreen,\n          ),\n        ),\n      ),\n    );\n  }\n\n  Widget _buildInitials() {\n    final initials = _getInitials();\n    final fontSize = size * 0.4;\n    \n    return Container(\n      width: size,\n      height: size,\n      color: backgroundColor ?? _getBackgroundColor(),\n      child: Center(\n        child: Text(\n          initials,\n          style: TextStyle(\n            fontSize: fontSize,\n            fontWeight: FontWeight.w600,\n            color: textColor ?? Colors.white,\n          ),\n        ),\n      ),\n    );\n  }\n\n  String _getInitials() {\n    if (name.isEmpty) return '?';\n    \n    final words = name.trim().split(' ');\n    if (words.length >= 2) {\n      return '${words[0][0]}${words[1][0]}'.toUpperCase();\n    } else {\n      return words[0].substring(0, words[0].length >= 2 ? 2 : 1).toUpperCase();\n    }\n  }\n\n  Color _getBackgroundColor() {\n    // Generate a consistent color based on the name\n    final hash = name.hashCode;\n    final colors = [\n      AppTheme.talowaGreen,\n      Colors.blue,\n      Colors.purple,\n      Colors.orange,\n      Colors.teal,\n      Colors.indigo,\n      Colors.pink,\n      Colors.brown,\n    ];\n    \n    return colors[hash.abs() % colors.length];\n  }\n}\n\n// Group avatar widget for multiple users\nclass GroupAvatarWidget extends StatelessWidget {\n  final List<String> imageUrls;\n  final List<String> names;\n  final double size;\n  final int maxAvatars;\n  final VoidCallback? onTap;\n\n  const GroupAvatarWidget({\n    super.key,\n    required this.imageUrls,\n    required this.names,\n    this.size = 40,\n    this.maxAvatars = 3,\n    this.onTap,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    final displayCount = imageUrls.length > maxAvatars ? maxAvatars : imageUrls.length;\n    final remainingCount = imageUrls.length - maxAvatars;\n    \n    return GestureDetector(\n      onTap: onTap,\n      child: SizedBox(\n        width: size + (displayCount - 1) * (size * 0.7),\n        height: size,\n        child: Stack(\n          children: [\n            // Display avatars\n            ...List.generate(displayCount, (index) {\n              final offset = index * (size * 0.7);\n              return Positioned(\n                left: offset,\n                child: UserAvatarWidget(\n                  imageUrl: index < imageUrls.length ? imageUrls[index] : null,\n                  name: index < names.length ? names[index] : 'User',\n                  size: size,\n                ),\n              );\n            }),\n            \n            // Show remaining count\n            if (remainingCount > 0)\n              Positioned(\n                left: displayCount * (size * 0.7),\n                child: Container(\n                  width: size,\n                  height: size,\n                  decoration: BoxDecoration(\n                    color: Colors.grey[600],\n                    shape: BoxShape.circle,\n                    border: Border.all(\n                      color: Colors.white,\n                      width: 2,\n                    ),\n                  ),\n                  child: Center(\n                    child: Text(\n                      '+$remainingCount',\n                      style: TextStyle(\n                        color: Colors.white,\n                        fontSize: size * 0.3,\n                        fontWeight: FontWeight.w600,\n                      ),\n                    ),\n                  ),\n                ),\n              ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n\n// Avatar with status indicator\nclass StatusAvatarWidget extends StatelessWidget {\n  final String? imageUrl;\n  final String name;\n  final double size;\n  final String status; // 'online', 'away', 'busy', 'offline'\n  final VoidCallback? onTap;\n\n  const StatusAvatarWidget({\n    super.key,\n    this.imageUrl,\n    required this.name,\n    this.size = 40,\n    required this.status,\n    this.onTap,\n  });\n\n  @override\n  Widget build(BuildContext context) {\n    return UserAvatarWidget(\n      imageUrl: imageUrl,\n      name: name,\n      size: size,\n      onTap: onTap,\n      showOnlineIndicator: true,\n      isOnline: status == 'online',\n      badge: _buildStatusBadge(),\n    );\n  }\n\n  Widget? _buildStatusBadge() {\n    Color statusColor;\n    switch (status.toLowerCase()) {\n      case 'online':\n        statusColor = Colors.green;\n        break;\n      case 'away':\n        statusColor = Colors.orange;\n        break;\n      case 'busy':\n        statusColor = Colors.red;\n        break;\n      case 'offline':\n      default:\n        statusColor = Colors.grey;\n        break;\n    }\n    \n    return Container(\n      width: size * 0.3,\n      height: size * 0.3,\n      decoration: BoxDecoration(\n        color: statusColor,\n        shape: BoxShape.circle,\n        border: Border.all(\n          color: Colors.white,\n          width: 2,\n        ),\n      ),\n    );\n  }\n}"
+// User Avatar Widget - Display user profile pictures with fallbacks
+// Part of Task 6: Implement PostWidget for individual posts
+
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../core/theme/app_theme.dart';
+
+class UserAvatarWidget extends StatelessWidget {
+  final String? imageUrl;
+  final String name;
+  final double size;
+  final VoidCallback? onTap;
+  final bool showOnlineIndicator;
+  final bool isOnline;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Widget? badge;
+
+  const UserAvatarWidget({
+    super.key,
+    this.imageUrl,
+    required this.name,
+    this.size = 40,
+    this.onTap,
+    this.showOnlineIndicator = false,
+    this.isOnline = false,
+    this.backgroundColor,
+    this.textColor,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: backgroundColor ?? _getBackgroundColor(),
+              border: Border.all(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+            ),
+            child: ClipOval(
+              child: imageUrl != null && imageUrl!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl!,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => _buildPlaceholder(),
+                      errorWidget: (context, url, error) => _buildInitials(),
+                    )
+                  : _buildInitials(),
+            ),
+          ),
+
+          // Online indicator
+          if (showOnlineIndicator)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: size * 0.25,
+                height: size * 0.25,
+                decoration: BoxDecoration(
+                  color: isOnline ? Colors.green : Colors.grey,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+
+          // Badge (e.g., role indicator)
+          if (badge != null)
+            Positioned(
+              right: -2,
+              top: -2,
+              child: badge!,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      width: size,
+      height: size,
+      color: Colors.grey[200],
+      child: Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            AppTheme.talowaGreen,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInitials() {
+    final initials = _getInitials();
+    final fontSize = size * 0.4;
+
+    return Container(
+      width: size,
+      height: size,
+      color: backgroundColor ?? _getBackgroundColor(),
+      child: Center(
+        child: Text(
+          initials,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+            color: textColor ?? Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getInitials() {
+    if (name.isEmpty) return '?';
+
+    final words = name.trim().split(' ');
+    if (words.length >= 2) {
+      return '${words[0][0]}${words[1][0]}'.toUpperCase();
+    } else {
+      return words[0].substring(0, words[0].length >= 2 ? 2 : 1).toUpperCase();
+    }
+  }
+
+  Color _getBackgroundColor() {
+    // Generate a consistent color based on the name
+    final hash = name.hashCode;
+    final colors = [
+      AppTheme.talowaGreen,
+      Colors.blue,
+      Colors.purple,
+      Colors.orange,
+      Colors.teal,
+      Colors.indigo,
+      Colors.pink,
+      Colors.brown,
+    ];
+
+    return colors[hash.abs() % colors.length];
+  }
+}
+
+// Group avatar widget for multiple users
+class GroupAvatarWidget extends StatelessWidget {
+  final List<String> imageUrls;
+  final List<String> names;
+  final double size;
+  final int maxAvatars;
+  final VoidCallback? onTap;
+
+  const GroupAvatarWidget({
+    super.key,
+    required this.imageUrls,
+    required this.names,
+    this.size = 40,
+    this.maxAvatars = 3,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final displayCount = imageUrls.length > maxAvatars ? maxAvatars : imageUrls.length;
+    final remainingCount = imageUrls.length - maxAvatars;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: size + (displayCount - 1) * (size * 0.7),
+        height: size,
+        child: Stack(
+          children: [
+            // Display avatars
+            ...List.generate(displayCount, (index) {
+              final offset = index * (size * 0.7);
+              return Positioned(
+                left: offset,
+                child: UserAvatarWidget(
+                  imageUrl: index < imageUrls.length ? imageUrls[index] : null,
+                  name: index < names.length ? names[index] : 'User',
+                  size: size,
+                ),
+              );
+            }),
+
+            // Show remaining count
+            if (remainingCount > 0)
+              Positioned(
+                left: displayCount * (size * 0.7),
+                child: Container(
+                  width: size,
+                  height: size,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[600],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '+$remainingCount',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: size * 0.3,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Avatar with status indicator
+class StatusAvatarWidget extends StatelessWidget {
+  final String? imageUrl;
+  final String name;
+  final double size;
+  final String status; // 'online', 'away', 'busy', 'offline'
+  final VoidCallback? onTap;
+
+  const StatusAvatarWidget({
+    super.key,
+    this.imageUrl,
+    required this.name,
+    this.size = 40,
+    required this.status,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return UserAvatarWidget(
+      imageUrl: imageUrl,
+      name: name,
+      size: size,
+      onTap: onTap,
+      showOnlineIndicator: true,
+      isOnline: status == 'online',
+      badge: _buildStatusBadge(),
+    );
+  }
+
+  Widget? _buildStatusBadge() {
+    Color statusColor;
+    switch (status.toLowerCase()) {
+      case 'online':
+        statusColor = Colors.green;
+        break;
+      case 'away':
+        statusColor = Colors.orange;
+        break;
+      case 'busy':
+        statusColor = Colors.red;
+        break;
+      case 'offline':
+      default:
+        statusColor = Colors.grey;
+        break;
+    }
+
+    return Container(
+      width: size * 0.3,
+      height: size * 0.3,
+      decoration: BoxDecoration(
+        color: statusColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white,
+          width: 2,
+        ),
+      ),
+    );
+  }
+}

@@ -42,6 +42,8 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
             const SizedBox(width: 8),
             _buildLocationFilter(),
             const SizedBox(width: 8),
+            _buildAuthorFilter(),
+            const SizedBox(width: 8),
             _buildDateFilter(),
             const SizedBox(width: 8),
             _buildClearFiltersButton(),
@@ -191,17 +193,24 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: categories.map((category) {
-              return RadioListTile<String>(
-                title: Text(category),
-                value: category,
+            children: [
+              RadioGroup<String>(
                 groupValue: (_currentFilters.categories?.isNotEmpty ?? false) ? _currentFilters.categories!.first : null,
                 onChanged: (value) {
                   Navigator.pop(context);
                   _updateFilters(_currentFilters.copyWith(categories: value == null ? [] : [value]));
                 },
-              );
-            }).toList(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: categories.map((category) {
+                    return RadioListTile<String>(
+                      title: Text(category),
+                      value: category,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -212,6 +221,86 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         ],
       ),
     );
+  }
+
+  void _showTypeDialog() {
+    final availableTypes = [
+      'post',
+      'user',
+      'news',
+      'legal_case',
+      'organization',
+      'campaign',
+    ];
+    final selected = List<String>.from(_currentFilters.types ?? const []);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Select Content Types'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: availableTypes.length,
+                itemBuilder: (context, index) {
+                  final type = availableTypes[index];
+                  final isSelected = selected.contains(type);
+                  return CheckboxListTile(
+                    title: Text(_getTypeDisplayName(type)),
+                    value: isSelected,
+                    onChanged: (checked) {
+                      setState(() {
+                        if (checked == true) {
+                          if (!selected.contains(type)) selected.add(type);
+                        } else {
+                          selected.remove(type);
+                        }
+                      });
+                    },
+                    activeColor: AppTheme.primaryColor,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _updateFilters(_currentFilters.copyWith(types: selected));
+                },
+                child: const Text('Apply'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _getTypeDisplayName(String type) {
+    switch (type) {
+      case 'post':
+        return 'Posts';
+      case 'user':
+        return 'People';
+      case 'news':
+        return 'News';
+      case 'legal_case':
+        return 'Legal Cases';
+      case 'organization':
+        return 'Organizations';
+      case 'campaign':
+        return 'Campaigns';
+      default:
+        return type;
+    }
   }
 
   void _showDateDialog() {
@@ -313,17 +402,24 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: locations.map((location) {
-              return RadioListTile<String>(
-                title: Text(location),
-                value: location,
+            children: [
+              RadioGroup<String>(
                 groupValue: (_currentFilters.location?.states?.isNotEmpty ?? false) ? _currentFilters.location!.states!.first : null,
                 onChanged: (value) {
                   Navigator.pop(context);
                   _updateFilters(_currentFilters.copyWith(location: value == null ? null : LocationFilter(states: [value])));
                 },
-              );
-            }).toList(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: locations.map((location) {
+                    return RadioListTile<String>(
+                      title: Text(location),
+                      value: location,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -337,7 +433,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   }
 
   void _showAuthorDialog() {
-    final controller = TextEditingController(text: _currentFilters.author ?? '');
+    final controller = TextEditingController(text: _currentFilters.author?.authorNames?.join(', ') ?? '');
 
     showDialog(
       context: context,
@@ -478,11 +574,18 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
           children: categories.map((category) {
             return FilterChip(
               label: Text(category),
-              selected: _filters.category == category,
+              selected: (_filters.categories ?? const []).contains(category),
               onSelected: (selected) {
                 setState(() {
+                  final current = _filters.categories ?? <String>[];
+                  final updated = List<String>.from(current);
+                  if (selected) {
+                    if (!updated.contains(category)) updated.add(category);
+                  } else {
+                    updated.remove(category);
+                  }
                   _filters = _filters.copyWith(
-                    category: selected ? category : null,
+                    categories: updated.isEmpty ? null : updated,
                   );
                 });
               },
@@ -659,7 +762,7 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
 
     final finalFilters = _filters.copyWith(
       author: author.isEmpty ? null : AuthorFilter(authorNames: [author]),
-      tags: tags,
+      tags: hashtags,
     );
 
     widget.onFiltersApplied(finalFilters);
