@@ -1,10 +1,9 @@
-﻿// Search Analytics Service - Track and optimize search performance
+// Search Analytics Service - Track and optimize search performance
 // Complete search analytics for TALOWA platform
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/search/search_result_model.dart';
 
 class SearchAnalyticsService {
   static SearchAnalyticsService? _instance;
@@ -201,7 +200,7 @@ class SearchAnalyticsService {
         avgProcessingTimeMs: totalSearches > 0 ? totalProcessingTime / totalSearches : 0,
         clickThroughRate: totalSearches > 0 ? totalClicks / totalSearches : 0,
         zeroResultRate: totalSearches > 0 ? zeroResultSearches / totalSearches : 0,
-        period: days != null ? '${days} days' : 'all time',
+        period: days != null ? '$days days' : 'all time',
       );
       
       debugPrint('ðŸ“ˆ Retrieved search metrics: ${metrics.totalSearches} searches, ${(metrics.clickThroughRate * 100).toStringAsFixed(1)}% CTR');

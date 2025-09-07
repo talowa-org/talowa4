@@ -2,7 +2,6 @@
 // Complete analytics dashboard for TALOWA platform
 
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/analytics/analytics_model.dart';
 import '../../services/analytics/advanced_analytics_service.dart';
@@ -33,8 +32,8 @@ class _AnalyticsDashboardWidgetState extends State<AnalyticsDashboardWidget>
   String? _errorMessage;
   
   // Date range selection
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime _endDate = DateTime.now();
+  final DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
+  final DateTime _endDate = DateTime.now();
   
   @override
   void initState() {
@@ -138,7 +137,7 @@ class _AnalyticsDashboardWidgetState extends State<AnalyticsDashboardWidget>
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.analytics,
                   color: AppTheme.primaryColor,
                   size: 28,
@@ -481,7 +480,7 @@ class _AnalyticsDashboardWidgetState extends State<AnalyticsDashboardWidget>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             ),
             const SizedBox(height: 16),

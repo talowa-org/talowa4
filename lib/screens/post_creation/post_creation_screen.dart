@@ -627,7 +627,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
                 const SizedBox(height: 12),
                 
                 DropdownButtonFormField<PostCategory>(
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Select Category',
@@ -702,7 +702,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
                 
                 // Visibility
                 DropdownButtonFormField<PostVisibility>(
-                  value: _selectedVisibility,
+                  initialValue: _selectedVisibility,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Visibility',
@@ -726,7 +726,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
                 
                 // Priority
                 DropdownButtonFormField<PostPriority>(
-                  value: _selectedPriority,
+                  initialValue: _selectedPriority,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Priority',

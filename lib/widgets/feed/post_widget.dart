@@ -7,7 +7,6 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
 import '../../screens/media/document_viewer_screen.dart';
 import '../../screens/hashtag/hashtag_screen.dart';
-import '../media/video_player_widget.dart';
 import '../media/enhanced_feed_media_widget.dart';
 import '../../services/auth/auth_service.dart';
 import '../../services/social_feed/post_management_service.dart';

@@ -95,6 +95,12 @@ dependencies:
   device_info_plus: ^10.1.2
   package_info_plus: ^8.0.2
 
+  path_provider: any
+  geolocator: any
+  geocoding: any
+  permission_handler: any
+  flutter_webrtc: any
+  sqflite: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

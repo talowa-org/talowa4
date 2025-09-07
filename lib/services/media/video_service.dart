@@ -1,16 +1,12 @@
-﻿// Enhanced Video Service for TALOWA Social Feed
+// Enhanced Video Service for TALOWA Social Feed
 // Comprehensive video upload, compression, thumbnail generation, and playback
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:crypto/crypto.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_compress/video_compress.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 

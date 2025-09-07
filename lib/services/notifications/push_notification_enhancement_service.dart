@@ -1,4 +1,4 @@
-﻿// Push Notification Enhancement Service - Advanced notification features
+// Push Notification Enhancement Service - Advanced notification features
 // Enhanced real-time features for TALOWA app
 
 import 'dart:async';
@@ -8,8 +8,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_service.dart';
-import '../../models/notification_model.dart';
-import '../../models/user_model.dart';
 
 /// Enhanced push notification service with advanced features
 class PushNotificationEnhancementService {

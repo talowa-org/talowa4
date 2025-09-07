@@ -1,9 +1,8 @@
-﻿// Advanced Caching Service - Comprehensive caching for TALOWA platform
+// Advanced Caching Service - Comprehensive caching for TALOWA platform
 // Multi-level caching with memory, disk, and network optimization
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';

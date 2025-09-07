@@ -1,4 +1,4 @@
-﻿// Security Management Screen for TALOWA
+// Security Management Screen for TALOWA
 // Comprehensive security dashboard and management interface
 
 import 'dart:async';
@@ -13,9 +13,9 @@ class SecurityScreen extends StatefulWidget {
   final bool isAdminMode;
   
   const SecurityScreen({
-    Key? key,
+    super.key,
     this.isAdminMode = false,
-  }) : super(key: key);
+  });
   
   @override
   State<SecurityScreen> createState() => _SecurityScreenState();
@@ -40,25 +40,25 @@ class _SecurityScreenState extends State<SecurityScreen>
   
   // Tab configuration
   final List<SecurityTab> _tabs = [
-    SecurityTab(
+    const SecurityTab(
       id: 'dashboard',
       title: 'Dashboard',
       icon: Icons.dashboard,
       description: 'Security overview and real-time metrics',
     ),
-    SecurityTab(
+    const SecurityTab(
       id: 'audit',
       title: 'Audit Trail',
       icon: Icons.history,
       description: 'Security events and audit logs',
     ),
-    SecurityTab(
+    const SecurityTab(
       id: 'compliance',
       title: 'Compliance',
       icon: Icons.assessment,
       description: 'Compliance reports and standards',
     ),
-    SecurityTab(
+    const SecurityTab(
       id: 'settings',
       title: 'Settings',
       icon: Icons.security,
@@ -641,7 +641,7 @@ class _SecurityScreenState extends State<SecurityScreen>
       SnackBar(
         content: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.info,
               color: Colors.white,
               size: 16,

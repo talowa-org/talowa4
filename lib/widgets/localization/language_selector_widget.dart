@@ -1,4 +1,4 @@
-﻿// Language Selector Widget - Multi-language selection interface
+// Language Selector Widget - Multi-language selection interface
 // Complete language selection for TALOWA platform
 
 import 'package:flutter/material.dart';
@@ -181,7 +181,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.language,
                   color: AppTheme.primaryColor,
                   size: 24,
@@ -316,7 +316,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
                 ),
               ),
               if (isChanging)
-                SizedBox(
+                const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
@@ -327,7 +327,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
               else if (isSelected)
                 Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppTheme.primaryColor,
                     shape: BoxShape.circle,
                   ),

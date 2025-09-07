@@ -1,4 +1,4 @@
-﻿// Anonymous Reporting Screen for TALOWA
+// Anonymous Reporting Screen for TALOWA
 // Allows users to submit anonymous reports about land rights violations
 // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
 
@@ -329,7 +329,7 @@ class _AnonymousReportingScreenState extends State<AnonymousReportingScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<ReportType>(
-                  value: _selectedReportType,
+                  initialValue: _selectedReportType,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -359,7 +359,7 @@ class _AnonymousReportingScreenState extends State<AnonymousReportingScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedCoordinatorId,
+                  initialValue: _selectedCoordinatorId,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

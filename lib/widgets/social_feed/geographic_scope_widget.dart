@@ -473,7 +473,7 @@ class _GeographicTargetingSelectorState extends State<GeographicTargetingSelecto
     bool enabled = true,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(),

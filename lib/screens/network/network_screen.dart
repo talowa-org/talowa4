@@ -98,12 +98,12 @@ class _NetworkScreenState extends State<NetworkScreen> {
     final user = AuthService.currentUser;
     
     if (user == null) {
-      return Scaffold(
-        appBar: const TalowaAppBar(
+      return const Scaffold(
+        appBar: TalowaAppBar(
           title: 'My Network',
           screenName: 'Network',
         ),
-        body: const Center(
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -249,11 +249,11 @@ class _NetworkScreenState extends State<NetworkScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.person_add, color: AppTheme.talowaGreen),
-            const SizedBox(width: 8),
-            const Text('Invite People'),
+            SizedBox(width: 8),
+            Text('Invite People'),
           ],
         ),
         content: Column(
@@ -330,7 +330,7 @@ class _NetworkScreenState extends State<NetworkScreen> {
                       label: const Text('QR Code'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.talowaGreen,
-                        side: BorderSide(color: AppTheme.talowaGreen),
+                        side: const BorderSide(color: AppTheme.talowaGreen),
                       ),
                     ),
                   ),

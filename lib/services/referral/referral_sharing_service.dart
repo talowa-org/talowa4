@@ -4,9 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui' as ui;
-import 'dart:typed_data';
 import 'dart:html' as html;
-import 'package:flutter/rendering.dart';
 
 /// Service for handling referral link sharing and QR code generation
 class ReferralSharingService {
@@ -101,25 +99,20 @@ Join here: $link
         debugPrint('Native sharing failed: $shareError');
         
         // Fallback for web: Use Web Share API or copy to clipboard
-        if (html.window.navigator.share != null) {
-          // Use Web Share API if available
-          try {
-            await html.window.navigator.share({
-              'title': 'Join Talowa - Political Engagement Platform',
-              'text': message,
-              'url': link,
-            });
-            debugPrint('Web Share API completed successfully');
-          } catch (webShareError) {
-            debugPrint('Web Share API failed: $webShareError');
-            // Final fallback: copy to clipboard
-            await _fallbackCopyToClipboard(message);
-          }
-        } else {
-          // Web Share API not available, copy to clipboard
+        // Use Web Share API if available
+        try {
+          await html.window.navigator.share({
+            'title': 'Join Talowa - Political Engagement Platform',
+            'text': message,
+            'url': link,
+          });
+          debugPrint('Web Share API completed successfully');
+        } catch (webShareError) {
+          debugPrint('Web Share API failed: $webShareError');
+          // Final fallback: copy to clipboard
           await _fallbackCopyToClipboard(message);
         }
-      }
+            }
     } catch (e) {
       debugPrint('Error sharing referral link: $e');
       // Final fallback: copy to clipboard

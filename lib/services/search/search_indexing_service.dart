@@ -1,15 +1,12 @@
-﻿// Search Indexing Service - Sync data with Algolia indices
+// Search Indexing Service - Sync data with Algolia indices
 // Complete data synchronization for TALOWA search functionality
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../config/algolia_config.dart';
-import '../../models/social_feed/post_model.dart';
-import '../../models/user_model.dart';
 import '../../models/legal_case_model.dart';
 import '../../models/news_model.dart';
-import 'algolia_service.dart';
 
 class SearchIndexingService {
   static SearchIndexingService? _instance;
@@ -341,8 +338,9 @@ class SearchIndexingService {
         createdAt is Timestamp ? createdAt.toDate() : DateTime.fromMillisecondsSinceEpoch(createdAt)
       ).inDays;
       
-      if (age < 1) priority += 100;
-      else if (age < 7) priority += 50;
+      if (age < 1) {
+        priority += 100;
+      } else if (age < 7) priority += 50;
       else if (age < 30) priority += 20;
     }
     

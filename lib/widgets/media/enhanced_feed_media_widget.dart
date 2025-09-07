@@ -70,7 +70,7 @@ class _EnhancedFeedMediaWidgetState extends State<EnhancedFeedMediaWidget> {
 
       // Validate URL format
       if (!_isValidUrl(widget.mediaUrl)) {
-        throw MediaException(
+        throw const MediaException(
           type: MediaErrorType.invalidUrl,
           message: 'Invalid media URL format',
         );

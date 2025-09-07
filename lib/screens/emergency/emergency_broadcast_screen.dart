@@ -167,7 +167,7 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<GeographicLevel>(
-                value: _selectedLevel,
+                initialValue: _selectedLevel,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.location_on),

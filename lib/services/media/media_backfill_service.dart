@@ -1,8 +1,7 @@
-﻿// Media Backfill Service - Fix existing posts with bad URLs
+// Media Backfill Service - Fix existing posts with bad URLs
 // Detects and fixes data URIs, gs:// paths, and missing tokens
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';

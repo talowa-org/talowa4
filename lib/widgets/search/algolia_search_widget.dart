@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/search/search_result_model.dart';
 import '../../models/search/search_filter_model.dart';
@@ -306,7 +305,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.flash_on,
             size: 16,
             color: AppTheme.primaryColor,
@@ -314,7 +313,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
           const SizedBox(width: 4),
           Text(
             'Search completed in ${_lastSearchTime}ms',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: AppTheme.primaryColor,
               fontWeight: FontWeight.w500,
@@ -323,7 +322,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
           if (_totalSearches > 1) ...[
             const SizedBox(width: 8),
             Text(
-              '• ${_totalSearches} searches',
+              '• $_totalSearches searches',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
@@ -343,7 +342,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -465,7 +464,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
       ),
       child: Row(
         children: [
-          Icon(Icons.search, color: AppTheme.primaryColor, size: 20),
+          const Icon(Icons.search, color: AppTheme.primaryColor, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -621,7 +620,7 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.flash_on, size: 64, color: AppTheme.primaryColor),
+          const Icon(Icons.flash_on, size: 64, color: AppTheme.primaryColor),
           const SizedBox(height: 16),
           Text(
             'Lightning-fast search',
@@ -642,5 +641,6 @@ class _AlgoliaSearchWidgetState extends State<AlgoliaSearchWidget> {
     );
   }
 }
+
 
 

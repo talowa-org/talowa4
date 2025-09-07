@@ -1,11 +1,10 @@
-﻿// Professional Directory Search Service - Find lawyers, activists, experts
+// Professional Directory Search Service - Find lawyers, activists, experts
 // Complete professional directory for TALOWA platform
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/search/search_result_model.dart';
-import '../../models/search/search_filter_model.dart';
 
 class ProfessionalDirectoryService {
   static ProfessionalDirectoryService? _instance;

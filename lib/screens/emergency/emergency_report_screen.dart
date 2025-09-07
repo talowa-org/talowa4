@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../services/emergency_service.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -56,7 +56,7 @@ class _EmergencyReportScreenState extends State<EmergencyReportScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             DropdownButtonFormField<EmergencyType>(
-              value: type,
+              initialValue: type,
               items: EmergencyType.values.map((e)=> DropdownMenuItem(value: e, child: Text(e.toString().split('.').last))).toList(),
               onChanged: (v){ if (v!=null) setState(()=> type=v); },
               decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),

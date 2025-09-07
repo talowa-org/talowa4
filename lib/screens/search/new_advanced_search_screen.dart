@@ -11,7 +11,6 @@ import '../../widgets/search/search_bar_widget.dart';
 import '../../widgets/search/simple_search_filters_widget.dart';
 import '../../widgets/search/search_results_widget.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 
 class NewAdvancedSearchScreen extends StatefulWidget {
   final String? initialQuery;

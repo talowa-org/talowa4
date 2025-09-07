@@ -2,9 +2,8 @@
 // Part of Task 6: Implement PostWidget for individual posts
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// removed: import 'package:intl/intl.dart';
 import '../../models/social_feed/post_model.dart';
-import '../../models/social_feed/comment_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../services/auth/auth_service.dart';
 // import '../media/enhanced_media_widget.dart'; // TODO: Add when available
@@ -794,22 +793,7 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
     }
   }
   
-  String _formatTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-    
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}h';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d';
-    } else {
-      return DateFormat('MMM d').format(dateTime);
-    }
-  }
+  // Removed unused helper _formatTime(DateTime)
   
   void _showLoginRequired() {
     ScaffoldMessenger.of(context).showSnackBar(

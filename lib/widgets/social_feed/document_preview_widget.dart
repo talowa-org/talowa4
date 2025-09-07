@@ -286,9 +286,11 @@ class DocumentPreviewWidget extends StatelessWidget {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
+        if (!context.mounted) return;
         _showError(context, 'Cannot open document');
       }
     } catch (e) {
+      if (!context.mounted) return;
       _showError(context, 'Failed to open document: $e');
     }
   }
@@ -299,6 +301,7 @@ class DocumentPreviewWidget extends StatelessWidget {
       // For now, just open the document
       await _openDocument(context, documentUrl);
     } catch (e) {
+      if (!context.mounted) return;
       _showError(context, 'Failed to download document: $e');
     }
   }
@@ -307,8 +310,10 @@ class DocumentPreviewWidget extends StatelessWidget {
     try {
       // In a real app, this would use the share plugin
       // For now, just copy to clipboard or show share dialog
+      if (!context.mounted) return;
       _showInfo(context, 'Share functionality coming soon!');
     } catch (e) {
+      if (!context.mounted) return;
       _showError(context, 'Failed to share document: $e');
     }
   }

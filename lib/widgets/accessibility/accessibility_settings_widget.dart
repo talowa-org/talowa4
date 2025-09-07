@@ -114,7 +114,7 @@ class _AccessibilitySettingsWidgetState extends State<AccessibilitySettingsWidge
             HapticFeedback.lightImpact();
           }
         },
-        activeColor: AppTheme.primaryColor,
+        activeThumbColor: AppTheme.primaryColor,
       ),
     );
   }
@@ -131,7 +131,7 @@ class _AccessibilitySettingsWidgetState extends State<AccessibilitySettingsWidge
           _loadSettings();
           HapticFeedback.lightImpact();
         },
-        activeColor: AppTheme.primaryColor,
+        activeThumbColor: AppTheme.primaryColor,
       ),
     );
   }
@@ -232,7 +232,7 @@ class _AccessibilitySettingsWidgetState extends State<AccessibilitySettingsWidge
               _loadSettings();
               HapticFeedback.lightImpact();
             },
-            activeColor: AppTheme.primaryColor,
+            activeThumbColor: AppTheme.primaryColor,
           ),
           if (_settings.isKeyboardNavigationEnabled) ...[
             const SizedBox(height: 12),
@@ -319,7 +319,7 @@ class _AccessibilitySettingsWidgetState extends State<AccessibilitySettingsWidge
           _loadSettings();
           HapticFeedback.lightImpact();
         },
-        activeColor: AppTheme.primaryColor,
+        activeThumbColor: AppTheme.primaryColor,
       ),
     );
   }

@@ -211,7 +211,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.psychology,
                   color: AppTheme.primaryColor,
                   size: 20,
@@ -320,7 +320,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
     actions.add(
       IconButton(
         onPressed: () => _performAISearch(_searchController.text),
-        icon: Icon(
+        icon: const Icon(
           Icons.search,
           color: AppTheme.primaryColor,
         ),
@@ -341,7 +341,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          Stack(
+          const Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
@@ -395,13 +395,13 @@ class _AISearchWidgetState extends State<AISearchWidget>
           children: [
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.lightbulb_outline,
                   color: AppTheme.primaryColor,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   'AI Understanding',
                   style: TextStyle(
                     color: AppTheme.primaryColor,
@@ -418,7 +418,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
                   ),
                   child: Text(
                     '${(_processedQuery!.confidence * 100).toInt()}% confident',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppTheme.primaryColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -471,7 +471,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.psychology,
             size: 16,
             color: AppTheme.primaryColor,
@@ -479,7 +479,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
           const SizedBox(width: 6),
           Text(
             intentLabels[intent] ?? intent,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.primaryColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -554,7 +554,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
           children: [
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.recommend,
                   color: AppTheme.primaryColor,
                   size: 20,
@@ -612,7 +612,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.lightbulb_outline,
                   color: AppTheme.primaryColor,
                   size: 20,
@@ -748,7 +748,7 @@ class _AISearchWidgetState extends State<AISearchWidget>
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.withOpacity(0.3)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

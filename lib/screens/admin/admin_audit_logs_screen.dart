@@ -239,7 +239,7 @@ class _AdminAuditLogsScreenState extends State<AdminAuditLogsScreen> {
                     ...details.entries.map((entry) => Text(
                       '${entry.key}: ${entry.value}',
                       style: const TextStyle(fontSize: 11),
-                    )).toList(),
+                    )),
                   ],
                 ),
               ),

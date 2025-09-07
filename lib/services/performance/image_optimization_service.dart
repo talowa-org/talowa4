@@ -1,8 +1,7 @@
-﻿// Image Optimization Service - Advanced image loading and optimization
+// Image Optimization Service - Advanced image loading and optimization
 // Comprehensive image handling with caching, compression, and lazy loading
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +152,7 @@ class ImageOptimizationService {
       debugPrint('ðŸ–¼ï¸ Generating thumbnail for: $imageUrl');
       
       // Check cache first
-      final cacheKey = '${imageUrl}_thumb_${size}';
+      final cacheKey = '${imageUrl}_thumb_$size';
       final cachedThumbnail = await CachingService.instance.getCachedImage(cacheKey);
       
       if (cachedThumbnail != null) {

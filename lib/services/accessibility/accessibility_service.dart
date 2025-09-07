@@ -1,8 +1,7 @@
-﻿// Accessibility Service - Comprehensive accessibility support for TALOWA platform
+// Accessibility Service - Comprehensive accessibility support for TALOWA platform
 // Complete accessibility features including screen reader, keyboard navigation, and compliance
 
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -345,7 +344,7 @@ class AccessibilityService {
       // This would integrate with platform-specific accessibility APIs
       // For now, we'll use Flutter's built-in accessibility detection
       
-      final mediaQuery = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
+      final mediaQuery = MediaQueryData.fromView(WidgetsBinding.instance.window);
       
       if (mediaQuery.accessibleNavigation) {
         await enableScreenReader(true);

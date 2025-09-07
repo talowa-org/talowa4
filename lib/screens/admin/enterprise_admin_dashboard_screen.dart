@@ -1,4 +1,4 @@
-﻿// Enterprise Admin Dashboard Screen - Complete admin control panel
+// Enterprise Admin Dashboard Screen - Complete admin control panel
 // Implements all requirements from ADMIN_SYSTEM.md specification
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,8 +7,6 @@ import '../../services/admin/admin_dashboard_enhanced_service.dart';
 import 'enhanced_moderation_screen.dart';
 import 'enhanced_moderation_dashboard_screen.dart';
 import 'admin_role_management_screen.dart';
-import 'admin_audit_logs_screen.dart';
-import 'admin_analytics_screen.dart';
 import 'secure_admin_login_screen.dart';
 
 class EnterpriseAdminDashboardScreen extends StatefulWidget {

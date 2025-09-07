@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/geographic_targeting.dart';
-import '../../services/auth/auth_service.dart';
 import '../../utils/navigation_helper.dart';
 
 /// Floating Action Button for post creation (coordinators only)
@@ -197,6 +196,7 @@ class PostCreationFAB extends StatelessWidget {
       initialCategory: category ?? initialCategory,
       initialTargeting: initialTargeting,
     );
+    if (!context.mounted) return;
     
     if (result == true && onPostCreated != null) {
       // Post was created successfully
@@ -393,6 +393,7 @@ class _PostCreationSpeedDialState extends State<PostCreationSpeedDial>
       initialCategory: category,
       initialTargeting: widget.initialTargeting,
     );
+    if (!context.mounted) return;
     
     if (result == true && widget.onPostCreated != null) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,8 +1,7 @@
-﻿// Web-specific video player using HTML5 video element
+// Web-specific video player using HTML5 video element
 // Provides better compatibility for Firebase Storage videos on web
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../../core/theme/app_theme.dart';
 
 // Only import web-specific libraries when on web

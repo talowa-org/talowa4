@@ -1,4 +1,4 @@
-﻿// Enhanced Post Creation Screen for TALOWA
+// Enhanced Post Creation Screen for TALOWA
 // Full-featured post creation with media upload and stories
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -9,12 +9,8 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../services/auth_service.dart';
-import '../../services/media/media_upload_service.dart';
 // removed: import '../../services/media/mock_media_upload_service.dart';
 import '../../services/media/comprehensive_media_service.dart';
-import 'dart:typed_data';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 
 class SimplePostCreationScreen extends StatefulWidget {

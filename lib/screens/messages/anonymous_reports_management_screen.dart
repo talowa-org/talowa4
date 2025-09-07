@@ -505,7 +505,7 @@ class _AnonymousReportsManagementScreenState extends State<AnonymousReportsManag
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<ReportStatus>(
-                      value: _filterStatus,
+                      initialValue: _filterStatus,
                       decoration: const InputDecoration(
                         labelText: 'Filter by Status',
                         border: OutlineInputBorder(),
@@ -529,7 +529,7 @@ class _AnonymousReportsManagementScreenState extends State<AnonymousReportsManag
                   const SizedBox(width: 8),
                   Expanded(
                     child: DropdownButtonFormField<ReportType>(
-                      value: _filterType,
+                      initialValue: _filterType,
                       decoration: const InputDecoration(
                         labelText: 'Filter by Type',
                         border: OutlineInputBorder(),

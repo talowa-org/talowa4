@@ -1,7 +1,6 @@
-﻿// Analytics Models - Data models for analytics and insights
+// Analytics Models - Data models for analytics and insights
 // Complete analytics data structures for TALOWA platform
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 // User Analytics Model
 class UserAnalyticsModel {

@@ -1,4 +1,4 @@
-﻿// Simple Search Filters Widget - Streamlined search filtering
+// Simple Search Filters Widget - Streamlined search filtering
 // Complete search filters for TALOWA platform
 
 import 'package:flutter/material.dart';
@@ -64,8 +64,8 @@ class _SimpleSearchFiltersWidgetState extends State<SimpleSearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.category, size: 16),
-      backgroundColor: hasCategories ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasCategories ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -82,8 +82,8 @@ class _SimpleSearchFiltersWidgetState extends State<SimpleSearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.filter_list, size: 16),
-      backgroundColor: hasTypes ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasTypes ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -100,8 +100,8 @@ class _SimpleSearchFiltersWidgetState extends State<SimpleSearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.location_on, size: 16),
-      backgroundColor: hasLocation ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasLocation ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -118,8 +118,8 @@ class _SimpleSearchFiltersWidgetState extends State<SimpleSearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.date_range, size: 16),
-      backgroundColor: hasDateRange ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasDateRange ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -134,7 +134,7 @@ class _SimpleSearchFiltersWidgetState extends State<SimpleSearchFiltersWidget> {
         _updateFilters(const SearchFilterModel());
       },
       avatar: const Icon(Icons.clear, size: 16),
-      backgroundColor: Colors.red.withOpacity(0.1),
+      backgroundColor: Colors.red.withValues(alpha: 0.1),
       labelStyle: const TextStyle(color: Colors.red),
     );
   }

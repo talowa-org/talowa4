@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -356,7 +356,7 @@ class ReferralCodeGenerator {
 
   /// Get theoretical capacity information
   static Map<String, dynamic> getCapacityInfo() {
-    final int charactersInSet = ALLOWED_CHARS.length; // Crockford Base32 (32 characters)
+    const int charactersInSet = ALLOWED_CHARS.length; // Crockford Base32 (32 characters)
     const int codeLength = CODE_LENGTH;
     final int totalCombinations = pow(charactersInSet, codeLength).toInt();
     

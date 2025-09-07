@@ -1,18 +1,18 @@
-﻿// Security Settings Widget for TALOWA
+// Security Settings Widget for TALOWA
 // Allows administrators to configure security policies and thresholds
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/security/enterprise_security_service.dart';
+// removed: import '../../services/security/enterprise_security_service.dart';
 
 class SecuritySettingsWidget extends StatefulWidget {
   final bool isAdminMode;
   
   const SecuritySettingsWidget({
-    Key? key,
+    super.key,
     this.isAdminMode = false,
-  }) : super(key: key);
+  });
   
   @override
   State<SecuritySettingsWidget> createState() => _SecuritySettingsWidgetState();
@@ -20,7 +20,7 @@ class SecuritySettingsWidget extends StatefulWidget {
 
 class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
     with TickerProviderStateMixin {
-  final EnterpriseSecurityService _securityService = EnterpriseSecurityService();
+  // removed: final EnterpriseSecurityService _securityService = EnterpriseSecurityService();
   
   // Animation controllers
   late AnimationController _fadeController;
@@ -96,7 +96,7 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
       // In a real implementation, this would load from the security service
       await Future.delayed(const Duration(seconds: 1));
       
-      final config = SecurityConfiguration(
+      const config = SecurityConfiguration(
         sessionTimeoutMinutes: 30,
         maxLoginAttempts: 5,
         passwordMinLength: 8,
@@ -156,7 +156,7 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -198,7 +198,7 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
@@ -234,7 +234,7 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -262,7 +262,7 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
   }
   
   Widget _buildCategoryTabs() {
-    return Container(
+    return SizedBox(
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -281,12 +281,12 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
               decoration: BoxDecoration(
                 color: isSelected
                     ? Theme.of(context).primaryColor
-                    : Colors.grey.withOpacity(0.1),
+                    : Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(25),
                 border: Border.all(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Colors.grey.withOpacity(0.3),
+                      : Colors.grey.withValues(alpha: 0.3),
                 ),
               ),
               child: Center(
@@ -722,10 +722,10 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.2),
+          color: Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -791,10 +791,10 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.05),
+            color: Colors.grey.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
             ),
           ),
           child: Column(
@@ -965,10 +965,10 @@ class _SecuritySettingsWidgetState extends State<SecuritySettingsWidget>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.05),
+        color: Colors.blue.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.blue.withOpacity(0.2),
+          color: Colors.blue.withValues(alpha: 0.2),
         ),
       ),
       child: Column(

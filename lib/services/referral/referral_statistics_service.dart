@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'referral_chain_service.dart';
@@ -153,7 +153,7 @@ class ReferralStatisticsService {
       // Get user's referral code first
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) {
-        throw ReferralStatisticsException('User not found', 'USER_NOT_FOUND');
+        throw const ReferralStatisticsException('User not found', 'USER_NOT_FOUND');
       }
       
       final referralCode = userDoc.data()!['referralCode'] as String? ?? '';
@@ -169,7 +169,7 @@ class ReferralStatisticsService {
       // In free app model, all users are active - no payment restrictions
       final totalReferrals = directReferrals.length;
       final active = totalReferrals; // All referrals are active
-      final pending = 0; // No pending users in free app model
+      const pending = 0; // No pending users in free app model
       
       // Get team size
       final teamSizeQuery = await _firestore

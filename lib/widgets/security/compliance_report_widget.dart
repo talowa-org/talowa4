@@ -1,4 +1,4 @@
-﻿// Compliance Report Widget for TALOWA
+// Compliance Report Widget for TALOWA
 // Provides compliance reporting and audit trail functionality
 
 import 'dart:async';
@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import '../../services/security/enterprise_security_service.dart';
 
 class ComplianceReportWidget extends StatefulWidget {
-  const ComplianceReportWidget({Key? key}) : super(key: key);
+  const ComplianceReportWidget({super.key});
   
   @override
   State<ComplianceReportWidget> createState() => _ComplianceReportWidgetState();
@@ -145,7 +145,7 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -178,7 +178,7 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
@@ -416,10 +416,10 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.green.withOpacity(0.3),
+              color: Colors.green.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -503,7 +503,7 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
@@ -556,7 +556,7 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.2),
+          color: Colors.grey.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -654,7 +654,7 @@ class _ComplianceReportWidgetState extends State<ComplianceReportWidget>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

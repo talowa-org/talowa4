@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../../services/notifications/notification_preferences_service.dart';
 import '../../models/notification_preferences_model.dart';
-import '../../core/theme/app_theme.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -14,7 +13,7 @@ class NotificationSettingsScreen extends StatefulWidget {
 }
 
 class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
-  NotificationPreferences _preferences = NotificationPreferences();
+  NotificationPreferences _preferences = const NotificationPreferences();
   bool _isLoading = true;
   bool _isSaving = false;
 

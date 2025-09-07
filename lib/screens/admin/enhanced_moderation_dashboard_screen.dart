@@ -1,4 +1,4 @@
-﻿// Enhanced Moderation Dashboard Screen for TALOWA
+// Enhanced Moderation Dashboard Screen for TALOWA
 // Provides comprehensive AI-powered content moderation management
 
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 
 class EnhancedModerationDashboardScreen extends StatefulWidget {
-  const EnhancedModerationDashboardScreen({Key? key}) : super(key: key);
+  const EnhancedModerationDashboardScreen({super.key});
 
   @override
   State<EnhancedModerationDashboardScreen> createState() => _EnhancedModerationDashboardScreenState();
@@ -560,7 +560,7 @@ class _EnhancedModerationDashboardScreenState extends State<EnhancedModerationDa
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
-        title: Text('Content Review Required'),
+        title: const Text('Content Review Required'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

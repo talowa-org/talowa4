@@ -1,7 +1,6 @@
 // Enhanced Moderation Screen - Complete content moderation system
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../services/admin/enhanced_admin_auth_service.dart';
 
 class EnhancedModerationScreen extends StatefulWidget {
   const EnhancedModerationScreen({super.key});
@@ -143,21 +142,24 @@ List<Map<String, dynamic>>> _loadFlaggedActivities() async {
     int suspicion = 0;
     
     // High referral count
-    if (directReferrals > 50) suspicion += 3;
-    else if (directReferrals > 20) suspicion += 2;
+    if (directReferrals > 50) {
+      suspicion += 3;
+    } else if (directReferrals > 20) suspicion += 2;
     else if (directReferrals > 10) suspicion += 1;
     
     // Large team size
-    if (teamSize > 200) suspicion += 3;
-    else if (teamSize > 100) suspicion += 2;
+    if (teamSize > 200) {
+      suspicion += 3;
+    } else if (teamSize > 100) suspicion += 2;
     else if (teamSize > 50) suspicion += 1;
     
     // Account age vs referrals
     final createdAt = userData['createdAt'] as Timestamp?;
     if (createdAt != null && directReferrals > 0) {
       final accountAge = DateTime.now().difference(createdAt.toDate()).inDays;
-      if (accountAge < 7 && directReferrals > 10) suspicion += 2;
-      else if (accountAge < 30 && directReferrals > 30) suspicion += 1;
+      if (accountAge < 7 && directReferrals > 10) {
+        suspicion += 2;
+      } else if (accountAge < 30 && directReferrals > 30) suspicion += 1;
     }
     
     // Already flagged
@@ -372,7 +374,7 @@ List<Map<String, dynamic>>> _loadFlaggedActivities() async {
                     ...details.entries.map((entry) => Text(
                       '${entry.key}: ${entry.value}',
                       style: const TextStyle(fontSize: 12),
-                    )).toList(),
+                    )),
                   ],
                 ),
               ),
@@ -761,7 +763,7 @@ List<Map<String, dynamic>>> _loadFlaggedActivities() async {
               const SizedBox(height: 4),
               ...((activity['details'] as Map<String, dynamic>? ?? {}).entries.map((entry) =>
                 Text('${entry.key}: ${entry.value}')
-              )).toList(),
+              )),
             ],
           ),
         ),

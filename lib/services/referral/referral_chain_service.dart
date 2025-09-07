@@ -1,4 +1,4 @@
-﻿// Referral Chain Service for Talowa
+// Referral Chain Service for Talowa
 // Implements BSS webapp referral chain logic in Flutter
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,7 +97,7 @@ class ReferralChainService {
 
     } catch (e) {
       debugPrint('âŒ Error updating referral chain: $e');
-      throw e;
+      rethrow;
     }
   }
 

@@ -1,13 +1,11 @@
-﻿// Media Upload Service - Handle image and document uploads
+// Media Upload Service - Handle image and document uploads
 // Part of Task 9: Build PostCreationScreen for coordinators
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
-import 'comprehensive_media_service.dart';
 
 class MediaUploadService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;

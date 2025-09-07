@@ -1,8 +1,7 @@
-﻿// Image Gallery Widget - Display and view multiple images with enhanced media support
+// Image Gallery Widget - Display and view multiple images with enhanced media support
 // Part of Task 6: Implement PostWidget for individual posts
 
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'enhanced_media_widget.dart';
 
 class ImageGalleryWidget extends StatelessWidget {

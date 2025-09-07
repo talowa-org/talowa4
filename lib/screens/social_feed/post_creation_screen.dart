@@ -475,7 +475,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
         const SizedBox(height: 8),
         
         DropdownButtonFormField<PostPriority>(
-          value: _selectedPriority,
+          initialValue: _selectedPriority,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

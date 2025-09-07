@@ -1,9 +1,8 @@
-﻿// Land Records Service for TALOWA
+// Land Records Service for TALOWA
 // Comprehensive land record management with GPS integration
 // Reference: TALOWA_APP_BLUEPRINT.md - Land Records System
 
 import 'dart:async';
-import 'dart:typed_data';
 // import 'dart:io';  // Not supported on web
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

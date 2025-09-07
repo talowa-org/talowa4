@@ -316,7 +316,9 @@ class _SyncStatusWidgetState extends State<SyncStatusWidget>
   void _manualSync() async {
     try {
       await _syncService.performSync(forceSync: true);
+      if (!mounted) return;
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sync failed: $e')),
       );
@@ -354,11 +356,13 @@ class _SyncDetailsDialogState extends State<SyncDetailsDialog> {
   Future<void> _loadStatistics() async {
     try {
       final stats = await _syncService.getSyncStatistics();
+      if (!mounted) return;
       setState(() {
         _statistics = stats;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -447,11 +451,12 @@ class _SyncDetailsDialogState extends State<SyncDetailsDialog> {
         mode: SyncMode.full,
         forceSync: true,
       );
-      
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Full sync started')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to start sync: $e')),
       );

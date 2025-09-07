@@ -1,4 +1,4 @@
-﻿// Story Creation Screen for TALOWA
+// Story Creation Screen for TALOWA
 // Instagram-like story creation with media selection and editing
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,7 +9,6 @@ import '../../services/media/media_upload_service.dart';
 import '../../services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:typed_data';
 import '../../services/media/comprehensive_media_service.dart';
 
 class StoryCreationScreen extends StatefulWidget {

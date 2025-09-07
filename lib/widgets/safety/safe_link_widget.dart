@@ -363,7 +363,7 @@ class _ReportLinkDialogState extends State<ReportLinkDialog> {
           const Text('Why are you reporting this link?'),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _selectedReason,
+            initialValue: _selectedReason,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Reason',

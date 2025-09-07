@@ -1,4 +1,4 @@
-﻿// Simple Feed Screen - Basic version for testing
+// Simple Feed Screen - Basic version for testing
 // Simplified version to test feed functionality without complex dependencies
 
 import 'package:flutter/material.dart';
@@ -681,7 +681,7 @@ class _SimpleFeedScreenState extends State<SimpleFeedScreen> {
                 const Text('Category:'),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<PostCategory>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),

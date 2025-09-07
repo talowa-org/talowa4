@@ -1,4 +1,4 @@
-﻿// Advanced Search Screen for TALOWA
+// Advanced Search Screen for TALOWA
 // Implements Task 24: Add advanced search and discovery - Search UI
 
 import 'package:flutter/material.dart';
@@ -40,7 +40,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen>
 
   bool _isLoading = false;
   bool _isLoadingMore = false;
-  bool _showSuggestions = false;
+  final bool _showSuggestions = false;
   String? _error;
   SearchFilterModel _currentFilters = const SearchFilterModel();
   bool _showFilters = false;

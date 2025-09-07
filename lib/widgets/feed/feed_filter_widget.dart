@@ -1,4 +1,4 @@
-﻿// Feed Filter Widget - Filter and sort options for feed
+// Feed Filter Widget - Filter and sort options for feed
 // Part of Task 5: Create FeedScreen main interface
 
 import 'package:flutter/material.dart';
@@ -198,7 +198,7 @@ class FeedFilterWidget extends StatelessWidget {
           subtitle: const Text('Filter posts from your network only'),
           value: showOnlyFollowing,
           onChanged: onFollowingToggled,
-          activeColor: AppTheme.talowaGreen,
+          activeThumbColor: AppTheme.talowaGreen,
         ),
       ],
     );

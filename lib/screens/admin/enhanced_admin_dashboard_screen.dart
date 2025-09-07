@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/admin/enhanced_admin_auth_service.dart';
 import '../../services/admin/admin_dashboard_enhanced_service.dart';
-import 'enhanced_moderation_screen.dart';
 import 'enhanced_moderation_dashboard_screen.dart';
 import 'admin_role_management_screen.dart';
 import 'admin_audit_logs_screen.dart';
@@ -444,7 +443,7 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EnhancedModerationDashboardScreen(),
+                    builder: (context) => const EnhancedModerationDashboardScreen(),
                   ),
                 ),
               ),
@@ -716,7 +715,7 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                   ],
                 ),
               );
-            }).toList(),
+            }),
         ],
       ),
     );
@@ -767,7 +766,7 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                   Expanded(child: Text(trend.toString())),
                 ],
               ),
-            )).toList(),
+            )),
             const SizedBox(height: 12),
           ],
           
@@ -786,7 +785,7 @@ class _EnhancedAdminDashboardScreenState extends State<EnhancedAdminDashboardScr
                   Expanded(child: Text(rec.toString())),
                 ],
               ),
-            )).toList(),
+            )),
           ],
         ],
       ),

@@ -1,10 +1,8 @@
-﻿// AI-Powered Search Service - Natural language and semantic search
+// AI-Powered Search Service - Natural language and semantic search
 // Complete AI search capabilities for TALOWA platform
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import '../../models/search/search_result_model.dart';
 import '../../models/search/search_filter_model.dart';
 import '../../services/search/search_service.dart';
@@ -446,7 +444,7 @@ class AISearchService {
     }
     
     if (profession == 'Farmer' || profession == 'Agriculturist') {
-      recommendations.add(SmartRecommendation(
+      recommendations.add(const SmartRecommendation(
         title: 'Agricultural land schemes',
         description: 'Government schemes and benefits for farmers',
         query: 'agricultural land scheme farmer benefits',
@@ -478,7 +476,7 @@ class AISearchService {
     for (final pattern in sortedPatterns.take(3)) {
       switch (pattern.key) {
         case 'find_lawyer':
-          recommendations.add(SmartRecommendation(
+          recommendations.add(const SmartRecommendation(
             title: 'Top-rated land lawyers',
             description: 'Highly rated lawyers specializing in land rights',
             query: 'top rated land rights lawyer',
@@ -487,7 +485,7 @@ class AISearchService {
           ));
           break;
         case 'land_dispute':
-          recommendations.add(SmartRecommendation(
+          recommendations.add(const SmartRecommendation(
             title: 'Land dispute resolution guide',
             description: 'Step-by-step guide to resolve land disputes',
             query: 'land dispute resolution guide steps',
@@ -508,7 +506,7 @@ class AISearchService {
     
     switch (intent) {
       case 'find_lawyer':
-        recommendations.add(SmartRecommendation(
+        recommendations.add(const SmartRecommendation(
           title: 'Legal aid organizations',
           description: 'Free legal aid organizations for land rights',
           query: 'legal aid organization land rights free',
@@ -517,7 +515,7 @@ class AISearchService {
         ));
         break;
       case 'land_dispute':
-        recommendations.add(SmartRecommendation(
+        recommendations.add(const SmartRecommendation(
           title: 'Similar land dispute cases',
           description: 'Cases similar to your situation with outcomes',
           query: 'land dispute case study outcome',

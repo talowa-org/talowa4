@@ -207,7 +207,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -318,7 +318,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     Expanded(child: Text(trend.toString(), style: const TextStyle(fontSize: 14))),
                   ],
                 ),
-              )).toList(),
+              )),
               const SizedBox(height: 16),
             ],
             
@@ -334,7 +334,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     Expanded(child: Text(rec.toString(), style: const TextStyle(fontSize: 14))),
                   ],
                 ),
-              )).toList(),
+              )),
             ],
           ],
         ),

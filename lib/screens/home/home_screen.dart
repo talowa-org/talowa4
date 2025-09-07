@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -114,8 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _fetchDailyMotivation(),
       ]);
 
-      final freshUserData = results[0] as Map<String, dynamic>?;
-      final freshMotivation = results[1] as Map<String, dynamic>?;
+      final freshUserData = results[0];
+      final freshMotivation = results[1];
 
       if (mounted) {
         setState(() {
@@ -382,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false, // Remove automatic back button
         actions: [
-          NotificationBadgeWidget(),
+          const NotificationBadgeWidget(),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -653,11 +653,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.celebration, color: AppTheme.warningOrange),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 "Today's Inspiration",
                 style: TextStyle(
                   fontSize: 16,

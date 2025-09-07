@@ -283,7 +283,7 @@ class _AdminRoleManagementScreenState extends State<AdminRoleManagementScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<AdminRole>(
-                value: selectedRole,
+                initialValue: selectedRole,
                 decoration: const InputDecoration(
                   labelText: 'Role',
                   border: OutlineInputBorder(),
@@ -342,7 +342,7 @@ class _AdminRoleManagementScreenState extends State<AdminRoleManagementScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<AdminRole>(
-                value: selectedRole,
+                initialValue: selectedRole,
                 decoration: const InputDecoration(
                   labelText: 'New Role',
                   border: OutlineInputBorder(),

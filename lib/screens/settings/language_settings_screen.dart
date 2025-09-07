@@ -174,7 +174,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
               title: const Text('Auto-translate messages'),
               subtitle: const Text('Automatically translate incoming messages'),
               value: _autoTranslateEnabled,
-              activeColor: AppTheme.talowaGreen,
+              activeThumbColor: AppTheme.talowaGreen,
               onChanged: (bool value) {
                 setState(() {
                   _autoTranslateEnabled = value;
@@ -185,7 +185,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
               title: const Text('Show original text'),
               subtitle: const Text('Display original text alongside translation'),
               value: _showOriginalText,
-              activeColor: AppTheme.talowaGreen,
+              activeThumbColor: AppTheme.talowaGreen,
               onChanged: _autoTranslateEnabled
                   ? (bool value) {
                       setState(() {
@@ -236,7 +236,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
               title: const Text('Voice transcription'),
               subtitle: const Text('Convert voice messages to text'),
               value: _voiceTranscriptionEnabled,
-              activeColor: AppTheme.talowaGreen,
+              activeThumbColor: AppTheme.talowaGreen,
               onChanged: (bool value) {
                 setState(() {
                   _voiceTranscriptionEnabled = value;

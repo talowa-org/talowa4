@@ -325,6 +325,8 @@ class _PostSchedulingWidgetState extends State<PostSchedulingWidget> {
       lastDate: now.add(const Duration(days: 365)),
     );
     
+    if (!mounted) return;
+    
     if (selectedDate != null) {
       final currentTime = _selectedDateTime?.timeOfDay ?? TimeOfDay.now();
       _setDateTime(DateTime(
@@ -342,6 +344,8 @@ class _PostSchedulingWidgetState extends State<PostSchedulingWidget> {
       context: context,
       initialTime: _selectedDateTime?.timeOfDay ?? TimeOfDay.now(),
     );
+    
+    if (!mounted) return;
     
     if (selectedTime != null) {
       final currentDate = _selectedDateTime ?? DateTime.now().add(const Duration(days: 1));
@@ -411,11 +415,13 @@ class _ScheduledPostsListWidgetState extends State<ScheduledPostsListWidget> {
     
     try {
       final posts = await PostManagementService.getScheduledPosts(widget.userId);
+      if (!mounted) return;
       setState(() {
         _scheduledPosts = posts;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -574,11 +580,15 @@ class _ScheduledPostsListWidgetState extends State<ScheduledPostsListWidget> {
       ),
     );
     
+    if (!mounted) return;
+    
     if (confirmed == true) {
       try {
         await PostManagementService.cancelScheduledPost(post['id']);
+        if (!mounted) return;
         _loadScheduledPosts();
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to cancel post: $e'),

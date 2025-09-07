@@ -1,10 +1,9 @@
-﻿// URL Migration Service - Fix bad Firebase Storage URLs in Firestore
+// URL Migration Service - Fix bad Firebase Storage URLs in Firestore
 // Migrates from incorrect bucket URLs to proper ones
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../media/enhanced_media_service.dart';
 
 class UrlMigrationService {
   static UrlMigrationService? _instance;

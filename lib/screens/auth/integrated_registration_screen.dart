@@ -1,4 +1,4 @@
-﻿// Real User Registration Screen for TALOWA
+// Real User Registration Screen for TALOWA
 // Regional user experience with proper validation
 
 import 'package:flutter/material.dart';
@@ -531,7 +531,7 @@ class _IntegratedRegistrationScreenState
     required void Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: const Icon(Icons.location_on, color: AppTheme.talowaGreen),

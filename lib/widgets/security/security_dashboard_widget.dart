@@ -10,10 +10,10 @@ class SecurityDashboardWidget extends StatefulWidget {
   final VoidCallback? onViewDetails;
   
   const SecurityDashboardWidget({
-    Key? key,
+    super.key,
     this.isCompact = true,
     this.onViewDetails,
-  }) : super(key: key);
+  });
   
   @override
   State<SecurityDashboardWidget> createState() => _SecurityDashboardWidgetState();
@@ -31,7 +31,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
   
   // Data
   Map<String, dynamic> _securityMetrics = {};
-  List<AuditEvent> _recentAuditEvents = [];
+  final List<AuditEvent> _recentAuditEvents = [];
   SecurityStatus _securityStatus = SecurityStatus.secure;
   
   // State
@@ -161,13 +161,13 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _getStatusColor().withOpacity(0.1),
-            _getStatusColor().withOpacity(0.05),
+            _getStatusColor().withValues(alpha: 0.1),
+            _getStatusColor().withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _getStatusColor().withOpacity(0.3),
+          color: _getStatusColor().withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -244,7 +244,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -282,7 +282,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _getStatusColor().withOpacity(0.1),
+                  color: _getStatusColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -417,7 +417,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
@@ -443,7 +443,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -477,10 +477,10 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -541,7 +541,7 @@ class _SecurityDashboardWidgetState extends State<SecurityDashboardWidget>
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
-          color: _getSeverityColor(event.severity).withOpacity(0.1),
+          color: _getSeverityColor(event.severity).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Text(

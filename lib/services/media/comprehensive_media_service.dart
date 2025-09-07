@@ -1,8 +1,7 @@
-﻿// Comprehensive Media Service - Proper upload pipeline with metadata enforcement
+// Comprehensive Media Service - Proper upload pipeline with metadata enforcement
 // Implements all requirements for proper Firebase Storage URL handling
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

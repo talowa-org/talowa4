@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../services/land_records_service.dart';
 import '../../models/land_record_model.dart';
 import '../../core/theme/app_theme.dart';
@@ -138,7 +138,7 @@ class _LandRecordFormScreenState extends State<LandRecordFormScreen> {
               Expanded(child: TextFormField(controller: areaCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Area', border: OutlineInputBorder()))),
               const SizedBox(width: 12),
               Expanded(child: DropdownButtonFormField<String>(
-                value: areaUnit,
+                initialValue: areaUnit,
                 items: const [DropdownMenuItem(value: 'acres', child: Text('Acres')), DropdownMenuItem(value: 'guntas', child: Text('Guntas')), DropdownMenuItem(value: 'hectares', child: Text('Hectares'))],
                 onChanged: (v){ if (v!=null) setState(()=> areaUnit=v); },
                 decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
@@ -146,14 +146,14 @@ class _LandRecordFormScreenState extends State<LandRecordFormScreen> {
             ]),
             const SizedBox(height: 12),
             DropdownButtonFormField<LandType>(
-              value: landType,
+              initialValue: landType,
               items: LandType.values.map((e)=> DropdownMenuItem(value: e, child: Text(e.toString().split('.').last))).toList(),
               onChanged: (v){ if (v!=null) setState(()=> landType=v); },
               decoration: const InputDecoration(labelText: 'Land Type', border: OutlineInputBorder()),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<PattaStatus>(
-              value: patta,
+              initialValue: patta,
               items: PattaStatus.values.map((e)=> DropdownMenuItem(value: e, child: Text(e.toString().split('.').last))).toList(),
               onChanged: (v){ if (v!=null) setState(()=> patta=v); },
               decoration: const InputDecoration(labelText: 'Patta Status', border: OutlineInputBorder()),

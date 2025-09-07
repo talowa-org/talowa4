@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/referral/referral_code_generator.dart';
-import '../../services/referral/stats_refresh_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
 import '../../services/referral/comprehensive_stats_service.dart';
 
@@ -854,7 +853,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                       ],
                     ),
                   );
-                }).toList(),
+                }),
                 if (recentReferrals.length > 3) ...[
                   const SizedBox(height: 8),
                   Text(

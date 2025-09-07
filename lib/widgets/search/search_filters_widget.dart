@@ -1,4 +1,4 @@
-﻿// Search Filters Widget for TALOWA
+// Search Filters Widget for TALOWA
 // Implements Task 24: Add advanced search and discovery - Search Filters
 
 import 'package:flutter/material.dart';
@@ -64,8 +64,8 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.category, size: 16),
-      backgroundColor: hasCategories ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasCategories ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -82,8 +82,8 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         }
       },
       avatar: const Icon(Icons.filter_list, size: 16),
-      backgroundColor: hasTypes ? AppTheme.primaryColor.withOpacity(0.1) : null,
-      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+      backgroundColor: hasTypes ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+      selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
     );
   }
 
@@ -162,7 +162,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
         _updateFilters(SearchFilters());
       },
       avatar: const Icon(Icons.clear, size: 16),
-      backgroundColor: Colors.red.withOpacity(0.1),
+      backgroundColor: Colors.red.withValues(alpha: 0.1),
     );
   }
 

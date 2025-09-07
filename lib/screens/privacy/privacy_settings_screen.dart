@@ -1,4 +1,4 @@
-﻿// Privacy Settings Screen for TALOWA Users
+// Privacy Settings Screen for TALOWA Users
 // Implements Task 17: Privacy protection system - User Interface
 
 import 'package:flutter/material.dart';
@@ -456,7 +456,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -512,7 +512,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       subtitle: Text(subtitle),
       value: value,
       onChanged: onChanged,
-      activeColor: AppTheme.talowaGreen,
+      activeThumbColor: AppTheme.talowaGreen,
       contentPadding: EdgeInsets.zero,
     );
   }

@@ -1,9 +1,8 @@
-﻿// Enhanced Gesture Service - Advanced gesture recognition and interactions
+// Enhanced Gesture Service - Advanced gesture recognition and interactions
 // Comprehensive gesture handling for TALOWA platform
 
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -246,7 +246,7 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
                   }
                 });
               },
-              activeColor: const Color(AppConstants.emergencyRedValue),
+              activeThumbColor: const Color(AppConstants.emergencyRedValue),
               contentPadding: EdgeInsets.zero,
             ),
             if (_isEmergency) ...[

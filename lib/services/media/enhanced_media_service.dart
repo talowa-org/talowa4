@@ -1,8 +1,7 @@
-﻿// Enhanced Media Service - Proper Firebase Storage URL handling
+// Enhanced Media Service - Proper Firebase Storage URL handling
 // Fixes CORS issues and ensures proper media loading
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:math' show min;
 import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';

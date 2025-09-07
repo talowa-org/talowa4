@@ -3,7 +3,8 @@
 
 import 'package:flutter/material.dart';
 import '../../services/search/advanced_search_service.dart';
-import '../common/user_avatar.dart';
+-import '../common/user_avatar_widget.dart';
++import 'package:talowa/widgets/common/user_avatar_widget.dart' as common;
 
 class SearchResultWidget extends StatelessWidget {
   final SearchResult result;
@@ -44,10 +45,10 @@ class SearchResultWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  UserAvatar(
+                  common.UserAvatarWidget(
                     imageUrl: result.metadata['authorAvatar'],
                     name: result.metadata['authorName'] ?? 'Unknown',
-                    radius: 16,
+                    size: 32,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -93,10 +94,10 @@ class SearchResultWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: UserAvatar(
+        leading: common.UserAvatarWidget(
           imageUrl: result.metadata['avatarUrl'],
           name: result.title,
-          radius: 24,
+          size: 48,
         ),
         title: _buildHighlightedText(result.title, query),
         subtitle: Column(
@@ -290,7 +291,7 @@ class SearchResultWidget extends StatelessWidget {
     return RichText(
       text: TextSpan(children: spans.isEmpty ? [TextSpan(text: text, style: style)] : spans),
       maxLines: maxLines,
-      overflow: maxLines != null ? TextOverflow.ellipsis : null,
+      overflow: maxLines != null ? TextOverflow.ellipsis : TextOverflow.clip,
     );
   }
 
@@ -344,7 +345,7 @@ class SearchResultWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

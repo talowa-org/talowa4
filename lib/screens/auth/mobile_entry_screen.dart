@@ -1,4 +1,4 @@
-﻿// Mobile Number Entry Screen for TALOWA
+// Mobile Number Entry Screen for TALOWA
 // First step in registration: Enter mobile number and request OTP
 
 import 'package:flutter/material.dart';
@@ -109,19 +109,19 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
           // Show user-friendly message
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Expanded(
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(
                       child: Text(
                           'Phone already verified! Proceeding to registration form.'),
                     ),
                   ],
                 ),
                 backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
+                duration: Duration(seconds: 2),
               ),
             );
           }
@@ -139,19 +139,19 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Row(
                   children: [
-                    const Icon(Icons.info, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Expanded(
+                    Icon(Icons.info, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(
                       child: Text(
                           'Verification expired. Please verify your phone number again.'),
                     ),
                   ],
                 ),
                 backgroundColor: Colors.orange,
-                duration: const Duration(seconds: 3),
+                duration: Duration(seconds: 3),
               ),
             );
           }

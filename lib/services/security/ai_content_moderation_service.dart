@@ -1,12 +1,10 @@
-﻿// Enhanced AI-Powered Content Moderation Service for TALOWA
+// Enhanced AI-Powered Content Moderation Service for TALOWA
 // Implements advanced content filtering and automated policy enforcement
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'content_moderation_service.dart';
 
 class AIContentModerationService {
