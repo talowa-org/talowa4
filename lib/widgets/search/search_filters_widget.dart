@@ -89,27 +89,26 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
 
   Widget _buildDateFilter() {
     String label = 'Date';
-    if (_currentFilters.startDate != null || _currentFilters.endDate != null) {
-      if (_currentFilters.startDate != null && _currentFilters.endDate != null) {
+    final hasStart = _currentFilters.dateRange?.startDate != null;
+    final hasEnd = _currentFilters.dateRange?.endDate != null;
+    if (hasStart || hasEnd) {
+      if (hasStart && hasEnd) {
         label = 'Custom Range';
-      } else if (_currentFilters.startDate != null) {
-        label = 'Since ${_formatDate(_currentFilters.startDate!)}';
+      } else if (hasStart) {
+        label = 'Since ${_formatDate(_currentFilters.dateRange!.startDate!)}';
       } else {
-        label = 'Until ${_formatDate(_currentFilters.endDate!)}';
+        label = 'Until ${_formatDate(_currentFilters.dateRange!.endDate!)}';
       }
     }
 
     return FilterChip(
       label: Text(label),
-      selected: _currentFilters.startDate != null || _currentFilters.endDate != null,
+      selected: _currentFilters.dateRange != null,
       onSelected: (selected) {
         if (selected) {
           _showDateDialog();
         } else {
-          _updateFilters(_currentFilters.copyWith(
-            startDate: null,
-            endDate: null,
-          ));
+          _updateFilters(_currentFilters.copyWith(dateRange: null));
         }
       },
       avatar: const Icon(Icons.date_range, size: 16),
@@ -117,9 +116,10 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   }
 
   Widget _buildLocationFilter() {
+    final hasLocation = _currentFilters.location != null;
     return FilterChip(
-      label: Text(_currentFilters.location ?? 'Location'),
-      selected: _currentFilters.location != null,
+      label: Text('Location'),
+      selected: hasLocation,
       onSelected: (selected) {
         if (selected) {
           _showLocationDialog();
@@ -132,8 +132,10 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   }
 
   Widget _buildAuthorFilter() {
+    final authorNames = _currentFilters.author?.authorNames;
+    final labelText = (authorNames != null && authorNames.isNotEmpty) ? authorNames.first : 'Author';
     return FilterChip(
-      label: Text(_currentFilters.author ?? 'Author'),
+      label: Text(labelText),
       selected: _currentFilters.author != null,
       onSelected: (selected) {
         if (selected) {
@@ -147,19 +149,23 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   }
 
   Widget _buildClearFiltersButton() {
-    final hasFilters = _currentFilters.category != null ||
-        _currentFilters.author != null ||
-        _currentFilters.startDate != null ||
-        _currentFilters.endDate != null ||
+    final hasFilters = (_currentFilters.categories?.isNotEmpty ?? false) ||
+        (_currentFilters.types?.isNotEmpty ?? false) ||
+        (_currentFilters.statuses?.isNotEmpty ?? false) ||
         _currentFilters.location != null ||
-        (_currentFilters.hashtags?.isNotEmpty ?? false);
+        _currentFilters.dateRange != null ||
+        (_currentFilters.tags?.isNotEmpty ?? false) ||
+        _currentFilters.priority != null ||
+        _currentFilters.author != null ||
+        _currentFilters.rating != null ||
+        (_currentFilters.customFilters?.isNotEmpty ?? false);
 
     if (!hasFilters) return const SizedBox.shrink();
 
     return ActionChip(
       label: const Text('Clear All'),
       onPressed: () {
-        _updateFilters(SearchFilters());
+        _updateFilters(const SearchFilterModel());
       },
       avatar: const Icon(Icons.clear, size: 16),
       backgroundColor: Colors.red.withValues(alpha: 0.1),
@@ -189,10 +195,10 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
               return RadioListTile<String>(
                 title: Text(category),
                 value: category,
-                groupValue: _currentFilters.category,
+                groupValue: (_currentFilters.categories?.isNotEmpty ?? false) ? _currentFilters.categories!.first : null,
                 onChanged: (value) {
                   Navigator.pop(context);
-                  _updateFilters(_currentFilters.copyWith(category: value));
+                  _updateFilters(_currentFilters.copyWith(categories: value == null ? [] : [value]));
                 },
               );
             }).toList(),
@@ -223,8 +229,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
                 final today = DateTime.now();
                 final startOfDay = DateTime(today.year, today.month, today.day);
                 _updateFilters(_currentFilters.copyWith(
-                  startDate: startOfDay,
-                  endDate: today,
+                  dateRange: DateRangeFilter(startDate: startOfDay, endDate: today),
                 ));
               },
             ),
@@ -235,8 +240,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
                 final now = DateTime.now();
                 final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
                 _updateFilters(_currentFilters.copyWith(
-                  startDate: startOfWeek,
-                  endDate: now,
+                  dateRange: DateRangeFilter(startDate: startOfWeek, endDate: now),
                 ));
               },
             ),
@@ -247,8 +251,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
                 final now = DateTime.now();
                 final startOfMonth = DateTime(now.year, now.month, 1);
                 _updateFilters(_currentFilters.copyWith(
-                  startDate: startOfMonth,
-                  endDate: now,
+                  dateRange: DateRangeFilter(startDate: startOfMonth, endDate: now),
                 ));
               },
             ),
@@ -276,18 +279,17 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
       context: context,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
-      initialDateRange: _currentFilters.startDate != null && _currentFilters.endDate != null
+      initialDateRange: (_currentFilters.dateRange?.startDate != null && _currentFilters.dateRange?.endDate != null)
           ? DateTimeRange(
-              start: _currentFilters.startDate!,
-              end: _currentFilters.endDate!,
+              start: _currentFilters.dateRange!.startDate!,
+              end: _currentFilters.dateRange!.endDate!,
             )
           : null,
     );
 
     if (picked != null) {
       _updateFilters(_currentFilters.copyWith(
-        startDate: picked.start,
-        endDate: picked.end,
+        dateRange: DateRangeFilter(startDate: picked.start, endDate: picked.end),
       ));
     }
   }
@@ -315,10 +317,10 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
               return RadioListTile<String>(
                 title: Text(location),
                 value: location,
-                groupValue: _currentFilters.location,
+                groupValue: (_currentFilters.location?.states?.isNotEmpty ?? false) ? _currentFilters.location!.states!.first : null,
                 onChanged: (value) {
                   Navigator.pop(context);
-                  _updateFilters(_currentFilters.copyWith(location: value));
+                  _updateFilters(_currentFilters.copyWith(location: value == null ? null : LocationFilter(states: [value])));
                 },
               );
             }).toList(),
@@ -359,7 +361,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
               Navigator.pop(context);
               final author = controller.text.trim();
               _updateFilters(_currentFilters.copyWith(
-                author: author.isEmpty ? null : author,
+                author: author.isEmpty ? null : AuthorFilter(authorNames: [author]),
               ));
             },
             child: const Text('Apply'),
@@ -369,7 +371,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
     );
   }
 
-  void _updateFilters(SearchFilters newFilters) {
+  void _updateFilters(SearchFilterModel newFilters) {
     setState(() {
       _currentFilters = newFilters;
     });
@@ -382,8 +384,8 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
 }
 
 class AdvancedSearchFiltersDialog extends StatefulWidget {
-  final SearchFilters initialFilters;
-  final Function(SearchFilters) onFiltersApplied;
+  final SearchFilterModel initialFilters;
+  final Function(SearchFilterModel) onFiltersApplied;
 
   const AdvancedSearchFiltersDialog({
     super.key,
@@ -396,7 +398,7 @@ class AdvancedSearchFiltersDialog extends StatefulWidget {
 }
 
 class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialog> {
-  late SearchFilters _filters;
+  late SearchFilterModel _filters;
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _hashtagController = TextEditingController();
 
@@ -404,8 +406,8 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
   void initState() {
     super.initState();
     _filters = widget.initialFilters;
-    _authorController.text = _filters.author ?? '';
-    _hashtagController.text = _filters.hashtags?.join(', ') ?? '';
+    _authorController.text = _filters.author?.authorNames?.join(', ') ?? '';
+    _hashtagController.text = _filters.tags?.join(', ') ?? '';
   }
 
   @override
@@ -527,8 +529,8 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
               child: OutlinedButton(
                 onPressed: _selectStartDate,
                 child: Text(
-                  _filters.startDate != null
-                      ? 'From: ${_formatDate(_filters.startDate!)}'
+                  _filters.dateRange?.startDate != null
+                      ? 'From: ${_formatDate(_filters.dateRange!.startDate!)}'
                       : 'Start Date',
                 ),
               ),
@@ -538,8 +540,8 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
               child: OutlinedButton(
                 onPressed: _selectEndDate,
                 child: Text(
-                  _filters.endDate != null
-                      ? 'To: ${_formatDate(_filters.endDate!)}'
+                  _filters.dateRange?.endDate != null
+                      ? 'To: ${_formatDate(_filters.dateRange!.endDate!)}'
                       : 'End Date',
                 ),
               ),
@@ -572,11 +574,11 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
           children: locations.map((location) {
             return FilterChip(
               label: Text(location),
-              selected: _filters.location == location,
+              selected: (_filters.location?.states?.contains(location) ?? false),
               onSelected: (selected) {
                 setState(() {
                   _filters = _filters.copyWith(
-                    location: selected ? location : null,
+                    location: selected ? LocationFilter(states: [location]) : null,
                   );
                 });
               },
@@ -611,14 +613,15 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
   void _selectStartDate() async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _filters.startDate ?? DateTime.now(),
+      initialDate: _filters.dateRange?.startDate ?? DateTime.now(),
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
     );
 
     if (date != null) {
       setState(() {
-        _filters = _filters.copyWith(startDate: date);
+        final existing = _filters.dateRange;
+        _filters = _filters.copyWith(dateRange: DateRangeFilter(startDate: date, endDate: existing?.endDate));
       });
     }
   }
@@ -626,21 +629,22 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
   void _selectEndDate() async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _filters.endDate ?? DateTime.now(),
-      firstDate: _filters.startDate ?? DateTime.now().subtract(const Duration(days: 365)),
+      initialDate: _filters.dateRange?.endDate ?? DateTime.now(),
+      firstDate: _filters.dateRange?.startDate ?? DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
     );
 
     if (date != null) {
       setState(() {
-        _filters = _filters.copyWith(endDate: date);
+        final existing = _filters.dateRange;
+        _filters = _filters.copyWith(dateRange: DateRangeFilter(startDate: existing?.startDate, endDate: date));
       });
     }
   }
 
   void _clearAllFilters() {
     setState(() {
-      _filters = SearchFilters();
+      _filters = const SearchFilterModel();
       _authorController.clear();
       _hashtagController.clear();
     });
@@ -654,8 +658,8 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
         : null;
 
     final finalFilters = _filters.copyWith(
-      author: author.isEmpty ? null : author,
-      hashtags: hashtags,
+      author: author.isEmpty ? null : AuthorFilter(authorNames: [author]),
+      tags: tags,
     );
 
     widget.onFiltersApplied(finalFilters);
@@ -664,26 +668,5 @@ class _AdvancedSearchFiltersDialogState extends State<AdvancedSearchFiltersDialo
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
-  }
-}
-
-// Extension to add copyWith method to SearchFilters
-extension SearchFiltersExtension on SearchFilters {
-  SearchFilters copyWith({
-    String? category,
-    String? author,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? location,
-    List<String>? hashtags,
-  }) {
-    return SearchFilters(
-      category: category ?? this.category,
-      author: author ?? this.author,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      location: location ?? this.location,
-      hashtags: hashtags ?? this.hashtags,
-    );
   }
 }

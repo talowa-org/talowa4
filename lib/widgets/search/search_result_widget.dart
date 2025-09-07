@@ -3,8 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../services/search/advanced_search_service.dart';
--import '../common/user_avatar_widget.dart';
-+import 'package:talowa/widgets/common/user_avatar_widget.dart' as common;
+import 'package:talowa/widgets/common/user_avatar_widget.dart' as common;
 
 class SearchResultWidget extends StatelessWidget {
   final SearchResult result;
