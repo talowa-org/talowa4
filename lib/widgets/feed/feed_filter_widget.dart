@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/index.dart';
-import '../../screens/feed/feed_screen.dart';
+import '../../services/social_feed/feed_service.dart';
 
 class FeedFilterWidget extends StatelessWidget {
   final PostCategory? selectedCategory;
@@ -142,51 +142,52 @@ class FeedFilterWidget extends StatelessWidget {
   }
 
   Widget _buildCategoryFilter(BuildContext context) {
-    return Column(
-      children: [
-        // All categories option
-        RadioListTile<PostCategory?>(
-          title: const Text('All Categories'),
-          value: null,
-          groupValue: selectedCategory,
-          onChanged: onCategoryChanged,
-          activeColor: AppTheme.talowaGreen,
-        ),
-        
-        // Individual categories
-        ...PostCategory.values.map((category) => RadioListTile<PostCategory?>(
-          title: Row(
-            children: [
-              Icon(category.icon, size: 16),
-              const SizedBox(width: 8),
-              Text(category.displayName),
-            ],
+    return RadioGroup<PostCategory?> (
+      groupValue: selectedCategory,
+      onChanged: onCategoryChanged,
+      child: Column(
+        children: [
+          // All categories option
+          const RadioListTile<PostCategory?> (
+            title: Text('All Categories'),
+            value: null,
           ),
-          subtitle: Text(
-            category.description,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
+          
+          // Individual categories
+          ...PostCategory.values.map((category) => RadioListTile<PostCategory?> (
+            title: Row(
+              children: [
+                Icon(category.icon, size: 16),
+                const SizedBox(width: 8),
+                Text(category.displayName),
+              ],
             ),
-          ),
-          value: category,
-          groupValue: selectedCategory,
-          onChanged: onCategoryChanged,
-          activeColor: AppTheme.talowaGreen,
-        )),
-      ],
+            subtitle: Text(
+              category.description,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            value: category,
+          )),
+        ],
+      ),
     );
   }
 
   Widget _buildSortFilter(BuildContext context) {
-    return Column(
-      children: FeedSortOption.values.map((option) => RadioListTile<FeedSortOption>(
-        title: Text(option.displayName),
-        subtitle: Text(_getSortDescription(option)),
-        value: option,
-        groupValue: sortOption,
-        onChanged: onSortChanged,
-        activeColor: AppTheme.talowaGreen,
-      )).toList(),
+    return RadioGroup<FeedSortOption> (
+      groupValue: sortOption,
+      onChanged: (value) {
+        if (value != null) onSortChanged(value);
+      },
+      child: Column(
+        children: FeedSortOption.values.map((option) => RadioListTile<FeedSortOption> (
+          title: Text(option.displayName),
+          subtitle: Text(_getSortDescription(option)),
+          value: option,
+        )).toList(),
+      ),
     );
   }
 
@@ -270,9 +271,9 @@ class FeedFilterWidget extends StatelessWidget {
         ),
         deleteIcon: const Icon(Icons.close, size: 16),
         onDeleted: onRemove,
-        backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+        backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.1),
         deleteIconColor: AppTheme.talowaGreen,
-        side: BorderSide(color: AppTheme.talowaGreen.withOpacity(0.3)),
+        side: BorderSide(color: AppTheme.talowaGreen.withValues(alpha: 0.3)),
       ),
     );
   }
@@ -287,8 +288,6 @@ class FeedFilterWidget extends StatelessWidget {
         return 'Show posts with most likes first';
       case FeedSortOption.mostCommented:
         return 'Show posts with most comments first';
-      case FeedSortOption.trending:
-        return 'Show trending posts based on engagement';
     }
   }
 }

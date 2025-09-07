@@ -181,7 +181,7 @@ class _SecurityScreenState extends State<SecurityScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -238,15 +238,15 @@ class _SecurityScreenState extends State<SecurityScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.red.withOpacity(0.1),
-            Colors.orange.withOpacity(0.1),
+            Colors.red.withValues(alpha: 0.2),
+            Colors.orange.withValues(alpha: 0.2),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.red.withOpacity(0.2),
+          color: Colors.red.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -282,7 +282,7 @@ class _SecurityScreenState extends State<SecurityScreen>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -346,7 +346,7 @@ class _SecurityScreenState extends State<SecurityScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -387,7 +387,7 @@ class _SecurityScreenState extends State<SecurityScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -420,7 +420,7 @@ class _SecurityScreenState extends State<SecurityScreen>
         labelColor: Theme.of(context).primaryColor,
         unselectedLabelColor: Colors.grey[600],
         indicator: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         indicatorPadding: const EdgeInsets.all(4),
@@ -537,7 +537,7 @@ class _SecurityScreenState extends State<SecurityScreen>
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -681,3 +681,4 @@ class SecurityTab {
     required this.description,
   });
 }
+

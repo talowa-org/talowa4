@@ -186,7 +186,7 @@ class _CommunicationDashboardWidgetState extends State<CommunicationDashboardWid
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).dividerColor,
@@ -779,7 +779,7 @@ class _CommunicationDashboardWidgetState extends State<CommunicationDashboardWid
     return Column(
       children: _activeAlerts.take(3).map((alert) => 
         Card(
-          color: _getAlertColor(alert.severity).withOpacity(0.1),
+          color: _getAlertColor(alert.severity).withValues(alpha: 0.2),
           child: ListTile(
             leading: Icon(
               _getAlertIcon(alert.severity),
@@ -989,4 +989,5 @@ class _CommunicationDashboardWidgetState extends State<CommunicationDashboardWid
     );
   }
 }
+
 

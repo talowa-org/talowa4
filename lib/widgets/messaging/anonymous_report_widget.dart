@@ -33,7 +33,7 @@ class AnonymousReportWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -234,8 +234,8 @@ class AnonymousReportWidget extends StatelessWidget {
           onReportSubmitted?.call();
         });
       },
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
+      backgroundColor: color.withValues(alpha: 0.2),
+      side: BorderSide(color: color.withValues(alpha: 0.2)),
       labelStyle: TextStyle(color: color),
     );
   }
@@ -317,7 +317,7 @@ class EmergencyAnonymousReportButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withOpacity(0.3),
+            color: Colors.red.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -379,4 +379,5 @@ class EmergencyAnonymousReportButton extends StatelessWidget {
     );
   }
 }
+
 

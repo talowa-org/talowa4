@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/security/content_moderation_service.dart';
 import '../../services/security/user_safety_service.dart';
-import '../../providers/auth_provider.dart';
+
+import '../../services/auth/auth_service.dart';
 
 class ReportContentDialog extends StatefulWidget {
   final String contentId;
@@ -196,7 +197,7 @@ class _ReportContentDialogState extends State<ReportContentDialog> {
     });
 
     try {
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) {
         throw Exception('User not authenticated');
       }

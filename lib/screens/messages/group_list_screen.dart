@@ -275,7 +275,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: _getGroupTypeColor(group.type).withOpacity(0.1),
+                color: _getGroupTypeColor(group.type).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -396,4 +396,5 @@ class _GroupListScreenState extends State<GroupListScreen> {
     ).then((_) => _loadGroups());
   }
 }
+
 

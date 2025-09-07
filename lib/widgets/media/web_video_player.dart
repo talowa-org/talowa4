@@ -188,7 +188,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
             Center(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -286,4 +286,5 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
     }
   }
 }
+
 

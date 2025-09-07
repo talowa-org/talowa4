@@ -1,6 +1,7 @@
 // Post Model for TALOWA Social Feed
 // Complete post data model with all required fields
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'geographic_targeting.dart';
 
 class PostModel {
@@ -235,6 +236,62 @@ extension PostCategoryExtension on PostCategory {
         return 'Education';
       case PostCategory.health:
         return 'Health';
+    }
+  }
+
+  // Icon to visually represent the category in UI components
+  IconData get icon {
+    switch (this) {
+      case PostCategory.announcement:
+        return Icons.campaign;
+      case PostCategory.successStory:
+        return Icons.celebration;
+      case PostCategory.legalUpdate:
+        return Icons.gavel;
+      case PostCategory.emergency:
+        return Icons.warning;
+      case PostCategory.communityNews:
+        return Icons.newspaper;
+      case PostCategory.generalDiscussion:
+        return Icons.forum;
+      case PostCategory.landRights:
+        return Icons.landscape;
+      case PostCategory.agriculture:
+        return Icons.agriculture;
+      case PostCategory.governmentSchemes:
+        return Icons.account_balance;
+      case PostCategory.education:
+        return Icons.school;
+      case PostCategory.health:
+        return Icons.health_and_safety;
+    }
+  }
+
+  // Short description to explain the category purpose
+  String get description {
+    switch (this) {
+      case PostCategory.announcement:
+        return 'General announcements and notices';
+      case PostCategory.successStory:
+        return 'Share positive outcomes and achievements';
+      case PostCategory.legalUpdate:
+        return 'Important legal information and updates';
+      case PostCategory.emergency:
+        return 'Urgent matters requiring immediate attention';
+      case PostCategory.communityNews:
+        return 'Local community news and events';
+      case PostCategory.generalDiscussion:
+        return 'Open discussion topics';
+      case PostCategory.landRights:
+        return 'Land rights specific content';
+      case PostCategory.agriculture:
+        return 'Farming practices and agriculture';
+      case PostCategory.governmentSchemes:
+        return 'Government schemes and benefits';
+      case PostCategory.education:
+        return 'Education resources and opportunities';
+      case PostCategory.health:
+        return 'Health tips and resources';
     }
   }
 

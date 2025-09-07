@@ -1,4 +1,4 @@
-﻿// Post Share Screen - Share post with network options
+// Post Share Screen - Share post with network options
 // Part of Task 7: Build post engagement interface
 
 import 'package:flutter/material.dart';
@@ -188,7 +188,7 @@ class _PostShareScreenState extends State<PostShareScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: option.color.withOpacity(0.1),
+            color: option.color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -348,3 +348,4 @@ enum ShareOption {
   final IconData icon;
   final Color color;
 }
+

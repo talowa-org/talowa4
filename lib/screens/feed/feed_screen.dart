@@ -343,9 +343,9 @@ class _FeedScreenState extends State<FeedScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: categoryInfo['color'].withOpacity(0.1),
+        color: categoryInfo['color'].withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: categoryInfo['color'].withOpacity(0.3)),
+        border: Border.all(color: categoryInfo['color'].withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1207,9 +1207,9 @@ class _FeedScreenState extends State<FeedScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -1320,7 +1320,7 @@ class _FeedScreenState extends State<FeedScreen>
                         return Container(
                           width: 60,
                           height: 60,
-                          color: AppTheme.talowaGreen.withOpacity(0.2),
+                          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                           child: Center(
                             child: Text(
                               story.authorName.isNotEmpty 
@@ -1446,4 +1446,5 @@ class FeedSearchDelegate extends SearchDelegate<String> {
     );
   }
 }
+
 

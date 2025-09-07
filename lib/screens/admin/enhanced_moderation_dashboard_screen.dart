@@ -465,7 +465,7 @@ class _EnhancedModerationDashboardScreenState extends State<EnhancedModerationDa
       title: Text(action.replaceAll('_', ' ').toUpperCase()),
       trailing: Chip(
         label: Text('$count'),
-        backgroundColor: _getActionColor(action).withOpacity(0.2),
+        backgroundColor: _getActionColor(action).withValues(alpha: 0.2),
       ),
     );
   }
@@ -884,3 +884,4 @@ class _EnhancedModerationDashboardScreenState extends State<EnhancedModerationDa
     );
   }
 }
+

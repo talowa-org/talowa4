@@ -80,9 +80,9 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
                 ),
                 child: const Row(
                   children: [
@@ -231,9 +231,9 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +287,7 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
       width: 200,
       margin: const EdgeInsets.only(right: 12),
       child: Card(
-        color: isSelected ? Colors.red.withOpacity(0.1) : null,
+        color: isSelected ? Colors.red.withValues(alpha: 0.2) : null,
         child: InkWell(
           onTap: () => _applyTemplate(template),
           child: Padding(
@@ -918,4 +918,5 @@ class DeliveryTrackingScreen extends StatelessWidget {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
+
 

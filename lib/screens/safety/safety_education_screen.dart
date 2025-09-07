@@ -4,7 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/safety/safety_education_service.dart';
-import '../../providers/auth_provider.dart';
+
+import '../../services/auth/auth_service.dart';
 import '../../widgets/common/loading_widget.dart';
 
 class SafetyEducationScreen extends StatefulWidget {
@@ -46,7 +47,7 @@ class _SafetyEducationScreenState extends State<SafetyEducationScreen>
         _error = null;
       });
 
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       final results = await Future.wait([
@@ -279,7 +280,7 @@ class _SafetyEducationScreenState extends State<SafetyEducationScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -690,7 +691,7 @@ class _SafetyEducationScreenState extends State<SafetyEducationScreen>
   }
 
   void _handleAlertTap(SafetyAlert alert) async {
-    final userId = context.read<AuthProvider>().currentUser?.uid;
+    final userId = AuthService.currentUser?.uid;
     if (userId != null) {
       await _educationService.markAlertAsRead(
         userId: userId,
@@ -709,4 +710,5 @@ class _SafetyEducationScreenState extends State<SafetyEducationScreen>
     }
   }
 }
+
 

@@ -146,9 +146,9 @@ class _AdminAccessWidgetState extends State<AdminAccessWidget> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
           borderRadius: BorderRadius.circular(8),
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.2),
         ),
         child: Row(
           children: [
@@ -234,4 +234,5 @@ class _AdminAccessWidgetState extends State<AdminAccessWidget> {
     );
   }
 }
+
 

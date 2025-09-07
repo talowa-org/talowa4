@@ -138,10 +138,10 @@ Together we can secure land rights for all! 🏡
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
@@ -351,5 +351,6 @@ Together we can secure land rights for all! 🏡
     );
   }
 }
+
 
 

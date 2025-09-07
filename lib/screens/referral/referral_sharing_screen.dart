@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/referral/qr_code_widget.dart';
 import '../../services/referral/referral_sharing_service.dart';
@@ -189,7 +189,7 @@ class _ReferralSharingScreenState extends State<ReferralSharingScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -217,7 +217,7 @@ class _ReferralSharingScreenState extends State<ReferralSharingScreen> {
                             ? 'Share $_userName\'s referral code'
                             : 'Share your referral code',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.2),
                           fontSize: 14,
                         ),
                       ),
@@ -357,7 +357,7 @@ class _ReferralSharingScreenState extends State<ReferralSharingScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -481,3 +481,4 @@ class _ReferralSharingScreenState extends State<ReferralSharingScreen> {
     );
   }
 }
+

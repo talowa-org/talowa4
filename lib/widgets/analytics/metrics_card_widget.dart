@@ -1,4 +1,4 @@
-﻿// Metrics Card Widget for TALOWA
+// Metrics Card Widget for TALOWA
 // Implements Task 23: Implement content analytics - Metrics Display
 
 import 'package:flutter/material.dart';
@@ -101,9 +101,9 @@ class CompactMetricsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -504,7 +504,7 @@ class MetricsFormatter {
   }
 
   static String formatCurrency(double value) {
-    return 'â‚¹${value.toStringAsFixed(2)}';
+    return '₹${value.toStringAsFixed(2)}';
   }
 
   static String formatDuration(Duration duration) {
@@ -529,3 +529,4 @@ class MetricsFormatter {
     return Icons.trending_flat;
   }
 }
+

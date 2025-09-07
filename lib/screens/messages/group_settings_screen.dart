@@ -1,4 +1,4 @@
-﻿// Group Settings Screen for TALOWA Messaging System
+// Group Settings Screen for TALOWA Messaging System
 // Reference: in-app-communication/requirements.md - Group Settings
 
 import 'package:flutter/material.dart';
@@ -235,7 +235,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                       );
                     }
                   },
-                  selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+                  selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
                   checkmarkColor: const Color(AppConstants.talowaGreenValue),
                 );
               }).toList(),
@@ -274,7 +274,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                   onChanged(permission);
                 }
               },
-              selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+              selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
               checkmarkColor: const Color(AppConstants.talowaGreenValue),
             );
           }).toList(),
@@ -311,7 +311,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                   );
                 }
               },
-              selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+              selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
               checkmarkColor: const Color(AppConstants.talowaGreenValue),
             );
           }).toList(),
@@ -329,3 +329,4 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
     );
   }
 }
+

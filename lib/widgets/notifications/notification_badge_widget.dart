@@ -1,4 +1,4 @@
-﻿// Notification Badge Widget - Show notification count with badge
+// Notification Badge Widget - Show notification count with badge
 // Real-time notification counter for app bar
 
 import 'dart:async';
@@ -216,7 +216,7 @@ class _InAppNotificationBannerState extends State<InAppNotificationBanner>
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -331,4 +331,5 @@ class NotificationOverlayManager {
     _currentOverlay = null;
   }
 }
+
 

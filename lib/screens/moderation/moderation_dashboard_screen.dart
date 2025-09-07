@@ -164,7 +164,7 @@ class _ModerationDashboardScreenState extends State<ModerationDashboardScreen>
         if (_isBulkMode)
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppTheme.talowaGreen.withOpacity(0.1),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.2),
             child: Row(
               children: [
                 Text(
@@ -600,4 +600,5 @@ class _ModerationDashboardScreenState extends State<ModerationDashboardScreen>
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
+
 

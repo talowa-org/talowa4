@@ -4,7 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/security/user_safety_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../services/auth/auth_service.dart';
+
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 import '../../widgets/common/user_avatar.dart';
@@ -36,7 +37,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         _error = null;
       });
 
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       final blockedUsers = await _safetyService.getBlockedUsers(userId);
@@ -55,7 +56,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
 
   Future<void> _unblockUser(BlockedUser user) async {
     try {
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       await _safetyService.unblockUser(
@@ -218,7 +219,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -404,7 +405,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
 
   Future<void> _submitHarassmentReport(BlockedUser user) async {
     try {
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       await _safetyService.reportUser(
@@ -443,4 +444,5 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     }
   }
 }
+
 

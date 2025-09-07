@@ -180,7 +180,7 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
     }
   }
 
-  void _showLoadingDialog(BuildContext context) {
+  Future<void> _showLoadingDialog(BuildContext context) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -196,11 +196,16 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
       ),
     );
 
-    // Wait for safety check to complete
-    _checkUrlSafety().then((_) {
-      Navigator.pop(context);
-      _handleLinkTap(context);
-    });
+    try {
+      await _checkUrlSafety();
+    } finally {
+      if (context.mounted && Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+    }
+
+    if (!context.mounted) return;
+    _handleLinkTap(context);
   }
 
   void _showSafetyWarningDialog(BuildContext context) {
@@ -313,6 +318,7 @@ class _SafeLinkWidgetState extends State<SafeLinkWidget> {
     try {
       await _safeBrowsingService.launchUrlSafely(widget.url, forceCheck: false);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not open link: $e')),
       );
@@ -434,8 +440,10 @@ class _ReportLinkDialogState extends State<ReportLinkDialog> {
             : _reasonController.text.trim(),
       );
 
+      if (!mounted) return;
       Navigator.pop(context);
       
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Link reported successfully. Thank you for helping keep TALOWA safe!'),
@@ -443,6 +451,7 @@ class _ReportLinkDialogState extends State<ReportLinkDialog> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error reporting link: $e'),
@@ -450,9 +459,11 @@ class _ReportLinkDialogState extends State<ReportLinkDialog> {
         ),
       );
     } finally {
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 }

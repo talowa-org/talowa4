@@ -261,7 +261,7 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: widget.isSender 
-                    ? Colors.white.withOpacity(0.2)
+                    ? Colors.white.withValues(alpha: 0.2)
                     : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -315,12 +315,12 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: widget.isSender 
-              ? Colors.white.withOpacity(0.2)
+              ? Colors.white.withValues(alpha: 0.2)
               : Colors.blue.shade50,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: widget.isSender 
-                ? Colors.white.withOpacity(0.3)
+                ? Colors.white.withValues(alpha: 0.2)
                 : Colors.blue.shade200,
           ),
         ),
@@ -433,7 +433,7 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
       decoration: BoxDecoration(
         color: widget.isSender 
-            ? Colors.white.withOpacity(0.2)
+            ? Colors.white.withValues(alpha: 0.2)
             : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(8),
       ),
@@ -540,4 +540,5 @@ class _MultilingualMessageWidgetState extends State<MultilingualMessageWidget> {
     }
   }
 }
+
 

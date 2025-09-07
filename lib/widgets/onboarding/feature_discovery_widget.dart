@@ -1,4 +1,4 @@
-﻿// TALOWA Feature Discovery Widget
+// TALOWA Feature Discovery Widget
 // Shows contextual tips and feature discovery prompts
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 
@@ -123,7 +123,7 @@ class _FeatureDiscoveryWidgetState extends State<FeatureDiscoveryWidget>
 
   Widget _buildOverlay() {
     return Material(
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withValues(alpha: 0.2),
       child: Stack(
         children: [
           // Tap to dismiss
@@ -146,7 +146,7 @@ class _FeatureDiscoveryWidgetState extends State<FeatureDiscoveryWidget>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -161,7 +161,7 @@ class _FeatureDiscoveryWidgetState extends State<FeatureDiscoveryWidget>
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: (widget.accentColor ?? AppTheme.talowaGreen).withOpacity(0.1),
+                        color: (widget.accentColor ?? AppTheme.talowaGreen).withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -391,3 +391,4 @@ class _FeatureContextualTipsWidgetState extends State<FeatureContextualTipsWidge
     );
   }
 }
+

@@ -120,7 +120,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.talowaGreen.withOpacity(0.1),
+              color: AppTheme.talowaGreen.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -456,7 +456,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
           Container(
             padding: const EdgeInsets.all(40),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -519,7 +519,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -667,9 +667,9 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -694,9 +694,9 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: TextField(
         controller: _captionController,
@@ -768,3 +768,4 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
     );
   }
 }
+

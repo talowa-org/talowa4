@@ -189,7 +189,7 @@ class _BulkActionsWidgetState extends State<BulkActionsWidget> {
               color: isSelected ? color : Colors.grey[300]!,
               width: isSelected ? 2 : 1,
             ),
-            color: isSelected ? color.withOpacity(0.1) : null,
+            color: isSelected ? color.withValues(alpha: 0.2) : null,
           ),
           child: Row(
             children: [
@@ -439,4 +439,5 @@ class _BulkActionsWidgetState extends State<BulkActionsWidget> {
     }
   }
 }
+
 

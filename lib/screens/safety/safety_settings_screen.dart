@@ -1,11 +1,12 @@
-﻿// Safety Settings Screen for TALOWA
+// Safety Settings Screen for TALOWA
 // Implements Task 18: Add security and content safety - Safety UI
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/security/user_safety_service.dart';
 import '../../services/security/content_moderation_service.dart';
-import '../../providers/auth_provider.dart';
+
+import '../../services/auth/auth_service.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 
@@ -39,7 +40,7 @@ class _SafetySettingsScreenState extends State<SafetySettingsScreen> {
         _error = null;
       });
 
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       final results = await Future.wait([
@@ -64,7 +65,7 @@ class _SafetySettingsScreenState extends State<SafetySettingsScreen> {
 
   Future<void> _updateSafetyPreferences(UserSafetyPreferences prefs) async {
     try {
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       await _safetyService.updateSafetyPreferences(
@@ -190,7 +191,7 @@ class _SafetySettingsScreenState extends State<SafetySettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -584,3 +585,4 @@ extension UserContentPreferencesExtension on UserContentPreferences {
     );
   }
 }
+

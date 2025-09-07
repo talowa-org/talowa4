@@ -1,4 +1,4 @@
-﻿// âš ï¸ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION âš ï¸
+// ⚠️ CRITICAL WARNING - AUTHENTICATION SYSTEM PROTECTION ⚠️
 // This is the WORKING welcome screen from Checkpoint 7
 // DO NOT MODIFY without explicit user approval
 // See: AUTHENTICATION_PROTECTION_STRATEGY.md
@@ -124,7 +124,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -244,10 +244,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
         // Copyright Information
         Text(
-          'Â© 2025 TALOWA. All rights reserved.',
+          '© 2025 TALOWA. All rights reserved.',
           style: TextStyle(
             fontSize: 12,
-            color: AppTheme.secondaryText.withOpacity(0.7),
+            color: AppTheme.secondaryText.withValues(alpha: 0.2),
             height: 1.4,
           ),
           textAlign: TextAlign.center,
@@ -263,4 +263,5 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.dispose();
   }
 }
+
 

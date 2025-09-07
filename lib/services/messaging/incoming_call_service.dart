@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/voice_call.dart';
@@ -314,7 +314,7 @@ class _IncomingCallOverlayState extends State<IncomingCallOverlay>
                 Text(
                   'Incoming Call',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.2),
                     fontSize: 16,
                   ),
                 ),
@@ -333,7 +333,7 @@ class _IncomingCallOverlayState extends State<IncomingCallOverlay>
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
                             colors: [
-                              Colors.blue.withOpacity(0.8),
+                              Colors.blue.withValues(alpha: 0.2),
                               Colors.blue,
                             ],
                           ),
@@ -371,7 +371,7 @@ class _IncomingCallOverlayState extends State<IncomingCallOverlay>
                 Text(
                   widget.incomingCall.callerRole.toUpperCase(),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.2),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 1.2,
@@ -441,3 +441,4 @@ class _IncomingCallOverlayState extends State<IncomingCallOverlay>
     }
   }
 }
+

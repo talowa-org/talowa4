@@ -1,4 +1,4 @@
-﻿// Trending Hashtags Widget - Display trending hashtags
+// Trending Hashtags Widget - Display trending hashtags
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';
@@ -65,7 +65,7 @@ class TrendingHashtagsWidget extends StatelessWidget {
               ? LinearGradient(
                   colors: [
                     AppTheme.talowaGreen,
-                    AppTheme.talowaGreen.withOpacity(0.8),
+                    AppTheme.talowaGreen.withValues(alpha: 0.8),
                   ],
                 )
               : null,
@@ -147,7 +147,7 @@ class TrendingHashtagsWidget extends StatelessWidget {
           border: Border.all(color: Colors.grey[300]!),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

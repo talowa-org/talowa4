@@ -62,10 +62,10 @@ class NotificationWidget extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         shape: BoxShape.circle,
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -118,10 +118,10 @@ class NotificationWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: _getNotificationColor().withOpacity(0.1),
+                color: _getNotificationColor().withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: _getNotificationColor().withOpacity(0.3),
+                  color: _getNotificationColor().withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
@@ -343,7 +343,7 @@ class CompactNotificationWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -502,4 +502,5 @@ class NotificationBadge extends StatelessWidget {
     );
   }
 }
+
 

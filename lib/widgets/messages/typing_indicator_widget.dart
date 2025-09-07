@@ -1,4 +1,4 @@
-﻿// Typing Indicator Widget for TALOWA Messaging
+// Typing Indicator Widget for TALOWA Messaging
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -89,7 +89,7 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
               // Avatar
               CircleAvatar(
                 radius: 12,
-                backgroundColor: AppTheme.talowaGreen.withOpacity(0.2),
+                backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                 child: const Icon(
                   Icons.person,
                   size: 14,
@@ -278,3 +278,4 @@ class TypingStatusManager {
     _listeners.clear();
   }
 }
+

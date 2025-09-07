@@ -1,4 +1,4 @@
-﻿// Admin Dashboard Screen for TALOWA Messaging System
+// Admin Dashboard Screen for TALOWA Messaging System
 import 'package:flutter/material.dart';
 import '../../services/admin/admin_dashboard_service.dart';
 import 'content_reports_screen.dart';
@@ -368,7 +368,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   ) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.2),
         child: Icon(icon, color: color),
       ),
       title: Text(title),
@@ -519,3 +519,4 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 }
+

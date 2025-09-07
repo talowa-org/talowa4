@@ -1,4 +1,4 @@
-﻿// Category Filter Widget - Filter content by categories
+// Category Filter Widget - Filter content by categories
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';
@@ -82,14 +82,14 @@ class CategoryFilterWidget extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppTheme.talowaGreen.withOpacity(0.3),
+                    color: AppTheme.talowaGreen.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -156,8 +156,8 @@ class CategoryFilterWidget extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? AppTheme.talowaGreen.withOpacity(0.2)
-                  : Colors.grey.withOpacity(0.1),
+                  ? AppTheme.talowaGreen.withValues(alpha: 0.2)
+                  : Colors.grey.withValues(alpha: 0.1),
               blurRadius: isSelected ? 8 : 4,
               offset: const Offset(0, 2),
             ),
@@ -175,7 +175,7 @@ class CategoryFilterWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppTheme.talowaGreen
-                      : AppTheme.talowaGreen.withOpacity(0.1),
+                      : AppTheme.talowaGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Icon(
@@ -242,10 +242,6 @@ class CategoryFilterWidget extends StatelessWidget {
     switch (category) {
       case PostCategory.landRights:
         return 245;
-      case PostCategory.legalUpdates:
-        return 89;
-      case PostCategory.successStories:
-        return 156;
       case PostCategory.successStory:
         return 156;
       case PostCategory.legalUpdate:
@@ -254,12 +250,18 @@ class CategoryFilterWidget extends StatelessWidget {
         return 312;
       case PostCategory.governmentSchemes:
         return 78;
-      case PostCategory.awareness:
-        return 203;
       case PostCategory.emergency:
         return 12;
-      case PostCategory.general:
+      case PostCategory.generalDiscussion:
         return 567;
+      case PostCategory.agriculture:
+        return 203;
+      case PostCategory.education:
+        return 134;
+      case PostCategory.health:
+        return 98;
+      case PostCategory.announcement:
+        return 210;
     }
   }
 }

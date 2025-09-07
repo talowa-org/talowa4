@@ -182,7 +182,7 @@ class _IntegratedRegistrationScreenState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppTheme.talowaGreen.withOpacity(0.1), Colors.white],
+            colors: [AppTheme.talowaGreen.withValues(alpha: 0.2), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -450,9 +450,9 @@ class _IntegratedRegistrationScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.talowaGreen.withOpacity(0.1),
+        color: AppTheme.talowaGreen.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.talowaGreen.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.talowaGreen.withValues(alpha: 0.2)),
       ),
       child: const Column(
         children: [
@@ -1075,4 +1075,5 @@ class _IntegratedRegistrationScreenState
 
 
 }
+
 

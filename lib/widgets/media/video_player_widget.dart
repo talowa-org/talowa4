@@ -1,4 +1,4 @@
-﻿// Video Player Widget for TALOWA Social Feed
+// Video Player Widget for TALOWA Social Feed
 // Handles video playback with controls and optimization
 
 import 'package:flutter/material.dart';
@@ -321,9 +321,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(0.3),
+            Colors.black.withValues(alpha: 0.2),
             Colors.transparent,
-            Colors.black.withOpacity(0.3),
+            Colors.black.withValues(alpha: 0.2),
           ],
         ),
       ),
@@ -353,7 +353,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           // Center play/pause button
           Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -408,4 +408,5 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
   }
 }
+
 

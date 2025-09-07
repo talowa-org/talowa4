@@ -1,4 +1,4 @@
-﻿// Image Gallery Screen - Full screen image viewer with swipe navigation
+// Image Gallery Screen - Full screen image viewer with swipe navigation
 // Part of Task 6: Implement PostWidget for individual posts
 
 import 'package:flutter/material.dart';
@@ -128,7 +128,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
                     Text(
                       'Loading image...',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.2),
                         fontSize: 14,
                       ),
                     ),
@@ -143,14 +143,14 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
                   children: [
                     Icon(
                       Icons.broken_image,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.2),
                       size: 64,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Failed to load image',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.2),
                         fontSize: 16,
                       ),
                     ),
@@ -180,7 +180,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.7),
+                Colors.black.withValues(alpha: 0.2),
                 Colors.transparent,
               ],
             ),
@@ -247,7 +247,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black.withOpacity(0.7),
+                  Colors.black.withValues(alpha: 0.2),
                   Colors.transparent,
                 ],
               ),
@@ -267,7 +267,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
                         shape: BoxShape.circle,
                         color: _currentIndex == index
                             ? Colors.white
-                            : Colors.white.withOpacity(0.4),
+                            : Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -324,7 +324,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
                                   color: Colors.grey[800],
                                   child: Icon(
                                     Icons.broken_image,
-                                    color: Colors.white.withOpacity(0.5),
+                                    color: Colors.white.withValues(alpha: 0.2),
                                     size: 20,
                                   ),
                                 );
@@ -402,3 +402,4 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen>
     );
   }
 }
+

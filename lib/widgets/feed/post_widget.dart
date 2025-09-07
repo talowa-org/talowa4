@@ -218,9 +218,9 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: badgeColor.withOpacity(0.3)),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.2)),
       ),
       child: Text(
         badgeText,
@@ -237,7 +237,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: _getCategoryColor().withOpacity(0.1),
+        color: _getCategoryColor().withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -468,7 +468,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                             Text(
                               'more photos',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 fontSize: 12,
                               ),
                             ),
@@ -657,9 +657,9 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.1),
+                color: Colors.amber.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -684,9 +684,9 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.red.withOpacity(0.3)),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1076,4 +1076,5 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     );
   }
 }
+
 

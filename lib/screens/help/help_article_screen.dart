@@ -186,8 +186,8 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.talowaGreen.withOpacity(0.1),
-                    AppTheme.talowaGreen.withOpacity(0.05),
+                    AppTheme.talowaGreen.withValues(alpha: 0.2),
+                    AppTheme.talowaGreen.withValues(alpha: 0.2),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -205,7 +205,7 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.talowaGreen.withOpacity(0.2),
+                          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -239,7 +239,7 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.2),
+                            color: Colors.orange.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
@@ -281,7 +281,7 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.2),
+                            color: Colors.grey.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -500,4 +500,5 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
     );
   }
 }
+
 

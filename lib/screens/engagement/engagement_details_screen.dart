@@ -246,9 +246,9 @@ class _EngagementDetailsScreenState extends State<EngagementDetailsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: badgeColor.withOpacity(0.3)),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.2)),
       ),
       child: Text(
         badgeText,
@@ -403,4 +403,5 @@ class EngagementUser {
     this.avatarUrl,
   });
 }
+
 

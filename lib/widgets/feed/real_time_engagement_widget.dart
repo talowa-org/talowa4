@@ -436,7 +436,7 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
                     width: 4,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppTheme.talowaGreen.withOpacity(opacity),
+                      color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                   );
@@ -531,4 +531,5 @@ class _UserPresenceIndicatorState extends State<UserPresenceIndicator> {
     );
   }
 }
+
 

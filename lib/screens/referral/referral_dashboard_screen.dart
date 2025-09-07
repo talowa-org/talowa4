@@ -143,7 +143,7 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppTheme.talowaGreen.withOpacity(0.1),
+              AppTheme.talowaGreen.withValues(alpha: 0.2),
               Colors.white,
             ],
           ),
@@ -236,7 +236,7 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.talowaGreen.withOpacity(0.1),
+                  color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppTheme.talowaGreen),
                 ),
@@ -447,7 +447,7 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -527,4 +527,5 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
     }
   }
 }
+
 

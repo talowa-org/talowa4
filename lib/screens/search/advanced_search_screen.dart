@@ -8,7 +8,8 @@ import '../../core/theme/app_theme.dart';
 import '../../models/search/search_result_model.dart';
 import '../../models/search/search_filter_model.dart';
 import '../../services/search/search_service.dart';
-import '../../providers/auth_provider.dart';
+
+import '../../services/auth/auth_service.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/search/search_result_widget.dart';
 import '../../widgets/search/simple_search_filters_widget.dart';
@@ -76,7 +77,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen>
         _error = null;
       });
 
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) return;
 
       final results = await Future.wait([

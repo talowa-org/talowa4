@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/voice_call.dart';
 import '../../models/call_participant.dart';
@@ -198,7 +198,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
       case 'connecting':
         return widget.isIncoming ? 'Incoming call...' : 'Connecting...';
       case 'connected':
-        return 'Connected â€¢ ${_formatDuration(_currentCall!.duration)}';
+        return 'Connected • ${_formatDuration(_currentCall!.duration)}';
       case 'ended':
         return 'Call ended';
       case 'failed':
@@ -293,7 +293,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
                       Text(
                         otherParticipant!.role.toUpperCase(),
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.2),
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 1.2,
@@ -306,7 +306,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
                     Text(
                       _getCallStatusText(),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.2),
                         fontSize: 16,
                       ),
                     ),
@@ -319,7 +319,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
                         margin: const EdgeInsets.symmetric(horizontal: 32),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -392,7 +392,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.2),
             fontSize: 10,
           ),
         ),
@@ -443,3 +443,4 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
     );
   }
 }
+

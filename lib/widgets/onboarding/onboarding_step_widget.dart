@@ -27,8 +27,8 @@ class OnboardingStepWidget extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: step.accentColor?.withOpacity(0.1) ?? 
-                     AppTheme.talowaGreen.withOpacity(0.1),
+              color: step.accentColor?.withValues(alpha: 0.2) ?? 
+                     AppTheme.talowaGreen.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -193,7 +193,7 @@ class OnboardingStepWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Row(
@@ -222,4 +222,5 @@ class OnboardingStepWidget extends StatelessWidget {
     );
   }
 }
+
 

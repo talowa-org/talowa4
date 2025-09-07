@@ -171,7 +171,7 @@ class ImageGalleryWidget extends StatelessWidget {
         onTap: () => _handleImageTap(context, 2),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -275,4 +275,5 @@ class ImageGalleryWidget extends StatelessWidget {
     );
   }
 }
+
 

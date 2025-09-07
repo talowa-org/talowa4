@@ -197,15 +197,15 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.talowaGreen.withOpacity(0.1),
-                  AppTheme.talowaGreen.withOpacity(0.05),
+                  AppTheme.talowaGreen.withValues(alpha: 0.2),
+                  AppTheme.talowaGreen.withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: AppTheme.talowaGreen.withOpacity(0.2),
+                color: AppTheme.talowaGreen.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -373,7 +373,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen>
                   _searchController.text = suggestion;
                   _performSearch(suggestion);
                 },
-                backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+                backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                 labelStyle: const TextStyle(color: AppTheme.talowaGreen),
               );
             }).toList(),
@@ -459,7 +459,7 @@ class HelpCategoryArticlesScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+                      backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                       child: const Icon(
                         Icons.article,
                         color: AppTheme.talowaGreen,
@@ -506,7 +506,7 @@ class HelpCategoryArticlesScreen extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.talowaGreen.withOpacity(0.1),
+                                  color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
@@ -532,4 +532,5 @@ class HelpCategoryArticlesScreen extends StatelessWidget {
     );
   }
 }
+
 

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 /// Call controls widget for voice calls
 class CallControlsWidget extends StatelessWidget {
@@ -27,7 +27,7 @@ class CallControlsWidget extends StatelessWidget {
           icon: isMuted ? Icons.mic_off : Icons.mic,
           isActive: isMuted,
           onTap: onMuteToggle,
-          backgroundColor: isMuted ? Colors.red : Colors.white.withOpacity(0.2),
+          backgroundColor: isMuted ? Colors.red : Colors.white.withValues(alpha: 0.2),
           iconColor: isMuted ? Colors.white : Colors.white,
         ),
 
@@ -46,7 +46,7 @@ class CallControlsWidget extends StatelessWidget {
           icon: isSpeakerOn ? Icons.volume_up : Icons.volume_down,
           isActive: isSpeakerOn,
           onTap: onSpeakerToggle,
-          backgroundColor: isSpeakerOn ? Colors.blue : Colors.white.withOpacity(0.2),
+          backgroundColor: isSpeakerOn ? Colors.blue : Colors.white.withValues(alpha: 0.2),
           iconColor: Colors.white,
         ),
       ],
@@ -71,7 +71,7 @@ class CallControlsWidget extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -86,3 +86,4 @@ class CallControlsWidget extends StatelessWidget {
     );
   }
 }
+

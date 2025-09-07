@@ -1,4 +1,4 @@
-﻿// Group Members Screen for TALOWA Messaging System
+// Group Members Screen for TALOWA Messaging System
 // Reference: in-app-communication/requirements.md - Group Member Management
 
 import 'package:flutter/material.dart';
@@ -274,7 +274,7 @@ class _GroupMembersScreenState extends State<GroupMembersScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
@@ -305,7 +305,7 @@ class _GroupMembersScreenState extends State<GroupMembersScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getRoleColor(member.groupRole).withOpacity(0.1),
+                    color: _getRoleColor(member.groupRole).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -453,3 +453,4 @@ class _GroupMembersScreenState extends State<GroupMembersScreen> {
     );
   }
 }
+

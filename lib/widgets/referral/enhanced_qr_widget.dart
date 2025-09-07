@@ -252,7 +252,7 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
                       border: Border.all(color: Colors.grey[300]!, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -294,10 +294,10 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -417,5 +417,6 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
     );
   }
 }
+
 
 

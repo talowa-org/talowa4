@@ -1,4 +1,4 @@
-﻿// Notification Center Widget - Display and manage notifications
+// Notification Center Widget - Display and manage notifications
 // Complete FCM notification UI implementation
 
 import 'package:flutter/material.dart';
@@ -436,9 +436,10 @@ class _NotificationCenterWidgetState extends State<NotificationCenterWidget> {
     }
 
     return CircleAvatar(
-      backgroundColor: iconColor.withOpacity(0.1),
+      backgroundColor: iconColor.withValues(alpha: 0.2),
       child: Icon(iconData, color: iconColor, size: 20),
     );
   }
 }
+
 

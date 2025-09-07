@@ -285,7 +285,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                       });
                     }
                   },
-                  selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+                  selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
                   checkmarkColor: const Color(AppConstants.talowaGreenValue),
                 );
               }).toList(),
@@ -479,7 +479,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   onChanged(permission);
                 }
               },
-              selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+              selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
               checkmarkColor: const Color(AppConstants.talowaGreenValue),
             );
           }).toList(),
@@ -549,4 +549,5 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     );
   }
 }
+
 

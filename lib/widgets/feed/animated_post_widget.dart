@@ -1,4 +1,4 @@
-﻿// Animated Post Widget - Provides smooth animations for real-time post updates
+// Animated Post Widget - Provides smooth animations for real-time post updates
 // Part of Task 13: Implement real-time feed updates
 
 import 'package:flutter/material.dart';
@@ -80,7 +80,7 @@ class _AnimatedPostWidgetState extends State<AnimatedPostWidget>
     ));
     
     _highlightAnimation = ColorTween(
-      begin: Colors.blue.withOpacity(0.1),
+      begin: Colors.blue.withValues(alpha: 0.2),
       end: Colors.transparent,
     ).animate(CurvedAnimation(
       parent: _highlightController,
@@ -320,3 +320,4 @@ class _TypingIndicatorWidgetState extends State<TypingIndicatorWidget>
     );
   }
 }
+

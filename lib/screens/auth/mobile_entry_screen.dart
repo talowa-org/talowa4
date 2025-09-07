@@ -386,7 +386,7 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppTheme.talowaGreen.withOpacity(0.1), Colors.white],
+            colors: [AppTheme.talowaGreen.withValues(alpha: 0.2), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -527,4 +527,5 @@ class _MobileEntryScreenState extends State<MobileEntryScreen> {
     );
   }
 }
+
 

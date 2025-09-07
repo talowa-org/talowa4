@@ -125,7 +125,7 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
@@ -134,7 +134,7 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: 'Search posts, hashtags, topics...',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
           prefixIcon: const Icon(Icons.search, color: Colors.white),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -278,10 +278,10 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: AppTheme.talowaGreen.withOpacity(0.1),
+          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.talowaGreen.withOpacity(0.3),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           ),
         ),
         child: Text(
@@ -550,7 +550,7 @@ class _ContentSearchScreenState extends State<ContentSearchScreen>
               _selectedCategory = selected ? category : null;
             });
           },
-          selectedColor: AppTheme.talowaGreen.withOpacity(0.2),
+          selectedColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
           checkmarkColor: AppTheme.talowaGreen,
         );
       }).toList(),
@@ -664,4 +664,5 @@ enum DateRange {
   const DateRange(this.displayName);
   final String displayName;
 }
+
 

@@ -119,7 +119,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
@@ -128,7 +128,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: 'Search posts, hashtags, people...',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
           prefixIcon: const Icon(Icons.search, color: Colors.white),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -285,10 +285,10 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: AppTheme.talowaGreen.withOpacity(0.1),
+          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.talowaGreen.withOpacity(0.3),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           ),
         ),
         child: Text(
@@ -307,7 +307,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: AppTheme.talowaGreen.withOpacity(0.1),
+          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(
@@ -580,7 +580,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
               _selectedCategory = selected ? category : null;
             });
           },
-          selectedColor: AppTheme.talowaGreen.withOpacity(0.2),
+          selectedColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
           checkmarkColor: AppTheme.talowaGreen,
         );
       }).toList(),
@@ -665,4 +665,5 @@ class _FeedSearchScreenState extends State<FeedSearchScreen>
     debugPrint('Opening post detail: ${post.id}');
   }
 }
+
 

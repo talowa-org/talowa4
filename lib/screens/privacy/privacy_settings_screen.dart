@@ -122,9 +122,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.talowaGreen.withOpacity(0.1),
+        color: AppTheme.talowaGreen.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.talowaGreen.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.talowaGreen.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +157,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Row(
@@ -235,7 +235,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.amber.withOpacity(0.1),
+            color: Colors.amber.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -276,7 +276,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Row(
@@ -341,7 +341,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Column(
@@ -696,3 +696,4 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     }
   }
 }
+

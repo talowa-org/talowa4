@@ -1,4 +1,4 @@
-﻿// Analytics Chart Widget for TALOWA
+// Analytics Chart Widget for TALOWA
 // Implements Task 23: Implement content analytics - Chart Visualization
 
 import 'package:flutter/material.dart';
@@ -106,7 +106,7 @@ class AnalyticsChartWidget extends StatelessWidget {
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.2),
             ),
           ),
         ],
@@ -191,10 +191,10 @@ class AnalyticsChartWidget extends StatelessWidget {
         sections: data.asMap().entries.map((entry) {
           final colors = [
             color,
-            color.withOpacity(0.8),
-            color.withOpacity(0.6),
-            color.withOpacity(0.4),
-            color.withOpacity(0.2),
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.2),
           ];
           
           return PieChartSectionData(
@@ -457,3 +457,4 @@ class _RealTimeChartState extends State<RealTimeChart> {
     );
   }
 }
+

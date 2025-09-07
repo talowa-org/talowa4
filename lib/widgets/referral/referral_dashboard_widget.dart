@@ -137,7 +137,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.8),
+            Theme.of(context).primaryColor.withValues(alpha: 0.2),
           ],
         ),
       ),
@@ -159,7 +159,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -222,7 +222,7 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconButton(
@@ -363,10 +363,10 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
@@ -412,9 +412,9 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.1),
+                  color: Colors.amber.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                  border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -660,9 +660,9 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isPositive ? Colors.green.withOpacity(0.1) :
-               isNegative ? Colors.red.withOpacity(0.1) :
-               Colors.grey.withOpacity(0.1),
+        color: isPositive ? Colors.green.withValues(alpha: 0.2) :
+               isNegative ? Colors.red.withValues(alpha: 0.2) :
+               Colors.grey.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -799,5 +799,6 @@ class _ReferralDashboardWidgetState extends State<ReferralDashboardWidget>
     );
   }
 }
+
 
 

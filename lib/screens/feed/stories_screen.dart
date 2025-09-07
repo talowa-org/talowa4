@@ -1,4 +1,4 @@
-﻿// Instagram-like Stories Screen for TALOWA
+// Instagram-like Stories Screen for TALOWA
 // Complete stories viewing experience with gestures and interactions
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -252,7 +252,7 @@ class _StoriesScreenState extends State<StoriesScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            'â¤ï¸', 'ðŸ˜', 'ðŸ˜‚', 'ðŸ˜®', 'ðŸ˜¢', 'ðŸ‘', 'ðŸ”¥', 'ðŸ’ª'
+            '❤️', '😍', '😂', '😮', '😢', '👏', '🔥', '💪'
           ].map((emoji) => GestureDetector(
             onTap: () {
               Navigator.pop(context);
@@ -261,7 +261,7 @@ class _StoriesScreenState extends State<StoriesScreen>
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Text(
@@ -492,7 +492,7 @@ class _StoriesScreenState extends State<StoriesScreen>
               Text(
                 _formatTime(_currentStory!.createdAt),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.2),
                   fontSize: 12,
                 ),
               ),
@@ -514,7 +514,7 @@ class _StoriesScreenState extends State<StoriesScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -534,9 +534,9 @@ class _StoriesScreenState extends State<StoriesScreen>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: const Text(
               'Send message',
@@ -554,9 +554,9 @@ class _StoriesScreenState extends State<StoriesScreen>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: const Icon(
               Icons.favorite_border,
@@ -573,9 +573,9 @@ class _StoriesScreenState extends State<StoriesScreen>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
             child: const Icon(
               Icons.send,
@@ -638,3 +638,4 @@ class ReactionAnimation {
     required this.animationController,
   });
 }
+

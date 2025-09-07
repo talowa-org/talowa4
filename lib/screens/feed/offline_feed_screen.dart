@@ -1,4 +1,4 @@
-﻿// Offline-Aware Feed Screen for TALOWA
+// Offline-Aware Feed Screen for TALOWA
 // Implements Task 20: Offline functionality - UI Integration
 
 import 'package:flutter/material.dart';
@@ -260,7 +260,7 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
   Widget _buildFilterBar() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: AppTheme.talowaGreen.withOpacity(0.1),
+      color: AppTheme.talowaGreen.withValues(alpha: 0.2),
       child: Row(
         children: [
           const Text(
@@ -272,7 +272,7 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
             label: Text(_getCategoryName(_selectedCategory!)),
             onDeleted: () => _clearFilter(),
             deleteIcon: const Icon(Icons.close, size: 16),
-            backgroundColor: AppTheme.talowaGreen.withOpacity(0.2),
+            backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
           ),
         ],
       ),
@@ -282,7 +282,7 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
   Widget _buildOfflineBanner() {
     return Container(
       padding: const EdgeInsets.all(12),
-      color: Colors.orange.withOpacity(0.1),
+      color: Colors.orange.withValues(alpha: 0.2),
       child: const Row(
         children: [
           Icon(Icons.cloud_off, color: Colors.orange, size: 20),
@@ -362,7 +362,7 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.2),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(8),
                   bottomRight: Radius.circular(8),
@@ -789,3 +789,4 @@ class _OfflineFeedScreenState extends State<OfflineFeedScreen>
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
+

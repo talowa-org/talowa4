@@ -159,7 +159,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withOpacity(0.05),
+        color: AppTheme.primaryColor.withValues(alpha: 0.2),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -178,7 +178,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -267,18 +267,18 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: isSelected 
-            ? AppTheme.primaryColor.withOpacity(0.1)
+            ? AppTheme.primaryColor.withValues(alpha: 0.2)
             : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected 
-              ? AppTheme.primaryColor.withOpacity(0.3)
-              : Colors.grey.withOpacity(0.2),
+              ? AppTheme.primaryColor.withValues(alpha: 0.2)
+              : Colors.grey.withValues(alpha: 0.2),
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -371,7 +371,7 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withOpacity(0.1),
+        color: AppTheme.primaryColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Center(
@@ -422,4 +422,5 @@ class _LanguageSelectorWidgetState extends State<LanguageSelectorWidget>
     );
   }
 }
+
 

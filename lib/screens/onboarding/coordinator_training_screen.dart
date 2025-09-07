@@ -439,8 +439,8 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  _currentModule.color.withOpacity(0.1),
-                  _currentModule.color.withOpacity(0.05),
+                  _currentModule.color.withValues(alpha: 0.2),
+                  _currentModule.color.withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -595,7 +595,7 @@ class _CoordinatorTrainingScreenState extends State<CoordinatorTrainingScreen>
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
@@ -683,4 +683,5 @@ class TrainingStep {
     required this.isInteractive,
   });
 }
+
 

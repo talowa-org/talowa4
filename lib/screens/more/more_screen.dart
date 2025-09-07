@@ -805,7 +805,7 @@ class _MoreScreenState extends State<MoreScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.talowaGreen.withOpacity(0.1),
+                color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(

@@ -237,9 +237,9 @@ class FeedPostCard extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.1),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-        border: Border.all(color: chipColor.withOpacity(0.3)),
+        border: Border.all(color: chipColor.withValues(alpha: 0.2)),
       ),
       child: Text(
         chipText,
@@ -279,4 +279,5 @@ class FeedPostCard extends StatelessWidget {
     }
   }
 }
+
 

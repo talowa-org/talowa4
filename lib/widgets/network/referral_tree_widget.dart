@@ -195,10 +195,10 @@ class ReferralTreeWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(AppTheme.spacingMedium),
           decoration: BoxDecoration(
-            color: AppTheme.secondaryText.withOpacity(0.1),
+            color: AppTheme.secondaryText.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             border: Border.all(
-              color: AppTheme.secondaryText.withOpacity(0.3),
+              color: AppTheme.secondaryText.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -231,10 +231,10 @@ class ReferralTreeWidget extends StatelessWidget {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: AppTheme.secondaryText.withOpacity(0.3),
+            color: AppTheme.secondaryText.withValues(alpha: 0.2),
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppTheme.secondaryText.withOpacity(0.5),
+              color: AppTheme.secondaryText.withValues(alpha: 0.2),
               width: 2,
             ),
           ),
@@ -267,4 +267,5 @@ class ReferralTreeWidget extends StatelessWidget {
     );
   }
 }
+
 

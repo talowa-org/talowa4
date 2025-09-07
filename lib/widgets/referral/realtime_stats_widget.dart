@@ -199,9 +199,9 @@ class RoleProgressWidget extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -279,4 +279,5 @@ class RoleProgressWidget extends StatelessWidget {
     );
   }
 }
+
 

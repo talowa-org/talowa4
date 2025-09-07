@@ -62,7 +62,7 @@ class _HashtagScreenState extends State<HashtagScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -177,13 +177,13 @@ class _HashtagScreenState extends State<HashtagScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.talowaGreen.withOpacity(0.1),
-            AppTheme.talowaGreen.withOpacity(0.05),
+            AppTheme.talowaGreen.withValues(alpha: 0.2),
+            AppTheme.talowaGreen.withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.talowaGreen.withOpacity(0.2),
+          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -507,4 +507,5 @@ class _HashtagScreenState extends State<HashtagScreen> {
     debugPrint('Opening post detail: ${post.id}');
   }
 }
+
 

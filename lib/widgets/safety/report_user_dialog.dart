@@ -2,10 +2,12 @@
 // Implements Task 18: Add security and content safety - User Report UI
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
++import 'package:flutter/foundation.dart';
+// removed: import 'package:provider/provider.dart';
 import '../../services/security/user_safety_service.dart';
-import '../../providers/auth_provider.dart';
-import '../common/user_avatar.dart';
+import '../../services/safety/safe_browsing_service.dart'; // For RiskLevel enum
+import '../../services/auth/auth_service.dart';
+import '../common/user_avatar_widget.dart';
 
 class ReportUserDialog extends StatefulWidget {
   final String reportedUserId;
@@ -59,7 +61,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
   Future<void> _analyzeHarassmentPattern() async {
     if (widget.recentMessages != null && widget.recentMessages!.isNotEmpty) {
       try {
-        final userId = context.read<AuthProvider>().currentUser?.uid;
+        final userId = AuthService.currentUser?.uid;
         if (userId == null) return;
 
         final analysis = await _safetyService.analyzeHarassmentPattern(
@@ -107,7 +109,18 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            ..._buildReasonOptions(),
+            RadioGroup<UserReportReason>(
+              groupValue: _selectedReason,
+              onChanged: (value) {
+                setState(() {
+                  _selectedReason = value;
+                });
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _buildReasonOptions(),
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
@@ -302,20 +315,27 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     );
   }
 
-  String _getPatternDescription(HarassmentPattern pattern) {
-    switch (pattern) {
-      case HarassmentPattern.excessiveMessaging:
-        return 'Sending too many messages';
-      case HarassmentPattern.threats:
-        return 'Threatening language detected';
-      case HarassmentPattern.personalAttacks:
-        return 'Personal attacks and insults';
-      case HarassmentPattern.stalking:
-        return 'Stalking behavior';
-      case HarassmentPattern.impersonation:
-        return 'Impersonation attempts';
+  String _getPatternDescription(String pattern) {
+    if (pattern.startsWith('keyword:')) {
+      final key = pattern.substring('keyword:'.length);
+      return 'Detected keyword: $key';
     }
-  }
+    // Legacy/fallback labels support
+    switch (pattern) {
+    case 'excessiveMessaging':
+    return 'Sending too many messages';
+    case 'threats':
+    return 'Threatening language detected';
+    case 'personalAttacks':
+    return 'Personal attacks and insults';
+    case 'stalking':
+    return 'Stalking behavior';
+    case 'impersonation':
+    return 'Impersonation attempts';
+    default:
+    return 'Potential harassment indicator';
+    }
+    }
 
   List<Widget> _buildReasonOptions() {
     return _reasonDescriptions.entries.map((entry) {
@@ -326,7 +346,6 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
           style: const TextStyle(fontSize: 12),
         ),
         value: entry.key,
-        groupValue: _selectedReason,
         onChanged: (value) {
           setState(() {
             _selectedReason = value;
@@ -364,7 +383,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     });
 
     try {
-      final userId = context.read<AuthProvider>().currentUser?.uid;
+      final userId = AuthService.currentUser?.uid;
       if (userId == null) {
         throw Exception('User not authenticated');
       }
@@ -388,9 +407,11 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
         );
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
 
       // Show success message
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Column(
@@ -416,6 +437,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error submitting report: $e'),
@@ -423,9 +445,11 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
         ),
       );
     } finally {
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-﻿// TALOWA Progress Indicator Widget
+// TALOWA Progress Indicator Widget
 // Shows progress through onboarding steps
 
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
           width: double.infinity,
           height: height,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(height / 2),
           ),
           child: FractionallySizedBox(
@@ -61,7 +61,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isCompleted || isCurrent
                       ? color
-                      : color.withOpacity(0.3),
+                      : color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -84,3 +84,4 @@ class ProgressIndicatorWidget extends StatelessWidget {
     );
   }
 }
+

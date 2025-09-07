@@ -409,9 +409,9 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: badgeColor.withOpacity(0.3)),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.2)),
       ),
       child: Text(
         badgeText,
@@ -547,4 +547,5 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
     }
   }
 }
+
 

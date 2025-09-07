@@ -132,7 +132,7 @@ class _ContentReportsScreenState extends State<ContentReportsScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor(report.status).withOpacity(0.1),
+          backgroundColor: _getStatusColor(report.status).withValues(alpha: 0.2),
           child: Icon(
             _getReportTypeIcon(report.reportType),
             color: _getStatusColor(report.status),
@@ -263,7 +263,7 @@ class _ContentReportsScreenState extends State<ContentReportsScreen> {
         status.displayName,
         style: const TextStyle(fontSize: 12),
       ),
-      backgroundColor: _getStatusColor(status).withOpacity(0.1),
+      backgroundColor: _getStatusColor(status).withValues(alpha: 0.2),
       side: BorderSide(color: _getStatusColor(status)),
     );
   }
@@ -562,4 +562,5 @@ class _ReviewReportDialogState extends State<_ReviewReportDialog> {
     }
   }
 }
+
 

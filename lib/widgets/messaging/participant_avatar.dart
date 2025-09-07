@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../models/call_participant.dart';
 
 /// Participant avatar widget for voice calls
@@ -28,12 +28,12 @@ class ParticipantAvatar extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                _getAvatarColor().withOpacity(0.8),
+                _getAvatarColor().withValues(alpha: 0.2),
                 _getAvatarColor(),
               ],
             ),
             border: Border.all(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.2),
               width: 2,
             ),
           ),
@@ -142,3 +142,4 @@ class ParticipantAvatar extends StatelessWidget {
     }
   }
 }
+

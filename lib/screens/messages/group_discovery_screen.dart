@@ -282,7 +282,7 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: _getGroupTypeColor(group.type).withOpacity(0.1),
+                          color: _getGroupTypeColor(group.type).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -359,7 +359,7 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: Colors.orange.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -384,7 +384,7 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Text(
@@ -496,4 +496,5 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen>
     ).then((_) => _discoverGroups());
   }
 }
+
 

@@ -1,4 +1,4 @@
-﻿// Recommended Content Widget - AI-powered content recommendations
+// Recommended Content Widget - AI-powered content recommendations
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';
@@ -207,12 +207,12 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.talowaGreen.withOpacity(0.1),
-              AppTheme.talowaGreen.withOpacity(0.05),
+              AppTheme.talowaGreen.withValues(alpha: 0.1),
+              AppTheme.talowaGreen.withValues(alpha: 0.05),
             ],
           ),
           border: Border.all(
-            color: AppTheme.talowaGreen.withOpacity(0.2),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.2),
           ),
         ),
         child: Padding(
@@ -226,10 +226,10 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                   CircleAvatar(
                     radius: 16,
                     backgroundColor: AppTheme.talowaGreen,
-                    backgroundImage: post.authorAvatarUrl != null
-                        ? NetworkImage(post.authorAvatarUrl!)
+                    backgroundImage: post.imageUrls.isNotEmpty
+                        ? NetworkImage(post.imageUrls.first)
                         : null,
-                    child: post.authorAvatarUrl == null
+                    child: post.imageUrls.isEmpty
                         ? Text(
                             post.authorName.isNotEmpty
                                 ? post.authorName[0].toUpperCase()
@@ -254,7 +254,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                           ),
                         ),
                         Text(
-                          post.getTimeAgo(),
+                          _formatTimeAgo(post.createdAt),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
                           ),
@@ -365,7 +365,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
           border: Border.all(color: Colors.grey[200]!),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -378,10 +378,10 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppTheme.talowaGreen,
-              backgroundImage: post.authorAvatarUrl != null
-                  ? NetworkImage(post.authorAvatarUrl!)
+              backgroundImage: post.imageUrls.isNotEmpty
+                  ? NetworkImage(post.imageUrls.first)
                   : null,
-              child: post.authorAvatarUrl == null
+              child: post.imageUrls.isEmpty
                   ? Text(
                       post.authorName.isNotEmpty
                           ? post.authorName[0].toUpperCase()
@@ -393,7 +393,6 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                     )
                   : null,
             ),
-            
             const SizedBox(width: AppTheme.spacingMedium),
             
             // Post content
@@ -412,7 +411,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                         ),
                       ),
                       Text(
-                        post.getTimeAgo(),
+                        _formatTimeAgo(post.createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -449,7 +448,7 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.1),
+                          color: Colors.orange.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -518,5 +517,20 @@ class _RecommendedContentWidgetState extends State<RecommendedContentWidget> {
         ),
       ),
     );
+  }
+
+  String _formatTimeAgo(DateTime time) {
+    final now = DateTime.now();
+    final diff = now.difference(time);
+    if (diff.inSeconds < 60) return '${diff.inSeconds}s ago';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    final weeks = (diff.inDays / 7).floor();
+    if (weeks < 4) return '${weeks}w ago';
+    final months = (diff.inDays / 30).floor();
+    if (months < 12) return '${months}mo ago';
+    final years = (diff.inDays / 365).floor();
+    return '${years}y ago';
   }
 }

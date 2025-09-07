@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../models/call_quality.dart';
 
 /// Call quality indicator widget
@@ -17,7 +17,7 @@ class CallQualityIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -54,7 +54,7 @@ class CallQualityIndicator extends StatelessWidget {
           height: 8 + (index * 2), // Increasing height
           margin: const EdgeInsets.only(right: 2),
           decoration: BoxDecoration(
-            color: isActive ? _getQualityColor() : Colors.white.withOpacity(0.3),
+            color: isActive ? _getQualityColor() : Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(1),
           ),
         );
@@ -77,3 +77,4 @@ class CallQualityIndicator extends StatelessWidget {
     }
   }
 }
+

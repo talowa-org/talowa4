@@ -1,4 +1,4 @@
-﻿// TALOWA Onboarding Screen
+// TALOWA Onboarding Screen
 // Interactive tutorial for messaging and calling features
 // Reference: in-app-communication/requirements.md - Requirements 2.2, 3.1, 9.1
 
@@ -352,7 +352,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, -2),
                   ),
@@ -405,3 +405,4 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 }
+

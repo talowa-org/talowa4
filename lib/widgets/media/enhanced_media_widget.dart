@@ -300,7 +300,7 @@ class _EnhancedMediaWidgetState extends State<EnhancedMediaWidget> {
             end: Alignment.bottomCenter,
             colors: [
               Colors.transparent,
-              Colors.black.withOpacity(0.3),
+              Colors.black.withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -448,5 +448,6 @@ class _FullscreenVideoPlayerState extends State<FullscreenVideoPlayer> {
     );
   }
 }
+
 
 

@@ -57,9 +57,9 @@ class ReportCardWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _getTypeColor().withOpacity(0.1),
+                        color: _getTypeColor().withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _getTypeColor().withOpacity(0.3)),
+                        border: Border.all(color: _getTypeColor().withValues(alpha: 0.2)),
                       ),
                       child: Text(
                         report.type.toUpperCase(),
@@ -77,9 +77,9 @@ class ReportCardWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _getSeverityColor().withOpacity(0.1),
+                        color: _getSeverityColor().withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _getSeverityColor().withOpacity(0.3)),
+                        border: Border.all(color: _getSeverityColor().withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -401,4 +401,5 @@ class ReportCardWidget extends StatelessWidget {
     );
   }
 }
+
 

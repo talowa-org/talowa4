@@ -598,10 +598,10 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                       children: _hashtags.map((hashtag) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppTheme.talowaGreen.withOpacity(0.1),
+                          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: AppTheme.talowaGreen.withOpacity(0.3),
+                            color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Text(
@@ -637,7 +637,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.photo_library, size: 18),
                             label: Text('Photos (${_selectedImages.length}/$maxImages)'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+                              backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                               foregroundColor: AppTheme.talowaGreen,
                               elevation: 0,
                             ),
@@ -650,7 +650,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.camera_alt, size: 18),
                             label: const Text('Camera'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+                              backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                               foregroundColor: AppTheme.talowaGreen,
                               elevation: 0,
                             ),
@@ -669,7 +669,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.videocam, size: 18),
                             label: Text('Video (${_selectedVideos.length}/$maxVideos)'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.withOpacity(0.1),
+                              backgroundColor: Colors.blue.withValues(alpha: 0.2),
                               foregroundColor: Colors.blue,
                               elevation: 0,
                             ),
@@ -682,7 +682,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.attach_file, size: 18),
                             label: Text('Docs (${_selectedDocuments.length}/$maxDocuments)'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange.withOpacity(0.1),
+                              backgroundColor: Colors.orange.withValues(alpha: 0.2),
                               foregroundColor: Colors.orange,
                               elevation: 0,
                             ),
@@ -719,7 +719,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.camera_alt, size: 18),
                             label: const Text('Take Photo'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.talowaGreen.withOpacity(0.1),
+                              backgroundColor: AppTheme.talowaGreen.withValues(alpha: 0.2),
                               foregroundColor: AppTheme.talowaGreen,
                               elevation: 0,
                             ),
@@ -732,7 +732,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
                             icon: const Icon(Icons.videocam, size: 18),
                             label: const Text('Record Video'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.withOpacity(0.1),
+                              backgroundColor: Colors.blue.withValues(alpha: 0.2),
                               foregroundColor: Colors.blue,
                               elevation: 0,
                             ),
@@ -824,7 +824,7 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
@@ -1239,4 +1239,5 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
     );
   }
 }
+
 

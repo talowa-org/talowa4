@@ -1,4 +1,4 @@
-﻿// Post Management Screen - Dashboard for managing user's posts
+// Post Management Screen - Dashboard for managing user's posts
 // Part of Task 11: Add post editing and management
 
 import 'package:flutter/material.dart';
@@ -590,9 +590,9 @@ class _PostManagementScreenState extends State<PostManagementScreen>
       width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1014,3 +1014,4 @@ class _PostManagementScreenState extends State<PostManagementScreen>
     );
   }
 }
+

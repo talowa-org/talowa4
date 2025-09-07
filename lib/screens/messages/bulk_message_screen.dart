@@ -209,7 +209,7 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
                       });
                     }
                   },
-                  selectedColor: const Color(AppConstants.talowaGreenValue).withOpacity(0.2),
+                  selectedColor: const Color(AppConstants.talowaGreenValue).withValues(alpha: 0.2),
                   checkmarkColor: const Color(AppConstants.talowaGreenValue),
                 );
               }).toList(),
@@ -254,10 +254,10 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(AppConstants.emergencyRedValue).withOpacity(0.1),
+                  color: const Color(AppConstants.emergencyRedValue).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: const Color(AppConstants.emergencyRedValue).withOpacity(0.3),
+                    color: const Color(AppConstants.emergencyRedValue).withValues(alpha: 0.2),
                   ),
                 ),
                 child: const Row(
@@ -354,12 +354,12 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _isEmergency 
-                    ? const Color(AppConstants.emergencyRedValue).withOpacity(0.1)
+                    ? const Color(AppConstants.emergencyRedValue).withValues(alpha: 0.2)
                     : Colors.grey[100],
                 borderRadius: BorderRadius.circular(8),
                 border: _isEmergency 
                     ? Border.all(
-                        color: const Color(AppConstants.emergencyRedValue).withOpacity(0.3),
+                        color: const Color(AppConstants.emergencyRedValue).withValues(alpha: 0.2),
                       )
                     : null,
               ),
@@ -415,4 +415,5 @@ class _BulkMessageScreenState extends State<BulkMessageScreen> {
     );
   }
 }
+
 

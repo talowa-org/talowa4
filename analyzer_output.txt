@@ -1,0 +1,7 @@
+Analyzing report_user_dialog.dart...                            
+
+  error - Expected a method, getter, setter or operator declaration - lib\widgets\safety\report_user_dialog.dart:5:1 - expected_executable
+warning - Unused import: '../common/user_avatar_widget.dart' - lib\widgets\safety\report_user_dialog.dart:10:8 - unused_import
+  error - The method 'UserAvatar' isn't defined for the type '_ReportUserDialogState' - lib\widgets\safety\report_user_dialog.dart:187:11 - undefined_method
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\widgets\safety\report_user_dialog.dart:349:9 - deprecated_member_use
+

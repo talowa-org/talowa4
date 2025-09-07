@@ -1,4 +1,4 @@
-﻿// Geographic Discovery Widget - Discover content by location
+// Geographic Discovery Widget - Discover content by location
 // Part of Task 8: Create content discovery features
 
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class GeographicDiscoveryWidget extends StatelessWidget {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
+                            color: Colors.grey.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -108,15 +108,15 @@ class GeographicDiscoveryWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.talowaGreen.withOpacity(0.1),
-            AppTheme.talowaGreen.withOpacity(0.05),
+            AppTheme.talowaGreen.withValues(alpha: 0.1),
+            AppTheme.talowaGreen.withValues(alpha: 0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.talowaGreen.withOpacity(0.2),
+          color: AppTheme.talowaGreen.withValues(alpha: 0.2),
         ),
       ),
       child: Column(

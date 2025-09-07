@@ -1,4 +1,4 @@
-﻿// Conversation Monitoring Screen for TALOWA Admin Dashboard
+// Conversation Monitoring Screen for TALOWA Admin Dashboard
 import 'package:flutter/material.dart';
 import '../../services/admin/admin_dashboard_service.dart';
 
@@ -104,7 +104,7 @@ class _ConversationMonitoringScreenState extends State<ConversationMonitoringScr
               ),
               backgroundColor: Color(
                 int.parse(data.riskLevel.colorCode.substring(1), radix: 16) + 0xFF000000,
-              ).withOpacity(0.1),
+              ).withValues(alpha: 0.2),
             ),
           ],
         ),
@@ -135,10 +135,10 @@ class _ConversationMonitoringScreenState extends State<ConversationMonitoringScr
             const SizedBox(height: 16),
             const Text(
               'Actions available:\n'
-              'â€¢ View conversation history\n'
-              'â€¢ Monitor message patterns\n'
-              'â€¢ Apply conversation restrictions\n'
-              'â€¢ Export conversation data',
+              '• View conversation history\n'
+              '• Monitor message patterns\n'
+              '• Apply conversation restrictions\n'
+              '• Export conversation data',
             ),
           ],
         ),
@@ -152,3 +152,4 @@ class _ConversationMonitoringScreenState extends State<ConversationMonitoringScr
     );
   }
 }
+

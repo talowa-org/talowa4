@@ -1,4 +1,4 @@
-﻿// Network Stats Card Widget
+// Network Stats Card Widget
 // Reference: complete-app-structure.md - Network Features
 
 import 'package:flutter/material.dart';
@@ -93,9 +93,9 @@ class NetworkStatsCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppTheme.spacingMedium),
       margin: const EdgeInsets.all(AppTheme.spacingSmall),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,3 +130,4 @@ class NetworkStatsCard extends StatelessWidget {
     );
   }
 }
+

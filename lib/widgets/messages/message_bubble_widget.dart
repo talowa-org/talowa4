@@ -114,7 +114,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
                       borderRadius: _getBorderRadius(),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 2,
                           offset: const Offset(0, 1),
                         ),
@@ -215,7 +215,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: (widget.isCurrentUser ? Colors.white : AppTheme.talowaGreen)
-            .withOpacity(0.1),
+            .withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
         border: Border(
           left: BorderSide(
@@ -419,7 +419,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -612,4 +612,5 @@ class MessageOptionsSheet extends StatelessWidget {
     );
   }
 }
+
 
