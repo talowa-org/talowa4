@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/social_feed/post_management_service.dart';
 
 /// Widget for scheduling posts for later publishing

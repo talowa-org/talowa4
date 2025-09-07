@@ -8,17 +8,14 @@ import 'land_screen.dart';
 import 'payments_screen.dart';
 import 'community_screen.dart';
 import 'profile_screen.dart';
-import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
-// Voice commands are handled directly by AI Assistant widget
-// import '../../services/ai_assistant/voice_command_handler.dart';
-// import '../admin/admin_fix_screen.dart';
-// Test imports removed for production
+// Removed unused: import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
 import '../../services/cultural_service.dart';
 import '../../services/user_role_fix_service.dart';
+// Removed: Home tab feature widgets no longer used
 import '../../widgets/notifications/notification_badge_widget.dart';
-import '../../widgets/social_feed/live_activity_dashboard.dart';
-import '../../widgets/notifications/real_time_notification_widget.dart';
-import '../../widgets/performance/performance_dashboard_widget.dart';
+// import '../../widgets/social_feed/live_activity_dashboard.dart';
+// import '../../widgets/notifications/real_time_notification_widget.dart';
+// import '../../widgets/performance/performance_dashboard_widget.dart';
 import '../../widgets/security/security_dashboard_widget.dart';
 // import '../../services/auth/auth_state_manager.dart';
 // import '../../generated/l10n/app_localizations.dart';
@@ -211,17 +208,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Voice and text query handlers for AI Assistant
-  void _handleVoiceQuery(String query) {
-    debugPrint('Voice query received: $query');
-    // Voice queries are processed by the VoiceFirstAIWidget internally
-    // This callback is for additional app-level actions if needed
-  }
+  // void _handleVoiceQuery(String query) {
+  //   debugPrint('Voice query received: $query');
+  // }
 
-  void _handleTextQuery(String query) {
-    debugPrint('Text query received: $query');
-    // Text queries are processed by the VoiceFirstAIWidget internally
-    // This callback is for additional app-level actions if needed
-  }
+  // void _handleTextQuery(String query) {
+  //   debugPrint('Text query received: $query');
+  // }
 
   void _showEmergencyDialog() {
     showDialog(
@@ -232,21 +225,21 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(Icons.emergency, color: AppTheme.emergencyRed),
               SizedBox(width: 8),
-              Text('à¤‡à¤®à¤°à¤œà¥‡à¤‚à¤¸à¥€ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾'),
+              Text('à¤‡à¤®à¤œà¥‡à¤‚à¤¸à¥€ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾'),
             ],
           ),
           content: const Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('à¤¤à¥à¤°à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
+              Text('à¤¤à¥à¤°à¤¸à¥à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
               SizedBox(height: 8),
               Text('â€¢ à¤ªà¥à¤²à¤¿à¤¸: 100'),
               Text('â€¢ à¤à¤®à¥à¤±à¥à¤²à¥‡à¤‚à¤¸: 108'),
-              Text('â€¢ à¤«à¤¾à¤¯à¤° à¤¬à¥à¤°à¤¿à¤—à¥‡à¤¡: 101'),
-              Text('â€¢ à¤®à¤¹à¤¿à¤²à¤¾ à¤¹à¥‡à¤²à¥à¤ªà¤²à¤¾à¤‡à¤¨: 1091'),
+              Text('â€¢ à¤«à¤¾à¤¯à¤° à¤¬à¥à¤°à¤—à¤¡: 101'),
+              Text('â€¢ à¤®à¤¹à¤¿à¤²à¤¾à¤¹à¥‡à¤²à¥à¤ªà¤²à¤¾à¤‡à¤¨: 1091'),
               SizedBox(height: 12),
-              Text('à¤¯à¤¾ à¤¹à¥‹à¤®à¤¸à¥à¤•à¥à¤°à¤¨à¤ªà¤°à¤‡à¤¨à¤ªà¥‹à¤—à¤•à¤°à¤¤'),
+              Text('à¤¯à¤¾ à¤¹à¥‹à¤®à¤¸à¥à¤•à¥à¤°à¤¨à¤‡à¤¨à¤ªà¤°à¤‡à¤¨à¤ªà¥‹à¤—à¤•à¤°à¤¤'),
             ],
           ),
           actions: [
@@ -389,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false, // Remove automatic back button
         actions: [
-          const NotificationBadgeWidget(),
+          NotificationBadgeWidget(),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -424,26 +417,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Show cache indicator
                     if (isDataCached) _buildCacheIndicator(),
                     
-                    // AI Assistant - Central Feature (Always Visible)
-                    _buildCentralAIAssistant(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Live Activity Dashboard
-                    _buildLiveActivitySection(),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Real-time Notifications
-                    _buildRealTimeNotifications(),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Performance Dashboard
-                    _buildPerformanceDashboard(),
-                    
-                    const SizedBox(height: 16),
-                    
+                    // Removed per requirement: AI Assistant, Live Activity, Recent Notifications, Performance Metrics
+
                     // Enterprise Security section has been removed from Home for end-users per product requirements
                     // _buildSecurityDashboard(),
                     
@@ -573,139 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Central AI Assistant - Always Visible, Voice-First Feature
-  Widget _buildCentralAIAssistant() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.talowaGreen.withValues(alpha: 0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: 2,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with prominent branding
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppTheme.talowaGreen, Color(0xFF2D7D32)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.smart_toy,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TALOWA AI Assistant',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Your voice-first legal & land rights companion',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.mic,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Voice-First â€¢ English â€¢ à¤¹à¤¿à¤‚à¤¦à¥€ â€¢ à°¤à±†à°²à±à°—à±',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // AI Assistant Widget - Always Expanded
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: VoiceFirstAIWidget(
-              onVoiceCommand: _handleVoiceQuery,
-              onTextCommand: _handleTextQuery,
-              isCollapsible: true,
-              maxHeight: 280,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Removed: _buildCentralAIAssistant placeholder
 
   Widget _buildGreetingCard() {
     final userName = userData?['fullName'] ?? 'User';
@@ -1085,195 +928,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Build Live Activity Dashboard Section
   Widget _buildLiveActivitySection() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.talowaGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.trending_up,
-                    color: AppTheme.talowaGreen,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Live Activity',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'LIVE',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const CompactLiveActivityDashboard(),
-        ],
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   /// Build Real-time Notifications Section
   Widget _buildRealTimeNotifications() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.notifications_active,
-                    color: Colors.blue,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Recent Notifications',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                const NotificationBellWidget(),
-              ],
-            ),
-          ),
-          Container(
-            height: 200,
-            child: const RealTimeNotificationWidget(
-              maxNotifications: 3,
-            ),
-          ),
-        ],
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   /// Build Performance Dashboard Section
   Widget _buildPerformanceDashboard() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.talowaGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.speed,
-                    color: AppTheme.talowaGreen,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Performance Metrics',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const PerformanceDashboardWidget(
-            showDetailedMetrics: false,
-            updateInterval: Duration(seconds: 10),
-          ),
-        ],
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   /// Build Security Dashboard Section
@@ -1329,3 +994,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

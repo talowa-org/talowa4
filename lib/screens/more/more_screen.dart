@@ -1,4 +1,4 @@
-﻿// TALOWA More Screen - Additional Features & Settings
+// TALOWA More Screen - Additional Features & Settings
 // Reference: complete-app-structure.md - More Tab
 
 import 'package:flutter/material.dart';
@@ -66,11 +66,7 @@ class _MoreScreenState extends State<MoreScreen> {
             onPressed: _openHelp,
             tooltip: 'Help & Support',
           ),
-          IconButton(
-            icon: const Icon(Icons.smart_toy, color: Colors.white),
-            onPressed: () => Navigator.pushNamed(context, '/ai-test'),
-            tooltip: 'AI Test',
-          ),
+          // AI Test entry removed per Option B (retain file, remove references)
           // Hidden admin access button (long press)
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),

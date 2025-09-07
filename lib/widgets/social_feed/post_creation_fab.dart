@@ -24,8 +24,8 @@ class PostCreationFAB extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    final currentUser = AuthService.currentUser;
-    final userRole = currentUser?.role ?? 'member';
+    // Determine user role. FirebaseAuth.User doesn't have a 'role' field; default to 'member'.
+    const userRole = 'member';
     
     // Only show FAB for coordinators
     if (!_isCoordinator(userRole)) {
@@ -262,8 +262,8 @@ class _PostCreationSpeedDialState extends State<PostCreationSpeedDial>
   
   @override
   Widget build(BuildContext context) {
-    final currentUser = AuthService.currentUser;
-    final userRole = currentUser?.role ?? 'member';
+    // Determine user role. FirebaseAuth.User doesn't have a 'role' field; default to 'member'.
+    const userRole = 'member';
     
     // Only show for coordinators
     if (!_isCoordinator(userRole)) {

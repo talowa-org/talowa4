@@ -121,7 +121,7 @@ class _FeedScreenState extends State<FeedScreen>
       foregroundColor: Colors.white,
       elevation: 0,
       actions: [
-        const NotificationBadgeWidget(),
+        NotificationBadgeWidget(),
         IconButton(
           onPressed: _openSearch,
           icon: const Icon(Icons.search),

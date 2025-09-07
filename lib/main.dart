@@ -20,7 +20,7 @@ import 'auth/login.dart';
 import 'screens/auth/mobile_entry_screen.dart';
 import 'screens/auth/integrated_registration_screen.dart';
 import 'screens/main/main_navigation_screen.dart';
-import 'screens/dev/ai_test_screen.dart';
+// import removed: 'screens/dev/ai_test_screen.dart'
 import 'screens/land_records/land_records_list_screen.dart';
 import 'screens/land_records/land_record_detail_screen.dart';
 import 'screens/land_records/land_record_form_screen.dart';
@@ -194,7 +194,7 @@ class _TalowaAppState extends State<TalowaApp> {
               '/mobile-entry': (context) => const MobileEntryScreen(),
               '/register': (context) => const IntegratedRegistrationScreen(),
               '/main': (context) => const MainNavigationScreen(),
-              '/ai-test': (context) => const AITestScreen(),
+              // removed AI Test route per Option B
               // Land records
               '/land/records': (context) => const LandRecordsListScreen(),
               '/land/add': (context) => const LandRecordFormScreen(),
