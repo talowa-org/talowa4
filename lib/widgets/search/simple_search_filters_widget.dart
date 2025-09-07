@@ -298,8 +298,6 @@ class _TypeFilterDialogState extends State<_TypeFilterDialog> {
     'user',
     'news',
     'legal_case',
-    'organization',
-    'campaign',
   ];
 
   @override

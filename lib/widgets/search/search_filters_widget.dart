@@ -120,7 +120,7 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
   Widget _buildLocationFilter() {
     final hasLocation = _currentFilters.location != null;
     return FilterChip(
-      label: Text('Location'),
+      label: const Text('Location'),
       selected: hasLocation,
       onSelected: (selected) {
         if (selected) {
@@ -229,8 +229,6 @@ class _SearchFiltersWidgetState extends State<SearchFiltersWidget> {
       'user',
       'news',
       'legal_case',
-      'organization',
-      'campaign',
     ];
     final selected = List<String>.from(_currentFilters.types ?? const []);
     showDialog(
