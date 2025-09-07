@@ -27,7 +27,7 @@ import 'screens/land_records/land_record_form_screen.dart';
 import 'screens/admin/admin_login_screen.dart';
 
 import 'widgets/admin/admin_route_guard.dart';
-import 'views/debug/migration_debug_page.dart';
+// Removed: import 'views/debug/migration_debug_page.dart';
 import 'services/performance_monitor.dart';
 // import 'services/localization_service.dart';
 // import 'services/rtl_support_service.dart';
@@ -202,7 +202,7 @@ class _TalowaAppState extends State<TalowaApp> {
               '/admin': (context) => const AdminRouteGuard(),
               '/admin/login': (context) => const AdminLoginScreen(),
               // Debug routes (only in debug mode)
-              if (kDebugMode) '/debug/migration': (context) => const MigrationDebugPage(),
+              // Removed: if (kDebugMode) '/debug/migration': (context) => const MigrationDebugPage(),
             },
             // onGenerateRoute for dynamic routes with arguments
             onGenerateRoute: (settings) {
