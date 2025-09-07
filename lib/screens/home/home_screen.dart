@@ -930,16 +930,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildLiveActivitySection() {
     return const SizedBox.shrink();
   }
++  // Removed: Live Activity Dashboard Section (dead code)
 
   /// Build Real-time Notifications Section
   Widget _buildRealTimeNotifications() {
     return const SizedBox.shrink();
   }
++  // Removed: Real-time Notifications Section (dead code)
 
   /// Build Performance Dashboard Section
   Widget _buildPerformanceDashboard() {
     return const SizedBox.shrink();
   }
++  // Removed: Performance Dashboard Section (dead code)
 
   /// Build Security Dashboard Section
   Widget _buildSecurityDashboard() {

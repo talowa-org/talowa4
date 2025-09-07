@@ -1,4 +1,4 @@
-﻿// Live Updates Service - Real-time data synchronization
+// Live Updates Service - Real-time data synchronization
 // Enhanced real-time features for TALOWA app
 
 import 'dart:async';
@@ -214,6 +214,7 @@ class LiveUpdatesService {
                         ? '${comment.content.substring(0, 50)}...' 
                         : comment.content,
                   );
++                  // Removed: Live activity tracking for comments
                 }
               }
             },
@@ -278,6 +279,7 @@ class LiveUpdatesService {
                     title: engagement.type == 'like' ? 'Post liked' : 'Post shared',
                     description: 'Someone ${engagement.type}d a post',
                   );
++                  // Removed: Live activity tracking for engagement
                 }
               }
             },
