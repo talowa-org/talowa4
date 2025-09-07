@@ -1,4 +1,4 @@
-﻿// Performance Optimization Service for TALOWA
+// Performance Optimization Service for TALOWA
 // Implements Task 21: Optimize performance and loading
 
 import 'dart:async';
@@ -56,38 +56,8 @@ class PerformanceOptimizationService {
     String? category,
     bool useCache = true,
   }) async {
-    try {
-      final cacheKey = 'posts_${page}_${pageSize}_${category ?? 'all'}';
-      
-      // Check memory cache first
-      if (useCache && _memoryCache.containsKey(cacheKey)) {
-        final cachedData = _memoryCache[cacheKey];
-        final timestamp = _cacheTimestamps[cacheKey];
-        
-        if (timestamp != null && 
-            DateTime.now().difference(timestamp) < cacheExpiration) {
-          _recordMetric('cache_hit');
-          return List<PostModel>.from(cachedData);
-        }
-      }
-      
-      // Simulate loading posts (replace with actual service call)
-      await Future.delayed(const Duration(milliseconds: 100));
-      
-      final posts = _generateMockPosts(page, pageSize, category);
-      
-      // Cache the results
-      if (useCache) {
-        _cacheData(cacheKey, posts);
-      }
-      
-      _recordMetric('posts_loaded');
-      return posts;
-    } catch (e) {
-      debugPrint('Error lazy loading posts: $e');
-      _recordMetric('load_error');
-      return [];
-    }
+    // Removed mock generation. This method should be implemented by real feed services.
+    throw UnimplementedError('lazyLoadPosts is not implemented in PerformanceOptimizationService. Use FeedService for real data.');
   }
 
   /// Compress and optimize image
@@ -614,14 +584,8 @@ class PerformanceOptimizationService {
   }
 
   Future<Uint8List> _loadImageBytes(String imageUrl) async {
-    // Mock implementation - replace with actual image loading
-    await Future.delayed(const Duration(milliseconds: 200));
-    
-    // Return a small mock image (1x1 pixel)
-    return Uint8List.fromList([
-      0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
-      0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43,
-    ]);
+    // Removed mock image bytes generator. Integrate with real network loader in widgets/services as needed.
+    throw UnimplementedError('Use a real image loader to fetch bytes for $imageUrl');
   }
 
   Future<void> _processSyncBatch(List<dynamic> batch) async {
@@ -630,30 +594,8 @@ class PerformanceOptimizationService {
   }
 
   List<PostModel> _generateMockPosts(int page, int pageSize, String? category) {
-    // Generate mock posts for testing
-    final posts = <PostModel>[];
-    final startIndex = page * pageSize;
-    
-    for (int i = 0; i < pageSize; i++) {
-      final postIndex = startIndex + i;
-      posts.add(PostModel(
-        id: 'post_$postIndex',
-        authorId: 'user_${postIndex % 10}',
-        authorName: 'User ${postIndex % 10}',
-        content: 'This is mock post content for post $postIndex',
-        mediaUrls: [], // Required parameter
-        hashtags: [], // Required parameter
-        category: PostCategory.values[postIndex % PostCategory.values.length],
-        location: 'Test Location', // Required parameter
-        createdAt: DateTime.now().subtract(Duration(hours: postIndex)),
-        likesCount: postIndex % 50,
-        commentsCount: postIndex % 20,
-        sharesCount: postIndex % 10,
-        isLikedByCurrentUser: false, // Required parameter
-      ));
-    }
-    
-    return posts;
+    // Removed mock post generator.
+    throw UnimplementedError('_generateMockPosts removed. Use FeedService for posts.');
   }
 
   Future<void> _preloadCriticalResources() async {

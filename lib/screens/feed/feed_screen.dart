@@ -15,8 +15,9 @@ import '../../widgets/notifications/notification_badge_widget.dart';
 import '../../widgets/media/enhanced_feed_media_widget.dart';
 import 'stories_screen.dart';
 import 'story_creation_screen.dart';
-import '../debug/feed_debug_screen.dart';
-import '../../services/social_feed/test_post_creation_service.dart';
+// Removed debug/test imports
+// import '../debug/feed_debug_screen.dart';
+// import '../../services/social_feed/test_post_creation_service.dart';
 import 'post_comments_screen.dart';
 import '../../widgets/stories/story_ring.dart';
 
@@ -132,19 +133,19 @@ class _FeedScreenState extends State<FeedScreen>
           icon: const Icon(Icons.filter_list),
           tooltip: 'Filter',
         ),
-        // Debug button (temporarily always visible for testing)
-        IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const FeedDebugScreen(),
-              ),
-            );
-          },
-          icon: const Icon(Icons.bug_report),
-          tooltip: 'Debug Feed',
-        ),
+        // Removed Debug button from production Feed
+        // IconButton(
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => const FeedDebugScreen(),
+        //       ),
+        //     );
+        //   },
+        //   icon: const Icon(Icons.bug_report),
+        //   tooltip: 'Debug Feed',
+        // ),
       ],
     );
   }
@@ -521,29 +522,30 @@ class _FeedScreenState extends State<FeedScreen>
                   _createPost();
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.science, color: Colors.orange),
-                title: const Text('Create Test Posts'),
-                subtitle: const Text('Add sample posts with media for testing'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _createTestPosts();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.bug_report, color: Colors.blue),
-                title: const Text('Debug Feed'),
-                subtitle: const Text('Open debug tools'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FeedDebugScreen(),
-                    ),
-                  );
-                },
-              ),
+              // Removed test/debug actions from production Feed
+              // ListTile(
+              //   leading: const Icon(Icons.science, color: Colors.orange),
+              //   title: const Text('Create Test Posts'),
+              //   subtitle: const Text('Add sample posts with media for testing'),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     _createTestPosts();
+              //   },
+              // ),
+              // ListTile(
+              //   leading: const Icon(Icons.bug_report, color: Colors.blue),
+              //   title: const Text('Debug Feed'),
+              //   subtitle: const Text('Open debug tools'),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const FeedDebugScreen(),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
         );
@@ -551,53 +553,10 @@ class _FeedScreenState extends State<FeedScreen>
     );
   }
 
-  Future<void> _createTestPosts() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 16),
-              Text('Creating test posts...'),
-            ],
-          ),
-        );
-      },
-    );
-
-    try {
-      await TestPostCreationService.createTestPosts();
-
-      // Close loading dialog
-      Navigator.of(context).pop();
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Test posts created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      // Refresh the feed
-      _loadFeed();
-    } catch (e) {
-      // Close loading dialog
-      Navigator.of(context).pop();
-
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('❌ Error creating test posts: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+  // Removed: _createTestPosts() used for mock data seeding
+  // Future<void> _createTestPosts() async {
+  //   ...
+  // }
 
   // Data loading methods
   Future<void> _loadFeed() async {

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../social_feed/feed_service.dart';
-import '../social_feed/live_activity_service.dart';
+// Removed: live_activity_service.dart (feature deprecated)
 import '../notifications/notification_service.dart';
 import '../../models/post_model.dart';
 import '../../models/comment_model.dart';
@@ -153,26 +153,7 @@ class LiveUpdatesService {
                   final post = PostModel.fromFirestore(change.doc);
                   _postUpdatesController.add(post);
                   
-                  // Notify live activity service
-                  if (change.type == DocumentChangeType.added) {
-                    LiveActivityService.trackActivity(
-                      type: ActivityType.postCreated,
-                      userId: post.authorId,
-                      targetId: post.id,
-                      title: 'New post created',
-                      description: post.content.length > 50 
-                          ? '${post.content.substring(0, 50)}...' 
-                          : post.content,
-                    );
-                  } else {
-                    LiveActivityService.trackActivity(
-                      type: ActivityType.postUpdated,
-                      userId: post.authorId,
-                      targetId: post.id,
-                      title: 'Post updated',
-                      description: 'A post has been modified',
-                    );
-                  }
+                  // Removed: Live activity tracking for post changes
                 }
               }
             },
@@ -204,17 +185,7 @@ class LiveUpdatesService {
                   final comment = CommentModel.fromFirestore(change.doc);
                   _commentUpdatesController.add(comment);
                   
-                  // Notify live activity service
-                  LiveActivityService.trackActivity(
-                    type: ActivityType.comment,
-                    userId: comment.authorId,
-                    targetId: comment.postId,
-                    title: 'New comment added',
-                    description: comment.content.length > 50 
-                        ? '${comment.content.substring(0, 50)}...' 
-                        : comment.content,
-                  );
-+                  // Removed: Live activity tracking for comments
+                  // Removed: Live activity tracking for comments
                 }
               }
             },
@@ -271,15 +242,7 @@ class LiveUpdatesService {
                   final engagement = LiveEngagement.fromFirestore(change.doc);
                   _engagementController.add(engagement);
                   
-                  // Notify live activity service
-                  LiveActivityService.trackActivity(
-                    type: engagement.type == 'like' ? ActivityType.like : ActivityType.share,
-                    userId: engagement.userId,
-                    targetId: engagement.targetId,
-                    title: engagement.type == 'like' ? 'Post liked' : 'Post shared',
-                    description: 'Someone ${engagement.type}d a post',
-                  );
-+                  // Removed: Live activity tracking for engagement
+                  // Removed: Live activity tracking for engagement
                 }
               }
             },
