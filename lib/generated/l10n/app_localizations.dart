@@ -460,10 +460,10 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to logout?'**
   String get logoutConfirmation;
 
-  /// My referral code section title
+  /// Referral code section title
   ///
   /// In en, this message translates to:
-  /// **'My Referral Code'**
+  /// **'Referral Code'**
   String get myReferralCode;
 
   /// Share referral code button text

@@ -710,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Expanded(
           child: _buildStatCard(
-            'My Referrals',
+            'Direct Referrals',
             '${userData?['directReferrals'] ?? 0}',
             Icons.people,
             Colors.blue,
@@ -994,4 +994,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
 

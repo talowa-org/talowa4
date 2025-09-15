@@ -302,9 +302,9 @@
     "description": "Logout confirmation message"
   },
 
-  "myReferralCode": "My Referral Code",
+  "myReferralCode": "Referral Code",
   "@myReferralCode": {
-    "description": "My referral code section title"
+    "description": "Referral code section title"
   },
 
   "shareReferralCode": "Share Referral Code",

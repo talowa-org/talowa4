@@ -120,7 +120,7 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: const Text(
-              'My Referrals',
+              'Direct Referrals',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             backgroundColor: AppTheme.talowaGreen,

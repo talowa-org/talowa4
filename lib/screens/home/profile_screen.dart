@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import '../../services/navigation/navigation_guard_service.dart';
@@ -137,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            _buildInfoRow('My Referral Code', userData?['referralCode'] ?? 'N/A'),
+            _buildInfoRow('Referral Code', userData?['referralCode'] ?? 'N/A'),
             _buildInfoRow('Referred By', userData?['referredBy'] ?? 'Direct signup'),
             _buildInfoRow('Direct Referrals', '${userData?['directReferrals'] ?? 0}'),
             _buildInfoRow('Team Referrals', '${userData?['teamReferrals'] ?? 0}'),

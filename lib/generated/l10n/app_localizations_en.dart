@@ -190,7 +190,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutConfirmation => 'Are you sure you want to logout?';
 
   @override
-  String get myReferralCode => 'My Referral Code';
+  String get myReferralCode => 'Referral Code';
 
   @override
   String get shareReferralCode => 'Share Referral Code';
