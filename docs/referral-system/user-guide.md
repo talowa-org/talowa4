@@ -97,41 +97,69 @@ Talowa makes registration easier with automatic referral code filling:
 
 Talowa uses a 5-tier role system that determines your earning potential and team leadership responsibilities.
 
-### Role Hierarchy
+### Automated Role Hierarchy (9 Levels)
 
 #### 1. Member (Starting Role)
-- **Requirements**: 0+ referrals, 0+ team size
+- **Requirements**: Default role for all new users
 - **Benefits**: 
   - Basic commission structure
   - Access to referral tools
   - Team building resources
 
-#### 2. Activist
-- **Requirements**: 10+ direct referrals, 25+ total team size
+#### 2. Volunteer
+- **Requirements**: 10+ direct referrals, 10+ total team size
 - **Benefits**:
   - Increased commission rates
   - Advanced analytics
   - Leadership training access
 
-#### 3. Organizer
-- **Requirements**: 25+ direct referrals, 100+ total team size
+#### 3. Team Leader
+- **Requirements**: 20+ direct referrals, 100+ total team size
 - **Benefits**:
   - Higher commission multipliers
   - Team management tools
   - Regional recognition
 
-#### 4. Coordinator
-- **Requirements**: 100+ direct referrals, 500+ total team size
+#### 4. Area Coordinator
+- **Requirements**: 40+ direct referrals, 700+ total team size
 - **Benefits**:
   - Premium commission structure
   - Advanced team analytics
-  - Leadership mentorship opportunities
+  - Area coordination responsibilities
 
-#### 5. Regional Coordinator
-- **Requirements**: 500+ direct referrals, 2500+ total team size
+#### 5. Mandal Coordinator
+- **Requirements**: 80+ direct referrals, 6,000+ total team size
+- **Benefits**:
+  - Enhanced commission rates
+  - Mandal-level leadership role
+  - Strategic planning access
+
+#### 6. Constituency Coordinator
+- **Requirements**: 160+ direct referrals, 50,000+ total team size
+- **Benefits**:
+  - High-tier commission structure
+  - Constituency oversight responsibilities
+  - Executive leadership training
+
+#### 7. District Coordinator
+- **Requirements**: 320+ direct referrals, 500,000+ total team size
+- **Benefits**:
+  - Premium leadership benefits
+  - District-wide coordination role
+  - Strategic decision-making authority
+
+#### 8. Zonal Regional Coordinator
+- **Requirements**: 500+ direct referrals, 1,500,000+ total team size
+- **Benefits**:
+  - Elite commission structure
+  - Regional coordination responsibilities
+  - High-level strategic planning
+
+#### 9. State Coordinator
+- **Requirements**: 1000+ direct referrals, 3,000,000+ total team size
 - **Benefits**:
   - Maximum commission rates
-  - Regional leadership role
+  - State-level leadership role
   - Exclusive events and recognition
 
 ### Role Progression

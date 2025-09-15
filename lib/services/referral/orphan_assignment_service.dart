@@ -1,8 +1,9 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:talowa/config/referral_config.dart';
 import 'package:talowa/services/referral/monitoring_service.dart';
+import 'package:talowa/services/referral/role_progression_service.dart';
 
 /// Exception thrown when orphan assignment operations fail
 class OrphanAssignmentException implements Exception {
@@ -443,46 +444,26 @@ class OrphanAssignmentService {
     }
   }
   
-  /// Simplified role progression check
+  /// Automated role progression check using new real-time promotion system
   static Future<void> _checkAndUpdateRole(String userId) async {
     try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) return;
+      // Use the new automated real-time role progression service
+      final promotionResult = await RoleProgressionService.checkAndUpdateRoleRealTime(userId);
       
-      final userData = userDoc.data()!;
-      final directReferrals = userData['directReferralCount'] ?? 0;
-      final teamSize = userData['totalTeamSize'] ?? 0;
-      final currentRole = userData['role'] ?? 'member';
-      
-      String newRole = currentRole;
-      
-      // Role progression logic
-      if (directReferrals >= 500 && teamSize >= 2500) {
-        newRole = 'regional_coordinator';
-      } else if (directReferrals >= 100 && teamSize >= 500) {
-        newRole = 'coordinator';
-      } else if (directReferrals >= 25 && teamSize >= 100) {
-        newRole = 'organizer';
-      } else if (directReferrals >= 10 && teamSize >= 25) {
-        newRole = 'activist';
-      } else {
-        newRole = 'member';
-      }
-      
-      if (newRole != currentRole) {
-        await _firestore.collection('users').doc(userId).update({
-          'role': newRole,
-          'roleUpdatedAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+      if (promotionResult['promoted'] == true) {
+        final previousRole = promotionResult['previousRole'] as String;
+        final currentRole = promotionResult['currentRole'] as String;
+        final directReferrals = promotionResult['directReferrals'] as int;
+        final teamSize = promotionResult['teamSize'] as int;
         
         if (kDebugMode) {
-          print('Updated role for user $userId: $currentRole -> $newRole');
+          print('🎉 Orphan assignment triggered promotion for user $userId: $previousRole -> $currentRole');
+          print('   Direct referrals: $directReferrals, Team size: $teamSize');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error updating role for user $userId: $e');
+        print('Error in automated role progression for user $userId: $e');
       }
     }
   }

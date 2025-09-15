@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 /// Exception thrown when role progression operations fail
 class RoleProgressionException implements Exception {
@@ -13,9 +14,10 @@ class RoleProgressionException implements Exception {
   String toString() => 'RoleProgressionException: $message';
 }
 
-/// Role definition with requirements
+/// Role definition with automated promotion requirements
 class RoleDefinition {
   final String name;
+  final int level;
   final int directReferralsRequired;
   final int teamSizeRequired;
   final List<String> permissions;
@@ -24,6 +26,7 @@ class RoleDefinition {
   
   const RoleDefinition({
     required this.name,
+    required this.level,
     required this.directReferralsRequired,
     required this.teamSizeRequired,
     required this.permissions,
@@ -32,97 +35,101 @@ class RoleDefinition {
   });
 }
 
-/// Service for managing role-based progression system
+/// Automated Real-Time Role Progression Service
+/// Implements the new promotion system with specified thresholds
 class RoleProgressionService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
-  /// 10-tier role progression system
+  /// Automated Role Promotion Rules (Real-Time Implementation)
   static const Map<String, RoleDefinition> ROLE_DEFINITIONS = {
     'member': RoleDefinition(
       name: 'Member',
+      level: 1,
       directReferralsRequired: 0,
       teamSizeRequired: 0,
       permissions: ['basic_access'],
-      benefits: {'description': 'Basic TALOWA membership'},
+      benefits: {'description': 'Default role assigned to all new users'},
     ),
-    'activist': RoleDefinition(
-      name: 'Activist',
-      directReferralsRequired: 2,
-      teamSizeRequired: 5,
+    'volunteer': RoleDefinition(
+      name: 'Volunteer',
+      level: 2,
+      directReferralsRequired: 10,
+      teamSizeRequired: 10,
       permissions: ['basic_access', 'share_content'],
-      benefits: {'description': 'Enhanced sharing capabilities'},
-    ),
-    'organizer': RoleDefinition(
-      name: 'Organizer',
-      directReferralsRequired: 5,
-      teamSizeRequired: 15,
-      permissions: ['basic_access', 'share_content', 'create_events'],
-      benefits: {'description': 'Event creation and management'},
+      benefits: {'description': 'Automatic promotion when user achieves 10 direct referrals and 10 team size'},
     ),
     'team_leader': RoleDefinition(
       name: 'Team Leader',
-      directReferralsRequired: 10,
-      teamSizeRequired: 50,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team'],
-      benefits: {'description': 'Team management capabilities'},
-    ),
-    'coordinator': RoleDefinition(
-      name: 'Coordinator',
+      level: 3,
       directReferralsRequired: 20,
-      teamSizeRequired: 150,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities'],
-      benefits: {'description': 'Activity coordination and planning'},
+      teamSizeRequired: 100,
+      permissions: ['basic_access', 'share_content', 'manage_team'],
+      benefits: {'description': 'Automatic promotion when user achieves 20 direct referrals and 100 team size'},
     ),
     'area_coordinator': RoleDefinition(
       name: 'Area Coordinator',
-      directReferralsRequired: 30,
-      teamSizeRequired: 350,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities', 'area_management'],
-      benefits: {'description': 'Area-wide coordination and management'},
+      level: 4,
+      directReferralsRequired: 40,
+      teamSizeRequired: 700,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area'],
+      benefits: {'description': 'Automatic promotion when user achieves 40 direct referrals and 700 team size'},
+    ),
+    'mandal_coordinator': RoleDefinition(
+      name: 'Mandal Coordinator',
+      level: 5,
+      directReferralsRequired: 80,
+      teamSizeRequired: 6000,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area', 'mandal_management'],
+      benefits: {'description': 'Automatic promotion when user achieves 80 direct referrals and 6,000 team size'},
+    ),
+    'constituency_coordinator': RoleDefinition(
+      name: 'Constituency Coordinator',
+      level: 6,
+      directReferralsRequired: 160,
+      teamSizeRequired: 50000,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area', 'mandal_management', 'constituency_oversight'],
+      benefits: {'description': 'Automatic promotion when user achieves 160 direct referrals and 50,000 team size'},
     ),
     'district_coordinator': RoleDefinition(
       name: 'District Coordinator',
-      directReferralsRequired: 40,
-      teamSizeRequired: 700,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities', 'area_management', 'district_oversight'],
-      benefits: {'description': 'District-level oversight and coordination'},
+      level: 7,
+      directReferralsRequired: 320,
+      teamSizeRequired: 500000,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area', 'mandal_management', 'constituency_oversight', 'district_leadership'],
+      benefits: {'description': 'Automatic promotion when user achieves 320 direct referrals and 500,000 team size'},
       isLocationBased: true,
     ),
-    'regional_coordinator': RoleDefinition(
-      name: 'Regional Coordinator',
-      directReferralsRequired: 60,
-      teamSizeRequired: 1500,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities', 'area_management', 'district_oversight', 'regional_leadership'],
-      benefits: {'description': 'Regional leadership and strategy'},
+    'zonal_regional_coordinator': RoleDefinition(
+      name: 'Zonal Regional Coordinator',
+      level: 8,
+      directReferralsRequired: 500,
+      teamSizeRequired: 1500000,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area', 'mandal_management', 'constituency_oversight', 'district_leadership', 'regional_coordination'],
+      benefits: {'description': 'Automatic promotion when user achieves 500 direct referrals and 1,500,000 team size'},
+      isLocationBased: true,
     ),
     'state_coordinator': RoleDefinition(
       name: 'State Coordinator',
-      directReferralsRequired: 100,
-      teamSizeRequired: 5000,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities', 'area_management', 'district_oversight', 'regional_leadership', 'state_governance'],
-      benefits: {'description': 'State-level governance and policy'},
-    ),
-    'national_coordinator': RoleDefinition(
-      name: 'National Coordinator',
-      directReferralsRequired: 200,
-      teamSizeRequired: 15000,
-      permissions: ['basic_access', 'share_content', 'create_events', 'manage_team', 'coordinate_activities', 'area_management', 'district_oversight', 'regional_leadership', 'state_governance', 'national_leadership'],
-      benefits: {'description': 'National leadership and movement direction'},
+      level: 9,
+      directReferralsRequired: 1000,
+      teamSizeRequired: 3000000,
+      permissions: ['basic_access', 'share_content', 'manage_team', 'coordinate_area', 'mandal_management', 'constituency_oversight', 'district_leadership', 'regional_coordination', 'state_governance'],
+      benefits: {'description': 'Automatic promotion when user achieves 1000 direct referrals and 3,000,000 team size'},
+      isLocationBased: true,
     ),
   };
   
-  /// Role hierarchy order
+  /// Role hierarchy order for automated promotions
   static const List<String> ROLE_HIERARCHY = [
     'member',
-    'activist',
-    'organizer',
+    'volunteer',
     'team_leader',
-    'coordinator',
     'area_coordinator',
+    'mandal_coordinator',
+    'constituency_coordinator',
     'district_coordinator',
-    'regional_coordinator',
+    'zonal_regional_coordinator',
     'state_coordinator',
-    'national_coordinator',
   ];
   
   /// For testing purposes - allows injection of fake firestore
@@ -130,8 +137,9 @@ class RoleProgressionService {
     _firestore = firestore;
   }
   
-  /// Check and update user role based on current statistics
-  static Future<Map<String, dynamic>> checkAndUpdateRole(String userId) async {
+  /// Real-time automated role promotion check and update
+  /// Processes promotions in real-time when thresholds are met
+  static Future<Map<String, dynamic>> checkAndUpdateRoleRealTime(String userId) async {
     try {
       // Get current user data
       final userDoc = await _firestore.collection('users').doc(userId).get();
@@ -144,40 +152,59 @@ class RoleProgressionService {
       }
       
       final userData = userDoc.data()!;
-      final currentRole = userData['currentRole'] as String? ?? 'member';
+      final currentRole = userData['role'] as String? ?? 'member';
+      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
       
-      // In simplified system, all registered users are eligible for role progression
+      // Get current statistics for real-time evaluation
+      final directReferrals = userData['directReferrals'] as int? ?? 0;
+      final teamSize = userData['teamReferrals'] as int? ?? 0; // Using teamReferrals as team size
       
-      // Get current statistics
-      final directReferrals = userData['activeDirectReferrals'] as int? ?? 0;
-      final teamSize = userData['activeTeamSize'] as int? ?? 0;
-      final location = userData['location'] as Map<String, dynamic>?;
-      
-      // Determine eligible role
-      final eligibleRole = _determineEligibleRole(
+      // Determine the highest eligible role using automated promotion rules
+      final eligibleRoleData = _determineHighestEligibleRole(
         directReferrals: directReferrals,
         teamSize: teamSize,
-        location: location,
       );
       
-      // Check if promotion is needed
-      if (_isRoleHigher(eligibleRole, currentRole)) {
-        await _promoteUser(userId, currentRole, eligibleRole, userData);
+      final eligibleRole = eligibleRoleData['role'] as String;
+      final eligibleLevel = eligibleRoleData['level'] as int;
+      
+      // Check if promotion is needed (real-time processing)
+      if (eligibleLevel > currentRoleLevel) {
+        // Perform validation checks before applying promotion
+        final validationResult = await _validatePromotionEligibility(userId, userData, eligibleRole);
         
-        return {
-          'promoted': true,
-          'previousRole': currentRole,
-          'currentRole': eligibleRole,
-          'directReferrals': directReferrals,
-          'teamSize': teamSize,
-          'promotedAt': DateTime.now().toIso8601String(),
-        };
+        if (validationResult['valid'] == true) {
+          await _promoteUserRealTime(userId, currentRole, eligibleRole, userData, directReferrals, teamSize);
+          
+          return {
+            'promoted': true,
+            'previousRole': currentRole,
+            'currentRole': eligibleRole,
+            'previousLevel': currentRoleLevel,
+            'currentLevel': eligibleLevel,
+            'directReferrals': directReferrals,
+            'teamSize': teamSize,
+            'promotedAt': DateTime.now().toIso8601String(),
+            'promotionType': 'automated_real_time',
+          };
+        } else {
+          // Log validation failure for audit purposes
+          await _logPromotionEvent(userId, 'promotion_validation_failed', {
+            'reason': validationResult['reason'],
+            'currentRole': currentRole,
+            'eligibleRole': eligibleRole,
+            'directReferrals': directReferrals,
+            'teamSize': teamSize,
+          });
+        }
       }
       
       return {
         'promoted': false,
         'currentRole': currentRole,
+        'currentLevel': currentRoleLevel,
         'eligibleRole': eligibleRole,
+        'eligibleLevel': eligibleLevel,
         'directReferrals': directReferrals,
         'teamSize': teamSize,
         'nextRoleRequirements': _getNextRoleRequirements(currentRole),
@@ -189,118 +216,190 @@ class RoleProgressionService {
       }
       
       throw RoleProgressionException(
-        'Failed to check and update role: $e',
-        'ROLE_CHECK_FAILED',
+        'Failed to check and update role in real-time: $e',
+        'REAL_TIME_ROLE_CHECK_FAILED',
         {'userId': userId}
       );
     }
   }
   
-  /// Determine eligible role based on statistics and location
-  static String _determineEligibleRole({
+  /// Determine the highest eligible role based on automated promotion rules
+  static Map<String, dynamic> _determineHighestEligibleRole({
     required int directReferrals,
     required int teamSize,
-    Map<String, dynamic>? location,
   }) {
     String eligibleRole = 'member';
+    int eligibleLevel = 1;
     
+    // Check roles in descending order to find the highest eligible role
     for (final role in ROLE_HIERARCHY.reversed) {
       final definition = ROLE_DEFINITIONS[role]!;
       
-      // Check if user meets requirements
+      // Check if user meets both direct referrals AND team size requirements
       if (directReferrals >= definition.directReferralsRequired &&
           teamSize >= definition.teamSizeRequired) {
-        
-        // For location-based roles, check location requirements
-        if (definition.isLocationBased) {
-          if (_meetsLocationRequirements(role, location)) {
-            eligibleRole = role;
-            break;
-          }
-        } else {
-          eligibleRole = role;
-          break;
-        }
+        eligibleRole = role;
+        eligibleLevel = definition.level;
+        break; // Found the highest eligible role
       }
     }
     
-    return eligibleRole;
+    return {
+      'role': eligibleRole,
+      'level': eligibleLevel,
+    };
   }
   
-  /// Check if user meets location requirements for role
-  static bool _meetsLocationRequirements(String role, Map<String, dynamic>? location) {
-    if (location == null) return false;
-    
-    final locationType = location['type'] as String?;
-    
-    switch (role) {
-      case 'district_coordinator':
-        // Special handling for district coordinator - urban vs rural
-        if (locationType == 'urban') {
-          // Urban areas need higher requirements (already handled in role definitions)
-          return true;
-        } else if (locationType == 'rural') {
-          // Rural areas have same requirements but different designation
-          return true;
+  /// Validate promotion eligibility with proper validation checks
+  static Future<Map<String, dynamic>> _validatePromotionEligibility(
+    String userId,
+    Map<String, dynamic> userData,
+    String targetRole,
+  ) async {
+    try {
+      // Check if user is not admin (admins cannot be promoted)
+      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
+      if (currentRoleLevel == 0) {
+        return {
+          'valid': false,
+          'reason': 'Admin users cannot be promoted',
+        };
+      }
+      
+      // Check if user account is active and verified
+      final isActive = userData['isActive'] as bool? ?? true;
+      final isVerified = userData['isVerified'] as bool? ?? false;
+      
+      if (!isActive) {
+        return {
+          'valid': false,
+          'reason': 'User account is not active',
+        };
+      }
+      
+      if (!isVerified) {
+        return {
+          'valid': false,
+          'reason': 'User account is not verified',
+        };
+      }
+      
+      // Additional validation for location-based roles
+      final roleDefinition = ROLE_DEFINITIONS[targetRole]!;
+      if (roleDefinition.isLocationBased) {
+        final location = userData['location'] as Map<String, dynamic>?;
+        if (location == null || location.isEmpty) {
+          return {
+            'valid': false,
+            'reason': 'Location information required for this role',
+          };
         }
-        return false;
-      default:
-        return true;
+      }
+      
+      return {
+        'valid': true,
+        'reason': 'All validation checks passed',
+      };
+      
+    } catch (e) {
+      return {
+        'valid': false,
+        'reason': 'Validation error: $e',
+      };
     }
   }
   
-  /// Check if role A is higher than role B in hierarchy
-  static bool _isRoleHigher(String roleA, String roleB) {
-    final indexA = ROLE_HIERARCHY.indexOf(roleA);
-    final indexB = ROLE_HIERARCHY.indexOf(roleB);
-    return indexA > indexB;
-  }
-  
-  /// Promote user to new role
-  static Future<void> _promoteUser(
+  /// Promote user to new role with real-time processing
+  static Future<void> _promoteUserRealTime(
     String userId,
     String previousRole,
     String newRole,
     Map<String, dynamic> userData,
+    int directReferrals,
+    int teamSize,
   ) async {
     final batch = _firestore.batch();
+    final promotionTimestamp = DateTime.now();
+    final newRoleDefinition = ROLE_DEFINITIONS[newRole]!;
     
-    // Update user document
+    // Update user document with new role
     final userRef = _firestore.collection('users').doc(userId);
     batch.update(userRef, {
-      'currentRole': newRole,
+      'role': newRole,
+      'currentRoleLevel': newRoleDefinition.level,
       'previousRole': previousRole,
       'rolePromotedAt': FieldValue.serverTimestamp(),
+      'lastRoleUpdate': FieldValue.serverTimestamp(),
       'rolePromotionHistory': FieldValue.arrayUnion([{
         'from': previousRole,
         'to': newRole,
-        'promotedAt': DateTime.now().toIso8601String(),
-        'directReferrals': userData['activeDirectReferrals'] ?? 0,
-        'teamSize': userData['activeTeamSize'] ?? 0,
+        'promotedAt': promotionTimestamp.toIso8601String(),
+        'directReferrals': directReferrals,
+        'teamSize': teamSize,
+        'promotionType': 'automated_real_time',
       }]),
+      'permissions': newRoleDefinition.permissions,
     });
     
-    // Record promotion in history
+    // Record promotion in audit log for tracking
     final promotionRef = _firestore.collection('rolePromotions').doc();
     batch.set(promotionRef, {
       'userId': userId,
-      'userName': userData['fullName'],
-      'userEmail': userData['email'],
+      'userName': userData['fullName'] ?? 'Unknown',
+      'userEmail': userData['email'] ?? 'Unknown',
       'previousRole': previousRole,
       'newRole': newRole,
-      'directReferrals': userData['activeDirectReferrals'] ?? 0,
-      'teamSize': userData['activeTeamSize'] ?? 0,
+      'previousLevel': ROLE_DEFINITIONS[previousRole]?.level ?? 1,
+      'newLevel': newRoleDefinition.level,
+      'directReferrals': directReferrals,
+      'teamSize': teamSize,
       'location': userData['location'],
       'promotedAt': FieldValue.serverTimestamp(),
+      'promotionType': 'automated_real_time',
+      'validationPassed': true,
     });
     
     await batch.commit();
     
+    // Log promotion event for audit purposes
+    await _logPromotionEvent(userId, 'role_promoted', {
+      'previousRole': previousRole,
+      'newRole': newRole,
+      'directReferrals': directReferrals,
+      'teamSize': teamSize,
+      'promotionType': 'automated_real_time',
+    });
+    
     // Send promotion notification
     await _sendPromotionNotification(userId, previousRole, newRole, userData);
+    
+    if (kDebugMode) {
+      print('🎉 Real-time promotion: User $userId promoted from $previousRole to $newRole');
+    }
   }
   
-  /// Send promotion notification
+  /// Log all promotion events for audit purposes
+  static Future<void> _logPromotionEvent(
+    String userId,
+    String eventType,
+    Map<String, dynamic> eventData,
+  ) async {
+    try {
+      await _firestore.collection('promotionAuditLogs').add({
+        'userId': userId,
+        'eventType': eventType,
+        'eventData': eventData,
+        'timestamp': FieldValue.serverTimestamp(),
+        'source': 'automated_real_time_promotion_system',
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Warning: Failed to log promotion event: $e');
+      }
+    }
+  }
+  
+  /// Send promotion notification to user
   static Future<void> _sendPromotionNotification(
     String userId,
     String previousRole,
@@ -308,107 +407,55 @@ class RoleProgressionService {
     Map<String, dynamic> userData,
   ) async {
     try {
+      final newRoleDefinition = ROLE_DEFINITIONS[newRole]!;
+      
       await _firestore.collection('notifications').add({
         'userId': userId,
         'type': 'role_promotion',
-        'title': 'Congratulations on Your Promotion!',
-        'message': 'You have been promoted from ${ROLE_DEFINITIONS[previousRole]!.name} to ${ROLE_DEFINITIONS[newRole]!.name}!',
+        'title': 'Congratulations on Your Automatic Promotion!',
+        'message': 'You have been automatically promoted from ${ROLE_DEFINITIONS[previousRole]!.name} to ${newRoleDefinition.name}!',
         'data': {
           'previousRole': previousRole,
           'newRole': newRole,
-          'benefits': ROLE_DEFINITIONS[newRole]!.benefits,
-          'permissions': ROLE_DEFINITIONS[newRole]!.permissions,
+          'newLevel': newRoleDefinition.level,
+          'benefits': newRoleDefinition.benefits,
+          'permissions': newRoleDefinition.permissions,
+          'promotionType': 'automated_real_time',
         },
         'createdAt': FieldValue.serverTimestamp(),
         'read': false,
+        'priority': 'high',
       });
     } catch (e) {
-      // Don't fail the main operation for notification errors
-      print('Warning: Failed to send promotion notification: $e');
+      if (kDebugMode) {
+        print('Warning: Failed to send promotion notification: $e');
+      }
     }
   }
   
-  /// Get requirements for next role
+  /// Get next role requirements for progress tracking
   static Map<String, dynamic>? _getNextRoleRequirements(String currentRole) {
     final currentIndex = ROLE_HIERARCHY.indexOf(currentRole);
     if (currentIndex == -1 || currentIndex >= ROLE_HIERARCHY.length - 1) {
-      return null; // Already at highest role
+      return null; // Already at highest role or role not found
     }
     
     final nextRole = ROLE_HIERARCHY[currentIndex + 1];
-    final definition = ROLE_DEFINITIONS[nextRole]!;
+    final nextRoleDefinition = ROLE_DEFINITIONS[nextRole]!;
     
     return {
-      'role': nextRole,
-      'name': definition.name,
-      'directReferralsRequired': definition.directReferralsRequired,
-      'teamSizeRequired': definition.teamSizeRequired,
-      'isLocationBased': definition.isLocationBased,
-      'benefits': definition.benefits,
+      'nextRole': nextRole,
+      'nextRoleName': nextRoleDefinition.name,
+      'nextLevel': nextRoleDefinition.level,
+      'directReferralsRequired': nextRoleDefinition.directReferralsRequired,
+      'teamSizeRequired': nextRoleDefinition.teamSizeRequired,
+      'benefits': nextRoleDefinition.benefits,
     };
   }
   
-  /// Get user's role progression status
-  static Future<Map<String, dynamic>> getRoleProgressionStatus(String userId) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) {
-        throw RoleProgressionException(
-          'User not found: $userId',
-          'USER_NOT_FOUND',
-          {'userId': userId}
-        );
-      }
-      
-      final userData = userDoc.data()!;
-      final currentRole = userData['currentRole'] as String? ?? 'member';
-      final directReferrals = userData['activeDirectReferrals'] as int? ?? 0;
-      final teamSize = userData['activeTeamSize'] as int? ?? 0;
-      
-      final nextRoleRequirements = _getNextRoleRequirements(currentRole);
-      
-      Map<String, dynamic>? progress;
-      if (nextRoleRequirements != null) {
-        final directProgress = (directReferrals / nextRoleRequirements['directReferralsRequired'] * 100).clamp(0, 100);
-        final teamProgress = (teamSize / nextRoleRequirements['teamSizeRequired'] * 100).clamp(0, 100);
-        
-        progress = {
-          'directReferrals': {
-            'current': directReferrals,
-            'required': nextRoleRequirements['directReferralsRequired'],
-            'progress': directProgress.round(),
-          },
-          'teamSize': {
-            'current': teamSize,
-            'required': nextRoleRequirements['teamSizeRequired'],
-            'progress': teamProgress.round(),
-          },
-          'overallProgress': ((directProgress + teamProgress) / 2).round(),
-        };
-      }
-      
-      return {
-        'userId': userId,
-        'currentRole': currentRole,
-        'currentRoleDefinition': ROLE_DEFINITIONS[currentRole],
-        'directReferrals': directReferrals,
-        'teamSize': teamSize,
-        'nextRole': nextRoleRequirements,
-        'progress': progress,
-        'membershipPaid': userData['membershipPaid'] ?? false, // Use actual payment status
-        'rolePromotionHistory': userData['rolePromotionHistory'] ?? [],
-      };
-    } catch (e) {
-      if (e is RoleProgressionException) {
-        rethrow;
-      }
-      
-      throw RoleProgressionException(
-        'Failed to get role progression status: $e',
-        'STATUS_RETRIEVAL_FAILED',
-        {'userId': userId}
-      );
-    }
+  /// Get role definition by name
+  static RoleDefinition? getRoleDefinition(String roleName) {
+    return ROLE_DEFINITIONS[roleName];
   }
   
   /// Get all role definitions
@@ -416,119 +463,11 @@ class RoleProgressionService {
     return Map.from(ROLE_DEFINITIONS);
   }
   
-  /// Get role hierarchy
-  static List<String> getRoleHierarchy() {
-    return List.from(ROLE_HIERARCHY);
-  }
-  
-  /// Check if user has specific permission
-  static Future<bool> hasPermission(String userId, String permission) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) return false;
-      
-      final userData = userDoc.data()!;
-      final currentRole = userData['currentRole'] as String? ?? 'member';
-      final roleDefinition = ROLE_DEFINITIONS[currentRole];
-      
-      return roleDefinition?.permissions.contains(permission) ?? false;
-    } catch (e) {
-      return false;
-    }
-  }
-  
-  /// Get users by role
-  static Future<List<Map<String, dynamic>>> getUsersByRole(String role, {int limit = 50}) async {
-    try {
-      final query = await _firestore
-          .collection('users')
-          .where('currentRole', isEqualTo: role)
-          .where('isActive', isEqualTo: true)
-          .limit(limit)
-          .get();
-      
-      return query.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'userId': doc.id,
-          'fullName': data['fullName'],
-          'email': data['email'],
-          'currentRole': data['currentRole'],
-          'directReferrals': data['activeDirectReferrals'] ?? 0,
-          'teamSize': data['activeTeamSize'] ?? 0,
-          'rolePromotedAt': data['rolePromotedAt'],
-          'location': data['location'],
-        };
-      }).toList();
-    } catch (e) {
-      throw RoleProgressionException(
-        'Failed to get users by role: $e',
-        'USERS_BY_ROLE_FAILED',
-        {'role': role}
-      );
-    }
-  }
-  
-  /// Get role distribution statistics
-  static Future<Map<String, dynamic>> getRoleDistributionStats() async {
-    try {
-      final distribution = <String, int>{};
-      
-      for (final role in ROLE_HIERARCHY) {
-        final query = await _firestore
-            .collection('users')
-            .where('currentRole', isEqualTo: role)
-            .where('isActive', isEqualTo: true)
-            .get();
-        
-        distribution[role] = query.docs.length;
-      }
-      
-      final totalUsers = distribution.values.fold(0, (sum, count) => sum + count);
-      
-      return {
-        'distribution': distribution,
-        'totalUsers': totalUsers,
-        'calculatedAt': DateTime.now().toIso8601String(),
-      };
-    } catch (e) {
-      throw RoleProgressionException(
-        'Failed to get role distribution stats: $e',
-        'DISTRIBUTION_STATS_FAILED'
-      );
-    }
-  }
-  
-  /// Batch check role progressions for multiple users
-  static Future<List<Map<String, dynamic>>> batchCheckRoleProgressions(List<String> userIds) async {
-    try {
-      final results = <Map<String, dynamic>>[];
-      
-      for (final userId in userIds) {
-        try {
-          final result = await checkAndUpdateRole(userId);
-          results.add({
-            'userId': userId,
-            'success': true,
-            'result': result,
-          });
-        } catch (e) {
-          results.add({
-            'userId': userId,
-            'success': false,
-            'error': e.toString(),
-          });
-        }
-      }
-      
-      return results;
-    } catch (e) {
-      throw RoleProgressionException(
-        'Failed to batch check role progressions: $e',
-        'BATCH_CHECK_FAILED',
-        {'userIds': userIds}
-      );
-    }
+  /// Check if role A is higher than role B in hierarchy
+  static bool isRoleHigher(String roleA, String roleB) {
+    final indexA = ROLE_HIERARCHY.indexOf(roleA);
+    final indexB = ROLE_HIERARCHY.indexOf(roleB);
+    return indexA > indexB;
   }
 }
 

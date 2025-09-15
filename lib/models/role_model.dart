@@ -1,4 +1,4 @@
-﻿// Role Model for Talowa Referral System
+// Role Model for Talowa Referral System
 // Adapted from BSS webapp but simplified for Talowa's needs
 
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class TalowaRoles {
     ),
     RoleModel(
       level: 2,
-      name: 'Active Member',
+      name: 'Volunteer',
       icon: Icons.person_outline,
       directReferralsNeeded: 10,
       teamReferralsNeeded: 10,
@@ -90,10 +90,10 @@ class TalowaRoles {
     ),
     RoleModel(
       level: 8,
-      name: 'Zonal Coordinator',
+      name: 'Zonal Regional Coordinator',
       icon: Icons.public,
       directReferralsNeeded: 500,
-      teamReferralsNeeded: 1000000,
+      teamReferralsNeeded: 1500000,
       color: Colors.deepPurple,
     ),
     RoleModel(

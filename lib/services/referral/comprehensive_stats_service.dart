@@ -206,18 +206,18 @@ class ComprehensiveStatsService {
     }
   }
 
-  /// Calculate role progression based on current stats
+  /// Calculate role progression based on current stats - Updated for Automated Real-Time Promotion
   static Map<String, dynamic>? _calculateRoleProgression(int directReferrals, int teamSize, String currentRole) {
-    // Talowa's complete 9-level role system
+    // Talowa's complete 9-level role system with updated thresholds
     final roles = [
       {'level': 1, 'name': 'Member', 'directRequired': 0, 'teamRequired': 0},
-      {'level': 2, 'name': 'Active Member', 'directRequired': 10, 'teamRequired': 10},
+      {'level': 2, 'name': 'Volunteer', 'directRequired': 10, 'teamRequired': 10},
       {'level': 3, 'name': 'Team Leader', 'directRequired': 20, 'teamRequired': 100},
       {'level': 4, 'name': 'Area Coordinator', 'directRequired': 40, 'teamRequired': 700},
       {'level': 5, 'name': 'Mandal Coordinator', 'directRequired': 80, 'teamRequired': 6000},
       {'level': 6, 'name': 'Constituency Coordinator', 'directRequired': 160, 'teamRequired': 50000},
       {'level': 7, 'name': 'District Coordinator', 'directRequired': 320, 'teamRequired': 500000},
-      {'level': 8, 'name': 'Zonal Coordinator', 'directRequired': 500, 'teamRequired': 1000000},
+      {'level': 8, 'name': 'Zonal Regional Coordinator', 'directRequired': 500, 'teamRequired': 1500000},
       {'level': 9, 'name': 'State Coordinator', 'directRequired': 1000, 'teamRequired': 3000000},
     ];
 

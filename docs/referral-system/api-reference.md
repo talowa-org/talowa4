@@ -310,7 +310,7 @@ static Map<String, dynamic> getRoleRequirements(String role)
 
 **Example:**
 ```dart
-Map<String, dynamic> requirements = RoleProgressionService.getRoleRequirements('organizer');
+Map<String, dynamic> requirements = RoleProgressionService.getRoleRequirements('team_leader');
 print('Required referrals: ${requirements['directReferrals']}');
 ```
 

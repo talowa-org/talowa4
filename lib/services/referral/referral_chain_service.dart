@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/app_constants.dart';
 import 'cloud_functions_service.dart';
+import 'role_progression_service.dart';
 
 class ReferralChainService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -101,92 +102,48 @@ class ReferralChainService {
     }
   }
 
-  /// Check and process role promotion for a user
+  /// Check and process role promotion for a user using new automated system
   /// This will be called by Cloud Functions when stats are updated
   static Future<void> checkRolePromotion(String userId) async {
     try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-      if (!userDoc.exists) return;
-
-      final userData = userDoc.data()!;
-      final currentRoleLevel = userData['currentRoleLevel'] as int? ?? 1;
-      final directReferrals = userData['directReferrals'] as int? ?? 0;
-      final teamReferrals = userData['teamReferrals'] as int? ?? 0;
-
-      // Skip admin users
-      if (currentRoleLevel == 0) return;
-
-      // Determine the highest eligible role using Talowa's complete hierarchy
-      int newRoleLevel = currentRoleLevel;
-      String newRoleName = userData['role'] as String? ?? AppConstants.roleMember;
-
-      // Define Talowa role thresholds (in descending order for highest eligible role)
-      final roleThresholds = [
-        {'level': 9, 'name': 'State Coordinator', 'direct': 1000, 'team': 3000000},
-        {'level': 8, 'name': 'Zonal Coordinator', 'direct': 500, 'team': 1000000},
-        {'level': 7, 'name': 'District Coordinator', 'direct': 320, 'team': 500000},
-        {'level': 6, 'name': 'Constituency Coordinator', 'direct': 160, 'team': 50000},
-        {'level': 5, 'name': 'Mandal Coordinator', 'direct': 80, 'team': 6000},
-        {'level': 4, 'name': 'Area Coordinator', 'direct': 40, 'team': 700},
-        {'level': 3, 'name': 'Team Leader', 'direct': 20, 'team': 100},
-        {'level': 2, 'name': 'Active Member', 'direct': 10, 'team': 10},
-        {'level': 1, 'name': 'Member', 'direct': 0, 'team': 0},
-      ];
-
-      // Find the highest eligible role
-      for (final role in roleThresholds) {
-        final directRequired = role['direct'] as int;
-        final teamRequired = role['team'] as int;
-        final roleLevel = role['level'] as int;
+      debugPrint('🔄 Checking role promotion for user: $userId');
+      
+      // Use the new automated real-time role progression service
+      final promotionResult = await RoleProgressionService.checkAndUpdateRoleRealTime(userId);
+      
+      if (promotionResult['promoted'] == true) {
+        final previousRole = promotionResult['previousRole'] as String;
+        final currentRole = promotionResult['currentRole'] as String;
+        final directReferrals = promotionResult['directReferrals'] as int;
+        final teamSize = promotionResult['teamSize'] as int;
         
-        final meetsDirect = directReferrals >= directRequired;
-        final meetsTeam = teamReferrals >= teamRequired;
-
-        if (meetsDirect && meetsTeam && roleLevel > currentRoleLevel) {
-          newRoleLevel = roleLevel;
-          newRoleName = role['name'] as String;
-          break; // Found the highest eligible role
+        debugPrint('🎉 User promoted from $previousRole to $currentRole');
+        debugPrint('   Direct referrals: $directReferrals, Team size: $teamSize');
+        
+        // Additional notification can be sent here if needed
+        // The RoleProgressionService already handles notifications
+      } else {
+        final currentRole = promotionResult['currentRole'] as String;
+        final eligibleRole = promotionResult['eligibleRole'] as String;
+        
+        if (currentRole != eligibleRole) {
+          debugPrint('ℹ️ User $userId eligible for $eligibleRole but validation failed');
         }
       }
-
-      // Update role if promotion is warranted
-      if (newRoleLevel > currentRoleLevel) {
-        await userDoc.reference.update({
-          'role': newRoleName,
-          'currentRoleLevel': newRoleLevel,
-          'lastRoleUpdate': FieldValue.serverTimestamp(),
-        });
-
-        debugPrint('ðŸŽ‰ Promoted user ${userData['fullName']} to $newRoleName (level $newRoleLevel)');
-        
-        // TODO: Send promotion notification
-        await _sendPromotionNotification(userId, newRoleName);
-      }
-
+      
     } catch (e) {
-      debugPrint('âŒ Error checking role promotion: $e');
+      debugPrint('❌ Error checking role promotion: $e');
     }
   }
 
-  /// Send promotion notification (placeholder)
+  /// Legacy promotion notification method - now handled by RoleProgressionService
+  /// Kept for backward compatibility
   static Future<void> _sendPromotionNotification(String userId, String newRole) async {
     try {
-      // Add notification to user's notifications collection
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('notifications')
-          .add({
-        'type': 'promotion',
-        'title': 'Congratulations! ðŸŽ‰',
-        'message': 'You have been promoted to $newRole!',
-        'read': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      debugPrint('ðŸ“§ Promotion notification sent for $newRole');
+      debugPrint('📧 Legacy promotion notification called for $newRole');
+      debugPrint('ℹ️ Notifications are now handled by RoleProgressionService automatically');
     } catch (e) {
-      debugPrint('âš ï¸ Failed to send promotion notification: $e');
+      debugPrint('⚠️ Failed to send promotion notification: $e');
     }
   }
 
@@ -265,7 +222,7 @@ class ReferralChainService {
       };
 
     } catch (e) {
-      debugPrint('âŒ Error getting referral stats: $e');
+      debugPrint('❌ Error getting referral stats: $e');
       return {
         'directReferrals': 0,
         'teamReferrals': 0,
@@ -288,7 +245,7 @@ class ReferralChainService {
 
       return query.docs.isNotEmpty;
     } catch (e) {
-      debugPrint('âŒ Error validating referral code: $e');
+      debugPrint('❌ Error validating referral code: $e');
       return false;
     }
   }

@@ -67,15 +67,32 @@ The system uses Firebase Firestore with the following main collections:
 - **QR Code Integration**: Visual sharing with branded QR codes
 - **Analytics Tracking**: Click-through and conversion tracking
 
-### 2. Role-Based Hierarchy
+### 2. Automated Role-Based Hierarchy
 
-The system supports a 5-tier role structure:
+The system supports a comprehensive 9-level role structure with automated real-time promotions:
 
-1. **Member** (0+ referrals, 0+ team size)
-2. **Activist** (10+ referrals, 25+ team size)
-3. **Organizer** (25+ referrals, 100+ team size)
-4. **Coordinator** (100+ referrals, 500+ team size)
-5. **Regional Coordinator** (500+ referrals, 2500+ team size)
+**State/Regional Level Roles:**
+- **State Coordinator** (Level 9): 1000 direct referrals, 3,000,000 team size
+- **Zonal Regional Coordinator** (Level 8): 500 direct referrals, 1,500,000 team size
+
+**District/Local Level Roles:**
+- **District Coordinator** (Level 7): 320 direct referrals, 500,000 team size
+- **Constituency Coordinator** (Level 6): 160 direct referrals, 50,000 team size
+- **Mandal Coordinator** (Level 5): 80 direct referrals, 6,000 team size
+
+**Area Level Roles:**
+- **Area Coordinator** (Level 4): 40 direct referrals, 700 team size
+
+**Base Level Roles:**
+- **Team Leader** (Level 3): 20 direct referrals, 100 team size
+- **Volunteer** (Level 2): 10 direct referrals, 10 team size
+- **Member** (Level 1): Default role for all new users
+
+**Key Features:**
+- Real-time automated promotions when thresholds are met
+- Dual requirements: Both direct referrals AND team size must be achieved
+- Comprehensive validation checks before applying promotions
+- Complete audit logging for all promotion events
 
 ### 3. Commission Structure
 
@@ -160,7 +177,7 @@ Map<String, dynamic> result = await PaymentIntegrationService.manualPaymentActiv
 await RoleProgressionService.checkAndUpdateRole('user123');
 
 // Get role requirements
-Map<String, dynamic> requirements = RoleProgressionService.getRoleRequirements('organizer');
+Map<String, dynamic> requirements = RoleProgressionService.getRoleRequirements('team_leader');
 ```
 
 ## User Guides
