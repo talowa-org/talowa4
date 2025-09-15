@@ -136,16 +136,7 @@ class ReferralChainService {
     }
   }
 
-  /// Legacy promotion notification method - now handled by RoleProgressionService
-  /// Kept for backward compatibility
-  static Future<void> _sendPromotionNotification(String userId, String newRole) async {
-    try {
-      debugPrint('📧 Legacy promotion notification called for $newRole');
-      debugPrint('ℹ️ Notifications are now handled by RoleProgressionService automatically');
-    } catch (e) {
-      debugPrint('⚠️ Failed to send promotion notification: $e');
-    }
-  }
+
 
   /// Fix orphaned users (assign them to admin)
   /// Adapted from BSS fix-orphans functionality
