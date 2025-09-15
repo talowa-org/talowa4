@@ -618,22 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Get user role display text using centralized utility
-  String _getUserRoleDisplay() {
-    final role = userData?['role'] as String?;
-    final isAdmin = userData?['isAdmin'] as bool?;
-    final referralCode = userData?['referralCode'] as String?;
-    
-    // Check for admin indicators
-    if (role == 'admin' || 
-        role == 'national_leadership' || 
-        isAdmin == true || 
-        referralCode == 'TALADMIN') {
-      return 'Administrator';
-    }
-    
-    return RoleUtils.getDisplayName(role);
-  }
+
 
   Widget _buildMotivationCard() {
     return Container(

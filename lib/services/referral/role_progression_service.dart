@@ -40,6 +40,11 @@ class RoleDefinition {
 class RoleProgressionService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
+  /// For testing purposes - allows injection of fake firestore
+  static void setFirestoreInstance(FirebaseFirestore firestore) {
+    _firestore = firestore;
+  }
+  
   /// Automated Role Promotion Rules (Real-Time Implementation)
   static const Map<String, RoleDefinition> ROLE_DEFINITIONS = {
     'member': RoleDefinition(
@@ -131,11 +136,6 @@ class RoleProgressionService {
     'zonal_regional_coordinator',
     'state_coordinator',
   ];
-  
-  /// For testing purposes - allows injection of fake firestore
-  static void setFirestoreInstance(FirebaseFirestore firestore) {
-    _firestore = firestore;
-  }
   
   /// Real-time automated role promotion check and update
   /// Processes promotions in real-time when thresholds are met

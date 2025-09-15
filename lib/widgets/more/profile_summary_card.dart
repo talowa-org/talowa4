@@ -1,8 +1,9 @@
-﻿// Profile Summary Card Widget
+// Profile Summary Card Widget
 // Reference: complete-app-structure.md - Profile Section
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/user_profile.dart';
 import '../../screens/more/more_screen.dart';
 
 class ProfileSummaryCard extends StatelessWidget {
@@ -30,7 +31,9 @@ class ProfileSummaryCard extends StatelessWidget {
                 radius: 30,
                 backgroundColor: AppTheme.talowaGreen,
                 child: Text(
-                  userProfile.name.substring(0, 1).toUpperCase(),
+                  (userProfile.name?.isNotEmpty == true) 
+                    ? userProfile.name!.substring(0, 1).toUpperCase()
+                    : 'U',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -47,7 +50,7 @@ class ProfileSummaryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userProfile.name,
+                      userProfile.name ?? 'Unknown User',
                       style: AppTheme.heading3Style,
                     ),
                     Text(
@@ -58,11 +61,11 @@ class ProfileSummaryCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'ID: ${userProfile.memberId}',
+                      'ID: ${userProfile.id}',
                       style: AppTheme.captionStyle,
                     ),
                     Text(
-                      userProfile.phoneNumber,
+                      userProfile.phone ?? 'No phone',
                       style: AppTheme.captionStyle,
                     ),
                   ],

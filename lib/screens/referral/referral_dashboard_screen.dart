@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/referral/cloud_referral_service.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -204,6 +206,8 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
           _buildReferralCodeCard(),
           const SizedBox(height: 16),
           _buildStatsCard(),
+          const SizedBox(height: 16),
+          _buildTestingButtonsCard(),
           const SizedBox(height: 16),
           _buildRecentReferralsCard(),
         ],
@@ -524,6 +528,171 @@ class _ReferralDashboardScreenState extends State<ReferralDashboardScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    }
+  }
+
+  Widget _buildTestingButtonsCard() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.science, color: AppTheme.talowaGreen),
+                const SizedBox(width: 8),
+                Text(
+                  'Testing Tools',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _generateMockReferrals,
+                    icon: const Icon(Icons.group_add),
+                    label: const Text('Generate 10 Referrals'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _generateTeamSize,
+                    icon: const Icon(Icons.groups),
+                    label: const Text('Generate Team of 100'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'These buttons generate mock data for testing role promotion functionality.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _generateMockReferrals() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        _showErrorMessage('User not authenticated');
+        return;
+      }
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+      
+      // Get current user data
+      final userDoc = await firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        _showErrorMessage('User document not found');
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final userData = userDoc.data()!;
+      final currentDirectReferrals = userData['directReferrals'] ?? 0;
+      final currentTeamSize = userData['teamSize'] ?? 0;
+
+      // Update user's referral stats by adding exactly 10
+      batch.update(userDoc.reference, {
+        'directReferrals': currentDirectReferrals + 10,
+        'teamSize': currentTeamSize + 10,
+        'teamReferrals': (userData['teamReferrals'] ?? 0) + 10,
+        'lastStatsUpdate': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+      
+      // Refresh the stats display
+      await _loadReferralStats();
+      
+      _showSuccessMessage('Successfully generated 10 mock referrals!');
+    } catch (e) {
+      _showErrorMessage('Failed to generate mock referrals: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _generateTeamSize() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        _showErrorMessage('User not authenticated');
+        return;
+      }
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+      
+      // Get current user data
+      final userDoc = await firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        _showErrorMessage('User document not found');
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final userData = userDoc.data()!;
+      final currentTeamSize = userData['teamSize'] ?? 0;
+
+      // Update user's team size by adding exactly 100
+      batch.update(userDoc.reference, {
+        'teamSize': currentTeamSize + 100,
+        'teamReferrals': (userData['teamReferrals'] ?? 0) + 100,
+        'lastStatsUpdate': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+      
+      // Refresh the stats display
+      await _loadReferralStats();
+      
+      _showSuccessMessage('Successfully generated team of 100 members!');
+    } catch (e) {
+      _showErrorMessage('Failed to generate team size: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

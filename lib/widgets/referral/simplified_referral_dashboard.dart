@@ -334,6 +334,8 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                 const SizedBox(height: 16),
                 _buildRoleProgressCard(),
                 const SizedBox(height: 16),
+                _buildTestingButtonsCard(),
+                const SizedBox(height: 16),
                 _buildActionButtons(),
               ],
             ),
@@ -1117,6 +1119,200 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
         .split('_')
         .map((word) => word[0].toUpperCase() + word.substring(1))
         .join(' ');
+  }
+
+  Widget _buildTestingButtonsCard() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.science, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'Testing Tools',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _generateMockReferrals,
+                    icon: const Icon(Icons.group_add),
+                    label: const Text('Generate 10 Referrals'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _generateTeamSize,
+                    icon: const Icon(Icons.groups),
+                    label: const Text('Generate Team of 100'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'These buttons generate mock data for testing role promotion functionality.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _generateMockReferrals() async {
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+      final now = DateTime.now();
+      
+      // Generate 10 mock referrals
+      for (int i = 1; i <= 10; i++) {
+        final mockUserId = 'mock_user_${DateTime.now().millisecondsSinceEpoch}_$i';
+        final referralDoc = FirebaseFirestore.instance
+            .collection('referrals')
+            .doc();
+        
+        batch.set(referralDoc, {
+          'referrerId': widget.userId,
+          'referredUserId': mockUserId,
+          'referralCode': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+          'timestamp': now.subtract(Duration(days: i)),
+          'status': 'completed',
+          'mockData': true,
+        });
+        
+        // Create mock user profile
+        final userDoc = FirebaseFirestore.instance
+            .collection('users')
+            .doc(mockUserId);
+        
+        batch.set(userDoc, {
+          'name': 'Test User $i',
+          'email': 'testuser$i@example.com',
+          'phoneNumber': '+91${9000000000 + i}',
+          'createdAt': now.subtract(Duration(days: i)),
+          'referredBy': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+          'mockData': true,
+        });
+      }
+      
+      await batch.commit();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Generated 10 mock referrals successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        
+        // Refresh the data
+        await _loadReferralStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error generating referrals: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _generateTeamSize() async {
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+      final now = DateTime.now();
+      
+      // Generate 100 mock team members (indirect referrals)
+      for (int i = 1; i <= 100; i++) {
+        final mockUserId = 'mock_team_${DateTime.now().millisecondsSinceEpoch}_$i';
+        final referrerId = i <= 10 ? widget.userId : 'mock_user_${DateTime.now().millisecondsSinceEpoch}_${(i % 10) + 1}';
+        
+        final referralDoc = FirebaseFirestore.instance
+            .collection('referrals')
+            .doc();
+        
+        batch.set(referralDoc, {
+          'referrerId': referrerId,
+          'referredUserId': mockUserId,
+          'referralCode': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+          'timestamp': now.subtract(Duration(hours: i)),
+          'status': 'completed',
+          'teamMember': true,
+          'rootReferrer': widget.userId,
+          'mockData': true,
+        });
+        
+        // Create mock team member profile
+        final userDoc = FirebaseFirestore.instance
+            .collection('users')
+            .doc(mockUserId);
+        
+        batch.set(userDoc, {
+          'name': 'Team Member $i',
+          'email': 'teammember$i@example.com',
+          'phoneNumber': '+91${8000000000 + i}',
+          'createdAt': now.subtract(Duration(hours: i)),
+          'referredBy': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+          'rootReferrer': widget.userId,
+          'mockData': true,
+        });
+      }
+      
+      await batch.commit();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Generated team of 100 members successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        
+        // Refresh the data
+        await _loadReferralStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error generating team: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }
 

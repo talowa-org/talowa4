@@ -2,6 +2,7 @@
 // Reference: complete-app-structure.md - More Tab
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../widgets/more/profile_summary_card.dart';
@@ -16,6 +17,8 @@ import '../onboarding/onboarding_screen.dart';
 import '../onboarding/coordinator_training_screen.dart';
 // Removed enterprise Security Center access for end-users per product requirements
 import '../home/payments_screen.dart';
+import '../../providers/user_state_provider.dart';
+import '../../models/user_profile.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -25,67 +28,58 @@ class MoreScreen extends StatefulWidget {
 }
 
 class _MoreScreenState extends State<MoreScreen> {
-  bool _isLoading = false;
-  UserProfile? _userProfile;
-
   @override
   void initState() {
     super.initState();
-    _loadUserProfile();
+    // Initialize UserStateProvider if not already done
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userStateProvider = Provider.of<UserStateProvider>(context, listen: false);
+      if (userStateProvider.userProfile == null) {
+        userStateProvider.refreshUserData();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'More',
-          style: TextStyle(
-            fontFamily: 'NotoSansTelugu',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return Consumer<UserStateProvider>(
+      builder: (context, userStateProvider, child) {
+        final userProfile = userStateProvider.userProfile;
+        final isLoading = userStateProvider.isLoading;
+        
+        return Scaffold(
+          backgroundColor: AppTheme.background,
+          appBar: AppBar(
+            title: const Text(
+              'More',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: AppTheme.primaryColor,
+            elevation: 0,
+            actions: [
+              // Hidden admin access button (long press)
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onPressed: () {}, // Regular tap does nothing
+                onLongPress: null,
+                tooltip: 'More Options (Long press for admin)',
+              ),
+            ],
           ),
-        ),
-        backgroundColor: AppTheme.talowaGreen,
-        elevation: AppTheme.elevationLow,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: _openAppSettings,
-            tooltip: 'App Settings',
-          ),
-          IconButton(
-            icon: const Icon(Icons.analytics, color: Colors.white),
-            onPressed: _openAnalytics,
-            tooltip: 'Analytics',
-          ),
-          IconButton(
-            icon: const Icon(Icons.help, color: Colors.white),
-            onPressed: _openHelp,
-            tooltip: 'Help & Support',
-          ),
-          // AI Test entry removed per Option B (retain file, remove references)
-          // Hidden admin access button (long press)
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {}, // Regular tap does nothing
-            onLongPress: null,
-            tooltip: 'More Options (Long press for admin)',
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const LoadingWidget(message: 'Loading profile...')
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          body: isLoading
+              ? const LoadingWidget(message: 'Loading profile...')
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                   // Profile Summary
-                  if (_userProfile != null)
+                  if (userProfile != null)
                     ProfileSummaryCard(
-                      userProfile: _userProfile!,
+                      userProfile: userProfile,
                       onTap: _openFullProfile,
                     ),
 
@@ -102,13 +96,13 @@ class _MoreScreenState extends State<MoreScreen> {
                     items: [
                       FeatureItem(
                         title: 'My Land Records',
-                        subtitle: '${_userProfile?.landRecords ?? 0} plots',
+                        subtitle: '${userProfile?.stats['landRecords'] ?? 0} plots',
                         icon: Icons.landscape,
                         onTap: _openLandRecords,
                       ),
                       FeatureItem(
                         title: 'Legal Cases',
-                        subtitle: '${_userProfile?.activeCases ?? 0} active',
+                        subtitle: '${userProfile?.stats['activeCases'] ?? 0} active',
                         icon: Icons.balance,
                         onTap: _openLegalCases,
                       ),
@@ -143,13 +137,13 @@ class _MoreScreenState extends State<MoreScreen> {
                       ),
                       FeatureItem(
                         title: 'Goal Progress',
-                        subtitle: '${(_userProfile?.goalProgress ?? 0 * 100).toInt()}% to next rank',
+                        subtitle: '${((userProfile?.stats['goalProgress'] ?? 0.0) * 100).toInt()}% to next rank',
                         icon: Icons.emoji_events,
                         onTap: _openGoalProgress,
                       ),
                       FeatureItem(
                         title: 'Engagement Score',
-                        subtitle: '${_userProfile?.engagementScore ?? 0}/10',
+                        subtitle: '${userProfile?.stats['engagementScore'] ?? 0}/10',
                         icon: Icons.favorite,
                         onTap: _openEngagementDetails,
                       ),
@@ -224,15 +218,15 @@ class _MoreScreenState extends State<MoreScreen> {
                         icon: Icons.call,
                         onTap: _openCallingTutorial,
                       ),
-                      if (_userProfile?.role == AppConstants.roleTeamLeader ||
-                          _userProfile?.role == AppConstants.roleAreaCoordinator ||
-                          _userProfile?.role == AppConstants.roleMandalCoordinator ||
-                          _userProfile?.role == AppConstants.roleConstituencyCoordinator ||
-                          _userProfile?.role == AppConstants.roleDistrictCoordinator ||
-                          _userProfile?.role == AppConstants.roleZonalRegionalCoordinator ||
-                          _userProfile?.role == AppConstants.roleStateCoordinator ||
-                          _userProfile?.role == AppConstants.roleFounder ||
-                          _userProfile?.role == AppConstants.roleRootAdmin)
+                      if (userProfile?.role == AppConstants.roleTeamLeader ||
+                          userProfile?.role == AppConstants.roleAreaCoordinator ||
+                          userProfile?.role == AppConstants.roleMandalCoordinator ||
+                          userProfile?.role == AppConstants.roleConstituencyCoordinator ||
+                          userProfile?.role == AppConstants.roleDistrictCoordinator ||
+                          userProfile?.role == AppConstants.roleZonalRegionalCoordinator ||
+                          userProfile?.role == AppConstants.roleStateCoordinator ||
+                          userProfile?.role == AppConstants.roleFounder ||
+                          userProfile?.role == AppConstants.roleRootAdmin)
                         FeatureItem(
                           title: 'Coordinator Training',
                           subtitle: 'Group management training',
@@ -270,7 +264,7 @@ class _MoreScreenState extends State<MoreScreen> {
                     items: [
                       FeatureItem(
                         title: 'My Achievements',
-                        subtitle: '${_userProfile?.achievements ?? 0} unlocked',
+                        subtitle: '${userProfile?.stats['achievements'] ?? 0} unlocked',
                         icon: Icons.emoji_events,
                         onTap: _openAchievements,
                       ),
@@ -301,9 +295,11 @@ class _MoreScreenState extends State<MoreScreen> {
                   _buildAppInfoSection(),
 
 
-                ],
-              ),
-            ),
+                    ],
+                  ),
+                ),
+        );
+      },
     );
   }
 
@@ -373,41 +369,7 @@ class _MoreScreenState extends State<MoreScreen> {
     );
   }
 
-  // Data Loading
-  Future<void> _loadUserProfile() async {
-    setState(() {
-      _isLoading = true;
-    });
 
-    try {
-      // TODO: Implement actual API call
-      await Future.delayed(const Duration(seconds: 1));
-
-      _userProfile = UserProfile(
-        name: 'Ravi Kumar',
-        role: AppConstants.roleAreaCoordinator,
-        memberId: 'MBR-20240115-0123',
-        phoneNumber: '+91 9876543210',
-        location: 'Kondapur Village',
-        landRecords: 3,
-        activeCases: 2,
-        teamSize: 47,
-        directReferrals: 12,
-        goalProgress: 0.63,
-        engagementScore: 8.2,
-        achievements: 5,
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      debugPrint('Error loading user profile: $e');
-    }
-  }
 
   // Action Methods
   void _openAppSettings() {
@@ -1034,36 +996,6 @@ class _MoreScreenState extends State<MoreScreen> {
 }
 
 // Data Models
-class UserProfile {
-  final String name;
-  final String role;
-  final String memberId;
-  final String phoneNumber;
-  final String location;
-  final int landRecords;
-  final int activeCases;
-  final int teamSize;
-  final int directReferrals;
-  final double goalProgress;
-  final double engagementScore;
-  final int achievements;
-
-  UserProfile({
-    required this.name,
-    required this.role,
-    required this.memberId,
-    required this.phoneNumber,
-    required this.location,
-    required this.landRecords,
-    required this.activeCases,
-    required this.teamSize,
-    required this.directReferrals,
-    required this.goalProgress,
-    required this.engagementScore,
-    required this.achievements,
-  });
-}
-
 class FeatureItem {
   final String title;
   final String subtitle;
