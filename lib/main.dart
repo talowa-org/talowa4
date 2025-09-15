@@ -39,6 +39,7 @@ import 'services/bootstrap_service.dart';
 import 'services/notifications/notification_service.dart';
 import 'services/referral/universal_link_service.dart';
 import 'providers/localization_provider.dart';
+import 'providers/user_state_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
@@ -169,6 +170,9 @@ class _TalowaAppState extends State<TalowaApp> {
       providers: [
         ChangeNotifierProvider(
           create: (context) => LocalizationProvider()..initialize(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserStateProvider.instance,
         ),
       ],
       child: Consumer<LocalizationProvider>(

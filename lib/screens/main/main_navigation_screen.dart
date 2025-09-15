@@ -1,12 +1,14 @@
-﻿// TALOWA Main Navigation Screen - 5 Tab System
+// TALOWA Main Navigation Screen - 5 Tab System
 // Reference: complete-app-structure.md - Bottom Navigation (5 Main Tabs)
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/onboarding_service.dart';
 import '../../services/navigation/smart_back_navigation_service.dart';
 import '../../services/navigation/navigation_safety_service.dart';
+import '../../providers/user_state_provider.dart';
 import '../home/home_screen.dart';
 import '../feed/feed_screen.dart';
 import '../messages/messages_screen.dart';
@@ -28,6 +30,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _checkOnboardingStatus();
+    _initializeUserState();
+  }
+  
+  /// Initialize user state provider for role updates across tabs
+  Future<void> _initializeUserState() async {
+    try {
+      final userStateProvider = Provider.of<UserStateProvider>(context, listen: false);
+      await userStateProvider.initialize();
+      debugPrint('✅ UserStateProvider initialized in MainNavigationScreen');
+    } catch (e) {
+      debugPrint('❌ Error initializing UserStateProvider: $e');
+    }
   }
 
   Future<void> _checkOnboardingStatus() async {

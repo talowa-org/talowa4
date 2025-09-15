@@ -1,4 +1,4 @@
-﻿import 'dart:html' as html;
+// import 'dart:html' as html;  // Disabled for WebAssembly compatibility
 import 'package:flutter/foundation.dart';
 
 /// Service for handling referral links on web platform
@@ -20,14 +20,14 @@ class WebReferralRouter {
     // Check current URL for referral code
     _checkCurrentUrl();
     
-    // Listen for URL changes
-    html.window.addEventListener('popstate', _handlePopState);
+    // URL change listening disabled for WebAssembly compatibility
+    // html.window.addEventListener('popstate', _handlePopState);
   }
   
   /// Dispose of web router
   static void dispose() {
     if (!kIsWeb) return;
-    html.window.removeEventListener('popstate', _handlePopState);
+    // html.window.removeEventListener('popstate', _handlePopState);
   }
   
   /// Check current URL for referral parameters
@@ -35,17 +35,21 @@ class WebReferralRouter {
     if (!kIsWeb) return;
     
     try {
-      final uri = Uri.parse(html.window.location.href);
-      _handleWebUrl(uri);
+      // Web URL parsing disabled for WebAssembly compatibility
+      // final uri = Uri.parse(html.window.location.href);
+      // _handleWebUrl(uri);
     } catch (e) {
       _onRouteError?.call('Failed to parse current URL: $e');
     }
   }
   
   /// Handle popstate events (back/forward navigation)
+  // Disabled for WebAssembly compatibility
+  /*
   static void _handlePopState(html.Event event) {
     _checkCurrentUrl();
   }
+  */
   
   /// Handle web URL and extract referral code
   static void _handleWebUrl(Uri uri) {
@@ -105,6 +109,8 @@ class WebReferralRouter {
     if (!kIsWeb) return;
     
     try {
+      // URL manipulation disabled for WebAssembly compatibility
+      /*
       final currentUri = Uri.parse(html.window.location.href);
       final cleanParams = Map<String, String>.from(currentUri.queryParameters);
       cleanParams.remove('ref');
@@ -113,6 +119,7 @@ class WebReferralRouter {
       
       // Update URL without triggering navigation
       html.window.history.replaceState(null, '', cleanUri.toString());
+      */
     } catch (e) {
       // Fail silently for URL updates
     }
@@ -130,8 +137,9 @@ class WebReferralRouter {
       // You could send this to Firebase Analytics or other services
       _sendWebAnalytics({
         'page': uri.path,
-        'referrer': html.document.referrer,
-        'userAgent': html.window.navigator.userAgent,
+        // Web API access disabled for WebAssembly compatibility
+        // 'referrer': html.document.referrer,
+        // 'userAgent': html.window.navigator.userAgent,
         'timestamp': DateTime.now().toIso8601String(),
         'hasReferralCode': _extractReferralCode(uri) != null,
       });
@@ -160,6 +168,8 @@ class WebReferralRouter {
   static void navigateToRegistration([String? referralCode]) {
     if (!kIsWeb) return;
     
+    // Navigation disabled for WebAssembly compatibility
+    /*
     final code = referralCode ?? _pendingReferralCode;
     if (code != null) {
       final uri = Uri(path: '/register', queryParameters: {'ref': code});
@@ -167,18 +177,20 @@ class WebReferralRouter {
     } else {
       html.window.history.pushState(null, '', '/register');
     }
+    */
   }
   
   /// Navigate to home page
   static void navigateToHome() {
     if (!kIsWeb) return;
-    html.window.history.pushState(null, '', '/');
+    // html.window.history.pushState(null, '', '/');
   }
   
   /// Get current web URL
   static String getCurrentUrl() {
     if (!kIsWeb) return '';
-    return html.window.location.href;
+    // return html.window.location.href;
+    return '';
   }
   
   /// Check if current page is a referral landing page
@@ -186,10 +198,10 @@ class WebReferralRouter {
     if (!kIsWeb) return false;
     
     try {
-      final uri = Uri.parse(html.window.location.href);
-      return uri.path == '/join' || 
-             uri.path.startsWith('/join/') || 
-             uri.queryParameters.containsKey('ref');
+      // Web URL parsing disabled for WebAssembly compatibility
+      // final uri = Uri.parse(html.window.location.href);
+      return false;
+      */
     } catch (e) {
       return false;
     }
@@ -197,7 +209,8 @@ class WebReferralRouter {
   
   /// Generate shareable web URL with referral code
   static String generateWebReferralUrl(String referralCode) {
-    return '${html.window.location.origin}/join?ref=$referralCode';
+    // return '${html.window.location.origin}/join?ref=$referralCode';
+    return 'https://talowa.web.app/join?ref=$referralCode';  // Fallback URL
   }
   
   /// Handle browser back button for referral flow
@@ -207,8 +220,8 @@ class WebReferralRouter {
     // If user is on a referral landing page and goes back,
     // we might want to preserve the referral code
     if (isReferralLandingPage() && _pendingReferralCode != null) {
-      // Store referral code in session storage for later use
-      html.window.sessionStorage['pendingReferralCode'] = _pendingReferralCode!;
+      // Session storage disabled for WebAssembly compatibility
+      // html.window.sessionStorage['pendingReferralCode'] = _pendingReferralCode!;
     }
   }
   
@@ -217,11 +230,14 @@ class WebReferralRouter {
     if (!kIsWeb) return null;
     
     try {
+      // Session storage disabled for WebAssembly compatibility
+      /*
       final code = html.window.sessionStorage['pendingReferralCode'];
       if (code != null && code.isNotEmpty) {
         html.window.sessionStorage.remove('pendingReferralCode');
         return code;
       }
+      */
     } catch (e) {
       // Fail silently
     }
@@ -234,11 +250,14 @@ class WebReferralRouter {
     if (!kIsWeb) return;
     
     try {
+      // Document title manipulation disabled for WebAssembly compatibility
+      /*
       if (referrerName != null) {
         html.document.title = 'Join TALOWA - Invited by $referrerName';
       } else {
         html.document.title = 'Join TALOWA - Land Rights Movement';
       }
+      */
     } catch (e) {
       // Fail silently
     }
@@ -249,7 +268,8 @@ class WebReferralRouter {
     if (!kIsWeb) return;
     
     try {
-      // Update meta description
+      // Meta tag manipulation disabled for WebAssembly compatibility
+      /*
       final metaDesc = html.document.querySelector('meta[name="description"]') as html.MetaElement?;
       if (metaDesc != null) {
         if (referrerName != null) {
@@ -261,6 +281,7 @@ class WebReferralRouter {
       
       // Update Open Graph tags for social sharing
       _updateOpenGraphTags(referrerName);
+      */
     } catch (e) {
       // Fail silently
     }
@@ -269,6 +290,8 @@ class WebReferralRouter {
   /// Update Open Graph meta tags for social sharing
   static void _updateOpenGraphTags(String? referrerName) {
     try {
+      // Open Graph tag manipulation disabled for WebAssembly compatibility
+      /*
       final ogTitle = html.document.querySelector('meta[property="og:title"]') as html.MetaElement?;
       final ogDesc = html.document.querySelector('meta[property="og:description"]') as html.MetaElement?;
       
@@ -280,6 +303,7 @@ class WebReferralRouter {
       
       if (ogDesc != null) {
         ogDesc.content = 'Join India\'s land rights movement and help secure land rights for all!';
+      */
       }
     } catch (e) {
       // Fail silently

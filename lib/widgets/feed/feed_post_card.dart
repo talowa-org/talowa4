@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../utils/role_utils.dart';
 
 class FeedPostCard extends StatelessWidget {
   final FeedPost post;
@@ -252,18 +253,7 @@ class FeedPostCard extends StatelessWidget {
   }
 
   Color _getRoleColor(String role) {
-    switch (role) {
-      case AppConstants.roleVillageCoordinator:
-        return AppTheme.talowaGreen;
-      case AppConstants.roleMandalCoordinator:
-        return AppTheme.legalBlue;
-      case AppConstants.roleDistrictCoordinator:
-        return AppTheme.warningOrange;
-      case AppConstants.roleLegalAdvisor:
-        return AppTheme.legalBlue;
-      default:
-        return AppTheme.secondaryText;
-    }
+    return RoleUtils.getColor(role);
   }
 
   String _formatTimestamp(DateTime timestamp) {

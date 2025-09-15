@@ -2,6 +2,7 @@
 // Reference: in-app-communication/requirements.md - Group Management
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/messaging/group_model.dart';
 import '../../services/messaging/group_service.dart';
 import '../../services/auth_service.dart';
@@ -10,6 +11,8 @@ import '../../widgets/common/loading_widget.dart';
 import 'group_settings_screen.dart';
 import 'group_members_screen.dart';
 import 'bulk_message_screen.dart';
+import '../../utils/role_utils.dart';
+import '../../providers/user_state_provider.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final GroupModel group;
@@ -480,14 +483,20 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Color _getRoleColor(GroupRole role) {
+    // Map GroupRole to string for RoleUtils
+    String roleString;
     switch (role) {
       case GroupRole.admin:
-        return const Color(AppConstants.emergencyRedValue);
+        roleString = 'admin';
+        break;
       case GroupRole.coordinator:
-        return const Color(AppConstants.legalBlueValue);
+        roleString = 'coordinator';
+        break;
       case GroupRole.member:
-        return const Color(AppConstants.talowaGreenValue);
+        roleString = 'member';
+        break;
     }
+    return RoleUtils.getColor(roleString);
   }
 
   String _formatDate(DateTime date) {

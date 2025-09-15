@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../../core/theme/app_theme.dart';
 import 'land_screen.dart';
@@ -11,6 +12,8 @@ import 'profile_screen.dart';
 // Removed unused: import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
 import '../../services/cultural_service.dart';
 import '../../services/user_role_fix_service.dart';
+import '../../utils/role_utils.dart';
+import '../../providers/user_state_provider.dart';
 // Removed: Home tab feature widgets no longer used
 import '../../widgets/notifications/notification_badge_widget.dart';
 // import '../../widgets/social_feed/live_activity_dashboard.dart';
@@ -597,13 +600,17 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
-              _getUserRoleDisplay(),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Consumer<UserStateProvider>(
+              builder: (context, userStateProvider, child) {
+                return Text(
+                  RoleUtils.getDisplayName(userStateProvider.currentRole),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -611,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Get user role display text
+  /// Get user role display text using centralized utility
   String _getUserRoleDisplay() {
     final role = userData?['role'] as String?;
     final isAdmin = userData?['isAdmin'] as bool?;
@@ -622,23 +629,10 @@ class _HomeScreenState extends State<HomeScreen> {
         role == 'national_leadership' || 
         isAdmin == true || 
         referralCode == 'TALADMIN') {
-      return 'Admin';
+      return 'Administrator';
     }
     
-    // Map other roles to display names
-    switch (role?.toLowerCase()) {
-      case 'regional_coordinator':
-        return 'Regional Coordinator';
-      case 'coordinator':
-        return 'Coordinator';
-      case 'organizer':
-        return 'Organizer';
-      case 'activist':
-        return 'Activist';
-      case 'member':
-      default:
-        return 'Member';
-    }
+    return RoleUtils.getDisplayName(role);
   }
 
   Widget _buildMotivationCard() {

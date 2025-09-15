@@ -1,4 +1,4 @@
-﻿// Group Service for TALOWA Messaging System
+// Group Service for TALOWA Messaging System
 // Reference: in-app-communication/design.md - Group Management Component
 
 import 'dart:async';
@@ -625,9 +625,11 @@ class GroupService {
     switch (groupType) {
       case GroupType.village:
         return [
-          AppConstants.roleVillageCoordinator,
+          AppConstants.roleAreaCoordinator,
           AppConstants.roleMandalCoordinator,
+          AppConstants.roleConstituencyCoordinator,
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -635,7 +637,9 @@ class GroupService {
       case GroupType.mandal:
         return [
           AppConstants.roleMandalCoordinator,
+          AppConstants.roleConstituencyCoordinator,
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -643,6 +647,7 @@ class GroupService {
       case GroupType.district:
         return [
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -651,9 +656,12 @@ class GroupService {
       case GroupType.legalCase:
       case GroupType.custom:
         return [
-          AppConstants.roleVillageCoordinator,
+          AppConstants.roleTeamLeader,
+          AppConstants.roleAreaCoordinator,
           AppConstants.roleMandalCoordinator,
+          AppConstants.roleConstituencyCoordinator,
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleLegalAdvisor,
           AppConstants.roleMediaCoordinator,

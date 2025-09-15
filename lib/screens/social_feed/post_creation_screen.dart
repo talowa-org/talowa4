@@ -10,6 +10,7 @@ import '../../services/media/media_service.dart';
 import '../../widgets/media/comprehensive_media_widget.dart';
 import '../../widgets/social_feed/hashtag_text_widget.dart';
 import '../../widgets/social_feed/geographic_scope_widget.dart';
+import '../../utils/role_utils.dart';
 
 /// Screen for creating new social feed posts (coordinators only)
 class PostCreationScreen extends StatefulWidget {
@@ -242,7 +243,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Posting as ${_getRoleDisplayName(userRole)}',
+              'Posting as ${RoleUtils.getDisplayName(userRole)}',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.green.shade700,
@@ -798,20 +799,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
   }
   
   String _getRoleDisplayName(String role) {
-    switch (role.toLowerCase()) {
-      case 'founder':
-        return 'Founder';
-      case 'admin':
-        return 'Administrator';
-      case 'district_coordinator':
-        return 'District Coordinator';
-      case 'mandal_coordinator':
-        return 'Mandal Coordinator';
-      case 'village_coordinator':
-        return 'Village Coordinator';
-      default:
-        return 'Coordinator';
-    }
+    return RoleUtils.getDisplayName(role);
   }
   
   List<String> _getHashtagSuggestions() {

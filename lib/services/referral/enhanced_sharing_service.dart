@@ -1,8 +1,8 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';  // Disabled for web compatibility
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';  // Disabled for web compatibility
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
@@ -35,16 +35,17 @@ class EnhancedSharingService {
       final message = customMessage ?? _generateShareMessage(referralCode, referralLink, userName);
       
       if (sharePositionOrigin != null) {
-        await Share.share(
+        // await Share.share(  // Disabled for web compatibility
+    // Web fallback: copy to clipboard
+    await Clipboard.setData(ClipboardData(text:
           message,
           subject: 'Join TALOWA Movement',
           sharePositionOrigin: sharePositionOrigin,
-        );
+        ));
       } else {
-        await Share.share(
-          message,
-          subject: 'Join TALOWA Movement',
-        );
+        // await Share.share(  // Disabled for web compatibility
+        // Web fallback: copy to clipboard
+        await Clipboard.setData(ClipboardData(text: message));
       }
     } catch (e) {
       throw SharingException(
@@ -210,24 +211,27 @@ class EnhancedSharingService {
         userName: userName,
       );
       
+      // File operations disabled for web compatibility
+      /*
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/talowa_qr_${DateTime.now().millisecondsSinceEpoch}.png');
       await file.writeAsBytes(qrBytes);
+      */
       
       final message = customMessage ?? 'Scan this QR code to join TALOWA with my referral!';
       
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: message,
-        subject: 'Join TALOWA Movement',
-      );
+      // await Share.shareXFiles(  // Disabled for web compatibility
+      // Web fallback: copy message to clipboard
+      await Clipboard.setData(ClipboardData(text: '$message\n\nReferral Link: $referralLink'));
       
-      // Clean up temp file after a delay
+      // File cleanup disabled for web compatibility
+      /*
       Future.delayed(const Duration(minutes: 5), () {
         if (file.existsSync()) {
           file.deleteSync();
         }
       });
+      */
     } catch (e) {
       throw SharingException(
         'Failed to share QR code: $e',

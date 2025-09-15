@@ -1,4 +1,4 @@
-﻿// Campaign Service for TALOWA
+// Campaign Service for TALOWA
 // Manages campaigns and integrates with messaging system
 // Reference: TALOWA_APP_BLUEPRINT.md - Campaign Management
 
@@ -447,9 +447,12 @@ class CampaignService {
 
   bool _canCreateCampaign(String userRole) {
     return [
-      AppConstants.roleVillageCoordinator,
+      AppConstants.roleTeamLeader,
+      AppConstants.roleAreaCoordinator,
       AppConstants.roleMandalCoordinator,
+      AppConstants.roleConstituencyCoordinator,
       AppConstants.roleDistrictCoordinator,
+      AppConstants.roleZonalRegionalCoordinator,
       AppConstants.roleStateCoordinator,
       AppConstants.roleMediaCoordinator,
       AppConstants.roleFounder,

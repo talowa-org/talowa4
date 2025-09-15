@@ -1,4 +1,4 @@
-﻿// Messaging Integration Service for TALOWA
+// Messaging Integration Service for TALOWA
 // Integrates messaging system with existing TALOWA systems
 // Reference: in-app-communication/tasks.md - Task 11
 
@@ -426,14 +426,26 @@ class MessagingIntegrationService {
           'canLinkToAllCases': true,
         };
       case AppConstants.roleStateCoordinator:
+      case AppConstants.roleZonalRegionalCoordinator:
       case AppConstants.roleDistrictCoordinator:
+      case AppConstants.roleConstituencyCoordinator:
       case AppConstants.roleMandalCoordinator:
-      case AppConstants.roleVillageCoordinator:
+      case AppConstants.roleAreaCoordinator:
         return {
           'canCreateGroups': true,
           'canCreateCampaignGroups': true,
           'canCreateLegalCaseGroups': true,
           'canSendEmergencyBroadcasts': true,
+          'canModerateContent': true,
+          'canAccessAllGroups': false,
+          'canLinkToAllCases': false,
+        };
+      case AppConstants.roleTeamLeader:
+        return {
+          'canCreateGroups': true,
+          'canCreateCampaignGroups': true,
+          'canCreateLegalCaseGroups': false,
+          'canSendEmergencyBroadcasts': false,
           'canModerateContent': true,
           'canAccessAllGroups': false,
           'canLinkToAllCases': false,
@@ -448,7 +460,17 @@ class MessagingIntegrationService {
           'canAccessAllGroups': false,
           'canLinkToAllCases': true,
         };
-      default:
+      case AppConstants.roleVolunteer:
+        return {
+          'canCreateGroups': false,
+          'canCreateCampaignGroups': false,
+          'canCreateLegalCaseGroups': false,
+          'canSendEmergencyBroadcasts': false,
+          'canModerateContent': false,
+          'canAccessAllGroups': false,
+          'canLinkToAllCases': false,
+        };
+      default: // Member and other roles
         return {
           'canCreateGroups': false,
           'canCreateCampaignGroups': false,
@@ -467,6 +489,10 @@ class MessagingIntegrationService {
       case AppConstants.roleRootAdmin:
       case AppConstants.roleLegalAdvisor:
         return 'high_security';
+      case AppConstants.roleStateCoordinator:
+      case AppConstants.roleZonalRegionalCoordinator:
+      case AppConstants.roleDistrictCoordinator:
+        return 'enhanced';
       default:
         return 'standard';
     }
@@ -476,9 +502,11 @@ class MessagingIntegrationService {
     switch (level) {
       case AppConstants.levelVillage:
         return [
-          AppConstants.roleVillageCoordinator,
+          AppConstants.roleAreaCoordinator,
           AppConstants.roleMandalCoordinator,
+          AppConstants.roleConstituencyCoordinator,
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -486,7 +514,9 @@ class MessagingIntegrationService {
       case AppConstants.levelMandal:
         return [
           AppConstants.roleMandalCoordinator,
+          AppConstants.roleConstituencyCoordinator,
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -494,6 +524,7 @@ class MessagingIntegrationService {
       case AppConstants.levelDistrict:
         return [
           AppConstants.roleDistrictCoordinator,
+          AppConstants.roleZonalRegionalCoordinator,
           AppConstants.roleStateCoordinator,
           AppConstants.roleFounder,
           AppConstants.roleRootAdmin,
@@ -505,9 +536,12 @@ class MessagingIntegrationService {
 
   bool _canCreateCampaignGroup(String userRole) {
     return [
-      AppConstants.roleVillageCoordinator,
+      AppConstants.roleTeamLeader,
+      AppConstants.roleAreaCoordinator,
       AppConstants.roleMandalCoordinator,
+      AppConstants.roleConstituencyCoordinator,
       AppConstants.roleDistrictCoordinator,
+      AppConstants.roleZonalRegionalCoordinator,
       AppConstants.roleStateCoordinator,
       AppConstants.roleMediaCoordinator,
       AppConstants.roleFounder,

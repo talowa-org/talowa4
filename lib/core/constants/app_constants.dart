@@ -1,4 +1,4 @@
-﻿// TALOWA App Constants
+// TALOWA App Constants
 // Reference: docs/TALOWA_APP_BLUEPRINT.md - App Vision & Strategy
 
 class AppConstants {
@@ -14,16 +14,39 @@ class AppConstants {
   static const int warningOrangeValue = 0xFFD97706;
   static const int successGreenValue = 0xFF10B981;
   
-  // User Roles
-  static const String roleMember = 'Member';
-  static const String roleVillageCoordinator = 'Village Coordinator';
-  static const String roleMandalCoordinator = 'Mandal Coordinator';
-  static const String roleDistrictCoordinator = 'District Coordinator';
-  static const String roleStateCoordinator = 'State Coordinator';
-  static const String roleLegalAdvisor = 'Legal Advisor';
-  static const String roleMediaCoordinator = 'Media Coordinator';
-  static const String roleFounder = 'Founder';
-  static const String roleRootAdmin = 'Root Administrator';
+  // User Roles - Keys (snake_case for consistency with RoleProgressionService)
+  static const String roleMember = 'member';
+  static const String roleVolunteer = 'volunteer';
+  static const String roleTeamLeader = 'team_leader';
+  static const String roleAreaCoordinator = 'area_coordinator';
+  static const String roleMandalCoordinator = 'mandal_coordinator';
+  static const String roleVillageCoordinator = 'mandal_coordinator'; // Legacy alias
+  static const String roleConstituencyCoordinator = 'constituency_coordinator';
+  static const String roleDistrictCoordinator = 'district_coordinator';
+  static const String roleZonalRegionalCoordinator = 'zonal_regional_coordinator';
+  static const String roleStateCoordinator = 'state_coordinator';
+  static const String roleLegalAdvisor = 'legal_advisor';
+  static const String roleMediaCoordinator = 'media_coordinator';
+  static const String roleFounder = 'founder';
+  static const String roleAdmin = 'admin';
+  static const String roleRootAdmin = 'root_admin';
+  
+  // User Role Display Names (for backward compatibility)
+  static const String roleDisplayMember = 'Member';
+  static const String roleDisplayVolunteer = 'Volunteer';
+  static const String roleDisplayTeamLeader = 'Team Leader';
+  static const String roleDisplayAreaCoordinator = 'Area Coordinator';
+  static const String roleDisplayMandalCoordinator = 'Mandal Coordinator';
+  static const String roleDisplayVillageCoordinator = 'Village Coordinator';
+  static const String roleDisplayConstituencyCoordinator = 'Constituency Coordinator';
+  static const String roleDisplayDistrictCoordinator = 'District Coordinator';
+  static const String roleDisplayZonalRegionalCoordinator = 'Zonal Regional Coordinator';
+  static const String roleDisplayStateCoordinator = 'State Coordinator';
+  static const String roleDisplayLegalAdvisor = 'Legal Advisor';
+  static const String roleDisplayMediaCoordinator = 'Media Coordinator';
+  static const String roleDisplayFounder = 'Founder';
+  static const String roleDisplayAdmin = 'Administrator';
+  static const String roleDisplayRootAdmin = 'Root Administrator';
   
   // Geographic Levels
   static const String levelVillage = 'village';

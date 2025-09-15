@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
@@ -19,6 +20,8 @@ import 'story_creation_screen.dart';
 // import '../../services/social_feed/test_post_creation_service.dart';
 import 'post_comments_screen.dart';
 import '../../widgets/stories/story_ring.dart';
+import '../../utils/role_utils.dart';
+import '../../providers/user_state_provider.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -1023,18 +1026,7 @@ class _FeedScreenState extends State<FeedScreen>
 
   // Helper methods
   Color _getRoleColor(String? role) {
-    switch (role?.toLowerCase()) {
-      case 'district_coordinator':
-        return Colors.purple;
-      case 'mandal_coordinator':
-        return Colors.blue;
-      case 'village_coordinator':
-        return Colors.green;
-      case 'volunteer':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
+    return RoleUtils.getColor(role);
   }
 
   Map<String, dynamic> _getCategoryInfo(PostCategory category) {

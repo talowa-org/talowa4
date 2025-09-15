@@ -224,9 +224,15 @@ class _MoreScreenState extends State<MoreScreen> {
                         icon: Icons.call,
                         onTap: _openCallingTutorial,
                       ),
-                      if (_userProfile?.role == AppConstants.roleVillageCoordinator ||
+                      if (_userProfile?.role == AppConstants.roleTeamLeader ||
+                          _userProfile?.role == AppConstants.roleAreaCoordinator ||
                           _userProfile?.role == AppConstants.roleMandalCoordinator ||
-                          _userProfile?.role == AppConstants.roleDistrictCoordinator)
+                          _userProfile?.role == AppConstants.roleConstituencyCoordinator ||
+                          _userProfile?.role == AppConstants.roleDistrictCoordinator ||
+                          _userProfile?.role == AppConstants.roleZonalRegionalCoordinator ||
+                          _userProfile?.role == AppConstants.roleStateCoordinator ||
+                          _userProfile?.role == AppConstants.roleFounder ||
+                          _userProfile?.role == AppConstants.roleRootAdmin)
                         FeatureItem(
                           title: 'Coordinator Training',
                           subtitle: 'Group management training',
@@ -379,7 +385,7 @@ class _MoreScreenState extends State<MoreScreen> {
 
       _userProfile = UserProfile(
         name: 'Ravi Kumar',
-        role: AppConstants.roleVillageCoordinator,
+        role: AppConstants.roleAreaCoordinator,
         memberId: 'MBR-20240115-0123',
         phoneNumber: '+91 9876543210',
         location: 'Kondapur Village',
@@ -1071,3 +1077,4 @@ class FeatureItem {
     required this.onTap,
   });
 }
+

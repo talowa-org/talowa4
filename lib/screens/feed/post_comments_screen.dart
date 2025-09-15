@@ -1,9 +1,10 @@
-﻿// Post Comments Screen - Shows all comments for a specific post
+// Post Comments Screen - Shows all comments for a specific post
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
+import '../../utils/role_utils.dart';
 
 class PostCommentsScreen extends StatefulWidget {
   final PostModel post;
@@ -415,18 +416,7 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
   }
 
   Color _getRoleColor(String? role) {
-    switch (role?.toLowerCase()) {
-      case 'district_coordinator':
-        return Colors.purple;
-      case 'mandal_coordinator':
-        return Colors.blue;
-      case 'village_coordinator':
-        return Colors.green;
-      case 'volunteer':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
+    return RoleUtils.getColor(role);
   }
 
   String _formatTime(DateTime dateTime) {

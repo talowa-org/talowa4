@@ -1,32 +1,34 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+// import 'package:flutter_tts/flutter_tts.dart';  // Disabled for web compatibility
 // import 'package:speech_to_text/speech_to_text.dart';  // Temporarily disabled
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CulturalService {
-  static final FlutterTts _tts = FlutterTts();
+  // static final FlutterTts _tts = FlutterTts();  // Disabled for web compatibility
   // static final SpeechToText _stt = SpeechToText();  // Temporarily disabled
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Initialize text-to-speech for local languages
   static Future<void> initializeTTS() async {
-    await _tts.setLanguage('en-US'); // Default to English
-    await _tts.setSpeechRate(0.5); // Slower for better comprehension
-    await _tts.setVolume(0.8);
-    await _tts.setPitch(1.0);
+    // Web compatibility: TTS functionality disabled
+    // await _tts.setLanguage('en-US'); // Default to English
+    // await _tts.setSpeechRate(0.5); // Slower for better comprehension
+    // await _tts.setVolume(0.8);
+    // await _tts.setPitch(1.0);
   }
 
   /// Voice-based navigation for illiterate users
   static Future<void> speakText(String text, {String? language}) async {
-    try {
-      if (language != null) {
-        await _tts.setLanguage(language);
-      }
-      await _tts.speak(text);
-    } catch (e) {
-      debugPrint('TTS Error: $e');
-    }
+    // Web compatibility: TTS functionality disabled
+    // try {
+    //   if (language != null) {
+    //     await _tts.setLanguage(language);
+    //   }
+    //   await _tts.speak(text);
+    // } catch (e) {
+    //   debugPrint('TTS Error: $e');
+    // }
   }
 
   /// Get culturally appropriate icons

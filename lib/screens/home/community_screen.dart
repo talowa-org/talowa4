@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import '../../services/navigation/navigation_guard_service.dart';
@@ -258,7 +258,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               color: isAdmin ? Colors.green : Colors.grey,
             ),
             Text(
-              isAdmin ? 'Admin' : 'Member',
+              isAdmin ? 'Admin' : (member['role'] ?? 'Member'),
               style: TextStyle(
                 fontSize: 10,
                 color: isAdmin ? Colors.green : Colors.grey,

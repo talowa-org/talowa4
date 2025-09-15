@@ -35,9 +35,9 @@ dependencies:
   # geocoding: ^2.1.1  # Not supported on web
   # permission_handler: ^11.0.1  # Not supported on web
   
-  # Voice & Speech
+  # Voice & Speech (Web compatible versions)
   # speech_to_text: ^7.2.0  # Using native implementation instead
-  flutter_tts: ^3.8.3
+  # flutter_tts: ^3.8.3  # Disabled for web compatibility
   
   # WebRTC Voice Calling (Web compatible)
   # flutter_webrtc: ^0.11.7  # Temporarily disabled for web build
@@ -48,16 +48,16 @@ dependencies:
   cached_network_image: ^3.3.1
   photo_view: ^0.14.0
   fl_chart: ^0.68.0
-  share_plus: ^7.2.2
+  # share_plus: ^7.2.2  # Disabled for web compatibility
   
-  # File & Media
+  # File & Media (Web compatible versions)
   image_picker: ^1.0.7
   file_picker: ^8.0.0+1
   image: ^4.1.7
   video_player: ^2.8.2
-  video_compress: ^3.1.3
-  video_thumbnail: ^0.5.3
-  ffmpeg_kit_flutter: ^6.0.3
+  # video_compress: ^3.1.3  # Disabled for web compatibility
+  # video_thumbnail: ^0.5.3  # Disabled for web compatibility
+  # ffmpeg_kit_flutter: ^6.0.3  # Disabled for web compatibility
   
   # Database & Storage
   # sqflite: ^2.4.2  # Not supported on web
@@ -95,12 +95,13 @@ dependencies:
   device_info_plus: ^10.1.2
   package_info_plus: ^8.0.2
 
-  path_provider: any
-  geolocator: any
-  geocoding: any
-  permission_handler: any
-  flutter_webrtc: any
-  sqflite: any
+  # Web-incompatible packages disabled
+  # path_provider: any  # Not supported on web
+  # geolocator: any  # Not supported on web
+  # geocoding: any  # Not supported on web
+  # permission_handler: any  # Not supported on web
+  # flutter_webrtc: any  # Not supported on web
+  # sqflite: any  # Not supported on web
 dev_dependencies:
   flutter_test:
     sdk: flutter

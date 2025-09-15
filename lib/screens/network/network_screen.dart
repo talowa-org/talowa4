@@ -2,6 +2,7 @@
 // Shows user's referral network and team management
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/referral_code_cache_service.dart';
@@ -9,6 +10,7 @@ import '../../services/referral/comprehensive_stats_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
 import '../../widgets/common/safe_app_bar.dart';
+import '../../providers/user_state_provider.dart';
 
 class NetworkScreen extends StatefulWidget {
   const NetworkScreen({super.key});
@@ -91,8 +93,6 @@ class _NetworkScreenState extends State<NetworkScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
@@ -118,7 +118,15 @@ class _NetworkScreenState extends State<NetworkScreen> {
         ),
       );
     }
-
+    
+    return Consumer<UserStateProvider>(
+      builder: (context, userStateProvider, child) {
+        return _buildAuthenticatedView(userStateProvider);
+      },
+    );
+  }
+  
+  Widget _buildAuthenticatedView(UserStateProvider userStateProvider) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -128,7 +136,9 @@ class _NetworkScreenState extends State<NetworkScreen> {
       },
       child: Scaffold(
         appBar: TalowaAppBar(
-          title: 'My Network',
+          title: userStateProvider.currentRole != null 
+              ? 'My Network - ${userStateProvider.currentRole}'
+              : 'My Network',
           screenName: 'Network',
           actions: [
             IconButton(
@@ -381,4 +391,5 @@ class _NetworkScreenState extends State<NetworkScreen> {
     }
   }
 }
+
 

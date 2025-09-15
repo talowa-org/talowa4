@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';  // Disabled for web compatibility
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui' as ui;
-import 'dart:html' as html;
+// import 'dart:html' as html;  // Disabled for web compatibility
 
 /// Service for handling referral link sharing and QR code generation
 class ReferralSharingService {
@@ -88,7 +88,9 @@ Join here: $link
       final link = generateReferralLink(referralCode);
       final message = _generateCustomMessage(referralCode, link, userName);
       
-      // Try native sharing first
+      // Web-compatible sharing: Copy to clipboard
+      // Native sharing disabled for web compatibility
+      /*
       try {
         await Share.share(
           message,
@@ -112,7 +114,10 @@ Join here: $link
           // Final fallback: copy to clipboard
           await _fallbackCopyToClipboard(message);
         }
-            }
+      }
+      */
+      // For web compatibility, directly copy to clipboard
+      await _fallbackCopyToClipboard(message);
     } catch (e) {
       debugPrint('Error sharing referral link: $e');
       // Final fallback: copy to clipboard
@@ -141,12 +146,16 @@ Join here: $link
     final message = _generateCustomMessage(referralCode, link, userName);
     
     try {
-      // Try native sharing first
+      // Web-compatible sharing: Copy to clipboard
+      // Native sharing disabled for web compatibility
+      /*
       await Share.share(
         message,
         subject: 'Join Talowa - Political Engagement Platform',
       );
       debugPrint('Share completed successfully');
+      */
+      await _fallbackCopyToClipboard(message);
     } catch (shareError) {
       debugPrint('Native sharing failed: $shareError');
       
@@ -386,7 +395,8 @@ Join here: $link
         if (picData != null) {
           final bytes = picData.buffer.asUint8List();
           
-          // Create download link for web
+          // Download functionality disabled for web compatibility
+          /*
           final blob = html.Blob([bytes]);
           final url = html.Url.createObjectUrlFromBlob(blob);
           final anchor = html.document.createElement('a') as html.AnchorElement
@@ -397,6 +407,10 @@ Join here: $link
           anchor.click();
           html.document.body?.children.remove(anchor);
           html.Url.revokeObjectUrl(url);
+          */
+          
+          // For web compatibility, show message that QR code is ready
+          debugPrint('QR code generated successfully (download disabled for web compatibility)');
           
           debugPrint('QR code downloaded successfully');
         }
@@ -668,5 +682,6 @@ Join here: $link
     );
   }
 }
+
 
 
