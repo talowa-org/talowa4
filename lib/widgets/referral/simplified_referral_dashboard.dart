@@ -1142,6 +1142,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
               ],
             ),
             const SizedBox(height: 16),
+            // First row - Original buttons
             Row(
               children: [
                 Expanded(
@@ -1170,6 +1171,52 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            // Second row - Large scale buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _generateLargeScaleReferrals(1000),
+                    icon: const Icon(Icons.trending_up),
+                    label: const Text('Generate 1,000'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _generateLargeScaleReferrals(10000),
+                    icon: const Icon(Icons.rocket_launch),
+                    label: const Text('Generate 10,000'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Third row - Massive scale button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _generateLargeScaleReferrals(100000),
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Generate 100,000 Referrals'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1309,6 +1356,129 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             content: Text('❌ Error generating team: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _generateLargeScaleReferrals(int count) async {
+    try {
+      // Show confirmation dialog for large numbers
+      if (count >= 10000) {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Generate $count Referrals'),
+            content: Text(
+              'This will generate $count mock referrals. This operation may take some time and use significant resources. Continue?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Generate'),
+              ),
+            ],
+          ),
+        );
+        
+        if (confirmed != true) return;
+      }
+
+      // Show loading indicator
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Text('Generating $count referrals...'),
+              ],
+            ),
+            duration: Duration(seconds: count >= 100000 ? 30 : 10),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+
+      final now = DateTime.now();
+      const batchSize = 500; // Firestore batch limit
+      final totalBatches = (count / batchSize).ceil();
+      
+      for (int batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+        final batch = FirebaseFirestore.instance.batch();
+        final startIndex = batchIndex * batchSize;
+        final endIndex = (startIndex + batchSize > count) ? count : startIndex + batchSize;
+        
+        for (int i = startIndex; i < endIndex; i++) {
+          final mockUserId = 'mock_large_${DateTime.now().millisecondsSinceEpoch}_$i';
+          final referralDoc = FirebaseFirestore.instance
+              .collection('referrals')
+              .doc();
+          
+          batch.set(referralDoc, {
+            'referrerId': widget.userId,
+            'referredUserId': mockUserId,
+            'referralCode': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+            'timestamp': now.subtract(Duration(minutes: i)),
+            'status': 'completed',
+            'mockData': true,
+            'largeScale': true,
+            'batchIndex': batchIndex,
+          });
+          
+          // Create mock user profile
+          final userDoc = FirebaseFirestore.instance
+              .collection('users')
+              .doc(mockUserId);
+          
+          batch.set(userDoc, {
+            'name': 'Large Scale User ${i + 1}',
+            'email': 'largescale${i + 1}@example.com',
+            'phoneNumber': '+91${7000000000 + (i % 1000000000)}',
+            'createdAt': now.subtract(Duration(minutes: i)),
+            'referredBy': _referralStatus?['referralCode'] ?? 'TEST_CODE',
+            'mockData': true,
+            'largeScale': true,
+          });
+        }
+        
+        await batch.commit();
+        
+        // Small delay between batches to avoid overwhelming Firestore
+        if (batchIndex < totalBatches - 1) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Generated $count mock referrals successfully!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        
+        // Refresh the data
+        await _loadReferralStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error generating $count referrals: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
