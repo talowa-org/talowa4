@@ -38,11 +38,17 @@ import 'services/remote_config_service.dart';
 import 'services/bootstrap_service.dart';
 import 'services/notifications/notification_service.dart';
 import 'services/referral/universal_link_service.dart';
+import 'services/performance/optimized_startup_service.dart';
+import 'services/performance/performance_integration_service.dart';
+import 'services/performance/performance_analytics_service.dart';
 import 'providers/localization_provider.dart';
 import 'providers/user_state_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
+  // 🚀 START APP LAUNCH PERFORMANCE TRACKING
+  PerformanceAnalyticsService.startAppLaunch();
+  
   WidgetsFlutterBinding.ensureInitialized();
   
   // Guard against future crashes by logging Flutter errors early
@@ -54,69 +60,32 @@ void main() async {
   
   // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Firebase initialized successfully
-
-
-
-  // Initialize localization service
-  // await LocalizationService.initialize();
-
-  // Initialize RTL support service
-  // await RTLSupportService.initialize();
-
-  // Initialize message translation service
-  // await MessageTranslationService.initialize();
-
-  // Initialize voice transcription service
-  // await VoiceTranscriptionService.initialize();
-
-  // Initialize Remote Config (feature flags)
-  await RemoteConfigService.init();
-
-  // Fix user roles and populate missing data collections (runs in background)
-  // Note: This will run after user authentication in the app
-  DataPopulationService.populateIfNeeded();
-
-  // Bootstrap admin user and migrate legacy data
-  try {
-    await BootstrapService.bootstrap();
-  } catch (e) {
-    if (kDebugMode) {
-      debugPrint('Bootstrap failed, but app will continue: $e');
-    }
-    // Don't let bootstrap failures prevent app startup
-  }
-
-  // Initialize performance monitoring (works without Firebase)
-  PerformanceMonitor.logMemoryUsage('app_startup');
-
-  // Initialize messaging integration system
-  // try {
-  //   await TalowaMessagingIntegration().initialize();
-  // } catch (e) {
-  //   debugPrint('Failed to initialize messaging integration: $e');
-  // }
-
-  // Initialize notification system (skip on web to avoid console errors)
-  if (!kIsWeb) {
-    try {
-      await NotificationService.initialize();
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Failed to initialize notification system: $e');
-      }
-    }
-  }
-
-  // Initialize Universal Link Service for referral code handling
-  try {
-    await UniversalLinkService.initialize();
-    // Universal Link Service initialized
-  } catch (e) {
-    if (kDebugMode) {
-      debugPrint('Failed to initialize Universal Link Service: $e');
-    }
-  }
+  
+  // 🚀 OPTIMIZED STARTUP - Use optimized service initialization
+  // This replaces the previous synchronous initialization with:
+  // - Parallel loading of critical services
+  // - Lazy loading of non-critical services
+  // - Significant startup time improvement
+  await OptimizedStartupService.initialize();
+  
+  // 📊 PERFORMANCE INTEGRATION - Initialize comprehensive performance services
+  // This provides:
+  // - Data loading optimization for large user base
+  // - Tab loading optimization with preloading
+  // - App stability and hanging prevention
+  // - Real-time performance monitoring and analytics
+  await PerformanceIntegrationService.instance.initialize();
+  await PerformanceAnalyticsService.instance.initialize();
+  
+  // Note: Non-critical services (Bootstrap, Notifications, Universal Links, etc.)
+  // are now initialized in the background after app startup
+  
+  // 📊 COMPLETE APP LAUNCH PERFORMANCE TRACKING
+  PerformanceAnalyticsService.completeAppLaunch(metadata: {
+    'firebase_initialized': true,
+    'performance_services_initialized': true,
+    'startup_type': 'optimized',
+  });
 
   runApp(const TalowaApp());
 }

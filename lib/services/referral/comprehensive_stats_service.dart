@@ -4,6 +4,13 @@ import 'package:flutter/foundation.dart';
 /// Comprehensive service to ensure all referral statistics are accurate and up-to-date
 class ComprehensiveStatsService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  // Cache for stats to avoid repeated expensive queries
+  static final Map<String, Map<String, dynamic>> _statsCache = {};
+  static final Map<String, DateTime> _cacheTimestamps = {};
+  
+  // Cache duration - 2 minutes for better performance
+  static const Duration _cacheDuration = Duration(minutes: 2);
 
   /// Update all statistics for a user by recalculating from actual data
   static Future<Map<String, dynamic>> updateUserStats(String userId) async {
@@ -66,9 +73,31 @@ class ComprehensiveStatsService {
     }
   }
 
+  /// Check if cached data is still valid
+  static bool _isCacheValid(String userId) {
+    if (!_cacheTimestamps.containsKey(userId) || !_statsCache.containsKey(userId)) {
+      return false;
+    }
+    
+    final cacheTime = _cacheTimestamps[userId]!;
+    return DateTime.now().difference(cacheTime) < _cacheDuration;
+  }
+  
+  /// Clear cache for a specific user
+  static void _clearUserCache(String userId) {
+    _statsCache.remove(userId);
+    _cacheTimestamps.remove(userId);
+  }
+  
   /// Get current stats for a user (with option to force recalculation)
   static Future<Map<String, dynamic>> getUserStats(String userId, {bool forceRecalculate = false}) async {
     try {
+      // Check cache first unless force recalculate is requested
+      if (!forceRecalculate && _isCacheValid(userId)) {
+        debugPrint('📋 Using cached stats for user: $userId');
+        return _statsCache[userId]!;
+      }
+      
       final userDoc = await _firestore.collection('users').doc(userId).get();
       if (!userDoc.exists) {
         return {
@@ -92,16 +121,22 @@ class ComprehensiveStatsService {
         return await updateUserStats(userId);
       }
 
-      // Return cached stats
-      return {
+      // Return cached stats and cache them
+      final stats = {
         'directReferrals': userData['directReferrals'] ?? 0,
         'teamSize': userData['teamSize'] ?? 0,
         'teamReferrals': userData['teamReferrals'] ?? userData['teamSize'] ?? 0,
         'currentRole': userData['role'] ?? 'Member',
         'referralCode': userData['referralCode'] ?? '',
-        'lastUpdate': lastUpdate.toDate(),
+        'lastUpdate': lastUpdate?.toDate() ?? DateTime.now(),
         'cached': true,
       };
+      
+      // Cache the results
+      _statsCache[userId] = stats;
+      _cacheTimestamps[userId] = DateTime.now();
+      
+      return stats;
 
     } catch (e) {
       debugPrint('âŒ Error getting user stats: $e');

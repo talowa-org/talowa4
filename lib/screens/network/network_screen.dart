@@ -8,6 +8,7 @@ import '../../services/auth_service.dart';
 import '../../services/referral_code_cache_service.dart';
 import '../../services/referral/comprehensive_stats_service.dart';
 import '../../services/referral/referral_sharing_service.dart';
+import '../../services/performance/performance_analytics_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
 import '../../widgets/common/safe_app_bar.dart';
 import '../../providers/user_state_provider.dart';
@@ -32,6 +33,9 @@ class _NetworkScreenState extends State<NetworkScreen> {
   }
 
   Future<void> _initializeNetwork() async {
+    // 📊 START NETWORK TAB LOADING PERFORMANCE TRACKING
+    final networkLoadStopwatch = Stopwatch()..start();
+    
     try {
       setState(() {
         _isLoading = true;
@@ -45,8 +49,23 @@ class _NetworkScreenState extends State<NetworkScreen> {
         
         // Load network data
         await _loadNetworkData();
+        
+        // 📊 TRACK SUCCESSFUL NETWORK TAB LOADING
+        networkLoadStopwatch.stop();
+        PerformanceAnalyticsService.instance.trackNetworkTabLoading(
+          networkLoadStopwatch.elapsed,
+          success: true,
+        );
       }
     } catch (e) {
+      // 📊 TRACK FAILED NETWORK TAB LOADING
+      networkLoadStopwatch.stop();
+      PerformanceAnalyticsService.instance.trackNetworkTabLoading(
+        networkLoadStopwatch.elapsed,
+        success: false,
+        errorMessage: e.toString(),
+      );
+      
       if (kDebugMode) {
         debugPrint('Error initializing network: $e');
       }
@@ -177,16 +196,7 @@ class _NetworkScreenState extends State<NetworkScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Loading your network...'),
-          ],
-        ),
-      );
+      return _buildSkeletonLoader();
     }
 
     if (_error != null) {
@@ -366,6 +376,75 @@ class _NetworkScreenState extends State<NetworkScreen> {
 
 
 
+  /// Build skeleton loader for better perceived performance
+  Widget _buildSkeletonLoader() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header skeleton
+          Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Stats cards skeleton
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Progress bar skeleton
+          Container(
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // List items skeleton
+          ...List.generate(3, (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          )),
+        ],
+      ),
+    );
+  }
+  
   /// Handle smart back navigation for network screen
   void _handleNetworkBackNavigation() {
     // Check if there's a screen in the navigation stack

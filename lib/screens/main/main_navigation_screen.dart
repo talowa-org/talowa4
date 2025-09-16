@@ -8,6 +8,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../services/onboarding_service.dart';
 import '../../services/navigation/smart_back_navigation_service.dart';
 import '../../services/navigation/navigation_safety_service.dart';
+import '../../services/performance/performance_analytics_service.dart';
 import '../../providers/user_state_provider.dart';
 import '../home/home_screen.dart';
 import '../feed/feed_screen.dart';
@@ -238,6 +239,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
   
   void _onTabTapped(int index) {
+    // 📊 START NAVIGATION PERFORMANCE TRACKING
+    final navigationStopwatch = Stopwatch()..start();
+    final previousIndex = _currentIndex;
+    
     setState(() {
       _currentIndex = index;
     });
@@ -247,6 +252,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     
     // Track navigation analytics
     _trackNavigation(index);
+    
+    // 📊 TRACK NAVIGATION PERFORMANCE
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigationStopwatch.stop();
+      PerformanceAnalyticsService.instance.trackNavigationPerformance(
+        fromTab: previousIndex,
+        toTab: index,
+        duration: navigationStopwatch.elapsed,
+      );
+    });
   }
   
   void _provideFeedback() {
@@ -266,12 +281,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final tabNames = ['Home', 'Feed', 'Messages', 'Network', 'More'];
     debugPrint('Navigation: User switched to ${tabNames[index]} tab');
     
-    // TODO: Implement analytics tracking
-    // AnalyticsService.trackEvent('tab_navigation', {
-    //   'tab_name': tabNames[index],
-    //   'tab_index': index,
-    //   'timestamp': DateTime.now().toIso8601String(),
-    // });
+    // 📊 ENHANCED NAVIGATION ANALYTICS WITH PERFORMANCE TRACKING
+    PerformanceAnalyticsService.instance.trackTabNavigation(
+      tabName: tabNames[index],
+      tabIndex: index,
+      timestamp: DateTime.now(),
+    );
   }
 
   /// Handle smart back navigation using the centralized service with safety checks

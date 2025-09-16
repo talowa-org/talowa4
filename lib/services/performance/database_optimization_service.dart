@@ -217,10 +217,10 @@ class DatabaseOptimizationService {
     query = query.limit(limit);
     
     // Create debounced stream
-    StreamController<List<T>>? controller;
+    final controller = StreamController<List<T>>();
     Timer? debounceTimer;
     
-    final subscription = query.snapshots().listen(
+    final firestoreSubscription = query.snapshots().listen(
       (querySnapshot) {
         // Cancel previous timer
         debounceTimer?.cancel();
@@ -234,15 +234,29 @@ class DatabaseOptimizationService {
               return fromFirestore(data);
             }).toList();
             
-            onData(items);
+            controller.add(items);
             
           } catch (e) {
-            onError?.call(e);
+            controller.addError(e);
           }
         });
       },
+      onError: (error) {
+        controller.addError(error);
+      },
+    );
+    
+    final subscription = controller.stream.listen(
+      onData,
       onError: onError,
     );
+    
+    // Clean up when subscription is cancelled
+    subscription.onDone(() {
+      debounceTimer?.cancel();
+      firestoreSubscription.cancel();
+      controller.close();
+    });
     
     return subscription;
   }
@@ -261,12 +275,11 @@ class DatabaseOptimizationService {
   /// Configure Firestore settings for optimal performance
   Future<void> _configureFirestoreSettings() async {
     try {
-      // Enable offline persistence for better performance
-      if (!kIsWeb) {
-        await _firestore.enablePersistence(
-          const PersistenceSettings(synchronizeTabs: true),
-        );
-      }
+      // Configure Firestore settings for better performance
+      _firestore.settings = const Settings(
+        cacheSizeBytes: 200 * 1024 * 1024, // 200MB cache
+        persistenceEnabled: !kIsWeb, // Only enable persistence on non-web platforms
+      );
       
       // Configure cache size (100MB)
       _firestore.settings = const Settings(

@@ -9,6 +9,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/unified_auth_service.dart';
+import '../services/performance/performance_analytics_service.dart';
 
 class LoginScreen extends StatefulWidget {
   final String? prefilledPhone;
@@ -33,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    // 📊 START LOGIN PERFORMANCE TRACKING
+    final loginStopwatch = Stopwatch()..start();
+    
     setState(() { _busy = true; _error = null; });
 
     try {
@@ -58,11 +62,37 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (result.success) {
+        // 📊 TRACK SUCCESSFUL LOGIN PERFORMANCE
+        loginStopwatch.stop();
+        PerformanceAnalyticsService.instance.trackLoginPerformance(
+          loginStopwatch.elapsed,
+          success: true,
+          method: 'phone_pin',
+        );
+        
         Navigator.of(context).pushReplacementNamed('/main');
       } else {
+        // 📊 TRACK FAILED LOGIN PERFORMANCE
+        loginStopwatch.stop();
+        PerformanceAnalyticsService.instance.trackLoginPerformance(
+          loginStopwatch.elapsed,
+          success: false,
+          method: 'phone_pin',
+          errorMessage: result.message,
+        );
+        
         setState(() { _error = result.message; });
       }
     } catch (e) {
+      // 📊 TRACK LOGIN ERROR PERFORMANCE
+      loginStopwatch.stop();
+      PerformanceAnalyticsService.instance.trackLoginPerformance(
+        loginStopwatch.elapsed,
+        success: false,
+        method: 'phone_pin',
+        errorMessage: e.toString(),
+      );
+      
       if (kDebugMode) {
         debugPrint('Login error: $e');
       }
