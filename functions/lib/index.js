@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmergencyAlert = exports.sendCampaignNotification = exports.sendSocialNotification = exports.sendReferralNotification = exports.sendWelcomeNotification = exports.processNotificationQueue = exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
+exports.triggerRolePromotionCheck = exports.automaticRolePromotion = exports.sendEmergencyAlert = exports.sendCampaignNotification = exports.sendSocialNotification = exports.sendReferralNotification = exports.sendWelcomeNotification = exports.processNotificationQueue = exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
 // functions/src/index.ts
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
@@ -69,6 +69,8 @@ Object.defineProperty(exports, "sendReferralNotification", { enumerable: true, g
 Object.defineProperty(exports, "sendSocialNotification", { enumerable: true, get: function () { return notifications_1.sendSocialNotification; } });
 Object.defineProperty(exports, "sendCampaignNotification", { enumerable: true, get: function () { return notifications_1.sendCampaignNotification; } });
 Object.defineProperty(exports, "sendEmergencyAlert", { enumerable: true, get: function () { return notifications_1.sendEmergencyAlert; } });
-// Export existing functions (if any)
-// Add your production-ready functions here
+// Export automatic role promotion functions
+var automatic_role_promotion_1 = require("./automatic-role-promotion");
+Object.defineProperty(exports, "automaticRolePromotion", { enumerable: true, get: function () { return automatic_role_promotion_1.automaticRolePromotion; } });
+Object.defineProperty(exports, "triggerRolePromotionCheck", { enumerable: true, get: function () { return automatic_role_promotion_1.triggerRolePromotionCheck; } });
 //# sourceMappingURL=index.js.map

@@ -11,6 +11,7 @@ import '../../services/referral/referral_sharing_service.dart';
 import '../../services/performance/performance_analytics_service.dart';
 import '../../widgets/referral/simplified_referral_dashboard.dart';
 import '../../widgets/common/safe_app_bar.dart';
+import '../../widgets/network/automatic_promotion_widget.dart';
 import '../../providers/user_state_provider.dart';
 
 class NetworkScreen extends StatefulWidget {
@@ -237,12 +238,39 @@ class _NetworkScreenState extends State<NetworkScreen> {
 
     final user = AuthService.currentUser!;
     
-    // Use only the SimplifiedReferralDashboard to avoid duplication
     return RefreshIndicator(
       onRefresh: _refreshNetwork,
-      child: SimplifiedReferralDashboard(
-        userId: user.uid,
-        onRefresh: _refreshNetwork,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Automatic Promotion Widget - Shows real-time progress and triggers at 100%
+            AutomaticPromotionWidget(
+              userId: user.uid,
+              onPromotionTriggered: () {
+                // Refresh network data when promotion is triggered
+                _refreshNetwork();
+                
+                // Show success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('🎉 Automatic promotion triggered! Refreshing your network...'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              },
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Existing referral dashboard
+            SimplifiedReferralDashboard(
+              userId: user.uid,
+              onRefresh: _refreshNetwork,
+            ),
+          ],
+        ),
       ),
     );
   }

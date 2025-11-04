@@ -41,5 +41,8 @@ export {
   sendEmergencyAlert
 } from './notifications';
 
-// Export existing functions (if any)
-// Add your production-ready functions here
+// Export automatic role promotion functions
+export {
+  automaticRolePromotion,
+  triggerRolePromotionCheck
+} from './automatic-role-promotion';
