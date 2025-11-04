@@ -28,7 +28,8 @@ import 'screens/admin/admin_login_screen.dart';
 
 import 'widgets/admin/admin_route_guard.dart';
 // Removed: import 'views/debug/migration_debug_page.dart';
-import 'services/performance_monitor.dart';
+import 'services/performance/performance_monitor.dart';
+import 'services/performance/performance_interceptor.dart';
 // import 'services/localization_service.dart';
 // import 'services/rtl_support_service.dart';
 // import 'services/messaging/message_translation_service.dart';
@@ -41,6 +42,17 @@ import 'services/referral/universal_link_service.dart';
 import 'services/performance/optimized_startup_service.dart';
 import 'services/performance/performance_integration_service.dart';
 import 'services/performance/performance_analytics_service.dart';
+import 'services/performance/memory_management_service.dart';
+import 'services/performance/network_optimization_service.dart';
+import 'services/performance/widget_optimization_service.dart';
+import 'services/performance/request_deduplication_service.dart';
+import 'services/performance/caching_service.dart';
+import 'services/performance/database_optimization_service.dart';
+import 'services/performance/performance_optimization_service.dart';
+import 'services/cache/cache_service.dart';
+import 'services/network/network_optimization_service.dart' as network_opt;
+import 'services/performance/performance_monitoring_service.dart';
+import 'services/query_optimization_service.dart';
 import 'providers/localization_provider.dart';
 import 'providers/user_state_provider.dart';
 import 'generated/l10n/app_localizations.dart';
@@ -68,24 +80,34 @@ void main() async {
   // - Significant startup time improvement
   await OptimizedStartupService.initialize();
   
-  // 📊 PERFORMANCE INTEGRATION - Initialize comprehensive performance services
-  // This provides:
-  // - Data loading optimization for large user base
-  // - Tab loading optimization with preloading
-  // - App stability and hanging prevention
-  // - Real-time performance monitoring and analytics
-  await PerformanceIntegrationService.instance.initialize();
-  await PerformanceAnalyticsService.instance.initialize();
+  // 🚀 INITIALIZE NEW PERFORMANCE SERVICES FOR 10M USER SCALABILITY
+  await CacheService.instance.initialize();
+  network_opt.NetworkOptimizationService.instance.initialize();
+  PerformanceMonitoringService.instance.initialize();
+  await QueryOptimizationService.instance.initialize();
+  
+  // 🚀 INITIALIZE EXISTING PERFORMANCE SERVICES
+  await MemoryManagementService.initialize();
+  await NetworkOptimizationService.initialize();
+  await WidgetOptimizationService.initialize();
+
+  // 🔗 INITIALIZE PERFORMANCE INTEGRATION
+  await PerformanceIntegrationService.initialize();
+  await PerformanceAnalyticsService.initialize();
+  
+  // Initialize new performance monitoring system
+  PerformanceMonitor.initialize();
+  
+  // Initialize additional performance services
+  await CachingService.initialize();
+  await DatabaseOptimizationService.initialize();
+  await PerformanceOptimizationService.initialize();
   
   // Note: Non-critical services (Bootstrap, Notifications, Universal Links, etc.)
   // are now initialized in the background after app startup
   
   // 📊 COMPLETE APP LAUNCH PERFORMANCE TRACKING
-  PerformanceAnalyticsService.completeAppLaunch(metadata: {
-    'firebase_initialized': true,
-    'performance_services_initialized': true,
-    'startup_type': 'optimized',
-  });
+  PerformanceAnalyticsService.completeAppLaunch();
 
   runApp(const TalowaApp());
 }

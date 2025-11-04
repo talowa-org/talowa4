@@ -33,25 +33,26 @@ class CachingService {
   bool _isInitialized = false;
   
   /// Initialize caching service
-  Future<void> initialize() async {
-    if (_isInitialized) return;
+  static Future<void> initialize() async {
+    final service = CachingService.instance;
+    if (service._isInitialized) return;
     
     try {
-      debugPrint('âš¡ Initializing Advanced Caching Service...');
+      debugPrint('⚡ Initializing Advanced Caching Service...');
       
-      _prefs = await SharedPreferences.getInstance();
+      service._prefs = await SharedPreferences.getInstance();
       
       // Load cache statistics
-      _loadCacheStatistics();
+      service._loadCacheStatistics();
       
       // Setup periodic cleanup
-      _setupPeriodicCleanup();
+      service._setupPeriodicCleanup();
       
-      _isInitialized = true;
-      debugPrint('âœ… Advanced Caching Service initialized');
+      service._isInitialized = true;
+      debugPrint('✅ Advanced Caching Service initialized');
       
     } catch (e) {
-      debugPrint('âŒ Failed to initialize caching service: $e');
+      debugPrint('❌ Failed to initialize caching service: $e');
     }
   }
   

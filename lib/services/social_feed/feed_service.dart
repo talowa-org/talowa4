@@ -1,4 +1,4 @@
-﻿// Feed Service for TALOWA
+// Feed Service for TALOWA
 // Fully functional social feed implementation with Firebase
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +7,7 @@ import '../../models/social_feed/post_model.dart';
 import '../auth_service.dart';
 import 'enterprise_feed_algorithm_service.dart';
 import '../security/ai_content_moderation_service.dart';
+import '../performance/query_optimization_service.dart';
 
 class FeedService {
   static final FeedService _instance = FeedService._internal();
@@ -186,7 +187,7 @@ class FeedService {
     }
   }
 
-  // Get personalized feed posts using enterprise algorithm
+  // Get personalized feed posts using enterprise algorithm with optimized queries
   Future<List<PostModel>> getPersonalizedFeedPosts({
     int limit = 20,
     DocumentSnapshot? lastDocument,
@@ -194,35 +195,49 @@ class FeedService {
     try {
       final currentUserId = AuthService.currentUser?.uid;
       if (currentUserId == null) {
-        debugPrint('âš ï¸ No authenticated user, returning chronological feed');
+        debugPrint('⚠️ No authenticated user, returning chronological feed');
         return await getFeedPosts(limit: limit, lastDocument: lastDocument);
       }
 
-      debugPrint('ðŸŽ¯ Getting personalized feed for user: $currentUserId');
+      debugPrint('🎯 Getting personalized feed for user: $currentUserId');
       
-      // Use enterprise feed algorithm
-      final enterpriseAlgorithm = EnterpriseFeedAlgorithmService();
-      final personalizedPosts = await enterpriseAlgorithm.getPersonalizedFeed(
-        userId: currentUserId,
-        limit: limit,
-        lastDocument: lastDocument,
-      );
+      // Use cached query for better performance
+      final cacheKey = 'personalized_feed_${currentUserId}_${limit}_${lastDocument?.id ?? 'start'}';
+      
+      return await QueryOptimizationService.instance.getCachedQuery(
+        cacheKey,
+        () async {
+          // Use enterprise feed algorithm
+          final enterpriseAlgorithm = EnterpriseFeedAlgorithmService();
+          final personalizedPosts = await enterpriseAlgorithm.getPersonalizedFeed(
+            userId: currentUserId,
+            limit: limit,
+            lastDocument: lastDocument,
+          );
 
-      // Add like status for current user
-      final postsWithLikeStatus = <PostModel>[];
-      for (final post in personalizedPosts) {
-        final likeDoc = await _firestore
-            .collection(_likesCollection)
-            .doc('${post.id}_$currentUserId')
-            .get();
-        postsWithLikeStatus.add(post.copyWith(isLikedByCurrentUser: likeDoc.exists));
-      }
-      
-      debugPrint('âœ… Retrieved ${postsWithLikeStatus.length} personalized posts');
-       return postsWithLikeStatus;
+          // Batch get like status for all posts to avoid sequential queries
+          final likeRefs = personalizedPosts.map((post) => 
+            _firestore.collection(_likesCollection).doc('${post.id}_$currentUserId')
+          ).toList();
+          
+          final likeSnapshots = await QueryOptimizationService.instance.batchGetDocuments(likeRefs);
+          
+          // Create posts with like status
+          final postsWithLikeStatus = <PostModel>[];
+          for (int i = 0; i < personalizedPosts.length; i++) {
+            final post = personalizedPosts[i];
+            final isLiked = i < likeSnapshots.length ? likeSnapshots[i].exists : false;
+            postsWithLikeStatus.add(post.copyWith(isLikedByCurrentUser: isLiked));
+          }
+          
+          debugPrint('✅ Retrieved ${postsWithLikeStatus.length} personalized posts');
+          return postsWithLikeStatus;
+        },
+        cacheDuration: const Duration(minutes: 3), // Cache for 3 minutes
+      );
       
     } catch (e) {
-      debugPrint('âŒ Error getting personalized feed: $e');
+      debugPrint('❌ Error getting personalized feed: $e');
       // Fallback to regular feed
       return await getFeedPosts(limit: limit, lastDocument: lastDocument);
     }

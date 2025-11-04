@@ -32,20 +32,22 @@ class PerformanceOptimizationService {
   static const int maxImageDimension = 1920;
 
   /// Initialize performance optimization service
-  Future<void> initialize() async {
+  static Future<void> initialize() async {
     try {
-      // Start performance monitoring
-      _startPerformanceMonitoring();
+      debugPrint('⚡ Initializing Performance Optimization Service...');
       
-      // Load cached preferences
-      await _loadCachedPreferences();
+      final service = _instance;
+      
+      // Start performance monitoring
+      service._startPerformanceMonitoring();
       
       // Setup memory pressure listener
-      _setupMemoryPressureListener();
+      service._setupMemoryPressureListener();
       
-      debugPrint('PerformanceOptimizationService initialized');
+      debugPrint('✅ Performance Optimization Service initialized');
+      
     } catch (e) {
-      debugPrint('Error initializing PerformanceOptimizationService: $e');
+      debugPrint('❌ Failed to initialize performance optimization: $e');
     }
   }
 

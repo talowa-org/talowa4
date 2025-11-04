@@ -256,10 +256,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     // 📊 TRACK NAVIGATION PERFORMANCE
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigationStopwatch.stop();
-      PerformanceAnalyticsService.instance.trackNavigationPerformance(
-        fromTab: previousIndex,
-        toTab: index,
-        duration: navigationStopwatch.elapsed,
+      PerformanceAnalyticsService.trackNavigationPerformance(
+        fromRoute: 'tab_$previousIndex',
+        route: 'tab_$index',
+        duration: navigationStopwatch.elapsedMilliseconds,
       );
     });
   }
@@ -282,10 +282,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     debugPrint('Navigation: User switched to ${tabNames[index]} tab');
     
     // 📊 ENHANCED NAVIGATION ANALYTICS WITH PERFORMANCE TRACKING
-    PerformanceAnalyticsService.instance.trackTabNavigation(
+    PerformanceAnalyticsService.trackTabNavigation(
       tabName: tabNames[index],
-      tabIndex: index,
-      timestamp: DateTime.now(),
+      duration: 0, // Immediate tab switch
     );
   }
 

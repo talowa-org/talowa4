@@ -52,18 +52,17 @@ class _NetworkScreenState extends State<NetworkScreen> {
         
         // 📊 TRACK SUCCESSFUL NETWORK TAB LOADING
         networkLoadStopwatch.stop();
-        PerformanceAnalyticsService.instance.trackNetworkTabLoading(
-          networkLoadStopwatch.elapsed,
-          success: true,
+        PerformanceAnalyticsService.trackNetworkTabLoading(
+          section: 'Network',
+          duration: networkLoadStopwatch.elapsedMilliseconds,
         );
       }
     } catch (e) {
       // 📊 TRACK FAILED NETWORK TAB LOADING
       networkLoadStopwatch.stop();
-      PerformanceAnalyticsService.instance.trackNetworkTabLoading(
-        networkLoadStopwatch.elapsed,
-        success: false,
-        errorMessage: e.toString(),
+      PerformanceAnalyticsService.trackNetworkTabLoading(
+        section: 'Network',
+        duration: networkLoadStopwatch.elapsedMilliseconds,
       );
       
       if (kDebugMode) {

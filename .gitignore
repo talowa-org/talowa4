@@ -162,4 +162,4 @@ jspm_packages/
 serviceAccountKey.json
 *.serviceAccount.json
 *.firebase.key.json
-*.secrets.json
+*.secrets.jsontalowa2 

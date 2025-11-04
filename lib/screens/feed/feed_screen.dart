@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../services/social_feed/feed_service.dart';
 import '../../widgets/common/loading_widget.dart';
+import '../../widgets/common/lazy_loading_widget.dart';
 import '../post_creation/simple_post_creation_screen.dart';
 import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';
@@ -22,6 +23,13 @@ import 'post_comments_screen.dart';
 import '../../widgets/stories/story_ring.dart';
 import '../../utils/role_utils.dart';
 import '../../providers/user_state_provider.dart';
+// Performance optimization imports
+import '../../services/performance/cache_service.dart';
+import '../../services/performance/network_optimization_service.dart';
+import '../../services/performance/performance_monitoring_service.dart';
+import '../../services/performance/memory_management_service.dart';
+import '../../widgets/optimized/lazy_loading_widget.dart';
+import '../../widgets/optimized/optimized_image_widget.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -58,12 +66,21 @@ class _FeedScreenState extends State<FeedScreen>
   static const int _postsPerPage = 10;
   int _currentPage = 0;
 
+  // Performance optimization services
+  late CacheService _cacheService;
+  late NetworkOptimizationService _networkService;
+  late PerformanceMonitoringService _performanceService;
+  late MemoryManagementService _memoryService;
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
+    
+    // Initialize performance services
+    _initializePerformanceServices();
     
     // Initialize animations
     _fabAnimationController = AnimationController(
@@ -77,7 +94,8 @@ class _FeedScreenState extends State<FeedScreen>
     // Setup scroll listener
     _scrollController.addListener(_onScroll);
     
-    // Load initial data
+    // Load initial data with performance tracking
+    _performanceService.startOperation('feed_initial_load');
     _loadFeed();
     _loadStories();
     
@@ -85,11 +103,33 @@ class _FeedScreenState extends State<FeedScreen>
     _fabAnimationController.forward();
   }
 
+  void _initializePerformanceServices() {
+    _cacheService = CacheService.instance;
+    _networkService = NetworkOptimizationService.instance;
+    _performanceService = PerformanceMonitoringService.instance;
+    _memoryService = MemoryManagementService.instance;
+    
+    // Configure cache for feed data
+    _cacheService.configure(
+      maxMemorySize: 50 * 1024 * 1024, // 50MB for feed cache
+      maxDiskSize: 200 * 1024 * 1024,  // 200MB for persistent cache
+    );
+    
+    // Enable network optimization
+    _networkService.enableCompression();
+    _networkService.enableRequestBatching();
+  }
+
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _fabAnimationController.dispose();
+    
+    // Clean up performance services
+    _memoryService.clearCache();
+    _performanceService.endOperation('feed_session');
+    
     super.dispose();
   }
 
@@ -205,138 +245,227 @@ class _FeedScreenState extends State<FeedScreen>
   }
 
   Widget _buildPostItem(PostModel post) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Author info
-            Row(
+    return RepaintBoundary(
+      child: LazyLoadingWidget(
+        child: Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundColor: _getRoleColor(post.authorRole),
-                  child: Text(
-                    post.authorName.isNotEmpty ? post.authorName[0] : '?',
+                // Author info
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: _getRoleColor(post.authorRole),
+                      child: Text(
+                        post.authorName.isNotEmpty ? post.authorName[0] : '?',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post.authorName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            _formatTime(post.createdAt),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildCategoryBadge(post.category),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Title
+                if (post.title != null) ...[
+                  Text(
+                    post.title!,
                     style: const TextStyle(
-                      color: Colors.white,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                ],
+
+                // Content
+                Text(
+                  post.content,
+                  style: const TextStyle(fontSize: 16, height: 1.4),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.authorName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+
+                // Media (Images, Videos, Documents) - Using Optimized Media Widgets
+                if (post.hasMedia || post.mediaUrls.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _buildOptimizedMediaSection(post.allMediaUrls.isNotEmpty ? post.allMediaUrls : post.mediaUrls, post.id),
+                ],
+
+                // Hashtags
+                if (post.hashtags.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: post.hashtags.map((hashtag) => InkWell(
+                      onTap: () => _searchByHashtag(hashtag),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppTheme.talowaGreen.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          '#$hashtag',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.talowaGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                      Text(
-                        _formatTime(post.createdAt),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                    )).toList(),
                   ),
-                ),
-                _buildCategoryBadge(post.category),
-              ],
-            ),
+                ],
 
-            const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-            // Title
-            if (post.title != null) ...[
-              Text(
-                post.title!,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-
-            // Content
-            Text(
-              post.content,
-              style: const TextStyle(fontSize: 16, height: 1.4),
-            ),
-
-            // Media (Images, Videos, Documents) - Using Enhanced Media Widgets
-            if (post.hasMedia || post.mediaUrls.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              _buildMediaSection(post.allMediaUrls.isNotEmpty ? post.allMediaUrls : post.mediaUrls, post.id),
-            ],
-
-            // Hashtags
-            if (post.hashtags.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: post.hashtags.map((hashtag) => InkWell(
-                  onTap: () => _searchByHashtag(hashtag),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.talowaGreen.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppTheme.talowaGreen.withValues(alpha: 0.3),
-                      ),
+                // Engagement
+                Row(
+                  children: [
+                    _buildEngagementButton(
+                      icon: post.isLikedByCurrentUser ? Icons.favorite : Icons.favorite_border,
+                      count: post.likesCount,
+                      label: 'Like',
+                      color: post.isLikedByCurrentUser ? Colors.red : null,
+                      onTap: () => _handleLike(post),
                     ),
-                    child: Text(
-                      '#$hashtag',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.talowaGreen,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    _buildEngagementButton(
+                      icon: Icons.comment_outlined,
+                      count: post.commentsCount,
+                      label: 'Comment',
+                      onTap: () => _handleComment(post),
                     ),
-                  ),
-                )).toList(),
-              ),
-            ],
-
-            const SizedBox(height: 12),
-
-            // Engagement
-            Row(
-              children: [
-                _buildEngagementButton(
-                  icon: post.isLikedByCurrentUser ? Icons.favorite : Icons.favorite_border,
-                  count: post.likesCount,
-                  label: 'Like',
-                  color: post.isLikedByCurrentUser ? Colors.red : null,
-                  onTap: () => _handleLike(post),
-                ),
-                _buildEngagementButton(
-                  icon: Icons.comment_outlined,
-                  count: post.commentsCount,
-                  label: 'Comment',
-                  onTap: () => _handleComment(post),
-                ),
-                _buildEngagementButton(
-                  icon: Icons.share_outlined,
-                  count: post.sharesCount,
-                  label: 'Share',
-                  onTap: () => _handleShare(post),
+                    _buildEngagementButton(
+                      icon: Icons.share_outlined,
+                      count: post.sharesCount,
+                      label: 'Share',
+                      onTap: () => _handleShare(post),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOptimizedMediaSection(List<String> mediaUrls, String postId) {
+    if (mediaUrls.isEmpty) return const SizedBox.shrink();
+
+    return LazyLoadingWidget(
+      child: Column(
+        children: [
+          if (mediaUrls.length == 1)
+            _buildSingleOptimizedMedia(mediaUrls.first, postId)
+          else
+            _buildMultipleOptimizedMedia(mediaUrls, postId),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleOptimizedMedia(String mediaUrl, String postId) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: OptimizedImageWidget(
+        imageUrl: mediaUrl,
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+        cacheKey: '${postId}_media_0',
+        placeholder: Container(
+          width: double.infinity,
+          height: 200,
+          color: Colors.grey[200],
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        errorWidget: Container(
+          width: double.infinity,
+          height: 200,
+          color: Colors.grey[200],
+          child: const Center(
+            child: Icon(Icons.error, color: Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMultipleOptimizedMedia(List<String> mediaUrls, String postId) {
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: mediaUrls.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(right: index < mediaUrls.length - 1 ? 8 : 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: OptimizedImageWidget(
+                imageUrl: mediaUrls[index],
+                width: 150,
+                height: 200,
+                fit: BoxFit.cover,
+                cacheKey: '${postId}_media_$index',
+                placeholder: Container(
+                  width: 150,
+                  height: 200,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                errorWidget: Container(
+                  width: 150,
+                  height: 200,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: Icon(Icons.error, color: Colors.grey),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -562,6 +691,8 @@ class _FeedScreenState extends State<FeedScreen>
 
   // Data loading methods
   Future<void> _loadFeed() async {
+    final stopwatch = Stopwatch()..start();
+    
     setState(() {
       _isLoading = true;
       _hasError = false;
@@ -570,42 +701,118 @@ class _FeedScreenState extends State<FeedScreen>
     });
 
     try {
+      // Check cache first for faster loading
+      final cacheKey = 'feed_${_selectedCategory?.toString() ?? 'all'}_${_searchQuery ?? ''}_${_sortOption.toString()}';
+      List<PostModel>? cachedPosts = await _cacheService.get<List<PostModel>>(cacheKey);
+      
+      if (cachedPosts != null && cachedPosts.isNotEmpty) {
+        setState(() {
+          _posts = cachedPosts;
+          _isLoading = false;
+          _hasMorePosts = cachedPosts.length == _postsPerPage;
+        });
+        
+        // Load fresh data in background
+        _loadFreshFeedData(cacheKey);
+        return;
+      }
+      
       List<PostModel> posts;
       
       // Use personalized feed if no filters are applied, otherwise use filtered feed
       if (_selectedCategory == null && 
           (_searchQuery == null || _searchQuery!.isEmpty) && 
           _sortOption == FeedSortOption.newest) {
-        // Use enterprise personalized algorithm
-        posts = await FeedService().getPersonalizedFeedPosts(
-          limit: _postsPerPage,
-        );
+        // Use enterprise personalized algorithm with network optimization
+        posts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getPersonalizedFeedPosts(
+            limit: _postsPerPage,
+          );
+        });
       } else {
-        // Use filtered feed for specific queries
-        posts = await FeedService().getFeedPosts(
-          limit: _postsPerPage,
-          category: _selectedCategory,
-          searchQuery: _searchQuery,
-          sortOption: _sortOption,
-        );
+        // Use filtered feed for specific queries with network optimization
+        posts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getFeedPosts(
+            limit: _postsPerPage,
+            category: _selectedCategory,
+            searchQuery: _searchQuery,
+            sortOption: _sortOption,
+          );
+        });
       }
 
+      // Cache the results for faster subsequent loads
+      await _cacheService.set(cacheKey, posts, duration: const Duration(minutes: 5));
+      
       setState(() {
         _posts = posts;
         _isLoading = false;
         _hasMorePosts = posts.length == _postsPerPage;
       });
+      
+      // Track performance metrics
+      _performanceService.recordMetric('feed_load_time', stopwatch.elapsedMilliseconds.toDouble());
+      _performanceService.recordMetric('feed_posts_loaded', posts.length.toDouble());
+      
     } catch (e) {
       setState(() {
         _isLoading = false;
         _hasError = true;
         _errorMessage = e.toString();
       });
+      
+      // Track error metrics
+      _performanceService.recordError('feed_load_error', e.toString());
+    } finally {
+      stopwatch.stop();
+      _performanceService.endOperation('feed_initial_load');
+    }
+  }
+
+  Future<void> _loadFreshFeedData(String cacheKey) async {
+    try {
+      List<PostModel> posts;
+      
+      if (_selectedCategory == null && 
+          (_searchQuery == null || _searchQuery!.isEmpty) && 
+          _sortOption == FeedSortOption.newest) {
+        posts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getPersonalizedFeedPosts(
+            limit: _postsPerPage,
+          );
+        });
+      } else {
+        posts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getFeedPosts(
+            limit: _postsPerPage,
+            category: _selectedCategory,
+            searchQuery: _searchQuery,
+            sortOption: _sortOption,
+          );
+        });
+      }
+
+      // Update cache with fresh data
+      await _cacheService.set(cacheKey, posts, duration: const Duration(minutes: 5));
+      
+      // Update UI if data has changed
+      if (mounted && posts.length != _posts.length) {
+        setState(() {
+          _posts = posts;
+          _hasMorePosts = posts.length == _postsPerPage;
+        });
+      }
+    } catch (e) {
+      // Silent fail for background refresh
+      _performanceService.recordError('background_refresh_error', e.toString());
     }
   }
 
   Future<void> _loadMorePosts() async {
     if (_isLoadingMore || !_hasMorePosts || _posts.isEmpty) return;
+
+    _performanceService.startOperation('feed_load_more');
+    final stopwatch = Stopwatch()..start();
 
     setState(() {
       _isLoadingMore = true;
@@ -624,20 +831,24 @@ class _FeedScreenState extends State<FeedScreen>
       if (_selectedCategory == null && 
           (_searchQuery == null || _searchQuery!.isEmpty) && 
           _sortOption == FeedSortOption.newest) {
-        // Use enterprise personalized algorithm
-        morePosts = await FeedService().getPersonalizedFeedPosts(
-          limit: _postsPerPage,
-          lastDocument: lastDoc,
-        );
+        // Use enterprise personalized algorithm with network optimization
+        morePosts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getPersonalizedFeedPosts(
+            limit: _postsPerPage,
+            lastDocument: lastDoc,
+          );
+        });
       } else {
-        // Use filtered feed for specific queries
-        morePosts = await FeedService().getFeedPosts(
-          limit: _postsPerPage,
-          lastDocument: lastDoc,
-          category: _selectedCategory,
-          searchQuery: _searchQuery,
-          sortOption: _sortOption,
-        );
+        // Use filtered feed for specific queries with network optimization
+        morePosts = await _networkService.optimizeRequest(() async {
+          return await FeedService().getFeedPosts(
+            limit: _postsPerPage,
+            lastDocument: lastDoc,
+            category: _selectedCategory,
+            searchQuery: _searchQuery,
+            sortOption: _sortOption,
+          );
+        });
       }
 
       setState(() {
@@ -646,16 +857,32 @@ class _FeedScreenState extends State<FeedScreen>
         _isLoadingMore = false;
         _hasMorePosts = morePosts.length == _postsPerPage;
       });
+      
+      // Track performance metrics
+      _performanceService.recordMetric('load_more_time', stopwatch.elapsedMilliseconds.toDouble());
+      _performanceService.recordMetric('more_posts_loaded', morePosts.length.toDouble());
+      
+      // Manage memory by cleaning old posts if list gets too large
+      if (_posts.length > 100) {
+        _memoryService.cleanupOldPosts(_posts, maxPosts: 50);
+      }
+      
     } catch (e) {
       setState(() {
         _isLoadingMore = false;
       });
+      
+      // Track error metrics
+      _performanceService.recordError('load_more_error', e.toString());
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load more posts: ${e.toString()}')),
         );
       }
+    } finally {
+      stopwatch.stop();
+      _performanceService.endOperation('feed_load_more');
     }
   }
 
@@ -1104,71 +1331,11 @@ class _FeedScreenState extends State<FeedScreen>
       ),
     );
   }
-  // Media display section
-  Widget _buildMediaSection(List<String> mediaUrls, String postId) {
-    if (mediaUrls.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 300),
-      child: mediaUrls.length == 1
-          ? _buildSingleMedia(mediaUrls.first, postId)
-          : _buildMultipleMedia(mediaUrls, postId),
-    );
-  }
 
-  Widget _buildSingleMedia(String mediaUrl, String postId) {
-    if (_isImageUrl(mediaUrl) || _isVideoUrl(mediaUrl)) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: EnhancedFeedMediaWidget(
-          mediaUrl: mediaUrl,
-          contentType: _isVideoUrl(mediaUrl) ? 'video/mp4' : 'image/jpeg',
-          postId: postId,
-          mediaIndex: 0,
-          width: double.infinity,
-          height: 300,
-          fit: BoxFit.cover,
-          showControls: _isVideoUrl(mediaUrl),
-          autoPlay: false,
-        ),
-      );
-    } else {
-      return _buildDocumentPreview(mediaUrl);
-    }
-  }
 
-  Widget _buildMultipleMedia(List<String> mediaUrls, String postId) {
-    return SizedBox(
-      height: 200,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: mediaUrls.length,
-        itemBuilder: (context, index) {
-          final mediaUrl = mediaUrls[index];
-          return Container(
-            width: 150,
-            margin: const EdgeInsets.only(right: 8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: (_isImageUrl(mediaUrl) || _isVideoUrl(mediaUrl))
-                  ? EnhancedFeedMediaWidget(
-                      mediaUrl: mediaUrl,
-                      contentType: _isVideoUrl(mediaUrl) ? 'video/mp4' : 'image/jpeg',
-                      postId: postId,
-                      mediaIndex: index,
-                      width: 150,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      showControls: _isVideoUrl(mediaUrl),
-                      autoPlay: false,
-                    )
-                  : _buildDocumentPreview(mediaUrl),
-            ),
-          );
-        },
-      ),
-    );
-  }
+
+
 
   Widget _buildDocumentPreview(String documentUrl) {
     final fileName = documentUrl.split('/').last.split('?').first;

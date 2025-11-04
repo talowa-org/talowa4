@@ -64,21 +64,20 @@ class _LoginScreenState extends State<LoginScreen> {
       if (result.success) {
         // 📊 TRACK SUCCESSFUL LOGIN PERFORMANCE
         loginStopwatch.stop();
-        PerformanceAnalyticsService.instance.trackLoginPerformance(
-          loginStopwatch.elapsed,
-          success: true,
+        PerformanceAnalyticsService.trackLoginPerformance(
           method: 'phone_pin',
+          duration: loginStopwatch.elapsedMilliseconds,
+          success: true,
         );
         
         Navigator.of(context).pushReplacementNamed('/main');
       } else {
         // 📊 TRACK FAILED LOGIN PERFORMANCE
         loginStopwatch.stop();
-        PerformanceAnalyticsService.instance.trackLoginPerformance(
-          loginStopwatch.elapsed,
-          success: false,
+        PerformanceAnalyticsService.trackLoginPerformance(
           method: 'phone_pin',
-          errorMessage: result.message,
+          duration: loginStopwatch.elapsedMilliseconds,
+          success: false,
         );
         
         setState(() { _error = result.message; });
@@ -86,11 +85,10 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       // 📊 TRACK LOGIN ERROR PERFORMANCE
       loginStopwatch.stop();
-      PerformanceAnalyticsService.instance.trackLoginPerformance(
-        loginStopwatch.elapsed,
-        success: false,
+      PerformanceAnalyticsService.trackLoginPerformance(
         method: 'phone_pin',
-        errorMessage: e.toString(),
+        duration: loginStopwatch.elapsedMilliseconds,
+        success: false,
       );
       
       if (kDebugMode) {

@@ -23,20 +23,21 @@ class DatabaseOptimizationService {
   final Map<String, QueryPerformanceMetrics> _queryMetrics = {};
   
   /// Initialize database optimization
-  Future<void> initialize() async {
+  static Future<void> initialize() async {
+    final service = DatabaseOptimizationService.instance;
     try {
-      debugPrint('âš¡ Initializing Database Optimization Service...');
+      debugPrint('⚡ Initializing Database Optimization Service...');
       
       // Configure Firestore settings for better performance
-      await _configureFirestoreSettings();
+      await service._configureFirestoreSettings();
       
       // Setup query performance monitoring
-      _setupQueryMonitoring();
+      service._setupQueryMonitoring();
       
-      debugPrint('âœ… Database Optimization Service initialized');
+      debugPrint('✅ Database Optimization Service initialized');
       
     } catch (e) {
-      debugPrint('âŒ Failed to initialize database optimization: $e');
+      debugPrint('❌ Failed to initialize database optimization: $e');
     }
   }
   
