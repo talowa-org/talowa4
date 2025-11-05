@@ -1,232 +1,156 @@
+// Cache Service for TALOWA
+// Simple in-memory cache with expiration support
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-/// Generic cache service for storing and retrieving data
 class CacheService {
   static final CacheService _instance = CacheService._internal();
-  static CacheService get instance => _instance;
-  
-  SharedPreferences? _prefs;
-  
+  factory CacheService() => _instance;
   CacheService._internal();
 
-  Future<void> initialize() async {
-    _prefs ??= await SharedPreferences.getInstance();
+  final Map<String, CacheItem> _cache = {};
+  Timer? _cleanupTimer;
+
+  void initialize() {
+    // Start periodic cleanup every 5 minutes
+    _cleanupTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      _cleanup();
+    });
   }
 
-  static Future<CacheService> getInstance() async {
-    await _instance.initialize();
-    return _instance;
-  }
-
-  /// Store string data in cache
-  Future<bool> setString(String key, String value) async {
+  /// Store data in cache with optional expiry
+  Future<void> set(
+    String key,
+    dynamic data, {
+    Duration? expiry,
+  }) async {
     try {
-      await initialize();
-      return await _prefs!.setString(key, value);
+      final expiryTime = expiry != null 
+          ? DateTime.now().add(expiry)
+          : null;
+
+      _cache[key] = CacheItem(
+        data: data,
+        createdAt: DateTime.now(),
+        expiryTime: expiryTime,
+      );
+
+      debugPrint('✅ Cached data for key: $key');
     } catch (e) {
-      debugPrint('Error storing string in cache: $e');
-      return false;
+      debugPrint('❌ Failed to cache data for key $key: $e');
     }
   }
 
-  /// Retrieve string data from cache
-  String? getString(String key) {
+  /// Retrieve data from cache
+  T? get<T>(String key) {
     try {
-      return _prefs?.getString(key);
-    } catch (e) {
-      debugPrint('Error retrieving string from cache: $e');
-      return null;
-    }
-  }
+      final item = _cache[key];
+      if (item == null) return null;
 
-  /// Store JSON data in cache
-  Future<bool> setJson(String key, Map<String, dynamic> data) async {
-    try {
-      final jsonString = jsonEncode(data);
-      return await setString(key, jsonString);
-    } catch (e) {
-      debugPrint('Error storing JSON in cache: $e');
-      return false;
-    }
-  }
-
-  /// Retrieve JSON data from cache
-  Map<String, dynamic>? getJson(String key) {
-    try {
-      final jsonString = getString(key);
-      if (jsonString != null) {
-        return jsonDecode(jsonString) as Map<String, dynamic>;
+      // Check if expired
+      if (item.isExpired) {
+        _cache.remove(key);
+        return null;
       }
-      return null;
-    } catch (e) {
-      debugPrint('Error retrieving JSON from cache: $e');
-      return null;
-    }
-  }
 
-  /// Store boolean data in cache
-  Future<bool> setBool(String key, bool value) async {
-    try {
-      await initialize();
-      return await _prefs!.setBool(key, value);
+      return item.data as T?;
     } catch (e) {
-      debugPrint('Error storing boolean in cache: $e');
-      return false;
-    }
-  }
-
-  /// Retrieve boolean data from cache
-  bool? getBool(String key) {
-    try {
-      return _prefs?.getBool(key);
-    } catch (e) {
-      debugPrint('Error retrieving boolean from cache: $e');
+      debugPrint('❌ Failed to get cached data for key $key: $e');
       return null;
     }
   }
 
-  /// Store integer data in cache
-  Future<bool> setInt(String key, int value) async {
-    try {
-      await initialize();
-      return await _prefs!.setInt(key, value);
-    } catch (e) {
-      debugPrint('Error storing integer in cache: $e');
+  /// Check if key exists and is not expired
+  bool has(String key) {
+    final item = _cache[key];
+    if (item == null) return false;
+    
+    if (item.isExpired) {
+      _cache.remove(key);
       return false;
     }
+    
+    return true;
   }
 
-  /// Retrieve integer data from cache
-  int? getInt(String key) {
-    try {
-      return _prefs?.getInt(key);
-    } catch (e) {
-      debugPrint('Error retrieving integer from cache: $e');
-      return null;
-    }
+  /// Remove specific key from cache
+  Future<void> remove(String key) async {
+    _cache.remove(key);
+    debugPrint('✅ Removed cached data for key: $key');
   }
 
-  /// Store double data in cache
-  Future<bool> setDouble(String key, double value) async {
-    try {
-      await initialize();
-      return await _prefs!.setDouble(key, value);
-    } catch (e) {
-      debugPrint('Error storing double in cache: $e');
-      return false;
-    }
+  /// Clear all cache
+  Future<void> clear() async {
+    _cache.clear();
+    debugPrint('✅ Cleared all cache');
   }
 
-  /// Retrieve double data from cache
-  double? getDouble(String key) {
-    try {
-      return _prefs?.getDouble(key);
-    } catch (e) {
-      debugPrint('Error retrieving double from cache: $e');
-      return null;
-    }
-  }
+  /// Get cache statistics
+  Map<String, dynamic> getStats() {
+    final now = DateTime.now();
+    int expiredCount = 0;
+    int totalSize = 0;
 
-  /// Store list of strings in cache
-  Future<bool> setStringList(String key, List<String> value) async {
-    try {
-      await initialize();
-      return await _prefs!.setStringList(key, value);
-    } catch (e) {
-      debugPrint('Error storing string list in cache: $e');
-      return false;
-    }
-  }
-
-  /// Retrieve list of strings from cache
-  List<String>? getStringList(String key) {
-    try {
-      return _prefs?.getStringList(key);
-    } catch (e) {
-      debugPrint('Error retrieving string list from cache: $e');
-      return null;
-    }
-  }
-
-  /// Remove data from cache
-  Future<bool> remove(String key) async {
-    try {
-      await initialize();
-      return await _prefs!.remove(key);
-    } catch (e) {
-      debugPrint('Error removing data from cache: $e');
-      return false;
-    }
-  }
-
-  /// Clear all cache data
-  Future<bool> clear() async {
-    try {
-      await initialize();
-      return await _prefs!.clear();
-    } catch (e) {
-      debugPrint('Error clearing cache: $e');
-      return false;
-    }
-  }
-
-  /// Check if key exists in cache
-  bool containsKey(String key) {
-    try {
-      return _prefs?.containsKey(key) ?? false;
-    } catch (e) {
-      debugPrint('Error checking key existence in cache: $e');
-      return false;
-    }
-  }
-
-  /// Get all keys from cache
-  Set<String> getKeys() {
-    try {
-      return _prefs?.getKeys() ?? <String>{};
-    } catch (e) {
-      debugPrint('Error getting keys from cache: $e');
-      return <String>{};
-    }
-  }
-
-  /// Store data with expiration time
-  Future<bool> setWithExpiry(String key, String value, Duration expiry) async {
-    try {
-      final expiryTime = DateTime.now().add(expiry).millisecondsSinceEpoch;
-      final data = {
-        'value': value,
-        'expiry': expiryTime,
-      };
-      return await setJson('${key}_expiry', data);
-    } catch (e) {
-      debugPrint('Error storing data with expiry: $e');
-      return false;
-    }
-  }
-
-  /// Retrieve data with expiration check
-  String? getWithExpiry(String key) {
-    try {
-      final data = getJson('${key}_expiry');
-      if (data != null) {
-        final expiryTime = data['expiry'] as int;
-        final currentTime = DateTime.now().millisecondsSinceEpoch;
-        
-        if (currentTime < expiryTime) {
-          return data['value'] as String;
-        } else {
-          // Data has expired, remove it
-          remove('${key}_expiry');
-          return null;
-        }
+    for (final item in _cache.values) {
+      if (item.isExpired) expiredCount++;
+      
+      try {
+        final jsonString = jsonEncode(item.data);
+        totalSize += jsonString.length;
+      } catch (e) {
+        // Skip items that can't be serialized
       }
-      return null;
-    } catch (e) {
-      debugPrint('Error retrieving data with expiry: $e');
-      return null;
+    }
+
+    return {
+      'total_items': _cache.length,
+      'expired_items': expiredCount,
+      'active_items': _cache.length - expiredCount,
+      'estimated_size_bytes': totalSize,
+    };
+  }
+
+  /// Clean up expired items
+  void _cleanup() {
+    final keysToRemove = <String>[];
+    
+    for (final entry in _cache.entries) {
+      if (entry.value.isExpired) {
+        keysToRemove.add(entry.key);
+      }
+    }
+
+    for (final key in keysToRemove) {
+      _cache.remove(key);
+    }
+
+    if (keysToRemove.isNotEmpty) {
+      debugPrint('✅ Cleaned up ${keysToRemove.length} expired cache items');
     }
   }
+
+  void dispose() {
+    _cleanupTimer?.cancel();
+    _cache.clear();
+  }
+}
+
+class CacheItem {
+  final dynamic data;
+  final DateTime createdAt;
+  final DateTime? expiryTime;
+
+  CacheItem({
+    required this.data,
+    required this.createdAt,
+    this.expiryTime,
+  });
+
+  bool get isExpired {
+    if (expiryTime == null) return false;
+    return DateTime.now().isAfter(expiryTime!);
+  }
+
+  Duration get age => DateTime.now().difference(createdAt);
 }

@@ -1,94 +1,64 @@
-// User Avatar Widget - Display user profile pictures with fallbacks
-// Part of Task 6: Implement PostWidget for individual posts
-
+// User Avatar Widget for TALOWA
+// Reusable avatar widget with fallback and loading states
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../core/theme/app_theme.dart';
 
 class UserAvatarWidget extends StatelessWidget {
   final String? imageUrl;
   final String name;
   final double size;
+  final bool showBorder;
+  final Color? borderColor;
+  final double borderWidth;
   final VoidCallback? onTap;
-  final bool showOnlineIndicator;
-  final bool isOnline;
-  final Color? backgroundColor;
-  final Color? textColor;
-  final Widget? badge;
 
   const UserAvatarWidget({
     super.key,
     this.imageUrl,
     required this.name,
     this.size = 40,
+    this.showBorder = false,
+    this.borderColor,
+    this.borderWidth = 2,
     this.onTap,
-    this.showOnlineIndicator = false,
-    this.isOnline = false,
-    this.backgroundColor,
-    this.textColor,
-    this.badge,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Stack(
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: backgroundColor ?? _getBackgroundColor(),
-              border: Border.all(
-                color: Colors.grey[300]!,
-                width: 1,
-              ),
-            ),
-            child: ClipOval(
-              child: imageUrl != null && imageUrl!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl!,
-                      width: size,
-                      height: size,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => _buildPlaceholder(),
-                      errorWidget: (context, url, error) => _buildInitials(),
-                    )
-                  : _buildInitials(),
-            ),
-          ),
-
-          // Online indicator
-          if (showOnlineIndicator)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: size * 0.25,
-                height: size * 0.25,
-                decoration: BoxDecoration(
-                  color: isOnline ? Colors.green : Colors.grey,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-
-          // Badge (e.g., role indicator)
-          if (badge != null)
-            Positioned(
-              right: -2,
-              top: -2,
-              child: badge!,
-            ),
-        ],
+    Widget avatar = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: showBorder
+            ? Border.all(
+                color: borderColor ?? Colors.grey[300]!,
+                width: borderWidth,
+              )
+            : null,
+      ),
+      child: ClipOval(
+        child: imageUrl != null && imageUrl!.isNotEmpty
+            ? CachedNetworkImage(
+                imageUrl: imageUrl!,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildPlaceholder(),
+                errorWidget: (context, url, error) => _buildFallback(),
+              )
+            : _buildFallback(),
       ),
     );
+
+    if (onTap != null) {
+      avatar = GestureDetector(
+        onTap: onTap,
+        child: avatar,
+      );
+    }
+
+    return avatar;
   }
 
   Widget _buildPlaceholder() {
@@ -97,201 +67,74 @@ class UserAvatarWidget extends StatelessWidget {
       height: size,
       color: Colors.grey[200],
       child: Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            AppTheme.talowaGreen,
+        child: SizedBox(
+          width: size * 0.4,
+          height: size * 0.4,
+          child: const CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInitials() {
-    final initials = _getInitials();
-    final fontSize = size * 0.4;
-
+  Widget _buildFallback() {
+    final initials = _getInitials(name);
+    final backgroundColor = _getBackgroundColor(name);
+    
     return Container(
       width: size,
       height: size,
-      color: backgroundColor ?? _getBackgroundColor(),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+      ),
       child: Center(
         child: Text(
           initials,
           style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-            color: textColor ?? Colors.white,
+            color: Colors.white,
+            fontSize: size * 0.4,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
     );
   }
 
-  String _getInitials() {
+  String _getInitials(String name) {
     if (name.isEmpty) return '?';
-
+    
     final words = name.trim().split(' ');
-    if (words.length >= 2) {
-      return '${words[0][0]}${words[1][0]}'.toUpperCase();
+    if (words.length == 1) {
+      return words[0][0].toUpperCase();
     } else {
-      return words[0].substring(0, words[0].length >= 2 ? 2 : 1).toUpperCase();
+      return '${words[0][0]}${words[1][0]}'.toUpperCase();
     }
   }
 
-  Color _getBackgroundColor() {
-    // Generate a consistent color based on the name
-    final hash = name.hashCode;
+  Color _getBackgroundColor(String name) {
     final colors = [
-      AppTheme.talowaGreen,
-      Colors.blue,
-      Colors.purple,
-      Colors.orange,
-      Colors.teal,
-      Colors.indigo,
-      Colors.pink,
-      Colors.brown,
+      Colors.red[400]!,
+      Colors.pink[400]!,
+      Colors.purple[400]!,
+      Colors.deepPurple[400]!,
+      Colors.indigo[400]!,
+      Colors.blue[400]!,
+      Colors.lightBlue[400]!,
+      Colors.cyan[400]!,
+      Colors.teal[400]!,
+      Colors.green[400]!,
+      Colors.lightGreen[400]!,
+      Colors.lime[400]!,
+      Colors.yellow[400]!,
+      Colors.amber[400]!,
+      Colors.orange[400]!,
+      Colors.deepOrange[400]!,
     ];
-
+    
+    final hash = name.hashCode;
     return colors[hash.abs() % colors.length];
-  }
-}
-
-// Group avatar widget for multiple users
-class GroupAvatarWidget extends StatelessWidget {
-  final List<String> imageUrls;
-  final List<String> names;
-  final double size;
-  final int maxAvatars;
-  final VoidCallback? onTap;
-
-  const GroupAvatarWidget({
-    super.key,
-    required this.imageUrls,
-    required this.names,
-    this.size = 40,
-    this.maxAvatars = 3,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final displayCount = imageUrls.length > maxAvatars ? maxAvatars : imageUrls.length;
-    final remainingCount = imageUrls.length - maxAvatars;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: size + (displayCount - 1) * (size * 0.7),
-        height: size,
-        child: Stack(
-          children: [
-            // Display avatars
-            ...List.generate(displayCount, (index) {
-              final offset = index * (size * 0.7);
-              return Positioned(
-                left: offset,
-                child: UserAvatarWidget(
-                  imageUrl: index < imageUrls.length ? imageUrls[index] : null,
-                  name: index < names.length ? names[index] : 'User',
-                  size: size,
-                ),
-              );
-            }),
-
-            // Show remaining count
-            if (remainingCount > 0)
-              Positioned(
-                left: displayCount * (size * 0.7),
-                child: Container(
-                  width: size,
-                  height: size,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[600],
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '+$remainingCount',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: size * 0.3,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Avatar with status indicator
-class StatusAvatarWidget extends StatelessWidget {
-  final String? imageUrl;
-  final String name;
-  final double size;
-  final String status; // 'online', 'away', 'busy', 'offline'
-  final VoidCallback? onTap;
-
-  const StatusAvatarWidget({
-    super.key,
-    this.imageUrl,
-    required this.name,
-    this.size = 40,
-    required this.status,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return UserAvatarWidget(
-      imageUrl: imageUrl,
-      name: name,
-      size: size,
-      onTap: onTap,
-      showOnlineIndicator: true,
-      isOnline: status == 'online',
-      badge: _buildStatusBadge(),
-    );
-  }
-
-  Widget? _buildStatusBadge() {
-    Color statusColor;
-    switch (status.toLowerCase()) {
-      case 'online':
-        statusColor = Colors.green;
-        break;
-      case 'away':
-        statusColor = Colors.orange;
-        break;
-      case 'busy':
-        statusColor = Colors.red;
-        break;
-      case 'offline':
-      default:
-        statusColor = Colors.grey;
-        break;
-    }
-
-    return Container(
-      width: size * 0.3,
-      height: size * 0.3,
-      decoration: BoxDecoration(
-        color: statusColor,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.white,
-          width: 2,
-        ),
-      ),
-    );
   }
 }

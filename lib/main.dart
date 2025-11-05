@@ -85,7 +85,7 @@ void main() async {
   await OptimizedStartupService.initialize();
   
   // 🚀 INITIALIZE NEW PERFORMANCE SERVICES FOR 10M USER SCALABILITY
-  await CacheService.instance.initialize();
+  CacheService().initialize();
   network_opt.NetworkOptimizationService.instance.initialize();
   PerformanceMonitoringService.instance.initialize();
   await QueryOptimizationService.instance.initialize();
