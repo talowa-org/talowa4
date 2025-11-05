@@ -1,509 +1,569 @@
-﻿// Database Optimization Service - Advanced Firestore query optimization
-// Comprehensive database performance optimization for TALOWA platform
-
-import 'dart:async';
-import 'package:flutter/foundation.dart';
+﻿import 'dart:async';
+import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'caching_service.dart';
+import 'package:flutter/foundation.dart';
 
+/// Advanced database optimization service for 10M DAU scaling
 class DatabaseOptimizationService {
   static DatabaseOptimizationService? _instance;
-  static DatabaseOptimizationService get instance => _instance ??= DatabaseOptimizationService._internal();
-  
-  DatabaseOptimizationService._internal();
-  
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  // Query optimization settings
-  static const int defaultPageSize = 20;
-  static const int maxPageSize = 100;
-  static const Duration cacheTimeout = Duration(minutes: 5);
-  
-  // Query performance tracking
-  final Map<String, QueryPerformanceMetrics> _queryMetrics = {};
-  
-  /// Initialize database optimization
-  static Future<void> initialize() async {
-    final service = DatabaseOptimizationService.instance;
+  static DatabaseOptimizationService get instance => _instance ??= DatabaseOptimizationService._();
+
+  DatabaseOptimizationService._();
+
+  // Connection pooling
+  final Map<String, FirebaseFirestore> _connectionPool = {};
+  final Queue<String> _availableConnections = Queue<String>();
+  static const int _maxConnections = 20;
+  static const int _minConnections = 5;
+
+  // Query caching
+  final Map<String, QuerySnapshot> _queryCache = {};
+  final Map<String, DateTime> _cacheTimestamps = {};
+  final Map<String, int> _cacheHitCounts = {};
+  static const Duration _defaultCacheDuration = Duration(minutes: 10);
+  static const int _maxCacheSize = 1000;
+
+  // Performance metrics
+  final Map<String, List<int>> _queryTimes = {};
+  final Map<String, int> _queryExecutionCounts = {};
+  final Map<String, int> _cacheHitRates = {};
+
+  // Batch operations
+  final Map<String, List<Future<void>>> _batchOperations = {};
+  Timer? _batchFlushTimer;
+  static const Duration _batchFlushInterval = Duration(milliseconds: 100);
+
+  /// Initialize the database optimization service
+  Future<void> initialize() async {
     try {
-      debugPrint('⚡ Initializing Database Optimization Service...');
-      
-      // Configure Firestore settings for better performance
-      await service._configureFirestoreSettings();
-      
-      // Setup query performance monitoring
-      service._setupQueryMonitoring();
-      
-      debugPrint('✅ Database Optimization Service initialized');
-      
+      await _initializeConnectionPool();
+      _startBatchProcessor();
+      _startCacheCleanup();
+      debugPrint('✅ DatabaseOptimizationService initialized with ${_availableConnections.length} connections');
     } catch (e) {
-      debugPrint('❌ Failed to initialize database optimization: $e');
+      debugPrint('❌ Failed to initialize DatabaseOptimizationService: $e');
+      rethrow;
     }
   }
-  
-  /// Optimized paginated query with caching
-  Future<OptimizedQueryResult<T>> executeOptimizedQuery<T>({
-    required String collection,
-    required T Function(Map<String, dynamic>) fromFirestore,
-    List<QueryFilter>? filters,
-    List<QueryOrder>? orderBy,
-    int limit = defaultPageSize,
-    DocumentSnapshot? startAfter,
+
+  /// Initialize connection pool
+  Future<void> _initializeConnectionPool() async {
+    for (int i = 0; i < _minConnections; i++) {
+      final connectionId = 'conn_$i';
+      _connectionPool[connectionId] = FirebaseFirestore.instance;
+      _availableConnections.add(connectionId);
+    }
+  }
+
+  /// Get optimized connection from pool
+  FirebaseFirestore _getConnection() {
+    if (_availableConnections.isNotEmpty) {
+      final connectionId = _availableConnections.removeFirst();
+      final connection = _connectionPool[connectionId]!;
+      
+      // Return connection to pool after use
+      Timer(const Duration(seconds: 30), () {
+        if (!_availableConnections.contains(connectionId)) {
+          _availableConnections.add(connectionId);
+        }
+      });
+      
+      return connection;
+    }
+    
+    // Fallback to default instance if pool is exhausted
+    return FirebaseFirestore.instance;
+  }
+
+  /// Execute optimized query with advanced caching
+  Future<QuerySnapshot> executeOptimizedQuery(
+    Query query, {
+    String? cacheKey,
+    Duration? cacheDuration,
     bool useCache = true,
-    Duration? cacheTimeout,
+    int priority = 1,
+  }) async {
+    final stopwatch = Stopwatch()..start();
+    
+    try {
+      final key = cacheKey ?? _generateAdvancedCacheKey(query);
+      final duration = cacheDuration ?? _defaultCacheDuration;
+
+      // Check cache first
+      if (useCache && _isCacheValid(key, duration)) {
+        _recordCacheHit(key);
+        debugPrint('🎯 Query cache hit for: $key');
+        return _queryCache[key]!;
+      }
+
+      // Execute query with connection pooling
+      final db = _getConnection();
+      debugPrint('🔍 Executing optimized query: $key');
+      
+      final result = await query.get();
+      stopwatch.stop();
+
+      // Cache result with priority-based eviction
+      if (useCache) {
+        _cacheQueryResult(key, result, priority);
+      }
+
+      // Record performance metrics
+      _recordQueryPerformance(key, stopwatch.elapsedMilliseconds);
+
+      return result;
+    } catch (e) {
+      stopwatch.stop();
+      _recordQueryError(cacheKey ?? 'unknown', stopwatch.elapsedMilliseconds);
+      debugPrint('❌ Optimized query execution failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Execute batch queries with connection pooling
+  Future<List<QuerySnapshot>> executeBatchQueries(
+    List<Query> queries, {
+    List<String>? cacheKeys,
+    bool useCache = true,
+    int maxConcurrency = 5,
   }) async {
     try {
-      final queryKey = _generateQueryKey(collection, filters, orderBy, limit);
-      final startTime = DateTime.now();
+      final semaphore = Semaphore(maxConcurrency);
+      final futures = <Future<QuerySnapshot>>[];
       
-      debugPrint('ðŸ” Executing optimized query: $collection');
-      
-      // Check cache first
-      if (useCache) {
-        final cachedResult = await CachingService.instance.getCachedData<List<Map<String, dynamic>>>(
-          queryKey,
-          level: CacheLevel.memory,
-        );
+      for (int i = 0; i < queries.length; i++) {
+        final query = queries[i];
+        final cacheKey = cacheKeys != null && i < cacheKeys.length ? cacheKeys[i] : null;
         
-        if (cachedResult != null) {
-          debugPrint('ðŸŽ¯ Query cache hit: $collection');
-          
-          final items = cachedResult.map((data) => fromFirestore(data)).toList();
-          return OptimizedQueryResult<T>(
-            items: items,
-            hasMore: items.length >= limit,
-            lastDocument: null,
-            fromCache: true,
-            queryTime: Duration.zero,
-          );
-        }
-      }
-      
-      // Build optimized query
-      Query query = _firestore.collection(collection);
-      
-      // Apply filters
-      if (filters != null) {
-        for (final filter in filters) {
-          query = _applyFilter(query, filter);
-        }
-      }
-      
-      // Apply ordering
-      if (orderBy != null) {
-        for (final order in orderBy) {
-          query = query.orderBy(order.field, descending: order.descending);
-        }
-      }
-      
-      // Apply pagination
-      if (startAfter != null) {
-        query = query.startAfterDocument(startAfter);
-      }
-      
-      query = query.limit(limit);
-      
-      // Execute query
-      final querySnapshot = await query.get(const GetOptions(source: Source.serverAndCache));
-      
-      final endTime = DateTime.now();
-      final queryTime = endTime.difference(startTime);
-      
-      // Process results
-      final items = querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
-        return fromFirestore(data);
-      }).toList();
-      
-      final lastDocument = querySnapshot.docs.isNotEmpty ? querySnapshot.docs.last : null;
-      final hasMore = querySnapshot.docs.length >= limit;
-      
-      // Cache results
-      if (useCache && items.isNotEmpty) {
-        final cacheData = querySnapshot.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          data['id'] = doc.id;
-          return data;
-        }).toList();
-        
-        await CachingService.instance.cacheData(
-          queryKey,
-          cacheData,
-          duration: cacheTimeout ?? DatabaseOptimizationService.cacheTimeout,
-          level: CacheLevel.memory,
-        );
-      }
-      
-      // Track performance
-      _trackQueryPerformance(queryKey, queryTime, items.length, querySnapshot.metadata.isFromCache);
-      
-      debugPrint('âœ… Query completed: ${items.length} items in ${queryTime.inMilliseconds}ms');
-      
-      return OptimizedQueryResult<T>(
-        items: items,
-        hasMore: hasMore,
-        lastDocument: lastDocument,
-        fromCache: querySnapshot.metadata.isFromCache,
-        queryTime: queryTime,
-      );
-      
-    } catch (e) {
-      debugPrint('âŒ Optimized query failed: $e');
-      rethrow;
-    }
-  }
-  
-  /// Batch write operations for better performance
-  Future<void> executeBatchWrite(List<BatchOperation> operations) async {
-    try {
-      debugPrint('ðŸ“ Executing batch write: ${operations.length} operations');
-      
-      final batch = _firestore.batch();
-      
-      for (final operation in operations) {
-        switch (operation.type) {
-          case BatchOperationType.create:
-            batch.set(operation.reference, operation.data!);
-            break;
-          case BatchOperationType.update:
-            batch.update(operation.reference, operation.data!);
-            break;
-          case BatchOperationType.delete:
-            batch.delete(operation.reference);
-            break;
-        }
-      }
-      
-      await batch.commit();
-      
-      debugPrint('âœ… Batch write completed');
-      
-    } catch (e) {
-      debugPrint('âŒ Batch write failed: $e');
-      rethrow;
-    }
-  }
-  
-  /// Optimized real-time listener with debouncing
-  StreamSubscription<List<T>> createOptimizedListener<T>({
-    required String collection,
-    required T Function(Map<String, dynamic>) fromFirestore,
-    required Function(List<T>) onData,
-    Function(Object)? onError,
-    List<QueryFilter>? filters,
-    List<QueryOrder>? orderBy,
-    int limit = defaultPageSize,
-    Duration debounceTime = const Duration(milliseconds: 300),
-  }) {
-    debugPrint('ðŸ‘‚ Creating optimized listener: $collection');
-    
-    // Build query
-    Query query = _firestore.collection(collection);
-    
-    // Apply filters
-    if (filters != null) {
-      for (final filter in filters) {
-        query = _applyFilter(query, filter);
-      }
-    }
-    
-    // Apply ordering
-    if (orderBy != null) {
-      for (final order in orderBy) {
-        query = query.orderBy(order.field, descending: order.descending);
-      }
-    }
-    
-    query = query.limit(limit);
-    
-    // Create debounced stream
-    final controller = StreamController<List<T>>();
-    Timer? debounceTimer;
-    
-    final firestoreSubscription = query.snapshots().listen(
-      (querySnapshot) {
-        // Cancel previous timer
-        debounceTimer?.cancel();
-        
-        // Start new timer
-        debounceTimer = Timer(debounceTime, () {
+        futures.add(semaphore.acquire().then((_) async {
           try {
-            final items = querySnapshot.docs.map((doc) {
-              final data = doc.data() as Map<String, dynamic>;
-              data['id'] = doc.id;
-              return fromFirestore(data);
-            }).toList();
-            
-            controller.add(items);
-            
-          } catch (e) {
-            controller.addError(e);
+            return await executeOptimizedQuery(
+              query,
+              cacheKey: cacheKey,
+              useCache: useCache,
+            );
+          } finally {
+            semaphore.release();
           }
-        });
-      },
-      onError: (error) {
-        controller.addError(error);
-      },
-    );
-    
-    final subscription = controller.stream.listen(
-      onData,
-      onError: onError,
-    );
-    
-    // Clean up when subscription is cancelled
-    subscription.onDone(() {
-      debounceTimer?.cancel();
-      firestoreSubscription.cancel();
-      controller.close();
-    });
-    
-    return subscription;
-  }
-  
-  /// Get query performance metrics
-  Map<String, QueryPerformanceMetrics> getQueryMetrics() {
-    return Map.from(_queryMetrics);
-  }
-  
-  /// Clear query performance metrics
-  void clearQueryMetrics() {
-    _queryMetrics.clear();
-    debugPrint('ðŸ§¹ Query metrics cleared');
-  }
-  
-  /// Configure Firestore settings for optimal performance
-  Future<void> _configureFirestoreSettings() async {
-    try {
-      // Configure Firestore settings for better performance
-      _firestore.settings = const Settings(
-        cacheSizeBytes: 200 * 1024 * 1024, // 200MB cache
-        persistenceEnabled: !kIsWeb, // Only enable persistence on non-web platforms
-      );
-      
-      // Configure cache size (100MB)
-      _firestore.settings = const Settings(
-        cacheSizeBytes: 100 * 1024 * 1024,
-        persistenceEnabled: true,
-      );
-      
-      debugPrint('âœ… Firestore settings configured');
-      
+        }));
+      }
+
+      return await Future.wait(futures);
     } catch (e) {
-      debugPrint('âš ï¸ Firestore settings configuration failed: $e');
+      debugPrint('❌ Batch queries execution failed: $e');
+      rethrow;
     }
   }
-  
-  /// Setup query performance monitoring
-  void _setupQueryMonitoring() {
-    // Clear old metrics periodically
-    Timer.periodic(const Duration(hours: 1), (timer) {
-      final cutoff = DateTime.now().subtract(const Duration(hours: 24));
+
+  /// Execute paginated query with intelligent prefetching
+  Future<PaginatedQueryResult> executePaginatedQuery(
+    Query query, {
+    DocumentSnapshot? startAfter,
+    int limit = 20,
+    String? cacheKey,
+    bool prefetchNext = true,
+  }) async {
+    try {
+      Query paginatedQuery = query.limit(limit);
       
-      _queryMetrics.removeWhere((key, metrics) => 
-          metrics.lastExecuted.isBefore(cutoff));
+      if (startAfter != null) {
+        paginatedQuery = paginatedQuery.startAfterDocument(startAfter);
+      }
+
+      final result = await executeOptimizedQuery(
+        paginatedQuery,
+        cacheKey: cacheKey != null ? '${cacheKey}_page_${startAfter?.id ?? 'first'}' : null,
+      );
+
+      // Prefetch next page if enabled
+      if (prefetchNext && result.docs.isNotEmpty && result.docs.length == limit) {
+        final nextPageQuery = query
+            .limit(limit)
+            .startAfterDocument(result.docs.last);
+        
+        // Prefetch in background
+        unawaited(_prefetchQuery(nextPageQuery, cacheKey, startAfter?.id));
+      }
+
+      return PaginatedQueryResult(
+        documents: result.docs,
+        hasMore: result.docs.length == limit,
+        lastDocument: result.docs.isNotEmpty ? result.docs.last : null,
+      );
+    } catch (e) {
+      debugPrint('❌ Paginated query failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Batch write operations for better performance
+  Future<void> executeBatchWrite(
+    List<BatchOperation> operations, {
+    String? batchId,
+    bool immediate = false,
+  }) async {
+    try {
+      final id = batchId ?? 'batch_${DateTime.now().millisecondsSinceEpoch}';
+      
+      if (immediate) {
+        await _executeBatchOperations(operations);
+      } else {
+        _batchOperations[id] ??= [];
+        _batchOperations[id]!.addAll(operations.map((op) => op.execute()));
+        
+        // Flush if batch is large
+        if (_batchOperations[id]!.length >= 100) {
+          await _flushBatch(id);
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Batch write failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Advanced cache key generation with query fingerprinting
+  String _generateAdvancedCacheKey(Query query) {
+    final buffer = StringBuffer();
+    buffer.write('query_');
+    buffer.write(query.hashCode);
+    buffer.write('_');
+    buffer.write(DateTime.now().millisecondsSinceEpoch ~/ 60000); // Minute precision
+    return buffer.toString();
+  }
+
+  /// Cache query result with priority-based eviction
+  void _cacheQueryResult(String key, QuerySnapshot result, int priority) {
+    if (_queryCache.length >= _maxCacheSize) {
+      _evictLowPriorityCache();
+    }
+    
+    _queryCache[key] = result;
+    _cacheTimestamps[key] = DateTime.now();
+    _cacheHitCounts[key] = priority;
+  }
+
+  /// Evict low priority cache entries
+  void _evictLowPriorityCache() {
+    final sortedEntries = _cacheHitCounts.entries.toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+    
+    final entriesToRemove = sortedEntries.take(_maxCacheSize ~/ 4);
+    
+    for (final entry in entriesToRemove) {
+      _queryCache.remove(entry.key);
+      _cacheTimestamps.remove(entry.key);
+      _cacheHitCounts.remove(entry.key);
+    }
+    
+    debugPrint('🗑️ Evicted ${entriesToRemove.length} low-priority cache entries');
+  }
+
+  /// Check if cache entry is valid
+  bool _isCacheValid(String key, Duration maxAge) {
+    final timestamp = _cacheTimestamps[key];
+    if (timestamp == null || !_queryCache.containsKey(key)) {
+      return false;
+    }
+    
+    return DateTime.now().difference(timestamp) <= maxAge;
+  }
+
+  /// Record cache hit for analytics
+  void _recordCacheHit(String key) {
+    _cacheHitRates[key] = (_cacheHitRates[key] ?? 0) + 1;
+  }
+
+  /// Record query performance metrics
+  void _recordQueryPerformance(String key, int milliseconds) {
+    _queryTimes[key] ??= [];
+    _queryTimes[key]!.add(milliseconds);
+    
+    // Keep only last 100 measurements
+    if (_queryTimes[key]!.length > 100) {
+      _queryTimes[key]!.removeAt(0);
+    }
+    
+    _queryExecutionCounts[key] = (_queryExecutionCounts[key] ?? 0) + 1;
+    
+    // Log slow queries
+    if (milliseconds > 1000) {
+      debugPrint('🐌 Slow query detected: $key (${milliseconds}ms)');
+    }
+  }
+
+  /// Record query error for monitoring
+  void _recordQueryError(String key, int milliseconds) {
+    debugPrint('❌ Query error: $key (${milliseconds}ms)');
+  }
+
+  /// Prefetch query in background
+  Future<void> _prefetchQuery(Query query, String? baseCacheKey, String? pageId) async {
+    try {
+      final cacheKey = baseCacheKey != null ? '${baseCacheKey}_prefetch_$pageId' : null;
+      await executeOptimizedQuery(query, cacheKey: cacheKey, useCache: true);
+      debugPrint('🔮 Prefetched next page: $cacheKey');
+    } catch (e) {
+      debugPrint('⚠️ Prefetch failed: $e');
+    }
+  }
+
+  /// Start batch processor
+  void _startBatchProcessor() {
+    _batchFlushTimer = Timer.periodic(_batchFlushInterval, (_) {
+      _flushAllBatches();
     });
   }
-  
-  /// Apply filter to query
-  Query _applyFilter(Query query, QueryFilter filter) {
-    switch (filter.operator) {
-      case FilterOperator.isEqualTo:
-        return query.where(filter.field, isEqualTo: filter.value);
-      case FilterOperator.isNotEqualTo:
-        return query.where(filter.field, isNotEqualTo: filter.value);
-      case FilterOperator.isLessThan:
-        return query.where(filter.field, isLessThan: filter.value);
-      case FilterOperator.isLessThanOrEqualTo:
-        return query.where(filter.field, isLessThanOrEqualTo: filter.value);
-      case FilterOperator.isGreaterThan:
-        return query.where(filter.field, isGreaterThan: filter.value);
-      case FilterOperator.isGreaterThanOrEqualTo:
-        return query.where(filter.field, isGreaterThanOrEqualTo: filter.value);
-      case FilterOperator.arrayContains:
-        return query.where(filter.field, arrayContains: filter.value);
-      case FilterOperator.arrayContainsAny:
-        return query.where(filter.field, arrayContainsAny: filter.value);
-      case FilterOperator.whereIn:
-        return query.where(filter.field, whereIn: filter.value);
-      case FilterOperator.whereNotIn:
-        return query.where(filter.field, whereNotIn: filter.value);
-      case FilterOperator.isNull:
-        return query.where(filter.field, isNull: true);
-      case FilterOperator.isNotNull:
-        return query.where(filter.field, isNull: false);
+
+  /// Flush all pending batches
+  Future<void> _flushAllBatches() async {
+    final batchIds = _batchOperations.keys.toList();
+    
+    for (final batchId in batchIds) {
+      await _flushBatch(batchId);
     }
   }
-  
-  /// Generate query cache key
-  String _generateQueryKey(
-    String collection,
-    List<QueryFilter>? filters,
-    List<QueryOrder>? orderBy,
-    int limit,
-  ) {
-    final parts = [collection, limit.toString()];
+
+  /// Flush specific batch
+  Future<void> _flushBatch(String batchId) async {
+    final operations = _batchOperations.remove(batchId);
+    if (operations != null && operations.isNotEmpty) {
+      try {
+        await Future.wait(operations);
+        debugPrint('✅ Flushed batch: $batchId (${operations.length} operations)');
+      } catch (e) {
+        debugPrint('❌ Batch flush failed: $batchId - $e');
+      }
+    }
+  }
+
+  /// Execute batch operations immediately
+  Future<void> _executeBatchOperations(List<BatchOperation> operations) async {
+    final batch = FirebaseFirestore.instance.batch();
     
-    if (filters != null) {
-      for (final filter in filters) {
-        parts.add('${filter.field}_${filter.operator.name}_${filter.value}');
+    for (final operation in operations) {
+      operation.addToBatch(batch);
+    }
+    
+    await batch.commit();
+  }
+
+  /// Start cache cleanup process
+  void _startCacheCleanup() {
+    Timer.periodic(const Duration(minutes: 5), (_) {
+      _cleanupExpiredCache();
+    });
+  }
+
+  /// Clean up expired cache entries
+  void _cleanupExpiredCache() {
+    final now = DateTime.now();
+    final expiredKeys = <String>[];
+    
+    for (final entry in _cacheTimestamps.entries) {
+      if (now.difference(entry.value) > _defaultCacheDuration) {
+        expiredKeys.add(entry.key);
       }
     }
     
-    if (orderBy != null) {
-      for (final order in orderBy) {
-        parts.add('${order.field}_${order.descending}');
+    for (final key in expiredKeys) {
+      _queryCache.remove(key);
+      _cacheTimestamps.remove(key);
+      _cacheHitCounts.remove(key);
+    }
+    
+    if (expiredKeys.isNotEmpty) {
+      debugPrint('🗑️ Cleaned up ${expiredKeys.length} expired cache entries');
+    }
+  }
+
+  /// Get comprehensive performance statistics
+  Map<String, dynamic> getPerformanceStats() {
+    final stats = <String, dynamic>{
+      'connectionPool': {
+        'totalConnections': _connectionPool.length,
+        'availableConnections': _availableConnections.length,
+        'activeConnections': _connectionPool.length - _availableConnections.length,
+      },
+      'cache': {
+        'size': _queryCache.length,
+        'maxSize': _maxCacheSize,
+        'hitRate': _calculateOverallCacheHitRate(),
+        'totalHits': _cacheHitRates.values.fold(0, (a, b) => a + b),
+      },
+      'queries': {
+        'totalExecuted': _queryExecutionCounts.values.fold(0, (a, b) => a + b),
+        'averageTime': _calculateAverageQueryTime(),
+        'slowQueries': _getSlowQueries(),
+      },
+      'batches': {
+        'pendingBatches': _batchOperations.length,
+        'pendingOperations': _batchOperations.values.fold(0, (a, b) => a + b.length),
+      },
+    };
+    
+    return stats;
+  }
+
+  /// Calculate overall cache hit rate
+  double _calculateOverallCacheHitRate() {
+    final totalHits = _cacheHitRates.values.fold(0, (a, b) => a + b);
+    final totalQueries = _queryExecutionCounts.values.fold(0, (a, b) => a + b);
+    
+    return totalQueries > 0 ? (totalHits / totalQueries) * 100 : 0.0;
+  }
+
+  /// Calculate average query time
+  double _calculateAverageQueryTime() {
+    final allTimes = <int>[];
+    for (final times in _queryTimes.values) {
+      allTimes.addAll(times);
+    }
+    
+    return allTimes.isNotEmpty 
+        ? allTimes.reduce((a, b) => a + b) / allTimes.length 
+        : 0.0;
+  }
+
+  /// Get slow queries for optimization
+  List<Map<String, dynamic>> _getSlowQueries() {
+    final slowQueries = <Map<String, dynamic>>[];
+    
+    for (final entry in _queryTimes.entries) {
+      final avgTime = entry.value.reduce((a, b) => a + b) / entry.value.length;
+      if (avgTime > 500) { // Queries slower than 500ms
+        slowQueries.add({
+          'query': entry.key,
+          'averageTime': avgTime,
+          'executionCount': _queryExecutionCounts[entry.key] ?? 0,
+        });
       }
     }
     
-    return parts.join('_');
+    slowQueries.sort((a, b) => b['averageTime'].compareTo(a['averageTime']));
+    return slowQueries.take(10).toList();
   }
-  
-  /// Track query performance
-  void _trackQueryPerformance(
-    String queryKey,
-    Duration queryTime,
-    int resultCount,
-    bool fromCache,
-  ) {
-    final existing = _queryMetrics[queryKey];
+
+  /// Clear all caches and reset metrics
+  void clearAll() {
+    _queryCache.clear();
+    _cacheTimestamps.clear();
+    _cacheHitCounts.clear();
+    _queryTimes.clear();
+    _queryExecutionCounts.clear();
+    _cacheHitRates.clear();
+    _batchOperations.clear();
     
-    if (existing != null) {
-      _queryMetrics[queryKey] = existing.copyWith(
-        executionCount: existing.executionCount + 1,
-        totalTime: existing.totalTime + queryTime,
-        lastExecuted: DateTime.now(),
-        lastResultCount: resultCount,
-        cacheHitCount: fromCache ? existing.cacheHitCount + 1 : existing.cacheHitCount,
-      );
+    debugPrint('🗑️ Cleared all database optimization caches and metrics');
+  }
+
+  /// Dispose resources
+  void dispose() {
+    _batchFlushTimer?.cancel();
+    clearAll();
+    _connectionPool.clear();
+    _availableConnections.clear();
+    
+    debugPrint('🔄 DatabaseOptimizationService disposed');
+  }
+}
+
+/// Semaphore for controlling concurrency
+class Semaphore {
+  final int maxCount;
+  int _currentCount;
+  final Queue<Completer<void>> _waitQueue = Queue<Completer<void>>();
+
+  Semaphore(this.maxCount) : _currentCount = maxCount;
+
+  Future<void> acquire() async {
+    if (_currentCount > 0) {
+      _currentCount--;
+      return;
+    }
+
+    final completer = Completer<void>();
+    _waitQueue.add(completer);
+    return completer.future;
+  }
+
+  void release() {
+    if (_waitQueue.isNotEmpty) {
+      final completer = _waitQueue.removeFirst();
+      completer.complete();
     } else {
-      _queryMetrics[queryKey] = QueryPerformanceMetrics(
-        queryKey: queryKey,
-        executionCount: 1,
-        totalTime: queryTime,
-        averageTime: queryTime,
-        lastExecuted: DateTime.now(),
-        lastResultCount: resultCount,
-        cacheHitCount: fromCache ? 1 : 0,
-      );
+      _currentCount++;
     }
   }
 }
 
-// Data Classes and Enums
-
-class OptimizedQueryResult<T> {
-  final List<T> items;
+/// Paginated query result
+class PaginatedQueryResult {
+  final List<QueryDocumentSnapshot> documents;
   final bool hasMore;
   final DocumentSnapshot? lastDocument;
-  final bool fromCache;
-  final Duration queryTime;
 
-  const OptimizedQueryResult({
-    required this.items,
+  const PaginatedQueryResult({
+    required this.documents,
     required this.hasMore,
     this.lastDocument,
-    required this.fromCache,
-    required this.queryTime,
   });
 }
 
-class QueryFilter {
-  final String field;
-  final FilterOperator operator;
-  final dynamic value;
-
-  const QueryFilter({
-    required this.field,
-    required this.operator,
-    required this.value,
-  });
+/// Batch operation interface
+abstract class BatchOperation {
+  Future<void> execute();
+  void addToBatch(WriteBatch batch);
 }
 
-class QueryOrder {
-  final String field;
-  final bool descending;
-
-  const QueryOrder({
-    required this.field,
-    this.descending = false,
-  });
-}
-
-class BatchOperation {
-  final BatchOperationType type;
+/// Set batch operation
+class SetBatchOperation implements BatchOperation {
   final DocumentReference reference;
-  final Map<String, dynamic>? data;
+  final Map<String, dynamic> data;
+  final SetOptions? options;
 
-  const BatchOperation({
-    required this.type,
-    required this.reference,
-    this.data,
-  });
-}
+  const SetBatchOperation(this.reference, this.data, {this.options});
 
-class QueryPerformanceMetrics {
-  final String queryKey;
-  final int executionCount;
-  final Duration totalTime;
-  final Duration averageTime;
-  final DateTime lastExecuted;
-  final int lastResultCount;
-  final int cacheHitCount;
+  @override
+  Future<void> execute() => reference.set(data, options);
 
-  const QueryPerformanceMetrics({
-    required this.queryKey,
-    required this.executionCount,
-    required this.totalTime,
-    required this.averageTime,
-    required this.lastExecuted,
-    required this.lastResultCount,
-    required this.cacheHitCount,
-  });
-
-  QueryPerformanceMetrics copyWith({
-    int? executionCount,
-    Duration? totalTime,
-    DateTime? lastExecuted,
-    int? lastResultCount,
-    int? cacheHitCount,
-  }) {
-    final newExecutionCount = executionCount ?? this.executionCount;
-    final newTotalTime = totalTime ?? this.totalTime;
-    
-    return QueryPerformanceMetrics(
-      queryKey: queryKey,
-      executionCount: newExecutionCount,
-      totalTime: newTotalTime,
-      averageTime: Duration(
-        microseconds: newTotalTime.inMicroseconds ~/ newExecutionCount,
-      ),
-      lastExecuted: lastExecuted ?? this.lastExecuted,
-      lastResultCount: lastResultCount ?? this.lastResultCount,
-      cacheHitCount: cacheHitCount ?? this.cacheHitCount,
-    );
+  @override
+  void addToBatch(WriteBatch batch) {
+    if (options != null) {
+      batch.set(reference, data, options!);
+    } else {
+      batch.set(reference, data);
+    }
   }
 }
 
-enum FilterOperator {
-  isEqualTo,
-  isNotEqualTo,
-  isLessThan,
-  isLessThanOrEqualTo,
-  isGreaterThan,
-  isGreaterThanOrEqualTo,
-  arrayContains,
-  arrayContainsAny,
-  whereIn,
-  whereNotIn,
-  isNull,
-  isNotNull,
+/// Update batch operation
+class UpdateBatchOperation implements BatchOperation {
+  final DocumentReference reference;
+  final Map<String, dynamic> data;
+
+  const UpdateBatchOperation(this.reference, this.data);
+
+  @override
+  Future<void> execute() => reference.update(data);
+
+  @override
+  void addToBatch(WriteBatch batch) {
+    batch.update(reference, data);
+  }
 }
 
-enum BatchOperationType {
-  create,
-  update,
-  delete,
-}
+/// Delete batch operation
+class DeleteBatchOperation implements BatchOperation {
+  final DocumentReference reference;
 
+  const DeleteBatchOperation(this.reference);
+
+  @override
+  Future<void> execute() => reference.delete();
+
+  @override
+  void addToBatch(WriteBatch batch) {
+    batch.delete(reference);
+  }
+}

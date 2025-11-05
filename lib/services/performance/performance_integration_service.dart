@@ -15,7 +15,7 @@ class PerformanceIntegrationService {
   PerformanceIntegrationService._internal();
 
   static bool _isInitialized = false;
-  static final Map<String, dynamic> _integrationMetrics = {};
+  static final Map<String, dynamic> _integrationMetrics = <String, dynamic>{};
 
   /// Initialize all performance services
   static Future<void> initialize() async {
@@ -28,8 +28,8 @@ class PerformanceIntegrationService {
       await Future.wait([
         MemoryManagementService.initialize(),
         NetworkOptimizationService.initialize(),
-        WidgetOptimizationService.initialize(),
-        PerformanceOptimizationService.initialize(),
+        WidgetOptimizationService.instance.initialize(),
+        PerformanceOptimizationService().initialize(),
       ]);
 
       stopwatch.stop();

@@ -1,434 +1,454 @@
-// Widget Optimization Service - UI performance optimization and rebuild management
-// Comprehensive widget performance optimization for TALOWA platform
-
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 
-/// Service for optimizing widget performance and managing rebuilds
+/// Advanced widget optimization service for Flutter performance at scale
 class WidgetOptimizationService {
   static WidgetOptimizationService? _instance;
-  static WidgetOptimizationService get instance => _instance ??= WidgetOptimizationService._internal();
-  
-  WidgetOptimizationService._internal();
-  
-  // Performance tracking
+  static WidgetOptimizationService get instance => _instance ??= WidgetOptimizationService._();
+
+  WidgetOptimizationService._();
+
+
+
+  // Widget performance tracking
   final Map<String, WidgetPerformanceMetrics> _widgetMetrics = {};
-  final Queue<RebuildEvent> _rebuildHistory = Queue<RebuildEvent>();
-  final Set<String> _optimizedWidgets = {};
+  final Map<String, List<RebuildEvent>> _rebuildHistory = {};
+  final Set<String> _slowWidgets = {};
   
-  // Frame monitoring
-  Timer? _frameMonitoringTimer;
-  int _droppedFrames = 0;
-  int _totalFrames = 0;
-  double _averageFrameTime = 0.0;
+  // Memory tracking
+  final Map<String, int> _widgetInstanceCounts = {};
+  final Map<String, DateTime> _widgetCreationTimes = {};
+  
+  // Optimization recommendations
+  final Map<String, List<OptimizationRecommendation>> _recommendations = {};
   
   // Configuration
-  static const Duration monitoringInterval = Duration(seconds: 5);
-  static const int maxRebuildHistorySize = 100;
-  static const double targetFrameTime = 16.67; // 60 FPS
-  static const int frameDropThreshold = 3;
+  static const Duration _slowBuildThreshold = Duration(milliseconds: 16);
+  static const int _maxRebuildHistory = 100;
+  static const int _excessiveRebuildThreshold = 10;
   
-  /// Initialize widget optimization service
-  static Future<void> initialize() async {
+  Timer? _metricsReportTimer;
+  Timer? _optimizationAnalysisTimer;
+
+  /// Initialize the widget optimization service
+  Future<void> initialize() async {
     try {
-      debugPrint('🎨 Initializing Widget Optimization Service...');
-      
-      final service = instance;
-      
-      // Start frame monitoring
-      service._startFrameMonitoring();
-      
-      // Setup rebuild tracking
-      service._setupRebuildTracking();
-      
-      // Initialize performance observers
-      service._initializePerformanceObservers();
-      
-      debugPrint('✅ Widget Optimization Service initialized');
-      
+      _startPerformanceMonitoring();
+      _startOptimizationAnalysis();
+      debugPrint('✅ WidgetOptimizationService initialized');
     } catch (e) {
-      debugPrint('❌ Failed to initialize widget optimization: $e');
+      debugPrint('❌ Failed to initialize WidgetOptimizationService: $e');
     }
   }
-  
-  /// Track widget rebuild
-  void trackRebuild(String widgetName, {
+
+  /// Track widget rebuild with performance metrics
+  void trackRebuild(
+    String widgetName, {
     String? reason,
     Duration? buildTime,
     Map<String, dynamic>? context,
   }) {
+    if (!kDebugMode) return;
+
+    final now = DateTime.now();
     final event = RebuildEvent(
-      widgetName: widgetName,
-      timestamp: DateTime.now(),
-      reason: reason,
+      timestamp: now,
+      reason: reason ?? 'unknown',
       buildTime: buildTime,
-      context: context,
+      context: context ?? {},
+    );
+
+    // Update rebuild history
+    _rebuildHistory[widgetName] ??= [];
+    _rebuildHistory[widgetName]!.add(event);
+    
+    // Keep history size manageable
+    if (_rebuildHistory[widgetName]!.length > _maxRebuildHistory) {
+      _rebuildHistory[widgetName]!.removeAt(0);
+    }
+
+    // Update widget metrics
+    _updateWidgetMetrics(widgetName, event);
+
+    // Check for performance issues
+    _analyzeWidgetPerformance(widgetName, event);
+  }
+
+  /// Track widget instance creation
+  void trackWidgetCreation(String widgetName) {
+    _widgetInstanceCounts[widgetName] = (_widgetInstanceCounts[widgetName] ?? 0) + 1;
+    _widgetCreationTimes[widgetName] = DateTime.now();
+  }
+
+  /// Track widget instance disposal
+  void trackWidgetDisposal(String widgetName) {
+    final count = _widgetInstanceCounts[widgetName] ?? 0;
+    if (count > 0) {
+      _widgetInstanceCounts[widgetName] = count - 1;
+    }
+  }
+
+  /// Update widget performance metrics
+  void _updateWidgetMetrics(String widgetName, RebuildEvent event) {
+    _widgetMetrics[widgetName] ??= WidgetPerformanceMetrics(widgetName: widgetName);
+    final metrics = _widgetMetrics[widgetName]!;
+
+    metrics.totalRebuilds++;
+    metrics.lastRebuildTime = event.timestamp;
+
+    if (event.buildTime != null) {
+      metrics.buildTimes.add(event.buildTime!.inMicroseconds / 1000.0);
+      
+      // Keep only recent build times
+      if (metrics.buildTimes.length > 50) {
+        metrics.buildTimes.removeAt(0);
+      }
+
+      // Update average build time
+      metrics.averageBuildTime = metrics.buildTimes.reduce((a, b) => a + b) / metrics.buildTimes.length;
+      
+      // Track slow builds
+      if (event.buildTime! > _slowBuildThreshold) {
+        metrics.slowBuilds++;
+        _slowWidgets.add(widgetName);
+      }
+    }
+
+    // Track rebuild reasons
+    metrics.rebuildReasons[event.reason] = (metrics.rebuildReasons[event.reason] ?? 0) + 1;
+  }
+
+  /// Analyze widget performance for issues
+  void _analyzeWidgetPerformance(String widgetName, RebuildEvent event) {
+    final history = _rebuildHistory[widgetName] ?? [];
+    
+    // Check for excessive rebuilds in short time
+    final recentRebuilds = history.where((e) => 
+      DateTime.now().difference(e.timestamp) < const Duration(seconds: 1)
+    ).length;
+
+    if (recentRebuilds > _excessiveRebuildThreshold) {
+      _addOptimizationRecommendation(
+        widgetName,
+        OptimizationRecommendation(
+          type: OptimizationType.excessiveRebuilds,
+          severity: Severity.high,
+          description: 'Widget is rebuilding excessively ($recentRebuilds times in 1 second)',
+          suggestion: 'Consider using const constructors, memoization, or splitting the widget',
+        ),
+      );
+    }
+
+    // Check for slow builds
+    if (event.buildTime != null && event.buildTime! > _slowBuildThreshold) {
+      _addOptimizationRecommendation(
+        widgetName,
+        OptimizationRecommendation(
+          type: OptimizationType.slowBuild,
+          severity: Severity.medium,
+          description: 'Widget build time is slow (${event.buildTime!.inMilliseconds}ms)',
+          suggestion: 'Optimize widget build method, reduce complexity, or use lazy loading',
+        ),
+      );
+    }
+
+    // Check for memory leaks (too many instances)
+    final instanceCount = _widgetInstanceCounts[widgetName] ?? 0;
+    if (instanceCount > 100) {
+      _addOptimizationRecommendation(
+        widgetName,
+        OptimizationRecommendation(
+          type: OptimizationType.memoryLeak,
+          severity: Severity.critical,
+          description: 'Potential memory leak detected ($instanceCount instances)',
+          suggestion: 'Check for proper widget disposal and avoid creating unnecessary instances',
+        ),
+      );
+    }
+  }
+
+  /// Add optimization recommendation
+  void _addOptimizationRecommendation(String widgetName, OptimizationRecommendation recommendation) {
+    _recommendations[widgetName] ??= [];
+    
+    // Avoid duplicate recommendations
+    final existing = _recommendations[widgetName]!.where((r) => 
+      r.type == recommendation.type && r.description == recommendation.description
     );
     
-    // Add to history
-    _rebuildHistory.addLast(event);
-    if (_rebuildHistory.length > maxRebuildHistorySize) {
-      _rebuildHistory.removeFirst();
-    }
-    
-    // Update metrics
-    _updateWidgetMetrics(widgetName, event);
-    
-    // Check for excessive rebuilds
-    _checkExcessiveRebuilds(widgetName);
-    
-    if (kDebugMode) {
-      debugPrint('🔄 Widget rebuild: $widgetName${reason != null ? ' ($reason)' : ''}');
+    if (existing.isEmpty) {
+      _recommendations[widgetName]!.add(recommendation);
+      
+      if (recommendation.severity == Severity.critical) {
+        debugPrint('🚨 CRITICAL: ${recommendation.description} in $widgetName');
+      } else if (recommendation.severity == Severity.high) {
+        debugPrint('⚠️ HIGH: ${recommendation.description} in $widgetName');
+      }
     }
   }
-  
-  /// Mark widget as optimized
-  void markWidgetOptimized(String widgetName, List<String> optimizations) {
-    _optimizedWidgets.add(widgetName);
-    
-    debugPrint('✅ Widget optimized: $widgetName');
-    debugPrint('   Optimizations: ${optimizations.join(', ')}');
+
+  /// Start performance monitoring
+  void _startPerformanceMonitoring() {
+    _metricsReportTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      _reportPerformanceMetrics();
+    });
   }
-  
-  /// Get widget performance metrics
-  WidgetPerformanceMetrics? getWidgetMetrics(String widgetName) {
-    return _widgetMetrics[widgetName];
+
+  /// Start optimization analysis
+  void _startOptimizationAnalysis() {
+    _optimizationAnalysisTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      _performOptimizationAnalysis();
+    });
   }
-  
-  /// Get all widget metrics
-  Map<String, WidgetPerformanceMetrics> getAllWidgetMetrics() {
-    return Map.unmodifiable(_widgetMetrics);
+
+  /// Report performance metrics
+  void _reportPerformanceMetrics() {
+    if (_widgetMetrics.isEmpty) return;
+
+    final slowWidgets = _widgetMetrics.values.where((m) => m.slowBuilds > 0).length;
+    final totalRebuilds = _widgetMetrics.values.fold(0, (sum, m) => sum + m.totalRebuilds);
+    final averageBuildTime = _widgetMetrics.values
+        .where((m) => m.averageBuildTime > 0)
+        .fold(0.0, (sum, m) => sum + m.averageBuildTime) / 
+        _widgetMetrics.values.where((m) => m.averageBuildTime > 0).length;
+
+    debugPrint('📊 Widget Performance Report:');
+    debugPrint('   Total widgets tracked: ${_widgetMetrics.length}');
+    debugPrint('   Slow widgets: $slowWidgets');
+    debugPrint('   Total rebuilds: $totalRebuilds');
+    debugPrint('   Average build time: ${averageBuildTime.toStringAsFixed(2)}ms');
   }
-  
-  /// Get rebuild history
-  List<RebuildEvent> getRebuildHistory({String? widgetName, int? limit}) {
-    var history = _rebuildHistory.toList();
+
+  /// Perform optimization analysis
+  void _performOptimizationAnalysis() {
+    // Analyze widget patterns
+    _analyzeWidgetPatterns();
     
-    if (widgetName != null) {
-      history = history.where((event) => event.widgetName == widgetName).toList();
-    }
+    // Clean up old data
+    _cleanupOldData();
     
-    if (limit != null && limit > 0) {
-      history = history.take(limit).toList();
-    }
-    
-    return history.reversed.toList(); // Most recent first
+    // Generate optimization report
+    _generateOptimizationReport();
   }
-  
-  /// Get performance statistics
-  Map<String, dynamic> getPerformanceStatistics() {
-    final excessiveRebuildWidgets = _widgetMetrics.entries
-        .where((entry) => entry.value.isExcessiveRebuilding)
-        .map((entry) => entry.key)
-        .toList();
-    
-    final slowBuildWidgets = _widgetMetrics.entries
-        .where((entry) => entry.value.averageBuildTime > 10.0)
-        .map((entry) => entry.key)
-        .toList();
-    
-    return {
-      'totalTrackedWidgets': _widgetMetrics.length,
-      'optimizedWidgets': _optimizedWidgets.length,
-      'totalRebuilds': _rebuildHistory.length,
-      'droppedFrames': _droppedFrames,
-      'totalFrames': _totalFrames,
-      'averageFrameTime': _averageFrameTime,
-      'frameDropRate': _totalFrames > 0 ? (_droppedFrames / _totalFrames) * 100 : 0.0,
-      'excessiveRebuildWidgets': excessiveRebuildWidgets,
-      'slowBuildWidgets': slowBuildWidgets,
-      'performanceScore': _calculatePerformanceScore(),
-    };
-  }
-  
-  /// Generate optimization recommendations
-  List<OptimizationRecommendation> generateRecommendations() {
-    final recommendations = <OptimizationRecommendation>[];
-    
-    // Check for excessive rebuilds
+
+  /// Analyze widget patterns for optimization opportunities
+  void _analyzeWidgetPatterns() {
     for (final entry in _widgetMetrics.entries) {
       final widgetName = entry.key;
       final metrics = entry.value;
       
-      if (metrics.isExcessiveRebuilding && !_optimizedWidgets.contains(widgetName)) {
-        recommendations.add(OptimizationRecommendation(
-          widgetName: widgetName,
-          type: OptimizationType.excessiveRebuilds,
-          priority: RecommendationPriority.high,
-          description: 'Widget rebuilds ${metrics.rebuildCount} times (${metrics.rebuildsPerMinute.toStringAsFixed(1)}/min)',
-          suggestions: [
-            'Use const constructors where possible',
-            'Implement shouldRebuild logic',
-            'Split widget into smaller components',
-            'Use ValueListenableBuilder or similar for targeted updates',
-            'Check for unnecessary setState calls',
-          ],
-          metrics: metrics,
-        ));
+      // Check for widgets that rebuild too frequently
+      if (metrics.totalRebuilds > 100) {
+        final topReasons = metrics.rebuildReasons.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        
+        if (topReasons.isNotEmpty) {
+          _addOptimizationRecommendation(
+            widgetName,
+            OptimizationRecommendation(
+              type: OptimizationType.frequentRebuilds,
+              severity: Severity.medium,
+              description: 'Widget rebuilds frequently (${metrics.totalRebuilds} times), mainly due to: ${topReasons.first.key}',
+              suggestion: 'Consider optimizing the cause of rebuilds or using widget memoization',
+            ),
+          );
+        }
       }
       
-      if (metrics.averageBuildTime > 10.0 && !_optimizedWidgets.contains(widgetName)) {
-        recommendations.add(OptimizationRecommendation(
-          widgetName: widgetName,
-          type: OptimizationType.slowBuild,
-          priority: RecommendationPriority.medium,
-          description: 'Average build time: ${metrics.averageBuildTime.toStringAsFixed(2)}ms',
-          suggestions: [
-            'Optimize expensive operations in build method',
-            'Move heavy computations to initState or didChangeDependencies',
-            'Use FutureBuilder or StreamBuilder for async operations',
-            'Consider lazy loading for complex widgets',
-            'Profile widget tree depth and complexity',
-          ],
-          metrics: metrics,
-        ));
-      }
-    }
-    
-    // Check frame performance
-    if (_droppedFrames > frameDropThreshold) {
-      recommendations.add(OptimizationRecommendation(
-        widgetName: 'Global',
-        type: OptimizationType.frameDrops,
-        priority: RecommendationPriority.critical,
-        description: 'Dropped ${_droppedFrames} frames (${((_droppedFrames / _totalFrames) * 100).toStringAsFixed(1)}%)',
-        suggestions: [
-          'Reduce widget tree complexity',
-          'Optimize image loading and caching',
-          'Use RepaintBoundary for expensive widgets',
-          'Implement proper list virtualization',
-          'Profile and optimize animation performance',
-        ],
-      ));
-    }
-    
-    return recommendations..sort((a, b) => b.priority.index.compareTo(a.priority.index));
-  }
-  
-  /// Start frame monitoring
-  void _startFrameMonitoring() {
-    if (kDebugMode) {
-      SchedulerBinding.instance.addTimingsCallback(_onFrameTimings);
-    }
-    
-    _frameMonitoringTimer = Timer.periodic(monitoringInterval, (timer) {
-      _analyzeFramePerformance();
-    });
-    
-    debugPrint('📊 Frame monitoring started');
-  }
-  
-  /// Handle frame timings
-  void _onFrameTimings(List<FrameTiming> timings) {
-    for (final timing in timings) {
-      _totalFrames++;
-      
-      final frameTime = timing.totalSpan.inMicroseconds / 1000.0; // Convert to milliseconds
-      _averageFrameTime = ((_averageFrameTime * (_totalFrames - 1)) + frameTime) / _totalFrames;
-      
-      if (frameTime > targetFrameTime) {
-        _droppedFrames++;
+      // Check for consistently slow widgets
+      if (metrics.averageBuildTime > 10.0) { // 10ms average
+        _addOptimizationRecommendation(
+          widgetName,
+          OptimizationRecommendation(
+            type: OptimizationType.consistentlySlow,
+            severity: Severity.high,
+            description: 'Widget has consistently slow build times (${metrics.averageBuildTime.toStringAsFixed(2)}ms average)',
+            suggestion: 'Profile the widget build method and optimize expensive operations',
+          ),
+        );
       }
     }
   }
-  
-  /// Analyze frame performance
-  void _analyzeFramePerformance() {
-    if (_totalFrames == 0) return;
+
+  /// Clean up old performance data
+  void _cleanupOldData() {
+    final cutoffTime = DateTime.now().subtract(const Duration(hours: 1));
     
-    final frameDropRate = (_droppedFrames / _totalFrames) * 100;
-    
-    if (frameDropRate > 5.0) {
-      debugPrint('⚠️ High frame drop rate: ${frameDropRate.toStringAsFixed(1)}%');
+    // Clean up old rebuild history
+    for (final entry in _rebuildHistory.entries) {
+      entry.value.removeWhere((event) => event.timestamp.isBefore(cutoffTime));
     }
     
-    if (_averageFrameTime > targetFrameTime * 1.5) {
-      debugPrint('⚠️ High average frame time: ${_averageFrameTime.toStringAsFixed(2)}ms');
-    }
-  }
-  
-  /// Setup rebuild tracking
-  void _setupRebuildTracking() {
-    // This would typically integrate with Flutter's widget inspector
-    // For now, we rely on manual tracking calls
-    debugPrint('🔍 Rebuild tracking setup completed');
-  }
-  
-  /// Initialize performance observers
-  void _initializePerformanceObservers() {
-    if (kDebugMode) {
-      // Setup additional performance observers
-      WidgetsBinding.instance.addObserver(_WidgetLifecycleObserver(this));
-    }
-  }
-  
-  /// Update widget metrics
-  void _updateWidgetMetrics(String widgetName, RebuildEvent event) {
-    final metrics = _widgetMetrics.putIfAbsent(
-      widgetName,
-      () => WidgetPerformanceMetrics(widgetName: widgetName),
-    );
+    // Remove empty entries
+    _rebuildHistory.removeWhere((key, value) => value.isEmpty);
     
-    metrics.recordRebuild(event);
-  }
-  
-  /// Check for excessive rebuilds
-  void _checkExcessiveRebuilds(String widgetName) {
-    final metrics = _widgetMetrics[widgetName];
-    if (metrics != null && metrics.isExcessiveRebuilding) {
-      debugPrint('⚠️ Excessive rebuilds detected for: $widgetName (${metrics.rebuildCount} rebuilds)');
+    // Clean up old recommendations (keep only recent ones)
+    final recommendationCutoff = DateTime.now().subtract(const Duration(minutes: 30));
+    for (final entry in _recommendations.entries) {
+      entry.value.removeWhere((rec) => rec.timestamp.isBefore(recommendationCutoff));
     }
+    _recommendations.removeWhere((key, value) => value.isEmpty);
   }
-  
-  /// Calculate overall performance score
-  double _calculatePerformanceScore() {
-    double score = 100.0;
-    
-    // Penalize frame drops
-    final frameDropRate = _totalFrames > 0 ? (_droppedFrames / _totalFrames) * 100 : 0.0;
-    score -= frameDropRate * 2; // 2 points per percent of dropped frames
-    
-    // Penalize excessive rebuilds
-    final excessiveRebuildCount = _widgetMetrics.values
-        .where((metrics) => metrics.isExcessiveRebuilding)
+
+  /// Generate optimization report
+  void _generateOptimizationReport() {
+    final criticalIssues = _recommendations.values
+        .expand((list) => list)
+        .where((rec) => rec.severity == Severity.critical)
         .length;
-    score -= excessiveRebuildCount * 5; // 5 points per widget with excessive rebuilds
     
-    // Penalize slow builds
-    final slowBuildCount = _widgetMetrics.values
-        .where((metrics) => metrics.averageBuildTime > 10.0)
+    final highIssues = _recommendations.values
+        .expand((list) => list)
+        .where((rec) => rec.severity == Severity.high)
         .length;
-    score -= slowBuildCount * 3; // 3 points per slow widget
-    
-    return score.clamp(0.0, 100.0);
+
+    if (criticalIssues > 0) {
+      debugPrint('🔍 Widget Optimization Report:');
+      debugPrint('   Critical issues: $criticalIssues');
+      debugPrint('   High priority issues: $highIssues');
+      debugPrint('   Widgets needing attention: ${_recommendations.length}');
+    }
   }
-  
-  /// Dispose widget optimization service
-  Future<void> dispose() async {
-    debugPrint('🧹 Disposing Widget Optimization Service...');
-    
-    _frameMonitoringTimer?.cancel();
+
+  /// Get performance statistics
+  Map<String, dynamic> getPerformanceStatistics() {
+    final totalRebuilds = _widgetMetrics.values
+        .fold(0, (sum, metrics) => sum + metrics.totalRebuilds);
+    final slowWidgets = _widgetMetrics.values
+        .where((m) => m.averageBuildTime > 16.0)
+        .length;
+
+    return {
+      'totalWidgets': _widgetMetrics.length,
+      'totalRebuilds': totalRebuilds,
+      'slowWidgets': slowWidgets,
+      'averageBuildTime': _calculateAverageBuildTime(),
+      'activeInstances': _widgetInstanceCounts.length,
+      'recommendations': _recommendations.length,
+      'criticalIssues': _recommendations.values
+          .expand((list) => list)
+          .where((rec) => rec.severity == Severity.critical)
+          .length,
+    };
+  }
+
+  /// Get optimization recommendations
+  List<OptimizationRecommendation> getRecommendations() {
+    return _recommendations.values.expand((list) => list).toList();
+  }
+
+  /// Get recommendations for specific widget
+  List<OptimizationRecommendation> getWidgetRecommendations(String widgetName) {
+    return _recommendations[widgetName] ?? [];
+  }
+
+  /// Get widget metrics
+  WidgetPerformanceMetrics? getWidgetMetrics(String widgetName) {
+    return _widgetMetrics[widgetName];
+  }
+
+  /// Get all widget metrics
+  Map<String, WidgetPerformanceMetrics> getAllMetrics() {
+    return Map.from(_widgetMetrics);
+  }
+
+  /// Clear all performance data
+  void clearAll() {
     _widgetMetrics.clear();
     _rebuildHistory.clear();
-    _optimizedWidgets.clear();
+    _slowWidgets.clear();
+    _widgetInstanceCounts.clear();
+    _widgetCreationTimes.clear();
+    _recommendations.clear();
     
-    debugPrint('✅ Widget Optimization Service disposed');
+    debugPrint('🗑️ Cleared all widget optimization data');
+  }
+
+  /// Dispose resources
+  Future<void> dispose() async {
+    _metricsReportTimer?.cancel();
+    _optimizationAnalysisTimer?.cancel();
+    clearAll();
+    
+    debugPrint('🔄 WidgetOptimizationService disposed');
+  }
+
+  /// Calculate average build time
+  double _calculateAverageBuildTime() {
+    final allTimes = _widgetMetrics.values
+        .where((m) => m.averageBuildTime > 0)
+        .map((m) => m.averageBuildTime)
+        .toList();
+    
+    if (allTimes.isEmpty) return 0.0;
+    return allTimes.reduce((a, b) => a + b) / allTimes.length;
   }
 }
 
 /// Widget performance metrics
 class WidgetPerformanceMetrics {
   final String widgetName;
-  final DateTime createdAt;
-  
-  int rebuildCount = 0;
-  double totalBuildTime = 0.0;
+  int totalRebuilds = 0;
+  int slowBuilds = 0;
   DateTime? lastRebuildTime;
-  final List<String> rebuildReasons = [];
-  
-  WidgetPerformanceMetrics({required this.widgetName}) : createdAt = DateTime.now();
-  
-  /// Record a rebuild event
-  void recordRebuild(RebuildEvent event) {
-    rebuildCount++;
-    lastRebuildTime = event.timestamp;
-    
-    if (event.buildTime != null) {
-      totalBuildTime += event.buildTime!.inMicroseconds / 1000.0; // Convert to milliseconds
-    }
-    
-    if (event.reason != null && !rebuildReasons.contains(event.reason!)) {
-      rebuildReasons.add(event.reason!);
-    }
-  }
-  
-  /// Average build time in milliseconds
-  double get averageBuildTime {
-    return rebuildCount > 0 ? totalBuildTime / rebuildCount : 0.0;
-  }
-  
-  /// Rebuilds per minute
-  double get rebuildsPerMinute {
-    final duration = DateTime.now().difference(createdAt);
-    final minutes = duration.inMilliseconds / 60000.0;
-    return minutes > 0 ? rebuildCount / minutes : 0.0;
-  }
-  
-  /// Check if widget has excessive rebuilds
-  bool get isExcessiveRebuilding {
-    return rebuildsPerMinute > 10.0 || rebuildCount > 50;
-  }
-  
+  double averageBuildTime = 0.0;
+  final List<double> buildTimes = [];
+  final Map<String, int> rebuildReasons = {};
+
+  WidgetPerformanceMetrics({required this.widgetName});
+
   Map<String, dynamic> toMap() {
     return {
       'widgetName': widgetName,
-      'rebuildCount': rebuildCount,
-      'averageBuildTime': averageBuildTime,
-      'rebuildsPerMinute': rebuildsPerMinute,
+      'totalRebuilds': totalRebuilds,
+      'slowBuilds': slowBuilds,
       'lastRebuildTime': lastRebuildTime?.toIso8601String(),
+      'averageBuildTime': averageBuildTime,
       'rebuildReasons': rebuildReasons,
-      'isExcessiveRebuilding': isExcessiveRebuilding,
     };
   }
 }
 
 /// Rebuild event
 class RebuildEvent {
-  final String widgetName;
   final DateTime timestamp;
-  final String? reason;
+  final String reason;
   final Duration? buildTime;
   final Map<String, dynamic>? context;
-  
-  RebuildEvent({
-    required this.widgetName,
+
+  const RebuildEvent({
     required this.timestamp,
-    this.reason,
+    required this.reason,
     this.buildTime,
     this.context,
   });
-  
-  Map<String, dynamic> toMap() {
-    return {
-      'widgetName': widgetName,
-      'timestamp': timestamp.toIso8601String(),
-      'reason': reason,
-      'buildTimeMs': buildTime?.inMicroseconds != null ? buildTime!.inMicroseconds / 1000.0 : null,
-      'context': context,
-    };
-  }
 }
 
 /// Optimization recommendation
 class OptimizationRecommendation {
-  final String widgetName;
   final OptimizationType type;
-  final RecommendationPriority priority;
+  final Severity severity;
   final String description;
-  final List<String> suggestions;
-  final WidgetPerformanceMetrics? metrics;
-  
+  final String suggestion;
+  final DateTime timestamp;
+
   OptimizationRecommendation({
-    required this.widgetName,
     required this.type,
-    required this.priority,
+    required this.severity,
     required this.description,
-    required this.suggestions,
-    this.metrics,
-  });
-  
+    required this.suggestion,
+  }) : timestamp = DateTime.now();
+
   Map<String, dynamic> toMap() {
     return {
-      'widgetName': widgetName,
-      'type': type.toString(),
-      'priority': priority.toString(),
+      'type': type.name,
+      'severity': severity.name,
       'description': description,
-      'suggestions': suggestions,
-      'metrics': metrics?.toMap(),
+      'suggestion': suggestion,
+      'timestamp': timestamp.toIso8601String(),
     };
   }
 }
@@ -437,33 +457,15 @@ class OptimizationRecommendation {
 enum OptimizationType {
   excessiveRebuilds,
   slowBuild,
-  frameDrops,
   memoryLeak,
-  inefficientLayout,
+  frequentRebuilds,
+  consistentlySlow,
 }
 
-/// Recommendation priorities
-enum RecommendationPriority {
+/// Severity levels
+enum Severity {
   low,
   medium,
   high,
   critical,
-}
-
-/// Widget lifecycle observer
-class _WidgetLifecycleObserver extends WidgetsBindingObserver {
-  final WidgetOptimizationService _service;
-  
-  _WidgetLifecycleObserver(this._service);
-  
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    
-    if (state == AppLifecycleState.paused) {
-      // App is paused, good time to analyze performance
-      final stats = _service.getPerformanceStatistics();
-      debugPrint('📊 Performance stats on pause: $stats');
-    }
-  }
 }

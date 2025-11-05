@@ -89,7 +89,7 @@ void main() async {
   // 🚀 INITIALIZE EXISTING PERFORMANCE SERVICES
   await MemoryManagementService.initialize();
   await NetworkOptimizationService.initialize();
-  await WidgetOptimizationService.initialize();
+  await WidgetOptimizationService.instance.initialize();
 
   // 🔗 INITIALIZE PERFORMANCE INTEGRATION
   await PerformanceIntegrationService.initialize();
@@ -100,8 +100,8 @@ void main() async {
   
   // Initialize additional performance services
   await CachingService.initialize();
-  await DatabaseOptimizationService.initialize();
-  await PerformanceOptimizationService.initialize();
+  await DatabaseOptimizationService.instance.initialize();
+  await PerformanceOptimizationService().initialize();
   
   // Note: Non-critical services (Bootstrap, Notifications, Universal Links, etc.)
   // are now initialized in the background after app startup
