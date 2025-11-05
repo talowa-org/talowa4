@@ -11,7 +11,7 @@ import '../../services/navigation/navigation_safety_service.dart';
 import '../../services/performance/performance_analytics_service.dart';
 import '../../providers/user_state_provider.dart';
 import '../home/home_screen.dart';
-import '../feed/feed_screen.dart';
+import '../feed/modern_feed_screen.dart';
 import '../messages/messages_screen.dart';
 import '../network/network_screen.dart';
 import '../more/more_screen.dart';
@@ -120,7 +120,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // 5 Main Tabs - Mobile Optimized
   final List<Widget> _screens = [
     const HomeScreen(),
-    const FeedScreen(), // Full-featured feed screen with all advanced features
+    const ModernFeedScreen(), // Modern social feed with latest design
     const MessagesScreen(),
     const NetworkScreen(),
     const MoreScreen(),

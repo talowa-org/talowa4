@@ -60,10 +60,8 @@ class FeedService {
       );
 
       // Check if content should be auto-hidden or rejected
-      bool isHidden = false;
       if (moderationResult.requiresHumanReview || moderationResult.policyViolations.isNotEmpty) {
         // Auto-hide content that requires review or has violations
-        isHidden = true;
         debugPrint('Post auto-hidden due to moderation concerns: ${moderationResult.policyViolations.map((v) => v.category).join(", ")}');
       }
 
@@ -292,7 +290,6 @@ class FeedService {
 
       List<PostModel> posts = [];
       for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
         final post = PostModel.fromFirestore(doc);
         
         // Check if current user liked this post

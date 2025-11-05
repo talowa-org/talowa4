@@ -153,7 +153,7 @@ class _EnhancedModerationDashboardScreenState extends State<EnhancedModerationDa
       body: _isLoading
           ? const LoadingWidget()
           : _error != null
-              ? ErrorDisplayWidget(error: _error!, onRetry: _loadModerationData)
+              ? CustomErrorWidget(message: _error!, onRetry: _loadModerationData)
               : TabBarView(
                   controller: _tabController,
                   children: [

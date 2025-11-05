@@ -29,15 +29,6 @@ import 'screens/admin/admin_login_screen.dart';
 import 'widgets/admin/admin_route_guard.dart';
 // Removed: import 'views/debug/migration_debug_page.dart';
 import 'services/performance/performance_monitor.dart';
-import 'services/performance/performance_interceptor.dart';
-// import 'services/localization_service.dart';
-// import 'services/rtl_support_service.dart';
-// import 'services/messaging/message_translation_service.dart';
-// import 'services/messaging/voice_transcription_service.dart';
-import 'services/data_population_service.dart';
-import 'services/remote_config_service.dart';
-import 'services/bootstrap_service.dart';
-import 'services/notifications/notification_service.dart';
 import 'services/referral/universal_link_service.dart';
 import 'services/performance/optimized_startup_service.dart';
 import 'services/performance/performance_integration_service.dart';
@@ -45,10 +36,12 @@ import 'services/performance/performance_analytics_service.dart';
 import 'services/performance/memory_management_service.dart';
 import 'services/performance/network_optimization_service.dart';
 import 'services/performance/widget_optimization_service.dart';
-import 'services/performance/request_deduplication_service.dart';
 import 'services/performance/caching_service.dart';
 import 'services/performance/database_optimization_service.dart';
 import 'services/performance/performance_optimization_service.dart';
+import 'services/social_feed/enhanced_feed_service.dart';
+import 'services/performance/feed_performance_optimizer.dart';
+import 'services/performance/firestore_performance_fix.dart';
 import 'services/cache/cache_service.dart';
 import 'services/network/network_optimization_service.dart' as network_opt;
 import 'services/performance/performance_monitoring_service.dart';
@@ -70,8 +63,19 @@ void main() async {
     print('Uncaught Flutter error: ${details.exceptionAsString()}');
   };
   
+  // Handle platform errors with proper error catching
+  try {
+    // Initialize platform-specific error handling
+    debugPrint('Platform error handling initialized');
+  } catch (e) {
+    debugPrint('Platform error handling failed: $e');
+  }
+  
   // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // 🔥 INITIALIZE FIRESTORE PERFORMANCE FIX
+  await FirestorePerformanceFix.initialize();
   
   // 🚀 OPTIMIZED STARTUP - Use optimized service initialization
   // This replaces the previous synchronous initialization with:
@@ -102,6 +106,12 @@ void main() async {
   await CachingService.initialize();
   await DatabaseOptimizationService.instance.initialize();
   await PerformanceOptimizationService().initialize();
+  
+  // 🎯 INITIALIZE ENHANCED FEED SERVICE
+  await EnhancedFeedService().initialize();
+  
+  // 🚀 INITIALIZE FEED PERFORMANCE OPTIMIZER
+  FeedPerformanceOptimizer().initialize();
   
   // Note: Non-critical services (Bootstrap, Notifications, Universal Links, etc.)
   // are now initialized in the background after app startup

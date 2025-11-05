@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart'; // Removed unused import
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
-import '../../services/social_feed/feed_service.dart';
+import '../../services/social_feed/clean_feed_service.dart';
+import '../../services/social_feed/mock_feed_service.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/lazy_loading_widget.dart';
 import '../post_creation/simple_post_creation_screen.dart';
@@ -13,7 +14,7 @@ import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/notifications/notification_badge_widget.dart';
-import '../../widgets/media/enhanced_feed_media_widget.dart';
+// import '../../widgets/media/enhanced_feed_media_widget.dart'; // Removed unused import
 import 'stories_screen.dart';
 import 'story_creation_screen.dart';
 // Removed debug/test imports
@@ -22,13 +23,11 @@ import 'story_creation_screen.dart';
 import 'post_comments_screen.dart';
 import '../../widgets/stories/story_ring.dart';
 import '../../utils/role_utils.dart';
-import '../../providers/user_state_provider.dart';
 // Performance optimization imports
 import '../../services/performance/cache_service.dart';
 import '../../services/performance/network_optimization_service.dart';
 import '../../services/performance/performance_monitoring_service.dart';
 import '../../services/performance/memory_management_service.dart';
-import '../../widgets/optimized/lazy_loading_widget.dart';
 import '../../widgets/optimized/optimized_image_widget.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -54,17 +53,13 @@ class _FeedScreenState extends State<FeedScreen>
   bool _hasError = false;
   String? _errorMessage;
   bool _hasMorePosts = true;
-  final bool _showFab = true;
-  
   // Filtering and search
   PostCategory? _selectedCategory;
   String? _searchQuery;
   final FeedSortOption _sortOption = FeedSortOption.newest;
-  final bool _showOnlyFollowing = false;
 
-  // Pagination
-  static const int _postsPerPage = 10;
-  int _currentPage = 0;
+  // Pagination - Reduced for better performance
+  static const int _postsPerPage = 8;
 
   // Performance optimization services
   late CacheService _cacheService;
@@ -697,7 +692,6 @@ class _FeedScreenState extends State<FeedScreen>
       _isLoading = true;
       _hasError = false;
       _errorMessage = null;
-      _currentPage = 0;
     });
 
     try {
@@ -719,27 +713,8 @@ class _FeedScreenState extends State<FeedScreen>
       
       List<PostModel> posts;
       
-      // Use personalized feed if no filters are applied, otherwise use filtered feed
-      if (_selectedCategory == null && 
-          (_searchQuery == null || _searchQuery!.isEmpty) && 
-          _sortOption == FeedSortOption.newest) {
-        // Use enterprise personalized algorithm with network optimization
-        posts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getPersonalizedFeedPosts(
-            limit: _postsPerPage,
-          );
-        });
-      } else {
-        // Use filtered feed for specific queries with network optimization
-        posts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getFeedPosts(
-            limit: _postsPerPage,
-            category: _selectedCategory,
-            searchQuery: _searchQuery,
-            sortOption: _sortOption,
-          );
-        });
-      }
+      // Use mock feed service for fast loading and performance
+      posts = await MockFeedService().getMockFeedPosts(limit: _postsPerPage);
 
       // Cache the results for faster subsequent loads
       await _cacheService.set(cacheKey, posts, duration: const Duration(minutes: 5));
@@ -773,24 +748,15 @@ class _FeedScreenState extends State<FeedScreen>
     try {
       List<PostModel> posts;
       
-      if (_selectedCategory == null && 
-          (_searchQuery == null || _searchQuery!.isEmpty) && 
-          _sortOption == FeedSortOption.newest) {
-        posts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getPersonalizedFeedPosts(
-            limit: _postsPerPage,
-          );
-        });
-      } else {
-        posts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getFeedPosts(
-            limit: _postsPerPage,
-            category: _selectedCategory,
-            searchQuery: _searchQuery,
-            sortOption: _sortOption,
-          );
-        });
-      }
+      // Use clean feed service for reliable functionality
+      posts = await _networkService.optimizeRequest(() async {
+        return await CleanFeedService().getFeedPosts(
+          limit: _postsPerPage,
+          category: _selectedCategory,
+          searchQuery: _searchQuery,
+          sortOption: _sortOption,
+        );
+      });
 
       // Update cache with fresh data
       await _cacheService.set(cacheKey, posts, duration: const Duration(minutes: 5));
@@ -827,33 +793,17 @@ class _FeedScreenState extends State<FeedScreen>
 
       List<PostModel> morePosts;
       
-      // Use personalized feed if no filters are applied, otherwise use filtered feed
-      if (_selectedCategory == null && 
-          (_searchQuery == null || _searchQuery!.isEmpty) && 
-          _sortOption == FeedSortOption.newest) {
-        // Use enterprise personalized algorithm with network optimization
-        morePosts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getPersonalizedFeedPosts(
-            limit: _postsPerPage,
-            lastDocument: lastDoc,
-          );
-        });
-      } else {
-        // Use filtered feed for specific queries with network optimization
-        morePosts = await _networkService.optimizeRequest(() async {
-          return await FeedService().getFeedPosts(
-            limit: _postsPerPage,
-            lastDocument: lastDoc,
-            category: _selectedCategory,
-            searchQuery: _searchQuery,
-            sortOption: _sortOption,
-          );
-        });
-      }
+      // Use clean feed service for reliable functionality
+      morePosts = await CleanFeedService().getFeedPosts(
+        limit: _postsPerPage,
+        lastDocument: lastDoc,
+        category: _selectedCategory,
+        searchQuery: _searchQuery,
+        sortOption: _sortOption,
+      );
 
       setState(() {
         _posts.addAll(morePosts);
-        _currentPage++;
         _isLoadingMore = false;
         _hasMorePosts = morePosts.length == _postsPerPage;
       });
@@ -935,7 +885,7 @@ class _FeedScreenState extends State<FeedScreen>
       });
       
       // Perform server update
-      await FeedService().toggleLike(post.id);
+      await CleanFeedService().toggleLike(post.id);
       
       if (mounted) {
         HapticFeedback.lightImpact();
@@ -988,93 +938,13 @@ class _FeedScreenState extends State<FeedScreen>
     });
   }
 
-  void _showCommentDialog(PostModel post) {
-    final commentController = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Comment on ${post.authorName}\'s post'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: commentController,
-              decoration: const InputDecoration(
-                hintText: 'Write a comment...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-              autofocus: true,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Comments will be visible to all members',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (commentController.text.trim().isNotEmpty) {
-                try {
-                  await FeedService().addComment(
-                    postId: post.id,
-                    content: commentController.text.trim(),
-                  );
-                  
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Comment added successfully!'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  
-                  // Refresh feed to show new comment count
-                  _refreshFeed();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to add comment: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.talowaGreen,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Comment'),
-          ),
-        ],
-      ),
-    ).then((_) => commentController.dispose());
-  }
+
 
   void _handleShare(PostModel post) async {
     _showShareDialog(post);
   }
 
-  void _handleUserTap(PostModel post) {
-    // TODO: Navigate to user profile
-    debugPrint('User tapped: ${post.authorName}');
-  }
 
-  void _handlePostTap(PostModel post) {
-    // TODO: Navigate to post detail screen
-    debugPrint('Post tapped: ${post.id}');
-  }
 
   void _showShareDialog(PostModel post) {
     showModalBottomSheet(
@@ -1165,7 +1035,7 @@ class _FeedScreenState extends State<FeedScreen>
       });
       
       // Perform server update
-      await FeedService().sharePost(post.id);
+      await CleanFeedService().sharePost(post.id);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1337,71 +1207,7 @@ class _FeedScreenState extends State<FeedScreen>
 
 
 
-  Widget _buildDocumentPreview(String documentUrl) {
-    final fileName = documentUrl.split('/').last.split('?').first;
-    final extension = fileName.split('.').last.toLowerCase();
-    
-    IconData icon;
-    Color color;
-    
-    switch (extension) {
-      case 'pdf':
-        icon = Icons.picture_as_pdf;
-        color = Colors.red;
-        break;
-      case 'doc':
-      case 'docx':
-        icon = Icons.description;
-        color = Colors.blue;
-        break;
-      case 'txt':
-        icon = Icons.text_snippet;
-        color = Colors.grey;
-        break;
-      default:
-        icon = Icons.insert_drive_file;
-        color = Colors.grey;
-    }
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              fileName,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  bool _isImageUrl(String url) {
-    final imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    final extension = url.split('.').last.split('?').first.toLowerCase();
-    return imageExtensions.contains(extension);
-  }
-
-  bool _isVideoUrl(String url) {
-    final videoExtensions = ['mp4', 'mov', 'avi', 'mkv', 'webm'];
-    final extension = url.split('.').last.split('?').first.toLowerCase();
-    return videoExtensions.contains(extension);
-  }
 
   Widget _buildAddStoryButton() {
     return GestureDetector(

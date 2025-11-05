@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/post_model.dart';
-import '../../services/social_feed/feed_service.dart';
+import '../../services/social_feed/clean_feed_service.dart';
 import '../../services/auth_service.dart';
 // removed: import '../../services/media/mock_media_upload_service.dart';
 import '../../services/media/comprehensive_media_service.dart';
@@ -249,12 +249,14 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
       }
 
       // Create the post with media URLs
-      await FeedService().createPost(
+      await CleanFeedService().createPost(
         title: _titleController.text.trim().isNotEmpty ? _titleController.text.trim() : null,
         content: _contentController.text.trim(),
         hashtags: _hashtags,
         category: _selectedCategory,
-        mediaUrls: [...uploadedImageUrls, ...uploadedVideoUrls, ...uploadedDocumentUrls],
+        imageUrls: uploadedImageUrls,
+        videoUrls: uploadedVideoUrls,
+        documentUrls: uploadedDocumentUrls,
       );
 
       if (mounted) {
