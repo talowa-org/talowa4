@@ -25,7 +25,6 @@ class _NetworkScreenState extends State<NetworkScreen> {
   bool _isLoading = true;
   String? _error;
   Map<String, dynamic>? _networkData;
-  bool _showAdvancedStats = false;
 
   @override
   void initState() {
@@ -155,24 +154,13 @@ class _NetworkScreenState extends State<NetworkScreen> {
       },
       child: Scaffold(
         appBar: TalowaAppBar(
-          title: userStateProvider.currentRole != null 
-              ? 'My Network - ${userStateProvider.currentRole}'
-              : 'My Network',
+          title: 'My Network',
           screenName: 'Network',
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _refreshNetwork,
               tooltip: 'Refresh Network',
-            ),
-            IconButton(
-              icon: Icon(_showAdvancedStats ? Icons.visibility_off : Icons.visibility),
-              onPressed: () {
-                setState(() {
-                  _showAdvancedStats = !_showAdvancedStats;
-                });
-              },
-              tooltip: _showAdvancedStats ? 'Hide Advanced Stats' : 'Show Advanced Stats',
             ),
             IconButton(
               icon: const Icon(Icons.person_add),

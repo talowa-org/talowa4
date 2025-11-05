@@ -324,8 +324,6 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
-                const SizedBox(height: 16),
                 _buildRecentReferralNotifications(),
                 const SizedBox(height: 16),
                 _buildReferralCodeCard(),
@@ -345,65 +343,7 @@ class _SimplifiedReferralDashboardState extends State<SimplifiedReferralDashboar
     );
   }
 
-  Widget _buildHeader() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.people,
-                color: Colors.green[700],
-                size: 32,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Simplified Referral System',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'One-step referrals with instant activation',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'ACTIVE',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildReferralCodeCard() {
     final referralCode = _referralStatus!['referralCode'] ?? 'N/A';
