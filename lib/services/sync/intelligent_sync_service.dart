@@ -10,7 +10,6 @@ import 'sync_conflict_resolver.dart';
 import '../database/local_database.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/comment_model.dart';
-import '../database/local_database.dart';
 
 class IntelligentSyncService {
   static final IntelligentSyncService _instance = IntelligentSyncService._internal();

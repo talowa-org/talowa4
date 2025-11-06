@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/instagram_post_model.dart';
-import '../../services/social_feed/instagram_feed_service.dart';
 import '../../widgets/common/loading_widget.dart';
 
 class InstagramPostCreationScreen extends StatefulWidget {

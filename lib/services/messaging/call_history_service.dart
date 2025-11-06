@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/voice_call.dart';
-import '../auth_service.dart';
+import '../unified_auth_service.dart';
 
 /// Service for managing call history and missed call notifications
 class CallHistoryService {
@@ -11,7 +11,6 @@ class CallHistoryService {
   CallHistoryService._internal();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AuthService _authService = AuthService();
 
   // Collections
   static const String _callHistoryCollection = 'call_history';
@@ -20,7 +19,7 @@ class CallHistoryService {
   /// Save a call to history
   Future<void> saveCallToHistory(CallSession callSession) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       final otherParticipant = callSession.getOtherParticipant(currentUserId);
@@ -60,7 +59,7 @@ class CallHistoryService {
     String? lastCallId,
   }) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return [];
 
       Query query = _firestore
@@ -96,28 +95,27 @@ class CallHistoryService {
 
   /// Get call history stream for real-time updates
   Stream<List<CallHistoryEntry>> getCallHistoryStream({int limit = 50}) {
-    return Stream.fromFuture(_authService.getCurrentUserId()).asyncExpand((currentUserId) {
-      if (currentUserId == null) {
-        return Stream.value(<CallHistoryEntry>[]);
-      }
+    final currentUserId = UnifiedAuthService.currentUser?.uid;
+    if (currentUserId == null) {
+      return Stream.value(<CallHistoryEntry>[]);
+    }
 
-      return _firestore
-          .collection('users')
-          .doc(currentUserId)
-          .collection(_callHistoryCollection)
-          .orderBy('startTime', descending: true)
-          .limit(limit)
-          .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map((doc) => CallHistoryEntry.fromJson(doc.data()))
-              .toList());
-    });
+    return _firestore
+        .collection('users')
+        .doc(currentUserId)
+        .collection(_callHistoryCollection)
+        .orderBy('startTime', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => CallHistoryEntry.fromJson(doc.data()))
+            .toList());
   }
 
   /// Save missed call notification
   Future<void> saveMissedCall(IncomingCall incomingCall) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       final missedCall = MissedCallNotification(
@@ -171,7 +169,7 @@ class CallHistoryService {
     int limit = 20,
   }) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return [];
 
       Query query = _firestore
@@ -200,32 +198,31 @@ class CallHistoryService {
     bool unreadOnly = false,
     int limit = 20,
   }) {
-    return Stream.fromFuture(_authService.getCurrentUserId()).asyncExpand((currentUserId) {
-      if (currentUserId == null) {
-        return Stream.value(<MissedCallNotification>[]);
-      }
+    final currentUserId = UnifiedAuthService.currentUser?.uid;
+    if (currentUserId == null) {
+      return Stream.value(<MissedCallNotification>[]);
+    }
 
-      Query query = _firestore
-          .collection('users')
-          .doc(currentUserId)
-          .collection(_missedCallsCollection)
-          .orderBy('timestamp', descending: true)
-          .limit(limit);
+    Query query = _firestore
+        .collection('users')
+        .doc(currentUserId)
+        .collection(_missedCallsCollection)
+        .orderBy('timestamp', descending: true)
+        .limit(limit);
 
-      if (unreadOnly) {
-        query = query.where('isRead', isEqualTo: false);
-      }
+    if (unreadOnly) {
+      query = query.where('isRead', isEqualTo: false);
+    }
 
-      return query.snapshots().map((snapshot) => snapshot.docs
-          .map((doc) => MissedCallNotification.fromJson(doc.data() as Map<String, dynamic>))
-          .toList());
-    });
+    return query.snapshots().map((snapshot) => snapshot.docs
+        .map((doc) => MissedCallNotification.fromJson(doc.data() as Map<String, dynamic>))
+        .toList());
   }
 
   /// Mark missed call as read
   Future<void> markMissedCallAsRead(String callId) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       await _firestore
@@ -244,7 +241,7 @@ class CallHistoryService {
   /// Mark all missed calls as read
   Future<void> markAllMissedCallsAsRead() async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       final batch = _firestore.batch();
@@ -269,7 +266,7 @@ class CallHistoryService {
   /// Get unread missed calls count
   Future<int> getUnreadMissedCallsCount() async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return 0;
 
       final snapshot = await _firestore
@@ -289,7 +286,7 @@ class CallHistoryService {
   /// Delete call from history
   Future<void> deleteCallFromHistory(String callId) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       await _firestore
@@ -308,7 +305,7 @@ class CallHistoryService {
   /// Clear all call history
   Future<void> clearCallHistory() async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
       final batch = _firestore.batch();
@@ -335,7 +332,7 @@ class CallHistoryService {
     DateTime? endDate,
   }) async {
     try {
-      final currentUserId = await _authService.getCurrentUserId();
+      final currentUserId = UnifiedAuthService.currentUser?.uid;
       if (currentUserId == null) return {};
 
       Query query = _firestore

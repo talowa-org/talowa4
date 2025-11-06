@@ -4,15 +4,21 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
+import '../../models/user_model.dart';
+
 import '../../services/messaging/simple_messaging_service.dart';
+import '../../services/messaging/advanced_messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/conversation_tile_widget.dart';
 import '../../widgets/messages/emergency_alert_banner.dart';
 import '../../widgets/messages/message_search_widget.dart';
+import '../../widgets/messages/advanced_search_widget.dart';
+import '../../widgets/messages/voice_message_widget.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../help/help_center_screen.dart';
 import 'chat_screen.dart';
+import 'user_selection_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -24,6 +30,7 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  final AdvancedMessagingService _advancedMessaging = AdvancedMessagingService();
   
   bool _isLoading = false;
   List<ConversationModel> _allConversations = [];
@@ -34,9 +41,18 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this); // Added AI tab
     _loadConversations();
     _checkEmergencyAlerts();
+    _initializeAdvancedFeatures();
+  }
+
+  Future<void> _initializeAdvancedFeatures() async {
+    try {
+      await _advancedMessaging.initialize();
+    } catch (e) {
+      debugPrint('Error initializing advanced features: $e');
+    }
   }
 
   @override
@@ -64,8 +80,13 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: _openSearch,
+            onPressed: _openBasicSearch,
             tooltip: 'Search Messages',
+          ),
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, color: Colors.white),
+            onPressed: _openAdvancedSearch,
+            tooltip: 'Advanced Search',
           ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline, color: Colors.white),
@@ -144,6 +165,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
             Tab(text: 'Groups'),
             Tab(text: 'Direct'),
             Tab(text: 'Reports'),
+            Tab(text: 'AI'),
           ],
         ),
       ),
@@ -200,6 +222,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
                       _buildGroupChats(),
                       _buildDirectMessages(),
                       _buildAnonymousReports(),
+                      _buildAIFeatures(),
                     ],
                   ),
           ),
@@ -239,6 +262,226 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         .where((conv) => conv.type == ConversationType.anonymous)
         .toList();
     return _buildConversationsList(anonymousReports);
+  }
+
+  Widget _buildAIFeatures() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // AI Features Header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppTheme.talowaGreen, AppTheme.talowaGreen.withValues(alpha: 0.7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'AI-Powered Messaging',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Smart features to enhance your communication',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Smart Search
+          _buildAIFeatureCard(
+            icon: Icons.search,
+            title: 'Smart Search',
+            description: 'Find messages using natural language',
+            onTap: _openAdvancedSearch,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Message Translation
+          _buildAIFeatureCard(
+            icon: Icons.translate,
+            title: 'Message Translation',
+            description: 'Translate messages to any language',
+            onTap: _showTranslationDemo,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Voice Messages
+          _buildAIFeatureCard(
+            icon: Icons.mic,
+            title: 'Voice Messages',
+            description: 'Send high-quality voice messages',
+            onTap: _showVoiceRecording,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Message Analytics
+          _buildAIFeatureCard(
+            icon: Icons.analytics,
+            title: 'Message Analytics',
+            description: 'Insights about your communication patterns',
+            onTap: _showMessageAnalytics,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Scheduled Messages
+          _buildAIFeatureCard(
+            icon: Icons.schedule,
+            title: 'Scheduled Messages',
+            description: 'Schedule messages for future delivery',
+            onTap: _showScheduledMessages,
+          ),
+
+          const SizedBox(height: 20),
+
+          // Recent AI Activity
+          const Text(
+            'Recent AI Activity',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _buildRecentAIActivity(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAIFeatureCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 2,
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.talowaGreen.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: AppTheme.talowaGreen),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(description),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildRecentAIActivity() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        children: [
+          _buildActivityItem(
+            icon: Icons.translate,
+            title: 'Translated 5 messages',
+            subtitle: 'Hindi to English',
+            time: '2 hours ago',
+          ),
+          const Divider(),
+          _buildActivityItem(
+            icon: Icons.search,
+            title: 'Smart search performed',
+            subtitle: 'Found 12 legal documents',
+            time: '1 day ago',
+          ),
+          const Divider(),
+          _buildActivityItem(
+            icon: Icons.mic,
+            title: 'Voice message sent',
+            subtitle: 'To Village Group',
+            time: '2 days ago',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivityItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String time,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: AppTheme.talowaGreen, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          time,
+          style: TextStyle(
+            color: Colors.grey[500],
+            fontSize: 11,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildConversationsList(List<ConversationModel> conversations) {
@@ -324,7 +567,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
   }
 
   // Action Methods
-  void _openSearch() {
+  void _openBasicSearch() {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -336,6 +579,214 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
         ),
       ),
     );
+  }
+
+  void _openAdvancedSearch() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AdvancedSearchWidget(
+        onSearchResults: (results) {
+          // Handle search results
+          debugPrint('Found ${results.length} search results');
+        },
+        onClose: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showVoiceRecording() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => VoiceRecordingWidget(
+        onRecordingComplete: (audioPath, duration) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Voice message recorded (${duration.inSeconds}s)'),
+              backgroundColor: AppTheme.talowaGreen,
+            ),
+          );
+        },
+        onCancel: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showTranslationDemo() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.translate, color: AppTheme.talowaGreen),
+            SizedBox(width: 8),
+            Text('Message Translation'),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'AI-powered translation supports:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            Text('• 12+ Indian languages'),
+            Text('• Real-time translation'),
+            Text('• Context-aware accuracy'),
+            Text('• Legal terminology support'),
+            SizedBox(height: 12),
+            Text(
+              'Translation is available in individual conversations.',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMessageAnalytics() async {
+    try {
+      final stats = await _advancedMessaging.getUserMessagingStats();
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.analytics, color: AppTheme.talowaGreen),
+              SizedBox(width: 8),
+              Text('Your Messaging Stats'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildStatRow('Total Messages', stats.totalMessagesSent.toString()),
+              _buildStatRow('Conversations', stats.totalConversations.toString()),
+              _buildStatRow('Daily Average', stats.averageMessagesPerDay.toStringAsFixed(1)),
+              const SizedBox(height: 12),
+              const Text(
+                'Message Types:',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              ...stats.messagesByType.entries.map((entry) =>
+                _buildStatRow(entry.key, entry.value.toString())
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load analytics: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Widget _buildStatRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showScheduledMessages() async {
+    try {
+      final scheduledMessages = await _advancedMessaging.getScheduledMessages();
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.schedule, color: AppTheme.talowaGreen),
+              SizedBox(width: 8),
+              Text('Scheduled Messages'),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: scheduledMessages.isEmpty
+                ? const Center(
+                    child: Text('No scheduled messages'),
+                  )
+                : ListView.builder(
+                    itemCount: scheduledMessages.length,
+                    itemBuilder: (context, index) {
+                      final message = scheduledMessages[index];
+                      return ListTile(
+                        title: Text(
+                          message.content,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          'Scheduled for: ${_formatDateTime(message.scheduledAt)}',
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.cancel, color: Colors.red),
+                          onPressed: () async {
+                            await _advancedMessaging.cancelScheduledMessage(message.id);
+                            Navigator.pop(context);
+                            _showScheduledMessages(); // Refresh
+                          },
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load scheduled messages: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   void _createNewChat() {
@@ -386,101 +837,31 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
   }
 
   void _showCreateDirectChat() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('New Direct Chat'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Search contacts',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                // TODO: Implement contact search
-              },
-            ),
-            const SizedBox(height: 16),
-            const Text('Recent contacts:'),
-            ListTile(
-              leading: const CircleAvatar(child: Text('A')),
-              title: const Text('Adv. Rajesh Kumar'),
-              subtitle: const Text('Legal Advisor'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Starting chat with Adv. Rajesh Kumar')),
-                );
-              },
-            ),
-            ListTile(
-              leading: const CircleAvatar(child: Text('S')),
-              title: const Text('Suresh Reddy'),
-              subtitle: const Text('Village Coordinator'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Starting chat with Suresh Reddy')),
-                );
-              },
-            ),
-          ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserSelectionScreen(
+          title: 'Select User to Chat',
+          multiSelect: false,
+          onUserSelected: (user) {
+            _startDirectChat(user);
+          },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
       ),
     );
   }
 
   void _showCreateGroupChat() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create Group Chat'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Group Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Group Description (Optional)',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 2,
-            ),
-            SizedBox(height: 16),
-            Text('Select members:'),
-            // Add member selection UI here
-          ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserSelectionScreen(
+          title: 'Select Group Members',
+          multiSelect: true,
+          onUsersSelected: (users) {
+            _createGroupChat(users);
+          },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Group chat created successfully!')),
-              );
-            },
-            child: const Text('Create'),
-          ),
-        ],
       ),
     );
   }
@@ -627,6 +1008,90 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
   Future<void> _archiveConversation(String conversationId) async {
     // TODO: Implement conversation archiving
     debugPrint('Archiving conversation: $conversationId');
+  }
+
+  void _startDirectChat(UserModel user) {
+    // TODO: Create or find existing direct conversation with user
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Starting chat with ${user.fullName}'),
+        backgroundColor: AppTheme.talowaGreen,
+      ),
+    );
+  }
+
+  void _createGroupChat(List<UserModel> users) {
+    // TODO: Show group creation dialog with selected users
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Create Group Chat'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Group Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Group Description (Optional)',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
+            Text('Selected members (${users.length}):'),
+            const SizedBox(height: 8),
+            Container(
+              height: 100,
+              child: ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    dense: true,
+                    leading: CircleAvatar(
+                      radius: 16,
+                      child: Text(user.fullName[0].toUpperCase()),
+                    ),
+                    title: Text(
+                      user.fullName,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    subtitle: Text(
+                      user.role,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Group chat created with ${users.length} members!'),
+                  backgroundColor: AppTheme.talowaGreen,
+                ),
+              );
+            },
+            child: const Text('Create'),
+          ),
+        ],
+      ),
+    );
   }
 }
 

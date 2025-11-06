@@ -40,7 +40,7 @@ dependencies:
   # flutter_tts: ^3.8.3  # Disabled for web compatibility
   
   # WebRTC Voice Calling (Web compatible)
-  # flutter_webrtc: ^0.11.7  # Temporarily disabled for web build
+  flutter_webrtc: ^0.11.7
   socket_io_client: ^2.0.3+1
   
   # UI & Animations

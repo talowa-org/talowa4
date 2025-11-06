@@ -65,25 +65,37 @@ class LocalNotificationService {
         await androidImplementation.requestExactAlarmsPermission();
       }
 
-      // Request iOS permissions
-      final DarwinFlutterLocalNotificationsPlugin? iosImplementation =
-          _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-              DarwinFlutterLocalNotificationsPlugin>();
-
-      if (iosImplementation != null) {
-        await iosImplementation.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+      // Request iOS permissions (using generic approach for compatibility)
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        // iOS permissions are handled during initialization
+        debugPrint('iOS notification permissions requested during initialization');
       }
     } catch (e) {
       debugPrint('Failed to request notification permissions: $e');
     }
   }
 
-  /// Show incoming call notification
-  Future<void> showIncomingCallNotification({
+  /// Show incoming call notification (overloaded method for IncomingCall object)
+  Future<void> showIncomingCallNotification(dynamic incomingCall) async {
+    if (incomingCall is Map) {
+      // Handle map-based call
+      await showIncomingCallNotificationDetails(
+        callId: incomingCall['id'] ?? '',
+        callerName: incomingCall['callerName'] ?? 'Unknown',
+        callerRole: incomingCall['callerRole'] ?? 'member',
+      );
+    } else {
+      // Handle object-based call
+      await showIncomingCallNotificationDetails(
+        callId: incomingCall.id,
+        callerName: incomingCall.callerName,
+        callerRole: incomingCall.callerRole,
+      );
+    }
+  }
+
+  /// Show incoming call notification with details
+  Future<void> showIncomingCallNotificationDetails({
     required String callId,
     required String callerName,
     required String callerRole,
@@ -106,7 +118,7 @@ class LocalNotificationService {
         sound: RawResourceAndroidNotificationSound('call_ringtone'),
         playSound: true,
         enableVibration: true,
-        vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]),
+        vibrationPattern: [0, 1000, 500, 1000],
         actions: <AndroidNotificationAction>[
           AndroidNotificationAction(
             'accept_call',
@@ -150,8 +162,27 @@ class LocalNotificationService {
     }
   }
 
-  /// Show missed call notification
-  Future<void> showMissedCallNotification({
+  /// Show missed call notification (overloaded method for IncomingCall object)
+  Future<void> showMissedCallNotification(dynamic incomingCall) async {
+    if (incomingCall is Map) {
+      // Handle map-based call
+      await showMissedCallNotificationDetails(
+        callId: incomingCall['id'] ?? '',
+        callerName: incomingCall['callerName'] ?? 'Unknown',
+        callerRole: incomingCall['callerRole'] ?? 'member',
+      );
+    } else {
+      // Handle object-based call
+      await showMissedCallNotificationDetails(
+        callId: incomingCall.id,
+        callerName: incomingCall.callerName,
+        callerRole: incomingCall.callerRole,
+      );
+    }
+  }
+
+  /// Show missed call notification with details
+  Future<void> showMissedCallNotificationDetails({
     required String callId,
     required String callerName,
     required String callerRole,
@@ -384,6 +415,42 @@ class LocalNotificationService {
     } catch (e) {
       debugPrint('Failed to check notification permissions: $e');
       return false;
+    }
+  }
+
+  /// Clear call notifications for a specific call
+  Future<void> clearCallNotifications(String callId) async {
+    try {
+      await cancelIncomingCallNotification(callId);
+      debugPrint('Cleared call notifications for: $callId');
+    } catch (e) {
+      debugPrint('Failed to clear call notifications: $e');
+    }
+  }
+
+  /// Send call notification to a specific user
+  Future<void> sendCallNotification(String recipientId, dynamic incomingCall) async {
+    try {
+      // For local notifications, we just show the incoming call notification
+      await showIncomingCallNotification(incomingCall);
+      debugPrint('Sent call notification to: $recipientId');
+    } catch (e) {
+      debugPrint('Failed to send call notification: $e');
+    }
+  }
+
+  /// Show call failed notification
+  Future<void> showCallFailedNotification(dynamic callSession) async {
+    try {
+      await showNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title: 'Call Failed',
+        body: 'Unable to connect the call. Please try again.',
+        payload: 'call_failed:${callSession.id}',
+      );
+      debugPrint('Call failed notification shown');
+    } catch (e) {
+      debugPrint('Failed to show call failed notification: $e');
     }
   }
 }

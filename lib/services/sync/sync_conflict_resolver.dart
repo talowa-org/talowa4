@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../social_feed/feed_service.dart';
 import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/comment_model.dart';
-import '../database/local_database.dart';
 
 class SyncConflictResolver {
   static final SyncConflictResolver _instance = SyncConflictResolver._internal();

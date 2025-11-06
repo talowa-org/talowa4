@@ -1,11 +1,16 @@
-﻿// Messaging Service for TALOWA
-// Fully functional real-time messaging with Firebase
+﻿// Main Messaging Service for TALOWA
+// Combines simple and advanced messaging features with real-time delivery confirmation
+
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/messaging/message_model.dart';
 import '../../models/messaging/conversation_model.dart';
+import '../../models/messaging/message_status_model.dart';
 import '../auth_service.dart';
+import 'simple_messaging_service.dart';
+import 'advanced_messaging_service.dart';
+import 'real_time_messaging_service.dart';
 
 class MessagingService {
   static final MessagingService _instance = MessagingService._internal();
@@ -13,61 +18,68 @@ class MessagingService {
   MessagingService._internal();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _conversationsCollection = 'conversations';
-  final String _messagesCollection = 'messages';
+  final SimpleMessagingService _simpleMessaging = SimpleMessagingService();
+  final AdvancedMessagingService _advancedMessaging = AdvancedMessagingService();
+  final RealTimeMessagingService _realTimeMessaging = RealTimeMessagingService();
 
-  // Create a new conversation
-  Future<String> createConversation({
-    required String name,
-    required ConversationType type,
-    required List<String> participantIds,
-    String? description,
-  }) async {
+  // Stream controllers for message status updates
+  final StreamController<MessageStatusModel> _messageStatusController = 
+      StreamController<MessageStatusModel>.broadcast();
+  final StreamController<Map<String, dynamic>> _typingIndicatorController = 
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  // Getters for real-time streams
+  Stream<MessageModel> get messageStream => _realTimeMessaging.messageStream;
+  Stream<MessageDeliveryStatus> get deliveryStatusStream => _realTimeMessaging.deliveryStatusStream;
+  Stream<MessageStatusModel> get messageStatusStream => _messageStatusController.stream;
+  Stream<Map<String, dynamic>> get typingIndicatorStream => _realTimeMessaging.typingIndicatorStream;
+  Stream<String> get connectionStatusStream => _realTimeMessaging.connectionStatusStream;
+
+  bool get isRealTimeConnected => _realTimeMessaging.isConnected;
+
+  /// Initialize messaging service
+  Future<void> initialize() async {
     try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final conversationId = _firestore.collection(_conversationsCollection).doc().id;
-
-      final conversation = ConversationModel(
-        id: conversationId,
-        name: name,
-        type: type,
-        participantIds: [currentUser.uid, ...participantIds],
-        createdBy: currentUser.uid,
-        createdAt: DateTime.now(),
-        lastMessageAt: DateTime.now(),
-        lastMessage: 'Conversation created',
-        lastMessageSenderId: currentUser.uid,
-        unreadCounts: {for (String id in [currentUser.uid, ...participantIds]) id: 0},
-        isActive: true,
-        description: description,
-        metadata: {},
-      );
-
-      await _firestore
-          .collection(_conversationsCollection)
-          .doc(conversationId)
-          .set(conversation.toFirestore());
-
-      // Send initial system message
-      await sendMessage(
-        conversationId: conversationId,
-        content: 'Conversation created',
-        messageType: MessageType.system,
-      );
-
-      debugPrint('Conversation created successfully: $conversationId');
-      return conversationId;
+      // Initialize real-time messaging first
+      await _realTimeMessaging.initialize();
+      
+      // Initialize advanced messaging
+      await _advancedMessaging.initialize();
+      
+      // Set up message status tracking
+      _setupMessageStatusTracking();
+      
+      debugPrint('✅ Messaging Service initialized with real-time support');
     } catch (e) {
-      debugPrint('Error creating conversation: $e');
+      debugPrint('❌ Error initializing messaging service: $e');
       rethrow;
     }
   }
 
-  // Send a message
+  /// Set up message status tracking
+  void _setupMessageStatusTracking() {
+    // Listen to delivery status updates
+    _realTimeMessaging.deliveryStatusStream.listen((status) {
+      debugPrint('📊 Message delivery status: ${status.toString()}');
+    });
+
+    // Listen to typing indicators
+    _realTimeMessaging.typingIndicatorStream.listen((data) {
+      _typingIndicatorController.add(data);
+    });
+
+    // Listen to connection status
+    _realTimeMessaging.connectionStatusStream.listen((status) {
+      debugPrint('🔗 Connection status: $status');
+    });
+  }
+
+  /// Get conversation messages stream
+  Stream<List<MessageModel>> getConversationMessages({required String conversationId}) {
+    return _simpleMessaging.getConversationMessages(conversationId);
+  }
+
+  /// Send a message with real-time delivery confirmation
   Future<String> sendMessage({
     required String conversationId,
     required String content,
@@ -76,223 +88,57 @@ class MessagingService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
-
-      // Get user profile for sender info
-      final userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
-      if (!userDoc.exists) {
-        throw Exception('User profile not found');
-      }
-
-      final userData = userDoc.data()!;
-      final messageId = _firestore.collection(_messagesCollection).doc().id;
-
-      final message = MessageModel(
-        id: messageId,
+      // Use real-time messaging service for enhanced delivery
+      final messageId = await _realTimeMessaging.sendMessage(
         conversationId: conversationId,
-        senderId: currentUser.uid,
-        senderName: userData['fullName'] ?? 'Unknown User',
         content: content,
         messageType: messageType,
-        mediaUrls: mediaUrls ?? [],
-        sentAt: DateTime.now(),
-        deliveredAt: null,
-        readAt: null,
-        readBy: [],
-        isEdited: false,
-        isDeleted: false,
-        metadata: metadata ?? {},
+        mediaUrls: mediaUrls,
+        metadata: metadata,
       );
 
-      // Save message
-      await _firestore
-          .collection(_messagesCollection)
-          .doc(messageId)
-          .set(message.toFirestore());
+      // Create message status tracking
+      await _createMessageStatus(messageId, conversationId);
 
-      // Update conversation with last message info
-      await _updateConversationLastMessage(
-        conversationId: conversationId,
-        lastMessage: content,
-        lastMessageSenderId: currentUser.uid,
-        lastMessageAt: DateTime.now(),
-      );
-
-      debugPrint('Message sent successfully: $messageId');
       return messageId;
     } catch (e) {
-      debugPrint('Error sending message: $e');
+      debugPrint('❌ Error sending message: $e');
       rethrow;
     }
   }
 
-  // Get conversations for current user
-  Stream<List<ConversationModel>> getUserConversations() {
-    try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        return Stream.value([]);
-      }
-
-      // Simple query without orderBy to avoid index requirement
-      return _firestore
-          .collection(_conversationsCollection)
-          .where('participantIds', arrayContains: currentUser.uid)
-          .snapshots()
-          .map((snapshot) {
-        final conversations = snapshot.docs
-            .map((doc) => ConversationModel.fromFirestore(doc))
-            .where((conversation) => conversation.isActive)
-            .toList();
-        
-        // Sort locally by lastMessageAt
-        conversations.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
-        return conversations;
-      });
-    } catch (e) {
-      debugPrint('Error getting user conversations: $e');
-      return Stream.value([]);
-    }
-  }
-
-  // Get messages for a conversation
-  Stream<List<MessageModel>> getConversationMessages({
-    required String conversationId,
-    int limit = 50,
-  }) {
-    try {
-      return _firestore
-          .collection(_messagesCollection)
-          .where('conversationId', isEqualTo: conversationId)
-          .where('isDeleted', isEqualTo: false)
-          .orderBy('sentAt', descending: true)
-          .limit(limit)
-          .snapshots()
-          .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          return MessageModel.fromFirestore(doc);
-        }).toList();
-      });
-    } catch (e) {
-      debugPrint('Error getting conversation messages: $e');
-      return Stream.value([]);
-    }
-  }
-
-  // Mark message as read
-  Future<void> markMessageAsRead({
-    required String messageId,
-    required String conversationId,
-  }) async {
+  /// Create message status tracking record
+  Future<void> _createMessageStatus(String messageId, String conversationId) async {
     try {
       final currentUser = AuthService.currentUser;
       if (currentUser == null) return;
 
-      // Update message read status
-      await _firestore.collection(_messagesCollection).doc(messageId).update({
-        'readBy': FieldValue.arrayUnion([currentUser.uid]),
-        'readAt': FieldValue.serverTimestamp(),
-      });
-
-      // Update conversation unread count
-      await _firestore.collection(_conversationsCollection).doc(conversationId).update({
-        'unreadCounts.${currentUser.uid}': 0,
-      });
-    } catch (e) {
-      debugPrint('Error marking message as read: $e');
-    }
-  }
-
-  // Mark all messages in conversation as read
-  Future<void> markConversationAsRead(String conversationId) async {
-    try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) return;
-
-      // Get all unread messages in conversation
-      final unreadMessages = await _firestore
-          .collection(_messagesCollection)
-          .where('conversationId', isEqualTo: conversationId)
-          .where('senderId', isNotEqualTo: currentUser.uid)
-          .get();
-
-      // Batch update all unread messages
-      final batch = _firestore.batch();
-      
-      for (final doc in unreadMessages.docs) {
-        final data = doc.data();
-        final readBy = List<String>.from(data['readBy'] ?? []);
-        
-        if (!readBy.contains(currentUser.uid)) {
-          batch.update(doc.reference, {
-            'readBy': FieldValue.arrayUnion([currentUser.uid]),
-            'readAt': FieldValue.serverTimestamp(),
-          });
-        }
-      }
-
-      // Update conversation unread count
-      batch.update(
-        _firestore.collection(_conversationsCollection).doc(conversationId),
-        {'unreadCounts.${currentUser.uid}': 0},
+      final messageStatus = MessageStatusModel(
+        messageId: messageId,
+        senderId: currentUser.uid,
+        conversationId: conversationId,
+        status: MessageStatus.sending,
+        sentAt: DateTime.now(),
       );
 
-      await batch.commit();
+      await _firestore
+          .collection('message_status')
+          .doc(messageId)
+          .set(messageStatus.toFirestore());
+
+      _messageStatusController.add(messageStatus);
     } catch (e) {
-      debugPrint('Error marking conversation as read: $e');
+      debugPrint('❌ Error creating message status: $e');
     }
   }
 
-  // Delete message
-  Future<void> deleteMessage(String messageId) async {
-    try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) return;
-
-      // Check if user owns the message
-      final messageDoc = await _firestore.collection(_messagesCollection).doc(messageId).get();
-      if (!messageDoc.exists) return;
-
-      final messageData = messageDoc.data()!;
-      if (messageData['senderId'] != currentUser.uid) {
-        throw Exception('Not authorized to delete this message');
-      }
-
-      // Soft delete the message
-      await _firestore.collection(_messagesCollection).doc(messageId).update({
-        'isDeleted': true,
-        'content': 'This message was deleted',
-        'deletedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      debugPrint('Error deleting message: $e');
-      rethrow;
-    }
-  }
-
-  // Edit message
+  /// Edit a message
   Future<void> editMessage({
     required String messageId,
     required String newContent,
   }) async {
     try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) return;
-
-      // Check if user owns the message
-      final messageDoc = await _firestore.collection(_messagesCollection).doc(messageId).get();
-      if (!messageDoc.exists) return;
-
-      final messageData = messageDoc.data()!;
-      if (messageData['senderId'] != currentUser.uid) {
-        throw Exception('Not authorized to edit this message');
-      }
-
-      // Update the message
-      await _firestore.collection(_messagesCollection).doc(messageId).update({
+      await _firestore.collection('messages').doc(messageId).update({
         'content': newContent,
         'isEdited': true,
         'editedAt': FieldValue.serverTimestamp(),
@@ -303,200 +149,240 @@ class MessagingService {
     }
   }
 
-  // Add participant to conversation
-  Future<void> addParticipant({
-    required String conversationId,
-    required String userId,
-  }) async {
+  /// Delete a message
+  Future<void> deleteMessage(String messageId) async {
     try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) return;
-
-      // Check if current user is in the conversation
-      final conversationDoc = await _firestore
-          .collection(_conversationsCollection)
-          .doc(conversationId)
-          .get();
-
-      if (!conversationDoc.exists) return;
-
-      final conversationData = conversationDoc.data()!;
-      final participantIds = List<String>.from(conversationData['participantIds'] ?? []);
-
-      if (!participantIds.contains(currentUser.uid)) {
-        throw Exception('Not authorized to add participants');
-      }
-
-      if (participantIds.contains(userId)) {
-        return; // User already in conversation
-      }
-
-      // Add participant
-      await _firestore.collection(_conversationsCollection).doc(conversationId).update({
-        'participantIds': FieldValue.arrayUnion([userId]),
-        'unreadCounts.$userId': 0,
+      await _firestore.collection('messages').doc(messageId).update({
+        'isDeleted': true,
+        'deletedAt': FieldValue.serverTimestamp(),
       });
-
-      // Send system message
-      await sendMessage(
-        conversationId: conversationId,
-        content: 'User added to conversation',
-        messageType: MessageType.system,
-        metadata: {'addedUserId': userId},
-      );
     } catch (e) {
-      debugPrint('Error adding participant: $e');
+      debugPrint('Error deleting message: $e');
       rethrow;
     }
   }
 
-  // Remove participant from conversation
-  Future<void> removeParticipant({
-    required String conversationId,
-    required String userId,
-  }) async {
+  /// Mark conversation as read
+  Future<void> markConversationAsRead(String conversationId) async {
     try {
       final currentUser = AuthService.currentUser;
       if (currentUser == null) return;
 
-      // Remove participant
-      await _firestore.collection(_conversationsCollection).doc(conversationId).update({
-        'participantIds': FieldValue.arrayRemove([userId]),
-        'unreadCounts.$userId': FieldValue.delete(),
+      await _firestore.collection('conversations').doc(conversationId).update({
+        'unreadCounts.${currentUser.uid}': 0,
       });
-
-      // Send system message
-      await sendMessage(
-        conversationId: conversationId,
-        content: 'User removed from conversation',
-        messageType: MessageType.system,
-        metadata: {'removedUserId': userId},
-      );
     } catch (e) {
-      debugPrint('Error removing participant: $e');
-      rethrow;
+      debugPrint('❌ Error marking conversation as read: $e');
     }
   }
 
-  // Search conversations
-  Future<List<ConversationModel>> searchConversations(String query) async {
+  /// Mark specific message as read with real-time confirmation
+  Future<void> markMessageAsRead(String messageId) async {
     try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) return [];
+      // Use real-time service for immediate read receipt
+      await _realTimeMessaging.markMessageAsRead(messageId);
 
-      final snapshot = await _firestore
-          .collection(_conversationsCollection)
-          .where('participantIds', arrayContains: currentUser.uid)
-          .get();
-
-      final conversations = snapshot.docs
-          .map((doc) => ConversationModel.fromFirestore(doc))
-          .where((conversation) =>
-              conversation.name.toLowerCase().contains(query.toLowerCase()) ||
-              conversation.lastMessage.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-
-      return conversations;
+      // Update message status
+      await _updateMessageStatus(messageId, MessageStatus.read);
     } catch (e) {
-      debugPrint('Error searching conversations: $e');
-      return [];
+      debugPrint('❌ Error marking message as read: $e');
     }
   }
 
-  // Get conversation by ID
-  Future<ConversationModel?> getConversation(String conversationId) async {
+  /// Update message status
+  Future<void> _updateMessageStatus(String messageId, MessageStatus status) async {
+    try {
+      final updateData = <String, dynamic>{
+        'status': status.value,
+      };
+
+      if (status == MessageStatus.delivered) {
+        updateData['deliveredAt'] = FieldValue.serverTimestamp();
+      } else if (status == MessageStatus.read) {
+        updateData['readAt'] = FieldValue.serverTimestamp();
+      }
+
+      await _firestore
+          .collection('message_status')
+          .doc(messageId)
+          .update(updateData);
+
+      // Get updated status and emit to stream
+      final doc = await _firestore
+          .collection('message_status')
+          .doc(messageId)
+          .get();
+      
+      if (doc.exists) {
+        final messageStatus = MessageStatusModel.fromFirestore(doc);
+        _messageStatusController.add(messageStatus);
+      }
+    } catch (e) {
+      debugPrint('❌ Error updating message status: $e');
+    }
+  }
+
+  /// Send typing indicator
+  void sendTypingIndicator(String conversationId, bool isTyping) {
+    _realTimeMessaging.sendTypingIndicator(conversationId, isTyping);
+  }
+
+  /// Join conversation room for real-time updates
+  void joinConversationRoom(String conversationId) {
+    _realTimeMessaging.joinConversationRoom(conversationId);
+  }
+
+  /// Leave conversation room
+  void leaveConversationRoom(String conversationId) {
+    _realTimeMessaging.leaveConversationRoom(conversationId);
+  }
+
+  /// Get message status
+  Future<MessageStatusModel?> getMessageStatus(String messageId) async {
     try {
       final doc = await _firestore
-          .collection(_conversationsCollection)
-          .doc(conversationId)
+          .collection('message_status')
+          .doc(messageId)
           .get();
-
+      
       if (doc.exists) {
-        return ConversationModel.fromFirestore(doc);
+        return MessageStatusModel.fromFirestore(doc);
       }
       return null;
     } catch (e) {
-      debugPrint('Error getting conversation: $e');
+      debugPrint('❌ Error getting message status: $e');
       return null;
     }
   }
 
-  // Private helper methods
-  Future<void> _updateConversationLastMessage({
-    required String conversationId,
-    required String lastMessage,
-    required String lastMessageSenderId,
-    required DateTime lastMessageAt,
+  /// Get message status stream for specific message
+  Stream<MessageStatusModel?> getMessageStatusStream(String messageId) {
+    return _firestore
+        .collection('message_status')
+        .doc(messageId)
+        .snapshots()
+        .map((doc) => doc.exists ? MessageStatusModel.fromFirestore(doc) : null);
+  }
+
+  /// Create a new conversation
+  Future<String?> createConversation({
+    required List<String> participantIds,
+    required String name,
+    ConversationType type = ConversationType.group,
   }) async {
+    return await _simpleMessaging.createConversation(
+      participantIds: participantIds,
+      name: name,
+      type: type,
+    );
+  }
+
+  /// Search conversations
+  Future<List<ConversationModel>> searchConversations(String query) async {
+    return await _simpleMessaging.searchConversations(query);
+  }
+
+  /// Advanced search messages
+  Future<List<MessageModel>> searchMessages({
+    required String query,
+    List<String>? conversationIds,
+    List<MessageType>? messageTypes,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? senderId,
+    bool includeDeleted = false,
+  }) async {
+    return await _advancedMessaging.searchMessages(
+      query: query,
+      conversationIds: conversationIds,
+      messageTypes: messageTypes,
+      startDate: startDate,
+      endDate: endDate,
+      senderId: senderId,
+      includeDeleted: includeDeleted,
+    );
+  }
+
+  /// Smart search with AI
+  Future<List<MessageModel>> smartSearch(String query) async {
+    return await _advancedMessaging.smartSearch(query);
+  }
+
+  /// Translate message
+  Future<String> translateMessage(String content, String targetLanguage) async {
+    return await _advancedMessaging.translateMessage(content, targetLanguage);
+  }
+
+  /// Generate smart replies
+  Future<List<String>> generateSmartReplies(String messageContent, {String? conversationContext}) async {
+    return await _advancedMessaging.generateSmartReplies(messageContent, conversationContext: conversationContext);
+  }
+
+  /// Schedule a message
+  Future<String?> scheduleMessage({
+    required String conversationId,
+    required String content,
+    required DateTime scheduledAt,
+    MessageType messageType = MessageType.text,
+    List<String>? mediaUrls,
+  }) async {
+    return await _advancedMessaging.scheduleMessage(
+      conversationId: conversationId,
+      content: content,
+      scheduledAt: scheduledAt,
+      messageType: messageType,
+      mediaUrls: mediaUrls,
+    );
+  }
+
+  /// Get user conversations stream
+  Stream<List<ConversationModel>> getUserConversations() {
+    return _simpleMessaging.getUserConversations();
+  }
+
+  /// Get user messaging statistics
+  Future<UserMessagingStats> getUserMessagingStats() async {
+    return await _advancedMessaging.getUserMessagingStats();
+  }
+
+  /// Get conversation analytics
+  Future<ConversationAnalytics> getConversationAnalytics(String conversationId) async {
+    return await _advancedMessaging.getConversationAnalytics(conversationId);
+  }
+
+  /// Dispose of messaging service resources
+  Future<void> dispose() async {
     try {
-      // Get conversation to update unread counts
-      final conversationDoc = await _firestore
-          .collection(_conversationsCollection)
-          .doc(conversationId)
-          .get();
+      // Dispose real-time messaging service
+      await _realTimeMessaging.dispose();
 
-      if (!conversationDoc.exists) return;
+      // Close stream controllers
+      await _messageStatusController.close();
+      await _typingIndicatorController.close();
 
-      final conversationData = conversationDoc.data()!;
-      final participantIds = List<String>.from(conversationData['participantIds'] ?? []);
-      final currentUnreadCounts = Map<String, int>.from(conversationData['unreadCounts'] ?? {});
-
-      // Increment unread count for all participants except sender
-      for (final participantId in participantIds) {
-        if (participantId != lastMessageSenderId) {
-          currentUnreadCounts[participantId] = (currentUnreadCounts[participantId] ?? 0) + 1;
-        }
-      }
-
-      await _firestore.collection(_conversationsCollection).doc(conversationId).update({
-        'lastMessage': lastMessage,
-        'lastMessageSenderId': lastMessageSenderId,
-        'lastMessageAt': Timestamp.fromDate(lastMessageAt),
-        'unreadCounts': currentUnreadCounts,
-      });
+      debugPrint('✅ MessagingService: Disposed successfully');
     } catch (e) {
-      debugPrint('Error updating conversation last message: $e');
+      debugPrint('❌ Error disposing messaging service: $e');
     }
   }
 
-  // Create direct conversation between two users
-  Future<String> createDirectConversation(String otherUserId) async {
-    try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
+  /// Initiate voice call
+  Future<CallSession?> initiateVoiceCall(String conversationId, List<String> participantIds) async {
+    return await _advancedMessaging.initiateVoiceCall(conversationId, participantIds);
+  }
 
-      // Check if conversation already exists
-      final existingConversations = await _firestore
-          .collection(_conversationsCollection)
-          .where('type', isEqualTo: ConversationType.direct.value)
-          .where('participantIds', arrayContains: currentUser.uid)
-          .get();
+  /// Initiate video call
+  Future<CallSession?> initiateVideoCall(String conversationId, List<String> participantIds) async {
+    return await _advancedMessaging.initiateVideoCall(conversationId, participantIds);
+  }
 
-      for (final doc in existingConversations.docs) {
-        final data = doc.data();
-        final participantIds = List<String>.from(data['participantIds'] ?? []);
-        if (participantIds.contains(otherUserId) && participantIds.length == 2) {
-          return doc.id; // Return existing conversation
-        }
-      }
+  /// Answer call
+  Future<bool> answerCall(String callId) async {
+    return await _advancedMessaging.answerCall(callId);
+  }
 
-      // Get other user's name
-      final otherUserDoc = await _firestore.collection('users').doc(otherUserId).get();
-      final otherUserName = otherUserDoc.exists 
-          ? otherUserDoc.data()!['fullName'] ?? 'Unknown User'
-          : 'Unknown User';
-
-      // Create new direct conversation
-      return await createConversation(
-        name: otherUserName,
-        type: ConversationType.direct,
-        participantIds: [otherUserId],
-      );
-    } catch (e) {
-      debugPrint('Error creating direct conversation: $e');
-      rethrow;
-    }
+  /// End call
+  Future<bool> endCall(String callId) async {
+    return await _advancedMessaging.endCall(callId);
   }
 }

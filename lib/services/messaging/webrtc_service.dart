@@ -1,9 +1,11 @@
 ﻿import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/voice_call.dart';
 import '../../models/call_participant.dart';
 import '../../models/call_quality.dart';
+import '../unified_auth_service.dart';
 import 'signaling_service.dart';
 import 'call_quality_monitor.dart';
 import 'call_history_service.dart';
@@ -58,6 +60,7 @@ class WebRTCService {
   Future<CallSession> initiateCall(String recipientId, String callType) async {
     try {
       final callId = _generateCallId();
+      final startTime = DateTime.now().millisecondsSinceEpoch;
       final callSession = CallSession(
         id: callId,
         participants: [
@@ -77,7 +80,7 @@ class WebRTCService {
           ),
         ],
         status: 'connecting',
-        startTime: DateTime.now().millisecondsSinceEpoch,
+        startTime: startTime,
         quality: CallQuality(
           averageLatency: 0,
           packetLoss: 0,
@@ -142,9 +145,10 @@ class WebRTCService {
       });
 
       // Update call status
-      callSession.status = 'connected';
-      callSession.startTime = DateTime.now().millisecondsSinceEpoch;
-      _activeCalls[callId] = callSession;
+      final updatedCallSession = callSession.copyWith(
+        status: 'connected',
+      );
+      _activeCalls[callId] = updatedCallSession;
 
       // Start quality monitoring
       await _qualityMonitor.startMonitoring(callId, peerConnection);
@@ -427,18 +431,47 @@ class WebRTCService {
   }
 
   Future<String> _getCurrentUserId() async {
-    // TODO: Get from auth service
-    return 'current_user_id';
+    final currentUser = UnifiedAuthService.currentUser;
+    return currentUser?.uid ?? 'anonymous_user';
   }
 
   Future<String> _getCurrentUserName() async {
-    // TODO: Get from user service
-    return 'Current User';
+    try {
+      final currentUser = UnifiedAuthService.currentUser;
+      if (currentUser == null) return 'Anonymous User';
+      
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      
+      if (userDoc.exists) {
+        final userData = userDoc.data()!;
+        return userData['fullName'] ?? 'Unknown User';
+      }
+      return 'Unknown User';
+    } catch (e) {
+      debugPrint('Failed to get current user name: $e');
+      return 'Unknown User';
+    }
   }
 
   Future<String> _getUserName(String userId) async {
-    // TODO: Get from user service
-    return 'User $userId';
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      
+      if (userDoc.exists) {
+        final userData = userDoc.data()!;
+        return userData['fullName'] ?? 'Unknown User';
+      }
+      return 'Unknown User';
+    } catch (e) {
+      debugPrint('Failed to get user name for $userId: $e');
+      return 'Unknown User';
+    }
   }
 
   /// Dispose resources

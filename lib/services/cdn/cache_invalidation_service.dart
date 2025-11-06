@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../config/cdn_config.dart';
 
 /// Enhanced Cache Invalidation Service for TALOWA CDN
 /// Manages cache invalidation strategies for dynamic content with advanced features

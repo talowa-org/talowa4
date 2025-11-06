@@ -239,9 +239,9 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>>
       
     } catch (e) {
       debugPrint('❌ Error building item at index $index: $e');
-      itemWidget = SizedBox(
+      itemWidget = const SizedBox(
         height: 50,
-        child: const Center(
+        child: Center(
           child: Text('Error loading item', style: TextStyle(color: Colors.red)),
         ),
       );

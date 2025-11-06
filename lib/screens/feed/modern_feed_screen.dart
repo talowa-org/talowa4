@@ -1018,7 +1018,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
         setState(() {
           _posts = posts ?? [];
           _isLoading = false;
-          _hasMorePosts = (posts?.length ?? 0) == _postsPerPage;
+          _hasMorePosts = (posts.length ?? 0) == _postsPerPage;
         });
       }
       
@@ -1157,7 +1157,9 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
     ErrorHandler.safeExecuteSync(() {
       if (!mounted || 
           !_scrollController.hasClients ||
-          _scrollController.position.maxScrollExtent == 0) return;
+          _scrollController.position.maxScrollExtent == 0) {
+        return;
+      }
       
       if (_scrollController.position.pixels >= 
           _scrollController.position.maxScrollExtent - 200) {
