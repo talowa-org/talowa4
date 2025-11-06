@@ -7,9 +7,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../social_feed/offline_sync_service.dart';
 import 'sync_conflict_resolver.dart';
-import '../../core/database/local_database.dart';
-import '../../models/post_model.dart';
-import '../../models/comment_model.dart';
+import '../database/local_database.dart';
+import '../../models/social_feed/post_model.dart';
+import '../../models/social_feed/comment_model.dart';
+import '../database/local_database.dart';
 
 class IntelligentSyncService {
   static final IntelligentSyncService _instance = IntelligentSyncService._internal();
@@ -47,8 +48,8 @@ class IntelligentSyncService {
       _schedulePeriodicSync();
       
       // Perform initial sync if online
-      final connectivity = await Connectivity().checkConnectivity();
-      if (connectivity != ConnectivityResult.none) {
+      final connectivityResults = await Connectivity().checkConnectivity();
+      if (connectivityResults.isNotEmpty && !connectivityResults.contains(ConnectivityResult.none)) {
         _performIntelligentSync();
       }
       
@@ -491,7 +492,7 @@ class IntelligentSyncService {
       }
       
       // Mark as synced in local database
-      await _localDb.markChangeSynced(id, 'post');
+      await _localDb.markChangeSynced(id);
       
       return UploadResult(success: true);
     } catch (e) {
@@ -517,7 +518,7 @@ class IntelligentSyncService {
         await commentRef.set(data, SetOptions(merge: false));
       }
       
-      await _localDb.markChangeSynced(id, 'comment');
+      await _localDb.markChangeSynced(id);
       
       return UploadResult(success: true);
     } catch (e) {
@@ -544,7 +545,7 @@ class IntelligentSyncService {
         await engagementRef.set(data, SetOptions(merge: true));
       }
       
-      await _localDb.markChangeSynced(id, 'engagement');
+      await _localDb.markChangeSynced(id);
       
       return UploadResult(success: true);
     } catch (e) {
@@ -614,7 +615,7 @@ class IntelligentSyncService {
       final data = change['data'] as Map<String, dynamic>;
 
       // Check if we have a local version
-      final localData = await _localDb.getLocalData(id, type);
+      final localData = await _localDb.getLocalData(id);
       
       if (localData != null) {
         // Check for conflicts
@@ -632,7 +633,7 @@ class IntelligentSyncService {
       }
 
       // Save to local database
-      await _localDb.saveRemoteData(id, type, data);
+      await _localDb.saveRemoteData(id, data);
       
       return DownloadResult(success: true);
     } catch (e) {
@@ -743,12 +744,12 @@ class IntelligentSyncService {
       
       // Record sync statistics
       final duration = DateTime.now().difference(startTime);
-      await _localDb.recordSyncStatistics(
-        syncedItems: syncedItems,
-        conflicts: conflicts,
-        duration: duration,
-        success: true,
-      );
+      await _localDb.recordSyncStatistics({
+        'syncedItems': syncedItems,
+        'conflicts': conflicts,
+        'duration': duration.inMilliseconds,
+        'success': true,
+      });
       
       // Clean up old sync data
       await _localDb.cleanupOldSyncData();
@@ -768,8 +769,8 @@ class IntelligentSyncService {
   }
 
   void _startConnectivityMonitoring() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result != ConnectivityResult.none && !_isSyncing) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      if (results.isNotEmpty && !results.contains(ConnectivityResult.none) && !_isSyncing) {
         // Connection restored, trigger sync
         debugPrint('Connection restored, triggering sync');
         _performIntelligentSync();
@@ -792,10 +793,8 @@ class IntelligentSyncService {
   Future<void> _loadSyncConfiguration() async {
     try {
       final configData = await _localDb.getSyncConfiguration();
-      if (configData != null) {
-        _config = SyncConfiguration.fromMap(configData);
-      }
-    } catch (e) {
+      _config = SyncConfiguration.fromMap(configData);
+        } catch (e) {
       debugPrint('Error loading sync configuration: $e');
     }
   }

@@ -20,7 +20,7 @@ class LazyLoadingImage extends StatefulWidget {
   final int? cacheHeight;
   
   const LazyLoadingImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.width,
     this.height,
@@ -32,7 +32,7 @@ class LazyLoadingImage extends StatefulWidget {
     this.enableDiskCache = true,
     this.cacheWidth,
     this.cacheHeight,
-  }) : super(key: key);
+  });
 
   @override
   State<LazyLoadingImage> createState() => _LazyLoadingImageState();
@@ -77,7 +77,7 @@ class _LazyLoadingImageState extends State<LazyLoadingImage>
               _loadImage();
             }
           },
-          child: Container(
+          child: SizedBox(
             width: widget.width,
             height: widget.height,
             child: _buildImageWidget(),
@@ -274,7 +274,7 @@ class LazyLoadingListView extends StatefulWidget {
   final double loadMoreThreshold;
   
   const LazyLoadingListView({
-    Key? key,
+    super.key,
     required this.itemCount,
     required this.itemBuilder,
     this.onLoadMore,
@@ -283,7 +283,7 @@ class LazyLoadingListView extends StatefulWidget {
     this.controller,
     this.padding,
     this.loadMoreThreshold = 200.0, // Load more when 200px from bottom
-  }) : super(key: key);
+  });
 
   @override
   State<LazyLoadingListView> createState() => _LazyLoadingListViewState();
@@ -384,6 +384,7 @@ class _LazyLoadingListViewState extends State<LazyLoadingListView> {
 
 /// Visibility detector for lazy loading
 class VisibilityDetector extends StatefulWidget {
+  @override
   final Key key;
   final Widget child;
   final Function(VisibilityInfo) onVisibilityChanged;
@@ -416,21 +417,19 @@ class _VisibilityDetectorState extends State<VisibilityDetector> {
     final renderObject = context.findRenderObject();
     if (renderObject is RenderBox) {
       final viewport = RenderAbstractViewport.of(renderObject);
-      if (viewport != null) {
-        final revealedOffset = viewport.getOffsetToReveal(renderObject, 0.0);
-        final size = renderObject.size;
-        final position = renderObject.localToGlobal(Offset.zero);
-        
-        // Calculate visibility fraction (simplified)
-        final visibleFraction = _calculateVisibilityFraction(position, size);
-        
-        widget.onVisibilityChanged(VisibilityInfo(
-          key: widget.key,
-          size: size,
-          visibleFraction: visibleFraction,
-        ));
-      }
-    }
+      final revealedOffset = viewport.getOffsetToReveal(renderObject, 0.0);
+      final size = renderObject.size;
+      final position = renderObject.localToGlobal(Offset.zero);
+      
+      // Calculate visibility fraction (simplified)
+      final visibleFraction = _calculateVisibilityFraction(position, size);
+      
+      widget.onVisibilityChanged(VisibilityInfo(
+        key: widget.key,
+        size: size,
+        visibleFraction: visibleFraction,
+      ));
+        }
   }
   
   double _calculateVisibilityFraction(Offset position, Size size) {

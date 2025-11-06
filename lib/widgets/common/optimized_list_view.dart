@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
 import '../../mixins/performance_tracking_mixin.dart';
 
 /// High-performance ListView with automatic virtualization and optimization
@@ -29,7 +29,7 @@ class OptimizedListView<T> extends StatefulWidget {
   final String? performanceTag;
   
   const OptimizedListView({
-    Key? key,
+    super.key,
     required this.items,
     required this.itemBuilder,
     this.loadingBuilder,
@@ -47,7 +47,7 @@ class OptimizedListView<T> extends StatefulWidget {
     this.separator,
     this.enablePerformanceTracking = kDebugMode,
     this.performanceTag,
-  }) : super(key: key);
+  });
   
   @override
   State<OptimizedListView<T>> createState() => _OptimizedListViewState<T>();
@@ -132,7 +132,7 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>>
     // Handle error state
     if (_error != null) {
       return widget.errorBuilder?.call(context, _error!) ??
-          Center(child: Text('Error: $_error'));
+          const Center(child: Text('Error loading data'));
     }
     
     // Handle loading state
@@ -239,9 +239,9 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>>
       
     } catch (e) {
       debugPrint('❌ Error building item at index $index: $e');
-      itemWidget = Container(
+      itemWidget = SizedBox(
         height: 50,
-        child: Center(
+        child: const Center(
           child: Text('Error loading item', style: TextStyle(color: Colors.red)),
         ),
       );
@@ -252,9 +252,9 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>>
   
   /// Build load more indicator
   Widget _buildLoadMoreIndicator() {
-    return Container(
+    return const SizedBox(
       height: 60,
-      child: const Center(
+      child: Center(
         child: CircularProgressIndicator(),
       ),
     );
@@ -470,7 +470,7 @@ class OptimizedGridView<T> extends StatefulWidget {
   final String? performanceTag;
   
   const OptimizedGridView({
-    Key? key,
+    super.key,
     required this.items,
     required this.itemBuilder,
     required this.gridDelegate,
@@ -484,7 +484,7 @@ class OptimizedGridView<T> extends StatefulWidget {
     this.physics,
     this.enablePerformanceTracking = kDebugMode,
     this.performanceTag,
-  }) : super(key: key);
+  });
   
   @override
   State<OptimizedGridView<T>> createState() => _OptimizedGridViewState<T>();

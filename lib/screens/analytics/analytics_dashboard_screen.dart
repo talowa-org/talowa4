@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../services/analytics/post_analytics_service.dart';
 import '../../services/auth_service.dart';
-import '../../models/social_feed/post_model.dart';
 import '../../widgets/social_feed/post_widget.dart';
 import '../../utils/app_colors.dart';
 

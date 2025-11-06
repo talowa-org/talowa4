@@ -64,7 +64,7 @@ class PerformanceOptimizationService {
   /// Configure Firestore for optimal performance
   Future<void> _configureFirestore() async {
     try {
-      final settings = const Settings(
+      const settings = Settings(
         cacheSizeBytes: 100 * 1024 * 1024, // 100MB cache
         persistenceEnabled: true,
         sslEnabled: true,

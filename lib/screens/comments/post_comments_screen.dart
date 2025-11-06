@@ -457,7 +457,11 @@ class _PostCommentsScreenState extends State<PostCommentsScreen>
         parentCommentId: _replyingTo?.id,
       );
 
-      final createdComment = await FeedService.addComment(widget.post.id, comment);
+      final createdComment = await FeedService.addComment(
+        postId: widget.post.id,
+        content: content,
+        parentCommentId: _replyingTo?.id,
+      );
       
       setState(() {
         if (_replyingTo != null) {

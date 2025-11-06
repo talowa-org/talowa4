@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:crypto/crypto.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 
 /// Video upload progress callback

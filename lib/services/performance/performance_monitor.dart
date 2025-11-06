@@ -49,7 +49,7 @@ class PerformanceMonitor {
     });
     
     // Clean up old metrics periodically
-    Timer.periodic(Duration(hours: 1), (_) {
+    Timer.periodic(const Duration(hours: 1), (_) {
       instance._cleanupOldMetrics();
     });
   }
@@ -291,7 +291,9 @@ class PerformanceMonitor {
   /// Dispose of the performance monitor
   void dispose() {
     _reportingTimer?.cancel();
-    _activeTimers.values.forEach((timer) => timer.cancel());
+    for (var timer in _activeTimers.values) {
+      timer.cancel();
+    }
     _activeTimers.clear();
     _metrics.clear();
   }
@@ -487,12 +489,12 @@ class PerformanceMonitor {
   Map<String, PerformanceStats> getAllStats() {
     final stats = <String, PerformanceStats>{};
     
-    _metrics.keys.forEach((operationName) {
+    for (var operationName in _metrics.keys) {
       final operationStats = getStats(operationName);
       if (operationStats != null) {
         stats[operationName] = operationStats;
       }
-    });
+    }
     
     return stats;
   }
@@ -522,7 +524,7 @@ class PerformanceMonitor {
     if (metrics.isEmpty) return 0;
     
     final now = DateTime.now();
-    final oneMinuteAgo = now.subtract(Duration(minutes: 1));
+    final oneMinuteAgo = now.subtract(const Duration(minutes: 1));
     
     final recentMetrics = metrics.where((m) => m.timestamp.isAfter(oneMinuteAgo));
     return recentMetrics.length / 60.0; // operations per second

@@ -2,8 +2,7 @@
 // Implements Task 18: Add security and content safety - User Report UI
 
 import 'package:flutter/material.dart';
-+import 'package:flutter/foundation.dart';
-// removed: import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import '../../services/security/user_safety_service.dart';
 import '../../services/safety/safe_browsing_service.dart'; // For RiskLevel enum
 import '../../services/auth/auth_service.dart';
@@ -184,7 +183,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
       ),
       child: Row(
         children: [
-          UserAvatar(
+          UserAvatarWidget(
             imageUrl: widget.reportedUserAvatar,
             name: widget.reportedUserName ?? 'Unknown User',
             radius: 20,

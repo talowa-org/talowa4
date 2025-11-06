@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'memory_management_service.dart';
 import 'network_optimization_service.dart';
 import 'widget_optimization_service.dart';
-import 'request_deduplication_service.dart';
 import 'performance_optimization_service.dart';
 
 class PerformanceIntegrationService {

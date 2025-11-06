@@ -135,8 +135,8 @@ class _AutomaticPromotionWidgetState extends State<AutomaticPromotionWidget>
                     gradient: progress.hasAchieved100Percent
                         ? LinearGradient(
                             colors: [
-                              Colors.green.withOpacity(0.1),
-                              Colors.amber.withOpacity(0.1),
+                              Colors.green.withValues(alpha: 0.1),
+                              Colors.amber.withValues(alpha: 0.1),
                             ],
                           )
                         : null,
@@ -227,7 +227,7 @@ class _AutomaticPromotionWidgetState extends State<AutomaticPromotionWidget>
       return Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.amber.withOpacity(0.1),
+          color: Colors.amber.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Row(
@@ -377,8 +377,8 @@ class _AutomaticPromotionWidgetState extends State<AutomaticPromotionWidget>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.green.withOpacity(0.8 + _celebrationAnimation.value * 0.2),
-                Colors.amber.withOpacity(0.8 + _celebrationAnimation.value * 0.2),
+                Colors.green.withValues(alpha: 0.8 + _celebrationAnimation.value * 0.2),
+                Colors.amber.withValues(alpha: 0.8 + _celebrationAnimation.value * 0.2),
               ],
             ),
             borderRadius: BorderRadius.circular(8),

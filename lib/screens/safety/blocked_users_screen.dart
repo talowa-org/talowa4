@@ -2,12 +2,10 @@
 // Implements Task 18: Add security and content safety - Blocked Users UI
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/security/user_safety_service.dart';
 import '../../services/auth/auth_service.dart';
 
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../../widgets/common/user_avatar.dart';
 
 class BlockedUsersScreen extends StatefulWidget {

@@ -2,6 +2,7 @@
 // Implements Task 18: Add security and content safety - Content Warnings
 
 import 'package:flutter/material.dart';
+import '../../models/safety/content_warning_model.dart';
 
 class ContentWarningWidget extends StatefulWidget {
   final Widget child;
@@ -206,7 +207,7 @@ class _ContentWarningWidgetState extends State<ContentWarningWidget>
         return _WarningInfo(
           title: 'Adult Content',
           description: 'This content is intended for mature audiences only.',
-          icon: Icons.adult_content,
+          icon: Icons.eighteen_up_rating,
           color: Colors.purple,
         );
       case ContentWarningType.disturbing:

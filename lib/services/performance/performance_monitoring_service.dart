@@ -69,7 +69,7 @@ class PerformanceMonitoringService {
       
       if (startTime != null) {
         final duration = endTime.difference(startTime).inMilliseconds.toDouble();
-        this.recordMetric('${operationName}_duration', duration, metadata: metadata);
+        recordMetric('${operationName}_duration', duration, metadata: metadata);
         
         debugPrint('✅ Completed operation: $operationName (${duration}ms)');
         

@@ -225,12 +225,14 @@ class PerformanceAnalyticsService {
         // Determine alert level based on metric type and value
         if (metric == 'cache_hit_rate_percent') {
           // For cache hit rate, lower is worse
-          if (value < threshold * 0.5) alertLevel = AlertLevel.critical;
-          else if (value < threshold * 0.8) alertLevel = AlertLevel.warning;
+          if (value < threshold * 0.5) {
+            alertLevel = AlertLevel.critical;
+          } else if (value < threshold * 0.8) alertLevel = AlertLevel.warning;
         } else {
           // For other metrics, higher is worse
-          if (value > threshold * 2) alertLevel = AlertLevel.critical;
-          else if (value > threshold * 1.5) alertLevel = AlertLevel.warning;
+          if (value > threshold * 2) {
+            alertLevel = AlertLevel.critical;
+          } else if (value > threshold * 1.5) alertLevel = AlertLevel.warning;
           else if (value > threshold) alertLevel = AlertLevel.info;
         }
 
@@ -355,13 +357,13 @@ class PerformanceAnalyticsService {
   /// Record cache performance
   static void recordCacheHit(String key) {
     _cacheHits++;
-    _recordMetric('cache_hit_${key}', DateTime.now().millisecondsSinceEpoch);
+    _recordMetric('cache_hit_$key', DateTime.now().millisecondsSinceEpoch);
   }
 
   /// Record cache miss
   static void recordCacheMiss(String key) {
     _cacheMisses++;
-    _recordMetric('cache_miss_${key}', DateTime.now().millisecondsSinceEpoch);
+    _recordMetric('cache_miss_$key', DateTime.now().millisecondsSinceEpoch);
   }
 
   // Performance calculation methods

@@ -9,6 +9,10 @@ class GeographicTargeting {
   final String? mandal;
   final String? district;
   final String? state;
+  final String? villageCode;
+  final String? mandalCode;
+  final String? districtCode;
+  final String? stateCode;
   final double? radiusKm;
   final GeoPoint? centerPoint;
   final TargetingScope scope;
@@ -18,6 +22,10 @@ class GeographicTargeting {
     this.mandal,
     this.district,
     this.state,
+    this.villageCode,
+    this.mandalCode,
+    this.districtCode,
+    this.stateCode,
     this.radiusKm,
     this.centerPoint,
     this.scope = TargetingScope.district,
@@ -30,6 +38,10 @@ class GeographicTargeting {
       mandal: data['mandal'],
       district: data['district'],
       state: data['state'],
+      villageCode: data['villageCode'],
+      mandalCode: data['mandalCode'],
+      districtCode: data['districtCode'],
+      stateCode: data['stateCode'],
       radiusKm: data['radiusKm']?.toDouble(),
       centerPoint: data['centerPoint'] as GeoPoint?,
       scope: TargetingScope.values.firstWhere(
@@ -46,6 +58,10 @@ class GeographicTargeting {
       'mandal': mandal,
       'district': district,
       'state': state,
+      'villageCode': villageCode,
+      'mandalCode': mandalCode,
+      'districtCode': districtCode,
+      'stateCode': stateCode,
       'radiusKm': radiusKm,
       'centerPoint': centerPoint,
       'scope': scope.toString().split('.').last,
@@ -58,6 +74,10 @@ class GeographicTargeting {
     String? mandal,
     String? district,
     String? state,
+    String? villageCode,
+    String? mandalCode,
+    String? districtCode,
+    String? stateCode,
     double? radiusKm,
     GeoPoint? centerPoint,
     TargetingScope? scope,
@@ -67,6 +87,10 @@ class GeographicTargeting {
       mandal: mandal ?? this.mandal,
       district: district ?? this.district,
       state: state ?? this.state,
+      villageCode: villageCode ?? this.villageCode,
+      mandalCode: mandalCode ?? this.mandalCode,
+      districtCode: districtCode ?? this.districtCode,
+      stateCode: stateCode ?? this.stateCode,
       radiusKm: radiusKm ?? this.radiusKm,
       centerPoint: centerPoint ?? this.centerPoint,
       scope: scope ?? this.scope,

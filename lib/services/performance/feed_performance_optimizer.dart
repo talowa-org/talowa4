@@ -86,9 +86,9 @@ class FeedPerformanceOptimizer {
       _performanceService.recordMetric('cache_hit_rate', cacheHitRate);
       
       if (cacheHitRate < _minCacheHitRate) {
-        debugPrint('⚠️ Cache hit rate low: ${cacheHitRate}%');
+        debugPrint('⚠️ Cache hit rate low: $cacheHitRate%');
       } else {
-        debugPrint('✅ Cache performance optimal: ${cacheHitRate}%');
+        debugPrint('✅ Cache performance optimal: $cacheHitRate%');
       }
       
     } catch (e) {

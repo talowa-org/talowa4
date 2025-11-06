@@ -128,7 +128,7 @@ class ComprehensiveStatsService {
         'teamReferrals': userData['teamReferrals'] ?? userData['teamSize'] ?? 0,
         'currentRole': userData['role'] ?? 'Member',
         'referralCode': userData['referralCode'] ?? '',
-        'lastUpdate': lastUpdate?.toDate() ?? DateTime.now(),
+        'lastUpdate': lastUpdate.toDate() ?? DateTime.now(),
         'cached': true,
       };
       

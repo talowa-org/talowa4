@@ -326,12 +326,18 @@ class _ContentReportsScreenState extends State<ContentReportsScreen> {
         title: const Text('Filter by Status'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: ReportStatus.values.map((status) => RadioListTile<ReportStatus>(
+          children: ReportStatus.values.map((status) => ListTile(
             title: Text(status.displayName),
-            value: status,
-            groupValue: _selectedStatus,
-            onChanged: (value) {
-              setState(() => _selectedStatus = value);
+            leading: Radio<ReportStatus>(
+              value: status,
+              groupValue: _selectedStatus,
+              onChanged: (value) {
+                setState(() => _selectedStatus = value);
+                Navigator.of(context).pop();
+              },
+            ),
+            onTap: () {
+              setState(() => _selectedStatus = status);
               Navigator.of(context).pop();
             },
           )).toList(),
@@ -353,12 +359,18 @@ class _ContentReportsScreenState extends State<ContentReportsScreen> {
         title: const Text('Filter by Type'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: ReportType.values.map((type) => RadioListTile<ReportType>(
+          children: ReportType.values.map((type) => ListTile(
             title: Text(type.displayName),
-            value: type,
-            groupValue: _selectedType,
-            onChanged: (value) {
-              setState(() => _selectedType = value);
+            leading: Radio<ReportType>(
+              value: type,
+              groupValue: _selectedType,
+              onChanged: (value) {
+                setState(() => _selectedType = value);
+                Navigator.of(context).pop();
+              },
+            ),
+            onTap: () {
+              setState(() => _selectedType = type);
               Navigator.of(context).pop();
             },
           )).toList(),
@@ -447,12 +459,15 @@ class _ReviewReportDialogState extends State<_ReviewReportDialog> {
             const SizedBox(height: 16),
             
             const Text('Action to take:', style: TextStyle(fontWeight: FontWeight.bold)),
-            ...ModerationActionType.values.map((action) => RadioListTile<ModerationActionType>(
+            ...ModerationActionType.values.map((action) => ListTile(
               title: Text(action.displayName),
               subtitle: Text(action.description),
-              value: action,
-              groupValue: _selectedAction,
-              onChanged: (value) => setState(() => _selectedAction = value),
+              leading: Radio<ModerationActionType>(
+                value: action,
+                groupValue: _selectedAction,
+                onChanged: (value) => setState(() => _selectedAction = value),
+              ),
+              onTap: () => setState(() => _selectedAction = action),
               dense: true,
             )),
             

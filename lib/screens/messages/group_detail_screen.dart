@@ -2,7 +2,6 @@
 // Reference: in-app-communication/requirements.md - Group Management
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../models/messaging/group_model.dart';
 import '../../services/messaging/group_service.dart';
 import '../../services/auth_service.dart';
@@ -12,7 +11,6 @@ import 'group_settings_screen.dart';
 import 'group_members_screen.dart';
 import 'bulk_message_screen.dart';
 import '../../utils/role_utils.dart';
-import '../../providers/user_state_provider.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final GroupModel group;

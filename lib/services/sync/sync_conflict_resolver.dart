@@ -5,8 +5,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../social_feed/feed_service.dart';
-import '../../models/post_model.dart';
-import '../../models/comment_model.dart';
+import '../../models/social_feed/post_model.dart';
+import '../../models/social_feed/comment_model.dart';
+import '../database/local_database.dart';
 
 class SyncConflictResolver {
   static final SyncConflictResolver _instance = SyncConflictResolver._internal();
@@ -57,18 +58,16 @@ class SyncConflictResolver {
           break;
       }
 
-      if (resolvedPost != null) {
-        // Apply the resolution
-        await _applyPostResolution(resolvedPost, conflict);
-        
-        return ConflictResolution(
-          isResolved: true,
-          resolvedData: resolvedPost,
-          conflict: conflict,
-          requiresUserInput: false,
-        );
-      }
-
+      // Apply the resolution
+      await _applyPostResolution(resolvedPost, conflict);
+      
+      return ConflictResolution(
+        isResolved: true,
+        resolvedData: resolvedPost,
+        conflict: conflict,
+        requiresUserInput: false,
+      );
+    
       return ConflictResolution(
         isResolved: false,
         resolvedData: null,
@@ -121,17 +120,15 @@ class SyncConflictResolver {
           break;
       }
 
-      if (resolvedComment != null) {
-        await _applyCommentResolution(resolvedComment, conflict);
-        
-        return ConflictResolution(
-          isResolved: true,
-          resolvedData: resolvedComment,
-          conflict: conflict,
-          requiresUserInput: false,
-        );
-      }
-
+      await _applyCommentResolution(resolvedComment, conflict);
+      
+      return ConflictResolution(
+        isResolved: true,
+        resolvedData: resolvedComment,
+        conflict: conflict,
+        requiresUserInput: false,
+      );
+    
       return ConflictResolution(
         isResolved: false,
         resolvedData: null,
@@ -611,12 +608,18 @@ extension PostModelSync on PostModel {
     return PostModel(
       id: id ?? this.id,
       authorId: authorId ?? this.authorId,
+      authorName: authorName ?? authorName,
       content: content ?? this.content,
       mediaUrls: mediaUrls ?? this.mediaUrls,
       hashtags: hashtags ?? this.hashtags,
+      category: category ?? category,
+      location: location ?? location,
       createdAt: createdAt ?? this.createdAt,
+      likesCount: likesCount ?? likesCount,
+      commentsCount: commentsCount ?? commentsCount,
+      sharesCount: sharesCount ?? sharesCount,
+      isLikedByCurrentUser: isLikedByCurrentUser ?? isLikedByCurrentUser,
       updatedAt: updatedAt ?? this.updatedAt,
-      // Add other fields as needed
     );
   }
 }
@@ -635,10 +638,10 @@ extension CommentModelSync on CommentModel {
       id: id ?? this.id,
       postId: postId ?? this.postId,
       authorId: authorId ?? this.authorId,
+      authorName: authorName ?? authorName,
       content: content ?? this.content,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      // Add other fields as needed
     );
   }
 }

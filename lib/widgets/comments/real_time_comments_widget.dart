@@ -2,6 +2,7 @@
 // Implements Task 15: Add real-time engagement features - Comments
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../../services/social_feed/real_time_engagement_service.dart';
 import '../../models/social_feed/index.dart';
@@ -487,7 +488,6 @@ class _RealTimeCommentsWidgetState extends State<RealTimeCommentsWidget>
   Future<void> _submitComment() async {
     if (_commentController.text.trim().isEmpty || _isSubmitting) return;
 
-    final content = _commentController.text.trim();
     _commentController.clear();
     _engagementService.stopTypingIndicator(widget.postId);
 

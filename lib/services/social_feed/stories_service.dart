@@ -46,7 +46,7 @@ class StoriesService {
         authorName: userData['fullName'] ?? 'Unknown User',
         authorRole: userData['role'] ?? 'member',
         mediaUrl: mediaUrl,
-        mediaType: mediaType,
+        mediaType: StoryMediaTypeExtension.fromString(mediaType),
         caption: caption,
         duration: duration ?? (mediaType == 'image' ? 5 : 15),
         createdAt: now,

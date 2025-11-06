@@ -94,7 +94,7 @@ class _PostManagementScreenState extends State<PostManagementScreen>
   
   Future<void> _loadDrafts(String userId) async {
     try {
-      _drafts = await PostManagementService.getUserDrafts(userId);
+      _drafts = await PostManagementService.getUserDrafts();
     } catch (e) {
       debugPrint('Error loading drafts: $e');
     }
@@ -102,7 +102,7 @@ class _PostManagementScreenState extends State<PostManagementScreen>
   
   Future<void> _loadScheduledPosts(String userId) async {
     try {
-      _scheduledPosts = await PostManagementService.getScheduledPosts(userId);
+      _scheduledPosts = await PostManagementService.getScheduledPosts();
     } catch (e) {
       debugPrint('Error loading scheduled posts: $e');
     }

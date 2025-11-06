@@ -4,7 +4,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
+// Conditional import for permission_handler (not available on web)
+import 'package:permission_handler/permission_handler.dart' if (dart.library.html) 'dart:html' as permission_handler;
 
 class UniversalVoiceService {
   static final UniversalVoiceService _instance = UniversalVoiceService._internal();
@@ -109,14 +110,14 @@ class UniversalVoiceService {
         return true;
       }
 
-      final status = await Permission.microphone.status;
+      final status = await permission_handler.Permission.microphone.status;
       if (status.isGranted) {
         debugPrint('ðŸ”’ Microphone permission granted');
         return true;
       }
 
       if (status.isDenied) {
-        final result = await Permission.microphone.request();
+        final result = await permission_handler.Permission.microphone.request();
         if (result.isGranted) {
           debugPrint('âœ… Microphone permission granted');
           return true;

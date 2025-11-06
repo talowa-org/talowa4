@@ -141,18 +141,35 @@ class EnhancedFeedService {
         return await _databaseService.executeOptimizedQuery(query);
       });
 
-      // Process results
-      List<PostModel> posts = snapshot.docs
-          .map((doc) => PostModel.fromFirestore(doc))
-          .toList();
+      // Process results with error handling
+      List<PostModel> posts = [];
+      for (final doc in snapshot.docs) {
+        try {
+          final post = PostModel.fromFirestore(doc);
+          posts.add(post);
+        } catch (e) {
+          debugPrint('❌ Error parsing post ${doc.id}: $e');
+          // Skip malformed posts instead of crashing
+        }
+      }
 
       // Apply search filter if provided
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        posts = _applySearchFilter(posts, searchQuery);
+        try {
+          posts = _applySearchFilter(posts, searchQuery);
+        } catch (e) {
+          debugPrint('❌ Error applying search filter: $e');
+          // Continue without search filter if it fails
+        }
       }
 
       // Enrich with user-specific data
-      posts = await _enrichPostsWithUserData(posts);
+      try {
+        posts = await _enrichPostsWithUserData(posts);
+      } catch (e) {
+        debugPrint('❌ Error enriching posts: $e');
+        // Continue with non-enriched posts if enrichment fails
+      }
 
       // Cache results with longer duration for better performance
       if (useCache) {
@@ -714,6 +731,8 @@ class EnhancedFeedService {
   }
 
   Future<List<PostModel>> _enrichPostsWithUserData(List<PostModel> posts) async {
+    if (posts.isEmpty) return posts;
+    
     final currentUserId = AuthService.currentUser?.uid;
     if (currentUserId == null) return posts;
 
@@ -723,20 +742,28 @@ class EnhancedFeedService {
         _firestore.collection(_likesCollection).doc('${post.id}_$currentUserId')
       ).toList();
       
+      if (likeRefs.isEmpty) return posts;
+      
       final likeSnapshots = await _databaseService.batchGetDocuments(likeRefs);
       
       // Create posts with like status
       final enrichedPosts = <PostModel>[];
       for (int i = 0; i < posts.length; i++) {
-        final post = posts[i];
-        final isLiked = i < likeSnapshots.length ? likeSnapshots[i].exists : false;
-        enrichedPosts.add(post.copyWith(isLikedByCurrentUser: isLiked));
+        try {
+          final post = posts[i];
+          final isLiked = i < likeSnapshots.length ? likeSnapshots[i].exists : false;
+          enrichedPosts.add(post.copyWith(isLikedByCurrentUser: isLiked));
+        } catch (e) {
+          debugPrint('❌ Error enriching individual post ${posts[i].id}: $e');
+          // Add the original post if enrichment fails
+          enrichedPosts.add(posts[i]);
+        }
       }
       
       return enrichedPosts;
     } catch (e) {
       debugPrint('❌ Error enriching posts with user data: $e');
-      return posts;
+      return posts; // Return original posts if enrichment fails
     }
   }
 

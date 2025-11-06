@@ -193,7 +193,7 @@ class LoadBalancingService {
       // Retry logic
       if (maxRetries > 0) {
         if (kDebugMode) {
-          print('🔄 Retrying request: $requestId (${maxRetries} retries left)');
+          print('🔄 Retrying request: $requestId ($maxRetries retries left)');
         }
         
         return await _executeRequest<T>(
@@ -506,7 +506,7 @@ ar();
  rverLoads.cl  _seclear();
   th._serverHeal
     ar();sts.cle_activeReque);
-    clear(ueue.estQqu   _re
+    clear(ueue.estQqu   re
  cel();canr?.CheckTime
     _healthse() {oid dispoervice
   ving sbalanc load  /// Dispose

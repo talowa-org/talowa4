@@ -64,7 +64,7 @@ class RequestDeduplicationService {
       final timeoutTimer = Timer(requestTimeout, () {
         if (!completer.isCompleted) {
           _cleanupRequest(requestKey);
-          completer.completeError(TimeoutException('Request timeout', requestTimeout));
+          completer.completeError(const TimeoutException('Request timeout', requestTimeout));
         }
       });
       

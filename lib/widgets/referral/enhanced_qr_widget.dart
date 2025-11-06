@@ -410,7 +410,14 @@ class _EnhancedQRWidgetState extends State<EnhancedQRWidget>
         version: QrVersions.auto,
         size: widget.size - 32,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        eyeStyle: const QrEyeStyle(
+          eyeShape: QrEyeShape.square,
+          color: Colors.black,
+        ),
+        dataModuleStyle: const QrDataModuleStyle(
+          dataModuleShape: QrDataModuleShape.square,
+          color: Colors.black,
+        ),
         errorCorrectionLevel: QrErrorCorrectLevel.M,
         gapless: true,
       ),

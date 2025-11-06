@@ -189,22 +189,26 @@ class MemoryManagementService {
   /// Get current memory usage
   Future<Map<String, int>> _getCurrentMemoryUsage() async {
     try {
-      if (Platform.isAndroid || Platform.isIOS) {
-        // Use platform channel to get memory info
-        final result = await SystemChannels.platform.invokeMethod('System.getMemoryInfo');
-        return {
-          'currentMB': (result['usedMemoryBytes'] ?? 0) ~/ (1024 * 1024),
-          'availableMB': (result['availableMemoryBytes'] ?? 0) ~/ (1024 * 1024),
-        };
+      // Only try platform-specific memory info on mobile platforms
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+        try {
+          final result = await SystemChannels.platform.invokeMethod('System.getMemoryInfo');
+          return {
+            'currentMB': (result['usedMemoryBytes'] ?? 0) ~/ (1024 * 1024),
+            'availableMB': (result['availableMemoryBytes'] ?? 0) ~/ (1024 * 1024),
+          };
+        } catch (e) {
+          debugPrint('Platform memory info not available: $e');
+        }
       }
     } catch (e) {
-      debugPrint('Failed to get platform memory info: $e');
+      debugPrint('Error accessing platform memory info: $e');
     }
     
-    // Fallback estimation
+    // Fallback estimation for web and other platforms
     return {
       'currentMB': _trackedResources.length * 2, // Rough estimation
-      'availableMB': 512, // Conservative estimate
+      'availableMB': kIsWeb ? 1024 : 512, // Higher estimate for web
     };
   }
   

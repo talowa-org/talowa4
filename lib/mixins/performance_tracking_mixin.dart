@@ -4,7 +4,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import '../services/performance/widget_optimization_service.dart';
 
 /// Mixin for automatic performance tracking in widgets

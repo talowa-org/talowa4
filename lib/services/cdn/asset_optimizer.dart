@@ -205,7 +205,7 @@ class AssetOptimizer {
       for (final level in qualityLevels) {
         final variantPath = outputPath.replaceAll(
           RegExp(r'\.[^.]+$'), 
-          '_${level}.$targetFormat'
+          '_$level.$targetFormat'
         );
         
         final variantQuality = level == 'low' ? 40 : level == 'medium' ? 60 : 80;
@@ -765,7 +765,7 @@ double _calculateVideoCompressionRatio(
     Map<String, dynamic> settings,
   ) async {
     // Simulate advanced processing with realistic delay
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     await inputFile.copy(outputFile.path);
     
     print('🖼️  Advanced image processing: ${settings['format']} Q:${settings['quality']} ${settings['maxWidth']}x${settings['maxHeight']}');
@@ -778,7 +778,7 @@ double _calculateVideoCompressionRatio(
     Map<String, dynamic> settings,
   ) async {
     // Simulate advanced processing with realistic delay
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     await inputFile.copy(outputFile.path);
     
     print('🎥 Advanced video processing: ${settings['format']} Q:${settings['quality']} Adaptive:${settings['adaptive']}');
@@ -866,15 +866,15 @@ double _calculateVideoCompressionRatio(
   }
 
   // Legacy constants for backward compatibility
-  static const int DEFAULT_IMAGE_QUALITY = 85;
-  static const int MAX_IMAGE_WIDTH = 1920;
-  static const int MAX_IMAGE_HEIGHT = 1080;
-  static const int THUMBNAIL_SIZE = 300;
-  static const List<String> SUPPORTED_IMAGE_FORMATS = ['jpg', 'jpeg', 'png', 'webp'];
-  static const List<String> SUPPORTED_VIDEO_FORMATS = ['mp4', 'webm', 'mov'];
+  const int DEFAULT_IMAGE_QUALITY = 85;
+  const int MAX_IMAGE_WIDTH = 1920;
+  const int MAX_IMAGE_HEIGHT = 1080;
+  const int THUMBNAIL_SIZE = 300;
+  const List<String> SUPPORTED_IMAGE_FORMATS = ['jpg', 'jpeg', 'png', 'webp'];
+  const List<String> SUPPORTED_VIDEO_FORMATS = ['mp4', 'webm', 'mov'];
   
   // Compression ratios by file type
-  static const Map<String, double> TARGET_COMPRESSION_RATIOS = {
+  const Map<String, double> TARGET_COMPRESSION_RATIOS = {
     'jpg': 0.7,
     'jpeg': 0.7,
     'png': 0.6,

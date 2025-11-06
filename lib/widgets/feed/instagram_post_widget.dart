@@ -16,6 +16,8 @@ class InstagramPostWidget extends StatefulWidget {
   final VoidCallback? onShare;
   final VoidCallback? onViewProfile;
   final VoidCallback? onReport;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const InstagramPostWidget({
     super.key,
@@ -26,6 +28,8 @@ class InstagramPostWidget extends StatefulWidget {
     this.onShare,
     this.onViewProfile,
     this.onReport,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -219,7 +223,7 @@ class _InstagramPostWidgetState extends State<InstagramPostWidget>
                     opacity: _doubleTapAnimation.value > 0.5 
                         ? 1.0 - _doubleTapAnimation.value 
                         : _doubleTapAnimation.value * 2,
-                    child: Icon(
+                    child: const Icon(
                       Icons.favorite,
                       color: Colors.red,
                       size: 80,
@@ -470,14 +474,49 @@ class _InstagramPostWidgetState extends State<InstagramPostWidget>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(Icons.report_outlined),
-              title: const Text('Report'),
-              onTap: () {
-                Navigator.pop(context);
-                widget.onReport?.call();
-              },
-            ),
+            // Edit option (only for post author)
+            if (widget.onEdit != null)
+              ListTile(
+                leading: const Icon(Icons.edit_outlined, color: Colors.blue),
+                title: const Text('Edit Post'),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onEdit?.call();
+                },
+              ),
+            
+            // Delete option (only for post author)
+            if (widget.onDelete != null)
+              ListTile(
+                leading: const Icon(Icons.delete_outlined, color: Colors.red),
+                title: const Text('Delete Post'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context);
+                },
+              ),
+            
+            // Archive option (only for post author)
+            if (widget.onEdit != null)
+              ListTile(
+                leading: const Icon(Icons.archive_outlined, color: Colors.orange),
+                title: const Text('Archive Post'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Implement archive functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Post archived'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+              ),
+            
+            // Divider if there are author options
+            if (widget.onEdit != null || widget.onDelete != null)
+              const Divider(),
+            
             ListTile(
               leading: const Icon(Icons.copy_outlined),
               title: const Text('Copy Link'),
@@ -492,6 +531,7 @@ class _InstagramPostWidgetState extends State<InstagramPostWidget>
                 );
               },
             ),
+            
             if (widget.post.allowSharing)
               ListTile(
                 leading: const Icon(Icons.share_outlined),
@@ -501,8 +541,41 @@ class _InstagramPostWidgetState extends State<InstagramPostWidget>
                   widget.onShare?.call();
                 },
               ),
+            
+            ListTile(
+              leading: const Icon(Icons.report_outlined, color: Colors.red),
+              title: const Text('Report'),
+              onTap: () {
+                Navigator.pop(context);
+                widget.onReport?.call();
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text('Are you sure you want to delete this post? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onDelete?.call();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }

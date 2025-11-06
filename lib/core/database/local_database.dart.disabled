@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:sqflite/sqflite.dart'; // Not supported on web
+// Web-compatible database implementation (sqflite not supported on web)
 import '../../models/social_feed/index.dart';
 import '../../services/social_feed/offline_sync_service.dart';
 
@@ -16,27 +16,29 @@ class LocalDatabase {
   factory LocalDatabase() => _instance;
   LocalDatabase._internal();
 
-  Database? _database;
+  Map<String, dynamic>? _database; // Web-compatible storage
   static const String _databaseName = 'talowa_offline.db';
   static const int _databaseVersion = 1;
 
-  /// Initialize the local database
+  /// Initialize the local database (web-compatible)
   Future<void> initialize() async {
     if (_database != null) return;
 
     try {
-      final documentsDirectory = await getApplicationDocumentsDirectory();
-      final path = join(documentsDirectory.path, _databaseName);
-      
-      _database = await openDatabase(
-        path,
-        version: _databaseVersion,
-        onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
-      );
+      // Initialize in-memory storage for web compatibility
+      _database = {
+        'posts': <String, Map<String, dynamic>>{},
+        'comments': <String, Map<String, dynamic>>{},
+        'users': <String, Map<String, dynamic>>{},
+        'sync_queue': <String, Map<String, dynamic>>{},
+        'metadata': <String, dynamic>{
+          'version': _databaseVersion,
+          'initialized_at': DateTime.now().toIso8601String(),
+        }
+      };
       
       if (kDebugMode) {
-        debugPrint('Local database initialized at: $path');
+        debugPrint('Local database initialized (web-compatible)');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -46,117 +48,17 @@ class LocalDatabase {
     }
   }
 
-  /// Create database tables
-  Future<void> _onCreate(Database db, int version) async {
+  /// Create database tables (web-compatible)
+  Future<void> _onCreate() async {
     try {
-      // Posts table
-      await db.execute('''
-        CREATE TABLE posts (
-          id TEXT PRIMARY KEY,
-          author_id TEXT NOT NULL,
-          author_name TEXT NOT NULL,
-          author_role TEXT,
-          author_avatar_url TEXT,
-          title TEXT,
-          content TEXT NOT NULL,
-          category TEXT NOT NULL,
-          visibility TEXT NOT NULL,
-          priority TEXT NOT NULL,
-          hashtags TEXT, -- JSON array
-          image_urls TEXT, -- JSON array
-          document_urls TEXT, -- JSON array
-          geographic_targeting TEXT, -- JSON object
-          created_at INTEGER NOT NULL,
-          updated_at INTEGER NOT NULL,
-          likes_count INTEGER DEFAULT 0,
-          comments_count INTEGER DEFAULT 0,
-          shares_count INTEGER DEFAULT 0,
-          views_count INTEGER DEFAULT 0,
-          is_liked_by_current_user INTEGER DEFAULT 0,
-          is_shared_by_current_user INTEGER DEFAULT 0,
-          is_pinned INTEGER DEFAULT 0,
-          is_emergency INTEGER DEFAULT 0,
-          allow_comments INTEGER DEFAULT 1,
-          allow_shares INTEGER DEFAULT 1,
-          metadata TEXT, -- JSON object for sync status, etc.
-          cached_at INTEGER
-        )
-      ''');
-
-      // Comments table
-      await db.execute('''
-        CREATE TABLE comments (
-          id TEXT PRIMARY KEY,
-          post_id TEXT NOT NULL,
-          author_id TEXT NOT NULL,
-          author_name TEXT NOT NULL,
-          author_role TEXT,
-          author_avatar_url TEXT,
-          content TEXT NOT NULL,
-          parent_comment_id TEXT,
-          created_at INTEGER NOT NULL,
-          updated_at INTEGER NOT NULL,
-          likes_count INTEGER DEFAULT 0,
-          is_liked_by_current_user INTEGER DEFAULT 0,
-          is_author INTEGER DEFAULT 0,
-          metadata TEXT, -- JSON object
-          FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
-        )
-      ''');
-
-      // Sync queue table
-      await db.execute('''
-        CREATE TABLE sync_queue (
-          id TEXT PRIMARY KEY,
-          action TEXT NOT NULL,
-          item_id TEXT NOT NULL,
-          data TEXT NOT NULL, -- JSON object
-          created_at INTEGER NOT NULL,
-          attempts INTEGER DEFAULT 0,
-          status TEXT DEFAULT 'pending',
-          last_attempt_at INTEGER,
-          completed_at INTEGER,
-          error TEXT
-        )
-      ''');
-
-      // User cache table
-      await db.execute('''
-        CREATE TABLE user_cache (
-          id TEXT PRIMARY KEY,
-          full_name TEXT NOT NULL,
-          role TEXT NOT NULL,
-          avatar_url TEXT,
-          address TEXT, -- JSON object
-          is_online INTEGER DEFAULT 0,
-          last_seen INTEGER,
-          cached_at INTEGER NOT NULL,
-          metadata TEXT -- JSON object
-        )
-      ''');
-
-      // Media cache table
-      await db.execute('''
-        CREATE TABLE media_cache (
-          id TEXT PRIMARY KEY,
-          url TEXT NOT NULL,
-          local_path TEXT NOT NULL,
-          media_type TEXT NOT NULL, -- 'image', 'document', 'video'
-          file_size INTEGER,
-          cached_at INTEGER NOT NULL,
-          last_accessed INTEGER NOT NULL,
-          metadata TEXT -- JSON object
-        )
-      ''');
-
-      // Create indexes for better performance
-      await db.execute('CREATE INDEX idx_posts_created_at ON posts (created_at DESC)');
-      await db.execute('CREATE INDEX idx_posts_author_id ON posts (author_id)');
-      await db.execute('CREATE INDEX idx_posts_category ON posts (category)');
-      await db.execute('CREATE INDEX idx_comments_post_id ON comments (post_id)');
-      await db.execute('CREATE INDEX idx_sync_queue_status ON sync_queue (status)');
-      await db.execute('CREATE INDEX idx_sync_queue_created_at ON sync_queue (created_at)');
-
+      // Initialize table structures in memory
+      if (_database != null) {
+        _database!['posts'] = <String, Map<String, dynamic>>{};
+        _database!['comments'] = <String, Map<String, dynamic>>{};
+        _database!['users'] = <String, Map<String, dynamic>>{};
+        _database!['sync_queue'] = <String, Map<String, dynamic>>{};
+      }
+      
       if (kDebugMode) {
         debugPrint('Database tables created successfully');
       }
@@ -168,16 +70,16 @@ class LocalDatabase {
     }
   }
 
-  /// Handle database upgrades
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  /// Handle database upgrades (web-compatible)
+  Future<void> _onUpgrade(int oldVersion, int newVersion) async {
     // Handle database schema upgrades here
     if (kDebugMode) {
       debugPrint('Upgrading database from version $oldVersion to $newVersion');
     }
   }
 
-  /// Get database instance
-  Future<Database> get database async {
+  /// Get database instance (web-compatible)
+  Future<Map<String, dynamic>> get database async {
     if (_database == null) {
       await initialize();
     }

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -388,7 +388,7 @@ class CDNService {
     final extension = file.path.split('.').last;
     final hash = _generateFileHash(file);
     
-    return '$basePath/${timestamp}_${hash}.$extension';
+    return '$basePath/${timestamp}_$hash.$extension';
   }
   
   /// Generate file hash for uniqueness
@@ -501,7 +501,7 @@ class CDNService {
   
   /// Start cache cleanup timer
   void _startCacheCleanup() {
-    _cacheCleanupTimer = Timer.periodic(Duration(hours: 1), (_) {
+    _cacheCleanupTimer = Timer.periodic(const Duration(hours: 1), (_) {
       _cleanupExpiredCache();
     });
   }

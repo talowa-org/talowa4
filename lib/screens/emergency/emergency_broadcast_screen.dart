@@ -143,13 +143,20 @@ class _EmergencyBroadcastScreenState extends State<EmergencyBroadcastScreen> {
               Row(
                 children: EmergencyPriority.values.map((priority) {
                   return Expanded(
-                    child: RadioListTile<EmergencyPriority>(
+                    child: ListTile(
                       title: Text(_getPriorityLabel(priority)),
-                      value: priority,
-                      groupValue: _selectedPriority,
-                      onChanged: (value) {
+                      leading: Radio<EmergencyPriority>(
+                        value: priority,
+                        groupValue: _selectedPriority,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedPriority = value!;
+                          });
+                        },
+                      ),
+                      onTap: () {
                         setState(() {
-                          _selectedPriority = value!;
+                          _selectedPriority = priority;
                         });
                       },
                       dense: true,

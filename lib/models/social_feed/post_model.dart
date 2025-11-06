@@ -9,6 +9,7 @@ class PostModel {
   final String authorId;
   final String authorName;
   final String? authorRole;
+  final String? authorAvatarUrl; // Added missing property
   final String? title;
   final String content;
   final List<String> mediaUrls; // Legacy field - kept for backward compatibility
@@ -22,14 +23,28 @@ class PostModel {
   final int likesCount;
   final int commentsCount;
   final int sharesCount;
+  final int viewsCount; // Added missing property
   final bool isLikedByCurrentUser;
+  final bool isSharedByCurrentUser; // Added missing property
+  final bool isPinned; // Added missing property
+  final bool isEmergency; // Added missing property
+  final DateTime? updatedAt; // Added for sync functionality
+  final int syncVersion; // Added for sync functionality
+  final bool isDeleted; // Added for sync functionality
+  final String visibility; // Added for database compatibility
+  final String priority; // Added for database compatibility
+  final bool allowComments; // Added for database compatibility
+  final bool allowShares; // Added for database compatibility
+  final Map<String, dynamic>? metadata; // Added for database compatibility
   final GeographicTargeting? geographicTargeting;
+  final GeographicTargeting? targeting; // Added missing property (alias for geographicTargeting)
 
   PostModel({
     required this.id,
     required this.authorId,
     required this.authorName,
     this.authorRole,
+    this.authorAvatarUrl,
     this.title,
     required this.content,
     this.mediaUrls = const [], // Legacy field - kept for backward compatibility
@@ -43,37 +58,94 @@ class PostModel {
     required this.likesCount,
     required this.commentsCount,
     required this.sharesCount,
+    this.viewsCount = 0,
     required this.isLikedByCurrentUser,
+    this.isSharedByCurrentUser = false,
+    this.isPinned = false,
+    this.isEmergency = false,
+    this.updatedAt,
+    this.syncVersion = 1,
+    this.isDeleted = false,
+    this.visibility = 'public',
+    this.priority = 'normal',
+    this.allowComments = true,
+    this.allowShares = true,
+    this.metadata,
     this.geographicTargeting,
-  });
+  }) : targeting = geographicTargeting;
 
   // Convert from Firestore document
   factory PostModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    
-    return PostModel(
-      id: doc.id,
-      authorId: data['authorId'] ?? '',
-      authorName: data['authorName'] ?? 'Unknown User',
-      authorRole: data['authorRole'],
-      title: data['title'],
-      content: data['content'] ?? '',
-      mediaUrls: List<String>.from(data['mediaUrls'] ?? []), // Legacy support
-      imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      videoUrls: List<String>.from(data['videoUrls'] ?? []),
-      documentUrls: List<String>.from(data['documentUrls'] ?? []),
-      hashtags: List<String>.from(data['hashtags'] ?? []),
-      category: PostCategoryExtension.fromString(data['category'] ?? 'general_discussion'),
-      location: data['location'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      likesCount: data['likesCount'] ?? 0,
-      commentsCount: data['commentsCount'] ?? 0,
-      sharesCount: data['sharesCount'] ?? 0,
-      isLikedByCurrentUser: false, // This will be set separately
-      geographicTargeting: data['geographicTargeting'] != null 
-          ? GeographicTargeting.fromMap(data['geographicTargeting']) 
-          : null,
-    );
+    try {
+      final data = doc.data() as Map<String, dynamic>?;
+      
+      if (data == null) {
+        throw Exception('Document data is null for post ${doc.id}');
+      }
+      
+      return PostModel(
+        id: doc.id,
+        authorId: data['authorId']?.toString() ?? '',
+        authorName: data['authorName']?.toString() ?? 'Unknown User',
+        authorRole: data['authorRole']?.toString(),
+        authorAvatarUrl: data['authorAvatarUrl']?.toString(),
+        title: data['title']?.toString(),
+        content: data['content']?.toString() ?? '',
+        mediaUrls: _safeListFromData(data['mediaUrls']), // Legacy support
+        imageUrls: _safeListFromData(data['imageUrls']),
+        videoUrls: _safeListFromData(data['videoUrls']),
+        documentUrls: _safeListFromData(data['documentUrls']),
+        hashtags: _safeListFromData(data['hashtags']),
+        category: PostCategoryExtension.fromString(data['category']?.toString() ?? 'general_discussion'),
+        location: data['location']?.toString() ?? '',
+        createdAt: _safeDateFromTimestamp(data['createdAt']),
+        likesCount: _safeIntFromData(data['likesCount']),
+        commentsCount: _safeIntFromData(data['commentsCount']),
+        sharesCount: _safeIntFromData(data['sharesCount']),
+        viewsCount: _safeIntFromData(data['viewsCount']),
+        isLikedByCurrentUser: false, // This will be set separately
+        isSharedByCurrentUser: data['isSharedByCurrentUser'] == true,
+        isPinned: data['isPinned'] == true,
+        isEmergency: data['isEmergency'] == true,
+        updatedAt: _safeDateFromTimestamp(data['updatedAt']),
+        syncVersion: _safeIntFromData(data['syncVersion'], defaultValue: 1),
+        isDeleted: data['isDeleted'] == true,
+        visibility: data['visibility']?.toString() ?? 'public',
+        priority: data['priority']?.toString() ?? 'normal',
+        allowComments: data['allowComments'] != false,
+        allowShares: data['allowShares'] != false,
+        metadata: data['metadata'] is Map ? Map<String, dynamic>.from(data['metadata']) : null,
+        geographicTargeting: data['geographicTargeting'] != null 
+            ? GeographicTargeting.fromMap(Map<String, dynamic>.from(data['geographicTargeting'])) 
+            : null,
+      );
+    } catch (e) {
+      throw Exception('Error parsing PostModel from Firestore document ${doc.id}: $e');
+    }
+  }
+
+  // Helper methods for safe data extraction
+  static List<String> _safeListFromData(dynamic data) {
+    if (data == null) return [];
+    if (data is List) {
+      return data.map((item) => item?.toString() ?? '').where((item) => item.isNotEmpty).toList();
+    }
+    return [];
+  }
+
+  static int _safeIntFromData(dynamic data, {int defaultValue = 0}) {
+    if (data == null) return defaultValue;
+    if (data is int) return data;
+    if (data is double) return data.toInt();
+    if (data is String) return int.tryParse(data) ?? defaultValue;
+    return defaultValue;
+  }
+
+  static DateTime _safeDateFromTimestamp(dynamic data) {
+    if (data == null) return DateTime.now();
+    if (data is Timestamp) return data.toDate();
+    if (data is DateTime) return data;
+    return DateTime.now();
   }
 
   // Convert to Firestore document
@@ -82,6 +154,7 @@ class PostModel {
       'authorId': authorId,
       'authorName': authorName,
       'authorRole': authorRole,
+      'authorAvatarUrl': authorAvatarUrl,
       'title': title,
       'content': content,
       'mediaUrls': mediaUrls, // Legacy support
@@ -95,6 +168,18 @@ class PostModel {
       'likesCount': likesCount,
       'commentsCount': commentsCount,
       'sharesCount': sharesCount,
+      'viewsCount': viewsCount,
+      'isSharedByCurrentUser': isSharedByCurrentUser,
+      'isPinned': isPinned,
+      'isEmergency': isEmergency,
+      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+      'syncVersion': syncVersion,
+      'isDeleted': isDeleted,
+      'visibility': visibility,
+      'priority': priority,
+      'allowComments': allowComments,
+      'allowShares': allowShares,
+      'metadata': metadata,
       'geographicTargeting': geographicTargeting?.toMap(),
     };
   }
@@ -105,6 +190,7 @@ class PostModel {
     String? authorId,
     String? authorName,
     String? authorRole,
+    String? authorAvatarUrl,
     String? title,
     String? content,
     List<String>? mediaUrls,
@@ -118,7 +204,19 @@ class PostModel {
     int? likesCount,
     int? commentsCount,
     int? sharesCount,
+    int? viewsCount,
     bool? isLikedByCurrentUser,
+    bool? isSharedByCurrentUser,
+    bool? isPinned,
+    bool? isEmergency,
+    DateTime? updatedAt,
+    int? syncVersion,
+    bool? isDeleted,
+    String? visibility,
+    String? priority,
+    bool? allowComments,
+    bool? allowShares,
+    Map<String, dynamic>? metadata,
     GeographicTargeting? geographicTargeting,
   }) {
     return PostModel(
@@ -126,6 +224,7 @@ class PostModel {
       authorId: authorId ?? this.authorId,
       authorName: authorName ?? this.authorName,
       authorRole: authorRole ?? this.authorRole,
+      authorAvatarUrl: authorAvatarUrl ?? this.authorAvatarUrl,
       title: title ?? this.title,
       content: content ?? this.content,
       mediaUrls: mediaUrls ?? this.mediaUrls,
@@ -139,7 +238,19 @@ class PostModel {
       likesCount: likesCount ?? this.likesCount,
       commentsCount: commentsCount ?? this.commentsCount,
       sharesCount: sharesCount ?? this.sharesCount,
+      viewsCount: viewsCount ?? this.viewsCount,
       isLikedByCurrentUser: isLikedByCurrentUser ?? this.isLikedByCurrentUser,
+      isSharedByCurrentUser: isSharedByCurrentUser ?? this.isSharedByCurrentUser,
+      isPinned: isPinned ?? this.isPinned,
+      isEmergency: isEmergency ?? this.isEmergency,
+      updatedAt: updatedAt ?? this.updatedAt,
+      syncVersion: syncVersion ?? this.syncVersion,
+      isDeleted: isDeleted ?? this.isDeleted,
+      visibility: visibility ?? this.visibility,
+      priority: priority ?? this.priority,
+      allowComments: allowComments ?? this.allowComments,
+      allowShares: allowShares ?? this.allowShares,
+      metadata: metadata ?? this.metadata,
       geographicTargeting: geographicTargeting ?? this.geographicTargeting,
     );
   }
@@ -153,6 +264,102 @@ class PostModel {
   int get totalMediaCount => imageUrls.length + videoUrls.length + documentUrls.length;
 
   List<String> get allMediaUrls => [...imageUrls, ...videoUrls, ...documentUrls];
+
+  // Time ago method for displaying relative time
+  String getTimeAgo() {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+    
+    if (difference.inMinutes < 1) {
+      return 'now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d';
+    } else {
+      return '${difference.inDays ~/ 7}w';
+    }
+  }
+
+  // Convert from Map (for sync functionality)
+  factory PostModel.fromMap(Map<String, dynamic> data) {
+    return PostModel(
+      id: data['id'] ?? '',
+      authorId: data['authorId'] ?? '',
+      authorName: data['authorName'] ?? 'Unknown User',
+      authorRole: data['authorRole'],
+      authorAvatarUrl: data['authorAvatarUrl'],
+      title: data['title'],
+      content: data['content'] ?? '',
+      mediaUrls: List<String>.from(data['mediaUrls'] ?? []),
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+      videoUrls: List<String>.from(data['videoUrls'] ?? []),
+      documentUrls: List<String>.from(data['documentUrls'] ?? []),
+      hashtags: List<String>.from(data['hashtags'] ?? []),
+      category: PostCategoryExtension.fromString(data['category'] ?? 'general_discussion'),
+      location: data['location'] ?? '',
+      createdAt: DateTime.parse(data['createdAt'] ?? DateTime.now().toIso8601String()),
+      likesCount: data['likesCount'] ?? 0,
+      commentsCount: data['commentsCount'] ?? 0,
+      sharesCount: data['sharesCount'] ?? 0,
+      viewsCount: data['viewsCount'] ?? 0,
+      isLikedByCurrentUser: data['isLikedByCurrentUser'] ?? false,
+      isSharedByCurrentUser: data['isSharedByCurrentUser'] ?? false,
+      isPinned: data['isPinned'] ?? false,
+      isEmergency: data['isEmergency'] ?? false,
+      updatedAt: data['updatedAt'] != null ? DateTime.parse(data['updatedAt']) : null,
+      syncVersion: data['syncVersion'] ?? 1,
+      isDeleted: data['isDeleted'] ?? false,
+      visibility: data['visibility'] ?? 'public',
+      priority: data['priority'] ?? 'normal',
+      allowComments: data['allowComments'] ?? true,
+      allowShares: data['allowShares'] ?? true,
+      metadata: data['metadata'] as Map<String, dynamic>?,
+      geographicTargeting: data['geographicTargeting'] != null 
+          ? GeographicTargeting.fromMap(data['geographicTargeting']) 
+          : null,
+    );
+  }
+
+  // Convert to Map (for sync functionality)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'authorId': authorId,
+      'authorName': authorName,
+      'authorRole': authorRole,
+      'authorAvatarUrl': authorAvatarUrl,
+      'title': title,
+      'content': content,
+      'mediaUrls': mediaUrls,
+      'imageUrls': imageUrls,
+      'videoUrls': videoUrls,
+      'documentUrls': documentUrls,
+      'hashtags': hashtags,
+      'category': category.value,
+      'location': location,
+      'createdAt': createdAt.toIso8601String(),
+      'likesCount': likesCount,
+      'commentsCount': commentsCount,
+      'sharesCount': sharesCount,
+      'viewsCount': viewsCount,
+      'isLikedByCurrentUser': isLikedByCurrentUser,
+      'isSharedByCurrentUser': isSharedByCurrentUser,
+      'isPinned': isPinned,
+      'isEmergency': isEmergency,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'syncVersion': syncVersion,
+      'isDeleted': isDeleted,
+      'visibility': visibility,
+      'priority': priority,
+      'allowComments': allowComments,
+      'allowShares': allowShares,
+      'metadata': metadata,
+      'geographicTargeting': geographicTargeting?.toMap(),
+    };
+  }
 
   @override
   String toString() {

@@ -2,7 +2,6 @@
 // Implements Task 18: Add security and content safety - Report UI
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/security/content_moderation_service.dart';
 import '../../services/security/user_safety_service.dart';
 

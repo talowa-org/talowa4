@@ -107,7 +107,7 @@ class RoleUtils {
     if (currentRole == null || currentRole.isEmpty) return 'volunteer';
     
     final normalizedRole = _normalizeRoleKey(currentRole);
-    final hierarchy = RoleProgressionService.ROLE_HIERARCHY;
+    const hierarchy = RoleProgressionService.ROLE_HIERARCHY;
     final currentIndex = hierarchy.indexOf(normalizedRole);
     
     if (currentIndex == -1 || currentIndex >= hierarchy.length - 1) {

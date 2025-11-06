@@ -549,12 +549,14 @@ class _AccessibilitySettingsWidgetState extends State<AccessibilitySettingsWidge
     
     _loadSettings();
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Accessibility settings reset to defaults'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Accessibility settings reset to defaults'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _showAccessibilityGuide() {

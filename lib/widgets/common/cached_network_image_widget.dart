@@ -4,7 +4,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../services/performance/performance_optimization_service.dart';
 import '../../core/theme/app_theme.dart';
 
 class CachedNetworkImageWidget extends StatefulWidget {
@@ -36,8 +35,6 @@ class CachedNetworkImageWidget extends StatefulWidget {
 }
 
 class _CachedNetworkImageWidgetState extends State<CachedNetworkImageWidget> {
-  final PerformanceOptimizationService _performanceService = PerformanceOptimizationService();
-  
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
@@ -53,7 +50,7 @@ class _CachedNetworkImageWidgetState extends State<CachedNetworkImageWidget> {
       fadeOutDuration: const Duration(milliseconds: 100),
       useOldImageOnUrlChange: true,
       // Performance optimizations
-      cacheManager: CustomCacheManager(),
+      // Using default cache manager for web compatibility
       maxWidthDiskCache: 1920,
       maxHeightDiskCache: 1080,
     );
@@ -120,7 +117,7 @@ class _CachedNetworkImageWidgetState extends State<CachedNetworkImageWidget> {
 }
 
 // Custom cache manager for better performance
-class CustomCacheManager extends CacheManager {
+class CustomCacheManager {
   static const key = 'talowa_image_cache';
   
   static CustomCacheManager? _instance;
@@ -130,15 +127,7 @@ class CustomCacheManager extends CacheManager {
     return _instance!;
   }
   
-  CustomCacheManager._() : super(
-    Config(
-      key,
-      stalePeriod: const Duration(days: 7), // Cache for 7 days
-      maxNrOfCacheObjects: 200, // Maximum 200 cached images
-      repo: JsonCacheInfoRepository(databaseName: key),
-      fileService: HttpFileService(),
-    ),
-  );
+  CustomCacheManager._();
 }
 
 // Optimized image widget with lazy loading
@@ -166,7 +155,6 @@ class LazyLoadImageWidget extends StatefulWidget {
 
 class _LazyLoadImageWidgetState extends State<LazyLoadImageWidget> {
   bool _isVisible = false;
-  final bool _hasError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -315,8 +303,8 @@ class _ProgressiveImageWidgetState extends State<ProgressiveImageWidget> {
             fit: widget.fit,
             width: widget.width,
             height: widget.height,
-            placeholder: (context, url) => const SizedBox.shrink(),
-            errorWidget: (context, url, error) => const SizedBox.shrink(),
+            placeholder: const SizedBox.shrink(),
+            errorWidget: const SizedBox.shrink(),
           ),
         ),
       ],

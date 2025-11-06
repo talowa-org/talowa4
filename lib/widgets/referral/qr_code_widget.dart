@@ -53,7 +53,14 @@ class QRCodeWidget extends StatelessWidget {
                 version: QrVersions.auto,
                 size: size,
                 backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                eyeStyle: const QrEyeStyle(
+                  eyeShape: QrEyeShape.square,
+                  color: Colors.black,
+                ),
+                dataModuleStyle: const QrDataModuleStyle(
+                  dataModuleShape: QrDataModuleShape.square,
+                  color: Colors.black,
+                ),
                 errorCorrectionLevel: QrErrorCorrectLevel.M,
                 embeddedImage: const AssetImage('assets/images/talowa_logo.png'), // Optional logo
                 embeddedImageStyle: const QrEmbeddedImageStyle(
@@ -183,7 +190,14 @@ class CompactQRCodeWidget extends StatelessWidget {
               version: QrVersions.auto,
               size: size,
               backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              eyeStyle: const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+              dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
               errorCorrectionLevel: QrErrorCorrectLevel.M,
             ),
             const SizedBox(height: 8),

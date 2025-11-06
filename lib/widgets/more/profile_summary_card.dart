@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/user_profile.dart';
-import '../../screens/more/more_screen.dart';
 
 class ProfileSummaryCard extends StatelessWidget {
   final UserProfile userProfile;

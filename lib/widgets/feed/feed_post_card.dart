@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../utils/role_utils.dart';
+import '../../models/social_feed/feed_post_model.dart';
 
 class FeedPostCard extends StatelessWidget {
   final FeedPost post;
@@ -39,7 +40,7 @@ class FeedPostCard extends StatelessWidget {
           _buildPostContent(),
           
           // Post Image (if any)
-          if (post.imageUrl != null) _buildPostImage(),
+          if (post.hasMedia) _buildPostImage(),
           
           // Post Actions
           _buildPostActions(),
@@ -85,11 +86,11 @@ class FeedPostCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${post.authorRole} • ${post.authorLocation}',
+                  '${post.authorRole} • ${post.location}',
                   style: AppTheme.captionStyle,
                 ),
                 Text(
-                  _formatTimestamp(post.timestamp),
+                  post.timeAgo,
                   style: AppTheme.captionStyle,
                 ),
               ],
@@ -182,21 +183,21 @@ class FeedPostCard extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '${post.likes} likes',
+            '${post.likesCount} likes',
             style: AppTheme.captionStyle.copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(width: AppTheme.spacingMedium),
           Text(
-            '${post.comments} comments',
+            '${post.commentsCount} comments',
             style: AppTheme.captionStyle.copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(width: AppTheme.spacingMedium),
           Text(
-            '${post.shares} shares',
+            '${post.sharesCount} shares',
             style: AppTheme.captionStyle.copyWith(
               fontWeight: FontWeight.w500,
             ),
@@ -210,7 +211,7 @@ class FeedPostCard extends StatelessWidget {
     Color chipColor;
     String chipText;
     
-    switch (post.type) {
+    switch (post.category.value) {
       case AppConstants.postTypeSuccessStory:
         chipColor = AppTheme.successGreen;
         chipText = 'Success';

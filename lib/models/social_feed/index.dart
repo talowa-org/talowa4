@@ -3,4 +3,6 @@
 
 export 'post_model.dart';
 export 'comment_model.dart';
+export 'story_model.dart';
+export 'feed_post_model.dart';
 export 'geographic_targeting.dart';

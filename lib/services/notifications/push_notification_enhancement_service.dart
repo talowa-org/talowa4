@@ -380,11 +380,15 @@ class PushNotificationEnhancementService {
     
     // Show local notification if user preferences allow
     if (_userPreferences?.showInApp ?? true) {
-      NotificationService.showLocalNotification(
+      final notification = NotificationModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: message.notification?.title ?? 'New Notification',
         body: message.notification?.body ?? '',
+        type: NotificationType.general,
         data: message.data,
+        createdAt: DateTime.now(),
       );
+      NotificationService.showLocalNotification(notification);
     }
   }
   

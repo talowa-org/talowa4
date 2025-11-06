@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/social_feed/post_management_service.dart';
 import '../models/social_feed/post_model.dart';
 
@@ -65,14 +66,14 @@ mixin AutoSaveMixin<T extends StatefulWidget> on State<T> {
   /// Perform auto-save
   Future<void> _performAutoSave() async {
     try {
-      _currentDraftId = await PostManagementService.autoSaveDraft(
-        authorId: authorId,
-        draftId: _currentDraftId,
-        title: currentTitle,
-        content: currentContent,
-        hashtags: currentHashtags,
-        category: currentCategory,
-      );
+      await PostManagementService().autoSaveDraft({
+        'authorId': authorId,
+        'draftId': _currentDraftId,
+        'title': currentTitle,
+        'content': currentContent,
+        'hashtags': currentHashtags,
+        'category': currentCategory,
+      });
       
       _hasUnsavedChanges = false;
       _onAutoSaveSuccess();
@@ -84,14 +85,14 @@ mixin AutoSaveMixin<T extends StatefulWidget> on State<T> {
   /// Manual save draft
   Future<String?> saveDraft() async {
     try {
-      _currentDraftId = await PostManagementService.saveDraft(
-        draftId: _currentDraftId,
-        authorId: authorId,
-        title: currentTitle,
-        content: currentContent,
-        hashtags: currentHashtags,
-        category: currentCategory,
-      );
+      _currentDraftId = await PostManagementService().saveDraft({
+        'draftId': _currentDraftId,
+        'authorId': authorId,
+        'title': currentTitle,
+        'content': currentContent,
+        'hashtags': currentHashtags,
+        'category': currentCategory,
+      });
       
       _hasUnsavedChanges = false;
       _onSaveSuccess();
@@ -105,7 +106,7 @@ mixin AutoSaveMixin<T extends StatefulWidget> on State<T> {
   /// Load draft by ID
   Future<Map<String, dynamic>?> loadDraft(String draftId) async {
     try {
-      final drafts = await PostManagementService.getUserDrafts(authorId);
+      final drafts = await PostManagementService().getUserDrafts();
       final draft = drafts.firstWhere(
         (d) => d['id'] == draftId,
         orElse: () => {},
@@ -127,7 +128,7 @@ mixin AutoSaveMixin<T extends StatefulWidget> on State<T> {
     if (_currentDraftId == null) return false;
     
     try {
-      await PostManagementService.deleteDraft(_currentDraftId!);
+      await PostManagementService().deleteDraft(_currentDraftId!);
       _currentDraftId = null;
       _hasUnsavedChanges = false;
       _onDeleteSuccess();
@@ -220,7 +221,7 @@ mixin EnhancedAutoSaveMixin<T extends StatefulWidget> on AutoSaveMixin<T> {
   /// Get all drafts with metadata
   Future<List<Map<String, dynamic>>> getAllDraftsWithMetadata() async {
     try {
-      final drafts = await PostManagementService.getUserDrafts(authorId);
+      final drafts = await PostManagementService().getUserDrafts();
       
       // Sort by last updated
       drafts.sort((a, b) {
@@ -246,7 +247,7 @@ mixin EnhancedAutoSaveMixin<T extends StatefulWidget> on AutoSaveMixin<T> {
       for (final draft in drafts) {
         final updatedAt = (draft['updatedAt'] as Timestamp?)?.toDate();
         if (updatedAt != null && updatedAt.isBefore(cutoffDate)) {
-          await PostManagementService.deleteDraft(draft['id']);
+          await PostManagementService().deleteDraft(draft['id']);
         }
       }
       
@@ -254,7 +255,7 @@ mixin EnhancedAutoSaveMixin<T extends StatefulWidget> on AutoSaveMixin<T> {
       if (drafts.length > maxDrafts) {
         final excessDrafts = drafts.skip(maxDrafts);
         for (final draft in excessDrafts) {
-          await PostManagementService.deleteDraft(draft['id']);
+          await PostManagementService().deleteDraft(draft['id']);
         }
       }
     } catch (e) {

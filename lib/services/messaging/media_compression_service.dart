@@ -63,7 +63,7 @@ class MediaCompressionService {
       if (level == CompressionLevel.maximum) {
         // Apply noise reduction and sharpening for maximum compression
         processedImage = img.gaussianBlur(processedImage, radius: 0.5);
-        processedImage = img.convolution(processedImage, [
+        processedImage = img.convolution(processedImage, filter: [
           0, -1, 0,
           -1, 5, -1,
           0, -1, 0

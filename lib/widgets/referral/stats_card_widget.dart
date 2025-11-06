@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../models/role_model.dart';
 import '../../core/theme/app_theme.dart';
+import '../../utils/safe_math_utils.dart';
 
 class StatsCardWidget extends StatelessWidget {
   final String title;
@@ -204,7 +205,7 @@ class RoleProgressCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.gold.withValues(alpha: 0.2),
+                      color: Colors.amber.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -246,8 +247,10 @@ class RoleProgressCard extends StatelessWidget {
     
     // Generate progress text based on what's needed
     String progressText = '';
-    final directNeeded = (nextRole.directReferralsNeeded - directReferrals).clamp(0, double.infinity).toInt();
-    final teamNeeded = (nextRole.teamReferralsNeeded - teamReferrals).clamp(0, double.infinity).toInt();
+    final directNeeded = SafeMathUtils.safeClampToInt(
+      nextRole.directReferralsNeeded - directReferrals, 0, 999999);
+    final teamNeeded = SafeMathUtils.safeClampToInt(
+      nextRole.teamReferralsNeeded - teamReferrals, 0, 999999);
 
     if (directNeeded > 0 && teamNeeded > 0) {
       progressText = 'Need $directNeeded direct & $teamNeeded team members';

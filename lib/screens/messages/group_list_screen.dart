@@ -6,7 +6,6 @@ import '../../models/messaging/group_model.dart';
 import '../../services/messaging/group_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import 'group_detail_screen.dart';
 import 'create_group_screen.dart';
 import 'group_discovery_screen.dart';

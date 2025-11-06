@@ -20,7 +20,7 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
   final FocusNode _captionFocusNode = FocusNode();
   final ImagePicker _imagePicker = ImagePicker();
   
-  List<XFile> _selectedMedia = [];
+  final List<XFile> _selectedMedia = [];
   bool _isLoading = false;
   bool _allowComments = true;
   bool _allowSharing = true;
@@ -261,7 +261,7 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppTheme.talowaGreen),
+              borderSide: const BorderSide(color: AppTheme.talowaGreen),
             ),
             contentPadding: const EdgeInsets.all(16),
           ),
@@ -351,7 +351,7 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppTheme.talowaGreen,
+        activeThumbColor: AppTheme.talowaGreen,
       ),
       contentPadding: EdgeInsets.zero,
     );

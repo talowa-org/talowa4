@@ -11,6 +11,14 @@ import '../../widgets/feed/instagram_post_widget.dart';
 import '../../widgets/feed/feed_skeleton_loader.dart';
 import '../../widgets/common/error_boundary_widget.dart';
 import '../post_creation/instagram_post_creation_screen.dart';
+import '../story/story_creation_screen.dart';
+import '../feed/comments_screen.dart';
+import '../../services/social_feed/story_service.dart';
+import '../../services/social_feed/post_management_service.dart';
+import '../../models/social_feed/story_model.dart';
+import '../../services/auth/auth_service.dart';
+import '../../services/feed_crash_prevention_service.dart';
+import 'package:flutter/foundation.dart';
 
 class InstagramFeedScreen extends StatefulWidget {
   const InstagramFeedScreen({super.key});
@@ -24,6 +32,9 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   
   // Services
   final InstagramFeedService _feedService = InstagramFeedService();
+  final StoryService _storyService = StoryService();
+  final PostManagementService _postManagementService = PostManagementService();
+  final FeedCrashPreventionService _crashPrevention = FeedCrashPreventionService();
   
   // Controllers
   final ScrollController _scrollController = ScrollController();
@@ -35,6 +46,7 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   
   // State
   List<InstagramPostModel> _posts = [];
+  List<StoryModel> _stories = [];
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasError = false;
@@ -44,6 +56,7 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   // Streams
   StreamSubscription<List<InstagramPostModel>>? _feedSubscription;
   StreamSubscription<String>? _postUpdateSubscription;
+  StreamSubscription<List<StoryModel>>? _storiesSubscription;
 
   @override
   bool get wantKeepAlive => true;
@@ -51,6 +64,7 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   @override
   void initState() {
     super.initState();
+    _crashPrevention.initialize();
     _initializeAnimations();
     _setupScrollListener();
     _setupStreamListeners();
@@ -63,6 +77,7 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
     _fabAnimationController.dispose();
     _feedSubscription?.cancel();
     _postUpdateSubscription?.cancel();
+    _storiesSubscription?.cancel();
     super.dispose();
   }
 
@@ -79,37 +94,72 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
 
   void _setupScrollListener() {
     _scrollController.addListener(() {
-      // Handle FAB visibility
-      final isScrollingDown = _scrollController.position.userScrollDirection == ScrollDirection.reverse;
-      if (isScrollingDown && _showFab) {
-        setState(() => _showFab = false);
-        _fabAnimationController.reverse();
-      } else if (!isScrollingDown && !_showFab) {
-        setState(() => _showFab = true);
-        _fabAnimationController.forward();
-      }
+      try {
+        // Safety check for mounted state
+        if (!mounted) return;
 
-      // Handle infinite scroll
-      if (_scrollController.position.pixels >= 
-          _scrollController.position.maxScrollExtent - 200) {
-        _loadMorePosts();
+        // Handle FAB visibility with safety checks
+        if (_scrollController.hasClients) {
+          final isScrollingDown = _scrollController.position.userScrollDirection == ScrollDirection.reverse;
+          if (isScrollingDown && _showFab) {
+            if (mounted) {
+              setState(() => _showFab = false);
+              _fabAnimationController.reverse();
+            }
+          } else if (!isScrollingDown && !_showFab) {
+            if (mounted) {
+              setState(() => _showFab = true);
+              _fabAnimationController.forward();
+            }
+          }
+
+          // Handle infinite scroll with crash prevention
+          final shouldLoadMore = _crashPrevention.handleScrollEvent(
+            pixels: _scrollController.position.pixels,
+            maxScrollExtent: _scrollController.position.maxScrollExtent,
+            onLoadMore: _loadMorePosts,
+            threshold: 200.0,
+          );
+
+          if (shouldLoadMore && kDebugMode) {
+            debugPrint('📜 Loading more posts triggered by scroll');
+          }
+        }
+      } catch (e) {
+        debugPrint('❌ Error in scroll listener: $e');
+        // Don't rethrow to prevent crash
       }
     });
   }
 
   void _setupStreamListeners() {
-    // Listen to feed updates
+    // Listen to feed updates with crash prevention
     _feedSubscription = _feedService.feedStream.listen(
       (posts) {
-        if (mounted) {
-          setState(() {
-            _posts = posts;
-            _isLoading = false;
-            _hasError = false;
-          });
+        if (mounted && _crashPrevention.isHealthy) {
+          try {
+            // Safely manage the posts list to prevent memory issues
+            final managedPosts = _crashPrevention.manageFeedList(_posts, posts);
+            
+            setState(() {
+              _posts = managedPosts;
+              _isLoading = false;
+              _hasError = false;
+            });
+          } catch (e) {
+            debugPrint('❌ Error updating posts: $e');
+            if (mounted) {
+              setState(() {
+                _hasError = true;
+                _errorMessage = 'Failed to update feed';
+                _isLoading = false;
+              });
+            }
+          }
         }
       },
       onError: (error) {
+        debugPrint('❌ Feed stream error: $error');
         if (mounted) {
           setState(() {
             _hasError = true;
@@ -127,6 +177,20 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
         // The feed stream will automatically emit the updated posts
       },
     );
+
+    // Listen to stories updates
+    _storiesSubscription = _storyService.storiesStream.listen(
+      (stories) {
+        if (mounted) {
+          setState(() {
+            _stories = stories;
+          });
+        }
+      },
+      onError: (error) {
+        debugPrint('❌ Stories stream error: $error');
+      },
+    );
   }
 
   Future<void> _loadInitialFeed() async {
@@ -138,8 +202,13 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
         _errorMessage = null;
       });
 
-      final posts = await _feedService.getFeed(refresh: true);
-      debugPrint('✅ Initial feed load complete: ${posts.length} posts');
+      // Load both posts and stories
+      await Future.wait([
+        _feedService.getFeed(refresh: true),
+        _loadStories(),
+      ]);
+      
+      debugPrint('✅ Initial feed load complete');
       
     } catch (e) {
       debugPrint('❌ Initial feed load failed: $e');
@@ -153,10 +222,22 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
     }
   }
 
+  Future<void> _loadStories() async {
+    try {
+      await _storyService.initialize();
+      await _storyService.getStories(refresh: true);
+    } catch (e) {
+      debugPrint('❌ Failed to load stories: $e');
+    }
+  }
+
   Future<void> _refreshFeed() async {
     try {
       HapticFeedback.lightImpact();
-      await _feedService.getFeed(refresh: true);
+      await Future.wait([
+        _feedService.getFeed(refresh: true),
+        _storyService.getStories(refresh: true),
+      ]);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -171,27 +252,38 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   }
 
   Future<void> _loadMorePosts() async {
-    if (_isLoadingMore || !_feedService.hasMorePosts) return;
+    // Use crash prevention service for safe async operation
+    await _crashPrevention.safeAsyncOperation(
+      () async {
+        if (_isLoadingMore || !_feedService.hasMorePosts || !mounted) return;
 
-    setState(() => _isLoadingMore = true);
+        if (mounted) {
+          setState(() => _isLoadingMore = true);
+        }
 
-    try {
-      await _feedService.getFeed();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to load more posts: $e'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingMore = false);
-      }
-    }
+        try {
+          await _feedService.getFeed();
+          debugPrint('✅ Successfully loaded more posts');
+        } catch (e) {
+          debugPrint('❌ Error loading more posts: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to load more posts'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        } finally {
+          if (mounted) {
+            setState(() => _isLoadingMore = false);
+          }
+        }
+      },
+      operationName: 'load_more_posts',
+    );
   }
 
   @override
@@ -267,34 +359,58 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
             child: _buildStoriesSection(),
           ),
           
-          // Posts list
+          // Posts list with crash prevention
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                if (index < _posts.length) {
-                  return InstagramPostWidget(
-                    post: _posts[index],
-                    onLike: () => _feedService.toggleLike(_posts[index].id),
-                    onBookmark: () => _feedService.toggleBookmark(_posts[index].id),
-                    onComment: () => _navigateToComments(_posts[index]),
-                    onShare: () => _sharePost(_posts[index]),
-                    onViewProfile: () => _viewProfile(_posts[index].authorId),
-                    onReport: () => _reportPost(_posts[index]),
-                  );
-                } else if (_isLoadingMore) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.talowaGreen,
+                return _crashPrevention.buildSafeWidget(
+                  builder: () {
+                    if (index < _posts.length) {
+                      final post = _posts[index];
+                      return InstagramPostWidget(
+                        key: ValueKey('post_${post.id}'), // Add key for better widget recycling
+                        post: post,
+                        onLike: () => _safeToggleLike(post.id),
+                        onBookmark: () => _safeToggleBookmark(post.id),
+                        onComment: () => _safeNavigateToComments(post),
+                        onShare: () => _safeSharePost(post),
+                        onViewProfile: () => _safeViewProfile(post.authorId),
+                        onReport: () => _safeReportPost(post),
+                        onEdit: _isCurrentUserPost(post) ? () => _safeEditPost(post) : null,
+                        onDelete: _isCurrentUserPost(post) ? () => _safeDeletePost(post) : null,
+                      );
+                    } else if (_isLoadingMore) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.talowaGreen,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                  fallback: Container(
+                    height: 200,
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Post temporarily unavailable',
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
+                  ),
+                );
               },
               childCount: _posts.length + (_isLoadingMore ? 1 : 0),
+              addAutomaticKeepAlives: false, // Improve memory usage
+              addRepaintBoundaries: true, // Improve performance
             ),
           ),
           
@@ -314,78 +430,106 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: 10, // Placeholder count
+        itemCount: _stories.length + 1, // +1 for "Add Story" button
         itemBuilder: (context, index) {
           if (index == 0) {
             return _buildAddStoryItem();
           }
-          return _buildStoryItem(index);
+          return _buildStoryItem(_stories[index - 1]);
         },
       ),
     );
   }
 
   Widget _buildAddStoryItem() {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey[300]!, width: 1),
+    return GestureDetector(
+      onTap: _createStory,
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey[300]!, width: 1),
+              ),
+              child: const Icon(Icons.add, color: Colors.grey),
             ),
-            child: const Icon(Icons.add, color: Colors.grey),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Your Story',
-            style: TextStyle(fontSize: 12, color: Colors.black),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+            const SizedBox(height: 4),
+            const Text(
+              'Your Story',
+              style: TextStyle(fontSize: 12, color: Colors.black),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStoryItem(int index) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Colors.purple, Colors.pink, Colors.orange],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Container(
-              margin: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
+  Widget _buildStoryItem(StoryModel story) {
+    return GestureDetector(
+      onTap: () => _viewStory(story),
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
+                gradient: story.isViewedByCurrentUser
+                    ? null
+                    : const LinearGradient(
+                        colors: [Colors.purple, Colors.pink, Colors.orange],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                border: story.isViewedByCurrentUser
+                    ? Border.all(color: Colors.grey[300]!, width: 2)
+                    : null,
               ),
-              child: CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.grey[300],
-                child: Text('U$index'),
+              child: Container(
+                margin: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: story.authorId.isNotEmpty
+                      ? NetworkImage('https://ui-avatars.com/api/?name=${story.authorName}&background=random')
+                      : null,
+                  child: story.authorId.isEmpty
+                      ? Text(
+                          story.authorName.isNotEmpty 
+                              ? story.authorName[0].toUpperCase()
+                              : 'U',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'User $index',
-            style: const TextStyle(fontSize: 12, color: Colors.black),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+            const SizedBox(height: 4),
+            SizedBox(
+              width: 60,
+              child: Text(
+                story.authorName,
+                style: const TextStyle(fontSize: 12, color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -396,8 +540,8 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
       child: FloatingActionButton(
         onPressed: _createPost,
         backgroundColor: AppTheme.talowaGreen,
-        child: const Icon(Icons.add, color: Colors.white),
         tooltip: 'Create Post',
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -500,42 +644,7 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
     });
   }
 
-  void _navigateToComments(InstagramPostModel post) {
-    // TODO: Navigate to comments screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Comments feature coming soon!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 
-  void _sharePost(InstagramPostModel post) {
-    // TODO: Implement share functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share feature coming soon!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _viewProfile(String userId) {
-    // TODO: Navigate to user profile
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile view coming soon!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _reportPost(InstagramPostModel post) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => _buildReportBottomSheet(post),
-    );
-  }
 
   Widget _buildReportBottomSheet(InstagramPostModel post) {
     final reasons = [
@@ -578,4 +687,281 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
       ),
     );
   }
+
+  // New methods for enhanced functionality
+
+  void _createStory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const StoryCreationScreen(),
+      ),
+    ).then((result) {
+      if (result == true) {
+        _loadStories();
+      }
+    });
+  }
+
+  void _viewStory(StoryModel story) {
+    // Mark story as viewed
+    _storyService.viewStory(story.id);
+    
+    // TODO: Navigate to story viewer screen
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Viewing ${story.authorName}\'s story'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Widget _buildShareBottomSheet(InstagramPostModel post) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Share Post',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            leading: const Icon(Icons.share, color: AppTheme.talowaGreen),
+            title: const Text('Share Externally'),
+            subtitle: const Text('Share via other apps'),
+            onTap: () {
+              Navigator.pop(context);
+              _postManagementService.sharePost(post, shareType: 'external');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.repeat, color: AppTheme.talowaGreen),
+            title: const Text('Repost'),
+            subtitle: const Text('Share to your feed'),
+            onTap: () {
+              Navigator.pop(context);
+              _showRepostDialog(post);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.link, color: AppTheme.talowaGreen),
+            title: const Text('Copy Link'),
+            subtitle: const Text('Copy post link'),
+            onTap: () {
+              Navigator.pop(context);
+              // TODO: Implement copy link functionality
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Link copied to clipboard'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRepostDialog(InstagramPostModel post) {
+    final TextEditingController captionController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Repost'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Add your thoughts (optional):'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: captionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'What do you think about this post?',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await _postManagementService.repostPost(
+                  originalPostId: post.id,
+                  additionalCaption: captionController.text.trim().isNotEmpty 
+                      ? captionController.text.trim() 
+                      : null,
+                );
+                
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Post reposted successfully!'),
+                      backgroundColor: AppTheme.talowaGreen,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to repost: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.talowaGreen,
+            ),
+            child: const Text('Repost'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper methods for post management
+
+  bool _isCurrentUserPost(InstagramPostModel post) {
+    try {
+      final currentUser = AuthService.currentUser;
+      return currentUser != null && post.authorId == currentUser.uid;
+    } catch (e) {
+      debugPrint('❌ Error checking post ownership: $e');
+      return false;
+    }
+  }
+
+  // Safe wrapper methods for post interactions
+  void _safeToggleLike(String postId) {
+    _crashPrevention.safeAsyncOperation(
+      () async => _feedService.toggleLike(postId),
+      operationName: 'toggle_like',
+    );
+  }
+
+  void _safeToggleBookmark(String postId) {
+    _crashPrevention.safeAsyncOperation(
+      () async => _feedService.toggleBookmark(postId),
+      operationName: 'toggle_bookmark',
+    );
+  }
+
+  void _safeNavigateToComments(InstagramPostModel post) {
+    try {
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CommentsScreen(post: post),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error navigating to comments: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to open comments'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _safeSharePost(InstagramPostModel post) {
+    try {
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => _buildShareBottomSheet(post),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error opening share dialog: $e');
+    }
+  }
+
+  void _safeViewProfile(String userId) {
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile view coming soon!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error viewing profile: $e');
+    }
+  }
+
+  void _safeReportPost(InstagramPostModel post) {
+    try {
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => _buildReportBottomSheet(post),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error opening report dialog: $e');
+    }
+  }
+
+  void _safeEditPost(InstagramPostModel post) {
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Post editing feature coming soon!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error editing post: $e');
+    }
+  }
+
+  Future<void> _safeDeletePost(InstagramPostModel post) async {
+    await _crashPrevention.safeAsyncOperation(
+      () async {
+        await _postManagementService.deletePost(post.id);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Post deleted successfully'),
+              backgroundColor: AppTheme.talowaGreen,
+            ),
+          );
+          
+          // Refresh feed to remove deleted post
+          _refreshFeed();
+        }
+      },
+      operationName: 'delete_post',
+    );
+  }
+
+
 }

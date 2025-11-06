@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+
 import '../../config/cdn_config.dart';
 
 /// Enhanced Cache Invalidation Service for TALOWA CDN
@@ -94,7 +94,7 @@ class CacheInvalidationService {
     // User avatars with immediate invalidation
     _invalidationRules['user_avatar'] = CacheInvalidationRule(
       pattern: '/media/avatars/*',
-      ttl: Duration(minutes: 30),
+      ttl: const Duration(minutes: 30),
       strategy: InvalidationStrategy.immediate,
       dependencies: ['user_profile'],
     );
@@ -110,7 +110,7 @@ class CacheInvalidationService {
     // Organization content
     _invalidationRules['organization'] = CacheInvalidationRule(
       pattern: '/organizations/{orgId}/*',
-      ttl: Duration(hours: 2),
+      ttl: const Duration(hours: 2),
       strategy: InvalidationStrategy.batched,
       dependencies: ['organization_media', 'organization_events'],
     );
@@ -349,7 +349,7 @@ class CacheInvalidationService {
   /// Perform CDN invalidation for a single request
   Future<void> _performCDNInvalidation(InvalidationRequest request) async {
     // Simulate CDN API call
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     
     final cacheKey = _generateCacheKey(request);
     _lastInvalidation[cacheKey] = DateTime.now();
@@ -360,7 +360,7 @@ class CacheInvalidationService {
   /// Perform batch CDN invalidation
   Future<void> _performBatchCDNInvalidation(List<InvalidationRequest> requests) async {
     // Simulate batch CDN API call
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
     
     for (final request in requests) {
       final cacheKey = _generateCacheKey(request);

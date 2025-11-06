@@ -245,7 +245,7 @@ class PerformanceDashboardService {
   /// Get capacity metrics
   Map<String, dynamic> _getCapacityMetrics() {
     final currentCapacity = _estimateConcurrentUsers();
-    final targetCapacity = 500000; // 10M DAU target
+    const targetCapacity = 500000; // 10M DAU target
     
     return {
       'current_capacity': currentCapacity,
@@ -407,7 +407,7 @@ class PerformanceDashboardService {
   /// Get scaling analysis
   Map<String, dynamic> _getScalingAnalysis() {
     final currentCapacity = _estimateConcurrentUsers();
-    final targetCapacity = 500000;
+    const targetCapacity = 500000;
     final scalingFactor = targetCapacity / currentCapacity;
     
     return {
@@ -463,7 +463,7 @@ Needs SReady' : '00 ? '= 1000apacity >y) => ct capacitnessLevel(ineadi _getRer
   StringPlacehold// ) => {}; estResults(LoadTastgetLc> _ing, dynami  Map<Strer
  Placehold'N/A'; //us) => ynamic> statring, d<Stletion(MapmpLoadTestCoimateest _  Stringlder
  Placeho; //> 0.0s) =ic> statu dynamMap<String,ess(grestProulateLoadT_calc
-  double ng();Stri.toIso860130))ation(days: urst Dadd(con).Time.now(te() => DategDainommendedScaletRecString _g'];
+  double ng();Stri.toIso860130))ation(days = urst Dadd(con).Time.now(te() => DategDainommendedScaletRecString _g'];
   achingve cImpro', 'estimize queri> ['Ophealth) =e ions(doubleActrformanc_getPeist<String> ];
   Lcaching'lement oling', 'Impon podd connecti => ['Aations()endgRecomm_getScalinng> ist<Stri Lge'];
  mory usaions', 'Meconnectase ['Databecks() => lenapacityBott _identifyCString>st<

@@ -2,6 +2,7 @@
 // Implements Task 15: Add real-time engagement features - UI Components
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../../services/social_feed/real_time_engagement_service.dart';
 import '../../core/theme/app_theme.dart';

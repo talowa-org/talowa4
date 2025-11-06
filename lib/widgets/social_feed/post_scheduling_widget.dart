@@ -414,7 +414,7 @@ class _ScheduledPostsListWidgetState extends State<ScheduledPostsListWidget> {
     });
     
     try {
-      final posts = await PostManagementService.getScheduledPosts(widget.userId);
+      final posts = await PostManagementService.getScheduledPosts();
       if (!mounted) return;
       setState(() {
         _scheduledPosts = posts;

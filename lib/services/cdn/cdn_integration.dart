@@ -38,7 +38,7 @@ class CDNIntegration {
       _performanceMonitor = PerformanceMonitor();
       
       // Initialize services in order
-      await _performanceMonitor.initialize();
+      _performanceMonitor.initialize();
       await _assetOptimizer.initialize();
       await _cdnService.initialize();
       await _cacheInvalidation.initialize();

@@ -18,7 +18,6 @@ import '../onboarding/coordinator_training_screen.dart';
 // Removed enterprise Security Center access for end-users per product requirements
 import '../home/payments_screen.dart';
 import '../../providers/user_state_provider.dart';
-import '../../models/user_profile.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});

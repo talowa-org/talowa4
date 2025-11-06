@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../models/social_feed/index.dart';
-import '../../core/database/local_database.dart';
+import '../database/local_database.dart';
 
 class OfflineSyncService {
   static final OfflineSyncService _instance = OfflineSyncService._instance();
@@ -153,7 +153,7 @@ class OfflineSyncService {
           final serverPostId = await _createPostOnServer(post);
           
           // Update local cache with server ID
-          await _localDb.updatePost(postId, {'id': serverPostId, 'synced': true});
+          await _localDb.updatePost({'id': postId, 'serverId': serverPostId, 'synced': true});
           return serverPostId;
         } catch (e) {
           debugPrint('Error creating post on server, queuing for sync: $e');
@@ -243,8 +243,9 @@ class OfflineSyncService {
           final serverCommentId = await _createCommentOnServer(comment);
           
           // Update local cache with server ID
-          await _localDb.updateComment(commentId, {
-            'id': serverCommentId,
+          await _localDb.updateComment({
+            'id': commentId,
+            'serverId': serverCommentId,
             'synced': true,
           });
           
@@ -465,7 +466,8 @@ class OfflineSyncService {
           await _processSyncItem(item);
           
           // Mark as completed
-          await _localDb.updateSyncItem(item.id, {
+          await _localDb.updateSyncItem({
+            'id': item.id,
             'status': SyncStatus.completed.toString(),
             'completedAt': DateTime.now().toIso8601String(),
           });
@@ -473,13 +475,15 @@ class OfflineSyncService {
           // Increment attempts and mark as failed if max attempts reached
           final newAttempts = item.attempts + 1;
           if (newAttempts >= 3) {
-            await _localDb.updateSyncItem(item.id, {
+            await _localDb.updateSyncItem({
+              'id': item.id,
               'status': SyncStatus.failed.toString(),
               'attempts': newAttempts,
               'error': e.toString(),
             });
           } else {
-            await _localDb.updateSyncItem(item.id, {
+            await _localDb.updateSyncItem({
+              'id': item.id,
               'attempts': newAttempts,
               'lastAttemptAt': DateTime.now().toIso8601String(),
             });
@@ -501,8 +505,9 @@ class OfflineSyncService {
         final serverPostId = await _createPostOnServer(post);
         
         // Update local post with server ID
-        await _localDb.updatePost(item.itemId, {
-          'id': serverPostId,
+        await _localDb.updatePost({
+          'id': item.itemId,
+          'serverId': serverPostId,
           'synced': true,
         });
         break;
@@ -520,8 +525,9 @@ class OfflineSyncService {
         final serverCommentId = await _createCommentOnServer(comment);
         
         // Update local comment with server ID
-        await _localDb.updateComment(item.itemId, {
-          'id': serverCommentId,
+        await _localDb.updateComment({
+          'id': item.itemId,
+          'serverId': serverCommentId,
           'synced': true,
         });
         break;
@@ -570,7 +576,7 @@ class OfflineSyncService {
   Future<void> clearOldCache({int daysToKeep = 30}) async {
     try {
       final cutoffDate = DateTime.now().subtract(Duration(days: daysToKeep));
-      await _localDb.clearOldCache(cutoffDate);
+      await _localDb.clearOldCache();
       debugPrint('Cleared cache older than $daysToKeep days');
     } catch (e) {
       debugPrint('Error clearing old cache: $e');

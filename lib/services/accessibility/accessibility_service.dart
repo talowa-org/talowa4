@@ -344,7 +344,7 @@ class AccessibilityService {
       // This would integrate with platform-specific accessibility APIs
       // For now, we'll use Flutter's built-in accessibility detection
       
-      final mediaQuery = MediaQueryData.fromView(WidgetsBinding.instance.window);
+      final mediaQuery = MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.first);
       
       if (mediaQuery.accessibleNavigation) {
         await enableScreenReader(true);
@@ -358,8 +358,8 @@ class AccessibilityService {
         await enableReducedMotion(true);
       }
       
-      if (mediaQuery.textScaleFactor > 1.0) {
-        await setTextScaleFactor(mediaQuery.textScaleFactor);
+      if (mediaQuery.textScaler.scale(1.0) > 1.0) {
+        await setTextScaleFactor(mediaQuery.textScaler.scale(1.0));
       }
       
       debugPrint('ðŸ” System accessibility settings detected');

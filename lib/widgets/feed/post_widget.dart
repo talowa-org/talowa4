@@ -243,9 +243,9 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          Icon(
             widget.post.category.icon,
-            style: const TextStyle(fontSize: 12),
+            size: 12,
           ),
           const SizedBox(width: 4),
           Text(
@@ -966,7 +966,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
 
   Future<void> _confirmDeletePost() async {
     try {
-      await PostManagementService.deletePost(widget.post.id);
+      await PostManagementService().deletePost(widget.post.id);
       
       // Show success message
       if (mounted) {

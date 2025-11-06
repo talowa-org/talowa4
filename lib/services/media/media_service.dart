@@ -62,19 +62,19 @@ class CompressionSettings {
   static const CompressionSettings thumbnail = CompressionSettings(
     maxWidth: 300,
     maxHeight: 300,
-    quality = 70,
+    quality: 70,
   );
   
   static const CompressionSettings preview = CompressionSettings(
-    maxWidth = 800,
-    maxHeight = 600,
-    quality = 80,
+    maxWidth: 800,
+    maxHeight: 600,
+    quality: 80,
   );
   
   static const CompressionSettings fullSize = CompressionSettings(
-    maxWidth = 1920,
-    maxHeight = 1080,
-    quality = 85,
+    maxWidth: 1920,
+    maxHeight: 1080,
+    quality: 85,
   );
 }
 

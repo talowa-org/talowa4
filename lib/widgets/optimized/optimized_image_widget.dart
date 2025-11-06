@@ -16,7 +16,7 @@ class OptimizedImageWidget extends StatelessWidget {
   final String? cacheKey;
 
   const OptimizedImageWidget({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.width,
     this.height,
@@ -28,7 +28,7 @@ class OptimizedImageWidget extends StatelessWidget {
     this.enableDiskCache = true,
     this.fadeInDuration,
     this.cacheKey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +92,12 @@ class OptimizedAvatarWidget extends StatelessWidget {
   final Color? backgroundColor;
 
   const OptimizedAvatarWidget({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.radius = 20,
     this.fallbackText,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

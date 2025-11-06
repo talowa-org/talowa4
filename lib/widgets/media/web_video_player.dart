@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
 // Only import web-specific libraries when on web
-import 'dart:html' as html show VideoElement, Event;
+import 'package:web/web.dart' as web;
 import 'dart:ui_web' as ui_web show platformViewRegistry;
 
 class WebVideoPlayer extends StatefulWidget {
@@ -33,7 +33,7 @@ class WebVideoPlayer extends StatefulWidget {
 }
 
 class _WebVideoPlayerState extends State<WebVideoPlayer> {
-  late html.VideoElement _videoElement;
+  late web.HTMLVideoElement _videoElement;
   late String _viewId;
   bool _isInitialized = false;
   bool _isPlaying = false;
@@ -51,7 +51,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
       debugPrint('ðŸŽ¬ Initializing web video: ${widget.videoUrl}');
       
       // Create HTML video element
-      _videoElement = html.VideoElement()
+      _videoElement = web.HTMLVideoElement()
         ..src = _processVideoUrl(widget.videoUrl)
         ..controls = widget.showControls
         ..autoplay = widget.autoPlay
@@ -64,7 +64,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
         ..crossOrigin = 'anonymous'; // Enable CORS
 
       // Add event listeners
-      _videoElement.onLoadedData.listen((html.Event event) {
+      _videoElement.onLoadedData.listen((web.Event event) {
         debugPrint('âœ… Video loaded successfully');
         if (mounted) {
           setState(() {
@@ -74,7 +74,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
         }
       });
 
-      _videoElement.onError.listen((html.Event event) {
+      _videoElement.onError.listen((web.Event event) {
         debugPrint('âŒ Video error: ${_videoElement.error?.message}');
         if (mounted) {
           setState(() {
@@ -83,7 +83,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
         }
       });
 
-      _videoElement.onPlay.listen((html.Event event) {
+      _videoElement.onPlay.listen((web.Event event) {
         if (mounted) {
           setState(() {
             _isPlaying = true;
@@ -91,7 +91,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
         }
       });
 
-      _videoElement.onPause.listen((html.Event event) {
+      _videoElement.onPause.listen((web.Event event) {
         if (mounted) {
           setState(() {
             _isPlaying = false;

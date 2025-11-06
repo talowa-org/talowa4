@@ -297,7 +297,7 @@ class _PostShareScreenState extends State<PostShareScreen> {
       await Future.delayed(const Duration(seconds: 1));
       
       // TODO: Implement actual sharing logic based on selected option
-      await FeedService.sharePost(widget.post.id, 'current_user_id');
+      await FeedService.sharePost(widget.post.id);
       
       if (mounted) {
         Navigator.pop(context, true); // Return success

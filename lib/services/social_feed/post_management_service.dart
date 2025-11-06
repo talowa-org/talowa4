@@ -1,547 +1,822 @@
-﻿// Post Management Service - Handle post editing, deletion, and management
-// Part of Task 11: Add post editing and management
-
+﻿// Post Management Service for TALOWA Instagram-like Posts
+// Comprehensive post management with editing, deletion, and sharing
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import '../../models/social_feed/post_model.dart';
-import '../../models/social_feed/geographic_targeting.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../models/social_feed/instagram_post_model.dart';
 import '../auth/auth_service.dart';
-import 'feed_service.dart';
+import '../cache/cache_service.dart';
+import '../analytics/analytics_service.dart';
 
-/// Service for managing posts (editing, deletion, scheduling, etc.)
 class PostManagementService {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  // Collection references
-  static final CollectionReference _postsCollection = _firestore.collection('posts');
-  static final CollectionReference _draftsCollection = _firestore.collection('drafts');
-  static final CollectionReference _scheduledPostsCollection = _firestore.collection('scheduled_posts');
-  static final CollectionReference _postAnalyticsCollection = _firestore.collection('post_analytics');
-  
-  /// Edit an existing post
-  static Future<PostModel> editPost({
+  static final PostManagementService _instance = PostManagementService._internal();
+  factory PostManagementService() => _instance;
+  PostManagementService._internal();
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final CacheService _cacheService = CacheService();
+  final AnalyticsService _analyticsService = AnalyticsService();
+
+  // Collections
+  static const String _postsCollection = 'posts';
+  static const String _sharesCollection = 'post_shares';
+  static const String _reportsCollection = 'post_reports';
+
+  // Stream controllers
+  final StreamController<String> _postUpdateController = 
+      StreamController<String>.broadcast();
+  final StreamController<String> _postDeleteController = 
+      StreamController<String>.broadcast();
+
+  // Getters
+  Stream<String> get postUpdateStream => _postUpdateController.stream;
+  Stream<String> get postDeleteStream => _postDeleteController.stream;
+
+  /// Edit a post
+  Future<void> editPost({
     required String postId,
-    String? title,
-    String? content,
-    List<String>? imageUrls,
-    List<String>? documentUrls,
-    List<String>? hashtags,
-    PostCategory? category,
-    PostPriority? priority,
-    GeographicTargeting? targeting,
-    PostVisibility? visibility,
+    String? newCaption,
+    List<String>? newHashtags,
+    LocationTag? newLocationTag,
+    List<UserTag>? newUserTags,
+    PostVisibility? newVisibility,
+    bool? allowComments,
+    bool? allowSharing,
+    String? altText,
   }) async {
     try {
-      debugPrint('PostManagementService: Editing post $postId');
-      
-      // Get current user
       final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Get current post data
+      final postDoc = await _firestore.collection(_postsCollection).doc(postId).get();
+      if (!postDoc.exists) throw Exception('Post not found');
+
+      final postData = postDoc.data()!;
+      
+      // Verify ownership
+      if (postData['authorId'] != currentUser.uid) {
+        throw Exception('You can only edit your own posts');
       }
-      
-      // Get existing post
-      final existingPost = await FeedService.getPostById(postId);
-      if (existingPost == null) {
-        throw Exception('Post not found');
-      }
-      
-      // Check permissions
-      if (!_canUserEditPost(existingPost, currentUser.uid, currentUser.role)) {
-        throw Exception('User does not have permission to edit this post');
-      }
-      
-      // Use FeedService.updatePost which already has the logic
-      return await FeedService.updatePost(
-        postId: postId,
-        title: title,
-        content: content,
-        imageUrls: imageUrls,
-        documentUrls: documentUrls,
-        hashtags: hashtags,
-        category: category,
-        priority: priority,
-        targeting: targeting,
-        visibility: visibility,
-      );
-      
-    } catch (e) {
-      debugPrint('PostManagementService: Error editing post: $e');
-      rethrow;
-    }
-  }
-  
-  /// Delete a post with confirmation
-  static Future<void> deletePost(String postId, {String? reason}) async {
-    try {
-      debugPrint('PostManagementService: Deleting post $postId');
-      
-      // Get current user
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
-      
-      // Get existing post
-      final existingPost = await FeedService.getPostById(postId);
-      if (existingPost == null) {
-        throw Exception('Post not found');
-      }
-      
-      // Check permissions
-      if (!_canUserDeletePost(existingPost, currentUser.uid, currentUser.role)) {
-        throw Exception('User does not have permission to delete this post');
-      }
-      
-      // Use transaction to ensure consistency
-      await _firestore.runTransaction((transaction) async {
-        // Soft delete - mark as hidden instead of actual deletion
-        final postRef = _postsCollection.doc(postId);
-        transaction.update(postRef, {
-          'isHidden': true,
-          'deletedAt': FieldValue.serverTimestamp(),
-          'deletedBy': currentUser.uid,
-          'deletionReason': reason,
-        });
-        
-        // Update user's post count
-        final userRef = _firestore.collection('users').doc(existingPost.authorId);
-        transaction.update(userRef, {
-          'postsCount': FieldValue.increment(-1),
-        });
-        
-        // Log the deletion for audit purposes
-        final auditRef = _firestore.collection('audit_logs').doc();
-        transaction.set(auditRef, {
-          'action': 'post_deleted',
-          'postId': postId,
-          'authorId': existingPost.authorId,
-          'deletedBy': currentUser.uid,
-          'reason': reason,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-      });
-      
-      debugPrint('PostManagementService: Post deleted successfully');
-      
-    } catch (e) {
-      debugPrint('PostManagementService: Error deleting post: $e');
-      rethrow;
-    }
-  }
-  
-  /// Update post visibility
-  static Future<void> updatePostVisibility(
-    String postId,
-    PostVisibility visibility,
-  ) async {
-    try {
-      debugPrint('PostManagementService: Updating post visibility $postId to $visibility');
-      
-      // Get current user
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
-      
-      // Get existing post
-      final existingPost = await FeedService.getPostById(postId);
-      if (existingPost == null) {
-        throw Exception('Post not found');
-      }
-      
-      // Check permissions
-      if (!_canUserEditPost(existingPost, currentUser.uid, currentUser.role)) {
-        throw Exception('User does not have permission to edit this post');
-      }
-      
-      // Update visibility
-      await _postsCollection.doc(postId).update({
-        'visibility': visibility.toString().split('.').last,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      
-      debugPrint('PostManagementService: Post visibility updated successfully');
-      
-    } catch (e) {
-      debugPrint('PostManagementService: Error updating post visibility: $e');
-      rethrow;
-    }
-  }
-  
-  /// Save post as draft
-  static Future<String> saveDraft({
-    String? draftId,
-    required String authorId,
-    String? title,
-    String? content,
-    List<String>? imageUrls,
-    List<String>? documentUrls,
-    List<String>? hashtags,
-    PostCategory? category,
-    PostPriority? priority,
-    GeographicTargeting? targeting,
-    PostVisibility? visibility,
-  }) async {
-    try {
-      debugPrint('PostManagementService: Saving draft');
-      
-      final draftData = {
-        'authorId': authorId,
-        'title': title,
-        'content': content ?? '',
-        'imageUrls': imageUrls ?? [],
-        'documentUrls': documentUrls ?? [],
-        'hashtags': hashtags ?? [],
-        'category': category?.toString().split('.').last ?? 'generalDiscussion',
-        'priority': priority?.toString().split('.').last ?? 'normal',
-        'targeting': targeting?.toMap(),
-        'visibility': visibility?.toString().split('.').last ?? 'public',
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+
+      // Prepare update data
+      final Map<String, dynamic> updateData = {
+        'editedAt': FieldValue.serverTimestamp(),
       };
-      
-      DocumentReference draftRef;
-      if (draftId != null) {
-        // Update existing draft
-        draftRef = _draftsCollection.doc(draftId);
-        await draftRef.update(draftData);
-      } else {
-        // Create new draft
-        draftRef = _draftsCollection.doc();
-        await draftRef.set(draftData);
+
+      if (newCaption != null) {
+        if (newCaption.length > 2200) {
+          throw Exception('Caption cannot exceed 2200 characters');
+        }
+        updateData['caption'] = newCaption;
+        
+        // Extract hashtags from caption if not provided separately
+        if (newHashtags == null) {
+          updateData['hashtags'] = _extractHashtags(newCaption);
+        }
       }
-      
-      debugPrint('PostManagementService: Draft saved with ID ${draftRef.id}');
-      return draftRef.id;
-      
+
+      if (newHashtags != null) {
+        updateData['hashtags'] = newHashtags;
+      }
+
+      if (newLocationTag != null) {
+        updateData['locationTag'] = newLocationTag.toMap();
+      }
+
+      if (newUserTags != null) {
+        updateData['userTags'] = newUserTags.map((tag) => tag.toMap()).toList();
+        updateData['mentionedUserIds'] = newUserTags.map((tag) => tag.userId).toList();
+      }
+
+      if (newVisibility != null) {
+        updateData['visibility'] = newVisibility.value;
+      }
+
+      if (allowComments != null) {
+        updateData['allowComments'] = allowComments;
+      }
+
+      if (allowSharing != null) {
+        updateData['allowSharing'] = allowSharing;
+      }
+
+      if (altText != null) {
+        updateData['altText'] = altText;
+      }
+
+      // Update post in database
+      await _firestore.collection(_postsCollection).doc(postId).update(updateData);
+
+      // Invalidate caches
+      await _invalidatePostCaches();
+
+      // Track analytics
+      _analyticsService.trackEvent('post_edited', {
+        'post_id': postId,
+        'fields_updated': updateData.keys.toList(),
+      });
+
+      // Emit update
+      _postUpdateController.add(postId);
+
+      debugPrint('✅ Post edited successfully: $postId');
+
     } catch (e) {
-      debugPrint('PostManagementService: Error saving draft: $e');
+      debugPrint('❌ Error editing post: $e');
+      _analyticsService.trackEvent('post_edit_error', {'error': e.toString()});
       rethrow;
     }
   }
-  
-  /// Get user's drafts
-  static Future<List<Map<String, dynamic>>> getUserDrafts(String userId) async {
+
+  /// Delete a post
+  Future<void> deletePost(String postId) async {
     try {
-      debugPrint('PostManagementService: Getting drafts for user $userId');
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Get post data
+      final postDoc = await _firestore.collection(_postsCollection).doc(postId).get();
+      if (!postDoc.exists) throw Exception('Post not found');
+
+      final postData = postDoc.data()!;
       
-      final querySnapshot = await _draftsCollection
-          .where('authorId', isEqualTo: userId)
-          .orderBy('updatedAt', descending: true)
+      // Verify ownership or admin privileges
+      final userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+      final userData = userDoc.data() ?? {};
+      final isAdmin = userData['role'] == 'admin' || userData['role'] == 'superAdmin';
+      
+      if (postData['authorId'] != currentUser.uid && !isAdmin) {
+        throw Exception('You can only delete your own posts');
+      }
+
+      // Get all related data counts
+      final commentsQuery = await _firestore
+          .collection('comments')
+          .where('postId', isEqualTo: postId)
           .get();
-      
-      final drafts = querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
-        return data;
-      }).toList();
-      
-      debugPrint('PostManagementService: Found ${drafts.length} drafts');
-      return drafts;
-      
+
+      final likesQuery = await _firestore
+          .collection('post_likes')
+          .where('postId', isEqualTo: postId)
+          .get();
+
+      final sharesQuery = await _firestore
+          .collection(_sharesCollection)
+          .where('postId', isEqualTo: postId)
+          .get();
+
+      // Use batch write for consistency
+      final batch = _firestore.batch();
+
+      // Delete the post
+      batch.delete(_firestore.collection(_postsCollection).doc(postId));
+
+      // Delete all comments
+      for (final commentDoc in commentsQuery.docs) {
+        batch.delete(commentDoc.reference);
+      }
+
+      // Delete all likes
+      for (final likeDoc in likesQuery.docs) {
+        batch.delete(likeDoc.reference);
+      }
+
+      // Delete all shares
+      for (final shareDoc in sharesQuery.docs) {
+        batch.delete(shareDoc.reference);
+      }
+
+      // Update user stats
+      batch.update(_firestore.collection('users').doc(postData['authorId']), {
+        'postsCount': FieldValue.increment(-1),
+      });
+
+      await batch.commit();
+
+      // Delete media files from storage
+      await _deletePostMedia(postData);
+
+      // Invalidate caches
+      await _invalidatePostCaches();
+
+      // Track analytics
+      _analyticsService.trackEvent('post_deleted', {
+        'post_id': postId,
+        'comments_deleted': commentsQuery.docs.length,
+        'likes_deleted': likesQuery.docs.length,
+        'shares_deleted': sharesQuery.docs.length,
+      });
+
+      // Emit deletion event
+      _postDeleteController.add(postId);
+
+      debugPrint('✅ Post deleted successfully: $postId');
+
     } catch (e) {
-      debugPrint('PostManagementService: Error getting drafts: $e');
-      return [];
-    }
-  }
-  
-  /// Delete a draft
-  static Future<void> deleteDraft(String draftId) async {
-    try {
-      debugPrint('PostManagementService: Deleting draft $draftId');
-      
-      await _draftsCollection.doc(draftId).delete();
-      
-      debugPrint('PostManagementService: Draft deleted successfully');
-      
-    } catch (e) {
-      debugPrint('PostManagementService: Error deleting draft: $e');
+      debugPrint('❌ Error deleting post: $e');
+      _analyticsService.trackEvent('post_delete_error', {'error': e.toString()});
       rethrow;
     }
   }
-  
-  /// Schedule a post for later publishing
-  static Future<String> schedulePost({
-    required String authorId,
-    required DateTime scheduledTime,
-    String? title,
-    required String content,
-    List<String>? imageUrls,
-    List<String>? documentUrls,
-    List<String>? hashtags,
-    required PostCategory category,
-    PostPriority priority = PostPriority.normal,
-    GeographicTargeting? targeting,
+
+  /// Share a post externally
+  Future<void> sharePost(InstagramPostModel post, {String? shareType}) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Check if sharing is allowed
+      if (!post.allowSharing) {
+        throw Exception('This post cannot be shared');
+      }
+
+      // Create share content
+      String shareText = '${post.authorName} shared a post on TALOWA\n\n';
+      if (post.caption.isNotEmpty) {
+        shareText += '${post.caption}\n\n';
+      }
+      shareText += 'Join TALOWA to see more: https://talowa.web.app';
+
+      // Share using platform share dialog
+      await Share.share(
+        shareText,
+        subject: 'Check out this post on TALOWA',
+      );
+
+      // Record share activity (assuming successful since Share.share doesn't return status on web)
+      {
+        await _recordShareActivity(post.id, currentUser.uid, shareType ?? 'external');
+        
+        // Update post share count
+        await _firestore.collection(_postsCollection).doc(post.id).update({
+          'sharesCount': FieldValue.increment(1),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Track analytics
+        _analyticsService.trackEvent('post_shared_external', {
+          'post_id': post.id,
+          'share_type': shareType ?? 'external',
+        });
+
+        // Emit update
+        _postUpdateController.add(post.id);
+      }
+
+      debugPrint('✅ Post shared externally: ${post.id}');
+
+    } catch (e) {
+      debugPrint('❌ Error sharing post: $e');
+      _analyticsService.trackEvent('post_share_error', {'error': e.toString()});
+      rethrow;
+    }
+  }
+
+  /// Share a post internally (repost)
+  Future<String> repostPost({
+    required String originalPostId,
+    String? additionalCaption,
     PostVisibility visibility = PostVisibility.public,
   }) async {
     try {
-      debugPrint('PostManagementService: Scheduling post for $scheduledTime');
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Get original post
+      final originalPostDoc = await _firestore.collection(_postsCollection).doc(originalPostId).get();
+      if (!originalPostDoc.exists) throw Exception('Original post not found');
+
+      final originalPost = InstagramPostModel.fromFirestore(originalPostDoc);
       
-      // Validate scheduled time is in the future
-      if (scheduledTime.isBefore(DateTime.now())) {
-        throw Exception('Scheduled time must be in the future');
+      // Check if sharing is allowed
+      if (!originalPost.allowSharing) {
+        throw Exception('This post cannot be shared');
       }
-      
-      // Validate scheduled time is not too far in the future (e.g., 1 year)
-      final maxScheduleTime = DateTime.now().add(const Duration(days: 365));
-      if (scheduledTime.isAfter(maxScheduleTime)) {
-        throw Exception('Cannot schedule posts more than 1 year in advance');
+
+      // Get user profile
+      final userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+      if (!userDoc.exists) throw Exception('User profile not found');
+
+      final userData = userDoc.data()!;
+      final repostId = _firestore.collection(_postsCollection).doc().id;
+
+      // Create repost caption
+      String repostCaption = '';
+      if (additionalCaption != null && additionalCaption.isNotEmpty) {
+        repostCaption = '$additionalCaption\n\n';
       }
+      repostCaption += '📤 Shared from @${originalPost.authorName}';
+      if (originalPost.caption.isNotEmpty) {
+        repostCaption += '\n\n"${originalPost.caption}"';
+      }
+
+      // Create repost model
+      final repost = InstagramPostModel(
+        id: repostId,
+        authorId: currentUser.uid,
+        authorName: userData['fullName'] ?? 'Unknown User',
+        authorProfileImageUrl: userData['profileImageUrl'],
+        caption: repostCaption,
+        mediaItems: originalPost.mediaItems, // Same media
+        hashtags: originalPost.hashtags,
+        userTags: [], // Clear user tags for reposts
+        locationTag: originalPost.locationTag,
+        createdAt: DateTime.now(),
+        visibility: visibility,
+        allowComments: true,
+        allowSharing: true,
+        mentionedUserIds: [originalPost.authorId], // Mention original author
+        analytics: {
+          'isRepost': true,
+          'originalPostId': originalPostId,
+          'originalAuthorId': originalPost.authorId,
+        },
+      );
+
+      // Use batch write for consistency
+      final batch = _firestore.batch();
       
-      final scheduledPostData = {
-        'authorId': authorId,
-        'title': title,
-        'content': content,
-        'imageUrls': imageUrls ?? [],
-        'documentUrls': documentUrls ?? [],
-        'hashtags': hashtags ?? [],
-        'category': category.toString().split('.').last,
-        'priority': priority.toString().split('.').last,
-        'targeting': targeting?.toMap(),
-        'visibility': visibility.toString().split('.').last,
-        'scheduledTime': Timestamp.fromDate(scheduledTime),
-        'status': 'scheduled',
-        'createdAt': FieldValue.serverTimestamp(),
-      };
+      // Add repost
+      batch.set(_firestore.collection(_postsCollection).doc(repostId), repost.toFirestore());
       
-      final docRef = await _scheduledPostsCollection.add(scheduledPostData);
+      // Update original post share count
+      batch.update(_firestore.collection(_postsCollection).doc(originalPostId), {
+        'sharesCount': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
       
-      debugPrint('PostManagementService: Post scheduled with ID ${docRef.id}');
-      return docRef.id;
-      
+      // Update user stats
+      batch.update(_firestore.collection('users').doc(currentUser.uid), {
+        'postsCount': FieldValue.increment(1),
+        'lastPostAt': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+
+      // Record share activity
+      await _recordShareActivity(originalPostId, currentUser.uid, 'repost');
+
+      // Invalidate caches
+      await _invalidatePostCaches();
+
+      // Track analytics
+      _analyticsService.trackEvent('post_reposted', {
+        'original_post_id': originalPostId,
+        'repost_id': repostId,
+        'has_additional_caption': additionalCaption != null && additionalCaption.isNotEmpty,
+      });
+
+      // Emit update
+      _postUpdateController.add(repostId);
+
+      debugPrint('✅ Post reposted successfully: $repostId');
+      return repostId;
+
     } catch (e) {
-      debugPrint('PostManagementService: Error scheduling post: $e');
+      debugPrint('❌ Error reposting: $e');
+      _analyticsService.trackEvent('repost_error', {'error': e.toString()});
       rethrow;
     }
   }
-  
-  /// Get user's scheduled posts
-  static Future<List<Map<String, dynamic>>> getScheduledPosts(String userId) async {
+
+  /// Report a post
+  Future<void> reportPost({
+    required String postId,
+    required String reason,
+    String? additionalDetails,
+  }) async {
     try {
-      debugPrint('PostManagementService: Getting scheduled posts for user $userId');
-      
-      final querySnapshot = await _scheduledPostsCollection
-          .where('authorId', isEqualTo: userId)
-          .where('status', isEqualTo: 'scheduled')
-          .orderBy('scheduledTime', descending: false)
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Check if user has already reported this post
+      final existingReportQuery = await _firestore
+          .collection(_reportsCollection)
+          .where('postId', isEqualTo: postId)
+          .where('reportedBy', isEqualTo: currentUser.uid)
           .get();
-      
-      final scheduledPosts = querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
-        return data;
-      }).toList();
-      
-      debugPrint('PostManagementService: Found ${scheduledPosts.length} scheduled posts');
-      return scheduledPosts;
-      
+
+      if (existingReportQuery.docs.isNotEmpty) {
+        throw Exception('You have already reported this post');
+      }
+
+      // Create report
+      await _firestore.collection(_reportsCollection).add({
+        'postId': postId,
+        'reportedBy': currentUser.uid,
+        'reason': reason,
+        'additionalDetails': additionalDetails,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'pending',
+        'reviewedBy': null,
+        'reviewedAt': null,
+        'action': null,
+      });
+
+      // Track analytics
+      _analyticsService.trackEvent('post_reported', {
+        'post_id': postId,
+        'reason': reason,
+        'has_additional_details': additionalDetails != null && additionalDetails.isNotEmpty,
+      });
+
+      debugPrint('✅ Post reported successfully: $postId');
+
     } catch (e) {
-      debugPrint('PostManagementService: Error getting scheduled posts: $e');
+      debugPrint('❌ Error reporting post: $e');
+      _analyticsService.trackEvent('post_report_error', {'error': e.toString()});
+      rethrow;
+    }
+  }
+
+  /// Archive/unarchive a post (hide from public feed)
+  Future<void> togglePostArchive(String postId) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      // Get post data
+      final postDoc = await _firestore.collection(_postsCollection).doc(postId).get();
+      if (!postDoc.exists) throw Exception('Post not found');
+
+      final postData = postDoc.data()!;
+      
+      // Verify ownership
+      if (postData['authorId'] != currentUser.uid) {
+        throw Exception('You can only archive your own posts');
+      }
+
+      final isArchived = postData['isArchived'] ?? false;
+
+      // Update post
+      await _firestore.collection(_postsCollection).doc(postId).update({
+        'isArchived': !isArchived,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Invalidate caches
+      await _invalidatePostCaches();
+
+      // Track analytics
+      _analyticsService.trackEvent('post_archive_toggled', {
+        'post_id': postId,
+        'is_archived': !isArchived,
+      });
+
+      // Emit update
+      _postUpdateController.add(postId);
+
+      debugPrint('✅ Post archive toggled: $postId (archived: ${!isArchived})');
+
+    } catch (e) {
+      debugPrint('❌ Error toggling post archive: $e');
+      rethrow;
+    }
+  }
+
+  /// Get user's archived posts
+  Future<List<InstagramPostModel>> getArchivedPosts({
+    int limit = 20,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) throw Exception('User not authenticated');
+
+      Query query = _firestore
+          .collection(_postsCollection)
+          .where('authorId', isEqualTo: currentUser.uid)
+          .where('isArchived', isEqualTo: true)
+          .orderBy('createdAt', descending: true);
+
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
+      }
+      query = query.limit(limit);
+
+      final querySnapshot = await query.get();
+      
+      final posts = querySnapshot.docs
+          .map((doc) => InstagramPostModel.fromFirestore(doc))
+          .toList();
+
+      debugPrint('✅ Loaded ${posts.length} archived posts');
+      return posts;
+
+    } catch (e) {
+      debugPrint('❌ Error loading archived posts: $e');
+      rethrow;
+    }
+  }
+
+  // Private helper methods
+
+  List<String> _extractHashtags(String content) {
+    final regex = RegExp(r'#(\w+)');
+    final matches = regex.allMatches(content);
+    return matches.map((match) => match.group(1)!.toLowerCase()).toList();
+  }
+
+  Future<void> _deletePostMedia(Map<String, dynamic> postData) async {
+    try {
+      // Delete media items from storage
+      final mediaItems = List<Map<String, dynamic>>.from(postData['mediaItems'] ?? []);
+      
+      for (final mediaItem in mediaItems) {
+        final url = mediaItem['url'] as String?;
+        if (url != null && url.contains('firebase')) {
+          try {
+            final ref = _storage.refFromURL(url);
+            await ref.delete();
+          } catch (e) {
+            debugPrint('⚠️ Failed to delete media file: $url - $e');
+          }
+        }
+      }
+
+      // Also handle legacy format
+      final imageUrls = List<String>.from(postData['imageUrls'] ?? []);
+      final videoUrls = List<String>.from(postData['videoUrls'] ?? []);
+      
+      for (final url in [...imageUrls, ...videoUrls]) {
+        if (url.contains('firebase')) {
+          try {
+            final ref = _storage.refFromURL(url);
+            await ref.delete();
+          } catch (e) {
+            debugPrint('⚠️ Failed to delete legacy media file: $url - $e');
+          }
+        }
+      }
+
+    } catch (e) {
+      debugPrint('⚠️ Error deleting post media: $e');
+    }
+  }
+
+  Future<void> _recordShareActivity(String postId, String userId, String shareType) async {
+    try {
+      await _firestore.collection(_sharesCollection).add({
+        'postId': postId,
+        'userId': userId,
+        'shareType': shareType,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('⚠️ Failed to record share activity: $e');
+    }
+  }
+
+  Future<void> _invalidatePostCaches() async {
+    try {
+      // Clear all post-related caches
+      await _cacheService.clear();
+      debugPrint('✅ Post caches invalidated');
+    } catch (e) {
+      debugPrint('❌ Failed to invalidate post caches: $e');
+    }
+  }
+
+  /// Get scheduled posts
+  Future<List<Map<String, dynamic>>> getScheduledPosts() async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final querySnapshot = await _firestore
+          .collection('scheduled_posts')
+          .where('authorId', isEqualTo: currentUser.uid)
+          .where('scheduledAt', isGreaterThan: Timestamp.now())
+          .orderBy('scheduledAt')
+          .get();
+
+      return querySnapshot.docs.map((doc) => {
+        'id': doc.id,
+        ...doc.data(),
+      }).toList();
+
+    } catch (e) {
+      debugPrint('❌ Error getting scheduled posts: $e');
       return [];
     }
   }
-  
-  /// Cancel a scheduled post
-  static Future<void> cancelScheduledPost(String scheduledPostId) async {
+
+  /// Cancel scheduled post
+  Future<void> cancelScheduledPost(String scheduledPostId) async {
     try {
-      debugPrint('PostManagementService: Canceling scheduled post $scheduledPostId');
-      
-      await _scheduledPostsCollection.doc(scheduledPostId).update({
-        'status': 'cancelled',
-        'cancelledAt': FieldValue.serverTimestamp(),
+      await _firestore
+          .collection('scheduled_posts')
+          .doc(scheduledPostId)
+          .delete();
+
+      debugPrint('✅ Scheduled post cancelled: $scheduledPostId');
+
+    } catch (e) {
+      debugPrint('❌ Error cancelling scheduled post: $e');
+      rethrow;
+    }
+  }
+
+  /// Auto-save draft
+  Future<void> autoSaveDraft(Map<String, dynamic> draftData) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      await _firestore
+          .collection('drafts')
+          .doc('${currentUser.uid}_auto')
+          .set({
+        ...draftData,
+        'userId': currentUser.uid,
+        'lastSaved': FieldValue.serverTimestamp(),
+        'isAutoSave': true,
       });
-      
-      debugPrint('PostManagementService: Scheduled post cancelled successfully');
-      
+
+      debugPrint('✅ Draft auto-saved');
+
     } catch (e) {
-      debugPrint('PostManagementService: Error canceling scheduled post: $e');
+      debugPrint('❌ Error auto-saving draft: $e');
+    }
+  }
+
+  /// Save draft
+  Future<String> saveDraft(Map<String, dynamic> draftData) async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final draftRef = await _firestore
+          .collection('drafts')
+          .add({
+        ...draftData,
+        'userId': currentUser.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastSaved': FieldValue.serverTimestamp(),
+        'isAutoSave': false,
+      });
+
+      debugPrint('✅ Draft saved: ${draftRef.id}');
+      return draftRef.id;
+
+    } catch (e) {
+      debugPrint('❌ Error saving draft: $e');
       rethrow;
     }
   }
-  
-  /// Get post analytics
-  static Future<Map<String, dynamic>> getPostAnalytics(String postId) async {
+
+  /// Get user drafts
+  Future<List<Map<String, dynamic>>> getUserDrafts() async {
     try {
-      debugPrint('PostManagementService: Getting analytics for post $postId');
-      
-      // Get basic post data
-      final post = await FeedService.getPostById(postId);
-      if (post == null) {
-        throw Exception('Post not found');
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
       }
-      
-      // Get detailed analytics if available
-      final analyticsDoc = await _postAnalyticsCollection.doc(postId).get();
-      Map<String, dynamic> analyticsData = {};
-      
-      if (analyticsDoc.exists) {
-        analyticsData = analyticsDoc.data() as Map<String, dynamic>;
-      }
-      
-      // Calculate basic metrics
-      final totalEngagement = post.likesCount + post.commentsCount + post.sharesCount;
-      final engagementRate = analyticsData['impressions'] != null && analyticsData['impressions'] > 0
-          ? (totalEngagement / analyticsData['impressions'] * 100).toStringAsFixed(2)
-          : '0.00';
-      
-      final analytics = {
-        'postId': postId,
-        'likes': post.likesCount,
-        'comments': post.commentsCount,
-        'shares': post.sharesCount,
-        'totalEngagement': totalEngagement,
-        'impressions': analyticsData['impressions'] ?? 0,
-        'reach': analyticsData['reach'] ?? 0,
-        'engagementRate': engagementRate,
-        'createdAt': post.createdAt.toIso8601String(),
-        'category': post.category.displayName,
-        'hashtags': post.hashtags,
-        'geographicScope': _getGeographicScopeString(post.geographicTargeting),
-        'hourlyEngagement': analyticsData['hourlyEngagement'] ?? {},
-        'dailyEngagement': analyticsData['dailyEngagement'] ?? {},
-        'topCommenters': analyticsData['topCommenters'] ?? [],
-        'shareDestinations': analyticsData['shareDestinations'] ?? {},
-      };
-      
-      debugPrint('PostManagementService: Analytics retrieved for post $postId');
-      return analytics;
-      
-    } catch (e) {
-      debugPrint('PostManagementService: Error getting post analytics: $e');
-      rethrow;
-    }
-  }
-  
-  /// Get user's post analytics summary
-  static Future<Map<String, dynamic>> getUserPostAnalytics(String userId) async {
-    try {
-      debugPrint('PostManagementService: Getting user analytics for $userId');
-      
-      // Get user's posts from last 30 days
-      final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-      
-      final querySnapshot = await _postsCollection
-          .where('authorId', isEqualTo: userId)
-          .where('createdAt', isGreaterThan: Timestamp.fromDate(thirtyDaysAgo))
-          .where('isHidden', isEqualTo: false)
+
+      final querySnapshot = await _firestore
+          .collection('drafts')
+          .where('userId', isEqualTo: currentUser.uid)
+          .orderBy('lastSaved', descending: true)
           .get();
-      
+
+      return querySnapshot.docs.map((doc) => {
+        'id': doc.id,
+        ...doc.data(),
+      }).toList();
+
+    } catch (e) {
+      debugPrint('❌ Error getting user drafts: $e');
+      return [];
+    }
+  }
+
+  /// Delete draft
+  Future<void> deleteDraft(String draftId) async {
+    try {
+      await _firestore
+          .collection('drafts')
+          .doc(draftId)
+          .delete();
+
+      debugPrint('✅ Draft deleted: $draftId');
+
+    } catch (e) {
+      debugPrint('❌ Error deleting draft: $e');
+      rethrow;
+    }
+  }
+
+  /// Get user post analytics
+  Future<Map<String, dynamic>> getUserPostAnalytics(String userId) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(_postsCollection)
+          .where('authorId', isEqualTo: userId)
+          .get();
+
       int totalPosts = querySnapshot.docs.length;
       int totalLikes = 0;
       int totalComments = 0;
       int totalShares = 0;
-      Map<String, int> categoryBreakdown = {};
-      Map<String, int> dailyPosts = {};
-      
+
       for (final doc in querySnapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
-        
-        totalLikes += (data['likesCount'] as int? ?? 0);
-        totalComments += (data['commentsCount'] as int? ?? 0);
-        totalShares += (data['sharesCount'] as int? ?? 0);
-        
-        // Category breakdown
-        final category = data['category'] as String? ?? 'unknown';
-        categoryBreakdown[category] = (categoryBreakdown[category] ?? 0) + 1;
-        
-        // Daily posts
-        final createdAt = (data['createdAt'] as Timestamp).toDate();
-        final dateKey = '${createdAt.year}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.day.toString().padLeft(2, '0')}';
-        dailyPosts[dateKey] = (dailyPosts[dateKey] ?? 0) + 1;
+        final data = doc.data();
+        totalLikes += (data['likesCount'] ?? 0) as int;
+        totalComments += (data['commentsCount'] ?? 0) as int;
+        totalShares += (data['sharesCount'] ?? 0) as int;
       }
-      
-      final totalEngagement = totalLikes + totalComments + totalShares;
-      final avgEngagementPerPost = totalPosts > 0 ? (totalEngagement / totalPosts).toStringAsFixed(2) : '0.00';
-      
-      final analytics = {
-        'userId': userId,
-        'period': '30 days',
+
+      return {
         'totalPosts': totalPosts,
         'totalLikes': totalLikes,
         'totalComments': totalComments,
         'totalShares': totalShares,
-        'totalEngagement': totalEngagement,
-        'avgEngagementPerPost': avgEngagementPerPost,
-        'categoryBreakdown': categoryBreakdown,
-        'dailyPosts': dailyPosts,
-        'generatedAt': DateTime.now().toIso8601String(),
+        'averageLikes': totalPosts > 0 ? totalLikes / totalPosts : 0,
+        'averageComments': totalPosts > 0 ? totalComments / totalPosts : 0,
+        'averageShares': totalPosts > 0 ? totalShares / totalPosts : 0,
       };
-      
-      debugPrint('PostManagementService: User analytics retrieved');
-      return analytics;
-      
+
     } catch (e) {
-      debugPrint('PostManagementService: Error getting user analytics: $e');
+      debugPrint('❌ Error getting user post analytics: $e');
+      return {};
+    }
+  }
+
+  /// Update post visibility
+  Future<void> updatePostVisibility(String postId, String visibility) async {
+    try {
+      await _firestore
+          .collection(_postsCollection)
+          .doc(postId)
+          .update({
+        'visibility': visibility,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint('✅ Post visibility updated: $postId -> $visibility');
+
+    } catch (e) {
+      debugPrint('❌ Error updating post visibility: $e');
       rethrow;
     }
   }
-  
-  /// Auto-save functionality
-  static Future<void> autoSaveDraft({
-    required String authorId,
-    String? draftId,
-    String? title,
-    String? content,
-    List<String>? hashtags,
-    PostCategory? category,
-  }) async {
+
+  /// Get post analytics
+  Future<Map<String, dynamic>> getPostAnalytics(String postId) async {
     try {
-      // Only auto-save if there's meaningful content
-      if ((content?.trim().isEmpty ?? true) && (title?.trim().isEmpty ?? true)) {
-        return;
+      final postDoc = await _firestore
+          .collection(_postsCollection)
+          .doc(postId)
+          .get();
+
+      if (!postDoc.exists) {
+        throw Exception('Post not found');
       }
+
+      final data = postDoc.data()!;
       
-      await saveDraft(
-        draftId: draftId,
-        authorId: authorId,
-        title: title,
-        content: content,
-        hashtags: hashtags,
-        category: category,
-      );
-      
+      return {
+        'postId': postId,
+        'likesCount': data['likesCount'] ?? 0,
+        'commentsCount': data['commentsCount'] ?? 0,
+        'sharesCount': data['sharesCount'] ?? 0,
+        'viewsCount': data['viewsCount'] ?? 0,
+        'createdAt': data['createdAt'],
+        'engagement': _calculateEngagement(data),
+      };
+
     } catch (e) {
-      debugPrint('PostManagementService: Error auto-saving draft: $e');
-      // Don't rethrow for auto-save failures
+      debugPrint('❌ Error getting post analytics: $e');
+      return {};
     }
   }
-  
-  // Helper methods
-  
-  static bool _canUserEditPost(PostModel post, String userId, String? userRole) {
-    // Author can always edit their own posts
-    if (post.authorId == userId) return true;
-    
-    // Coordinators and admins can edit posts in their jurisdiction
-    if (userRole != null && (userRole.contains('coordinator') || userRole.contains('admin'))) {
-      return true;
-    }
-    
-    return false;
+
+  /// Calculate engagement rate
+  double _calculateEngagement(Map<String, dynamic> postData) {
+    final likes = (postData['likesCount'] ?? 0) as int;
+    final comments = (postData['commentsCount'] ?? 0) as int;
+    final shares = (postData['sharesCount'] ?? 0) as int;
+    final views = (postData['viewsCount'] ?? 0) as int;
+
+    if (views == 0) return 0.0;
+
+    final totalEngagement = likes + comments + shares;
+    return (totalEngagement / views) * 100;
   }
-  
-  static bool _canUserDeletePost(PostModel post, String userId, String? userRole) {
-    // Author can always delete their own posts
-    if (post.authorId == userId) return true;
-    
-    // Higher-level coordinators and admins can delete posts
-    if (userRole != null && (userRole.contains('coordinator') || userRole.contains('admin'))) {
-      return true;
-    }
-    
-    return false;
-  }
-  
-  static String _getGeographicScopeString(GeographicTargeting? targeting) {
-    if (targeting == null) return 'No geographic targeting';
-    
-    final parts = <String>[];
-    if (targeting.village?.isNotEmpty == true) parts.add(targeting.village!);
-    if (targeting.mandal?.isNotEmpty == true) parts.add(targeting.mandal!);
-    if (targeting.district?.isNotEmpty == true) parts.add(targeting.district!);
-    if (targeting.state?.isNotEmpty == true) parts.add(targeting.state!);
-    
-    return parts.isNotEmpty ? parts.join(', ') : 'No geographic targeting';
+
+  /// Dispose resources
+  void dispose() {
+    _postUpdateController.close();
+    _postDeleteController.close();
   }
 }

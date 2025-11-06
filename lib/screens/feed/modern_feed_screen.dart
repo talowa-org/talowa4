@@ -16,6 +16,7 @@ import 'story_creation_screen.dart';
 import 'post_comments_screen.dart';
 
 import '../../utils/role_utils.dart';
+import '../../utils/error_handler.dart';
 
 class ModernFeedScreen extends StatefulWidget {
   const ModernFeedScreen({super.key});
@@ -46,7 +47,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
   // Filtering and search
   PostCategory? _selectedCategory;
   String? _searchQuery;
-  FeedSortOption _sortOption = FeedSortOption.newest;
+  final FeedSortOption _sortOption = FeedSortOption.newest;
 
   // Pagination
   static const int _postsPerPage = 10;
@@ -189,7 +190,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               ),
               child: Text(
                 _feedTabs[index],
-                style: TextStyle(
+                style: const TextStyle(
                   color: isSelected ? Colors.white : Colors.grey[600],
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   fontSize: 14,
@@ -503,10 +504,10 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: AppTheme.talowaGreen.withOpacity(0.1),
+            color: AppTheme.talowaGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppTheme.talowaGreen.withOpacity(0.3),
+              color: AppTheme.talowaGreen.withValues(alpha: 0.3),
             ),
           ),
           child: Text(
@@ -624,7 +625,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: categoryInfo['color'].withOpacity(0.1),
+        color: categoryInfo['color'].withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -698,7 +699,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [AppTheme.talowaGreen, AppTheme.talowaGreen.withOpacity(0.7)],
+                  colors: [AppTheme.talowaGreen, AppTheme.talowaGreen.withValues(alpha: 0.7)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -774,7 +775,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
                             return Container(
                               width: 60,
                               height: 60,
-                              color: AppTheme.talowaGreen.withOpacity(0.2),
+                              color: AppTheme.talowaGreen.withValues(alpha: 0.2),
                               child: Center(
                                 child: Text(
                                   story.authorName.isNotEmpty 
@@ -976,10 +977,11 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
       _isLoading = true;
       _hasError = false;
       _errorMessage = null;
+      _lastDocument = null; // Reset pagination
     });
 
     try {
-      List<PostModel> posts;
+      List<PostModel> posts = [];
       
       switch (_currentTabIndex) {
         case 0: // For You
@@ -1004,44 +1006,71 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
           );
           break;
         default:
-          posts = await _feedService.getFeedPosts(limit: _postsPerPage);
+          posts = await _feedService.getFeedPosts(
+            limit: _postsPerPage,
+            category: _selectedCategory,
+            searchQuery: _searchQuery,
+            sortOption: _sortOption,
+          );
       }
       
       if (mounted) {
         setState(() {
-          _posts = posts;
+          _posts = posts ?? [];
           _isLoading = false;
-          _hasMorePosts = posts.length == _postsPerPage;
-          _lastDocument = posts.isNotEmpty ? null : null; // Will be set by service
+          _hasMorePosts = (posts?.length ?? 0) == _postsPerPage;
         });
       }
       
     } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e, context: 'Loading feed');
       if (mounted) {
         setState(() {
           _isLoading = false;
           _hasError = true;
-          _errorMessage = e.toString();
+          _errorMessage = errorMessage;
+          _posts = []; // Ensure posts list is not null
         });
       }
     }
   }
 
   Future<void> _loadMorePosts() async {
-    if (_isLoadingMore || !_hasMorePosts || _posts.isEmpty) return;
+    if (_isLoadingMore || !_hasMorePosts || _posts.isEmpty || !mounted) return;
 
     setState(() {
       _isLoadingMore = true;
     });
 
     try {
-      List<PostModel> morePosts;
+      List<PostModel> morePosts = [];
       
       switch (_currentTabIndex) {
         case 0: // For You
           morePosts = await _feedService.getPersonalizedFeed(
             limit: _postsPerPage,
             lastDocument: _lastDocument,
+          );
+          break;
+        case 1: // Following
+          morePosts = await _feedService.getFeedPosts(
+            limit: _postsPerPage,
+            lastDocument: _lastDocument,
+            sortOption: FeedSortOption.newest,
+          );
+          break;
+        case 2: // Trending
+          morePosts = await _feedService.getFeedPosts(
+            limit: _postsPerPage,
+            lastDocument: _lastDocument,
+            sortOption: FeedSortOption.mostLiked,
+          );
+          break;
+        case 3: // Local
+          morePosts = await _feedService.getFeedPosts(
+            limit: _postsPerPage,
+            lastDocument: _lastDocument,
+            location: 'Telangana',
           );
           break;
         default:
@@ -1054,26 +1083,40 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
           );
       }
 
-      if (mounted) {
+      if (mounted && morePosts.isNotEmpty) {
         setState(() {
           _posts.addAll(morePosts);
           _isLoadingMore = false;
           _hasMorePosts = morePosts.length == _postsPerPage;
         });
+      } else if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+          _hasMorePosts = false;
+        });
       }
       
     } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e, context: 'Loading more posts');
       if (mounted) {
         setState(() {
           _isLoadingMore = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to load more posts: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // Only show error message if it should be shown to user
+        if (ErrorHandler.shouldShowToUser(e)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              action: ErrorHandler.isRecoverable(e) ? SnackBarAction(
+                label: 'Retry',
+                textColor: Colors.white,
+                onPressed: _loadMorePosts,
+              ) : null,
+            ),
+          );
+        }
       }
     }
   }
@@ -1111,10 +1154,16 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
-        _scrollController.position.maxScrollExtent - 200) {
-      _loadMorePosts();
-    }
+    ErrorHandler.safeExecuteSync(() {
+      if (!mounted || 
+          !_scrollController.hasClients ||
+          _scrollController.position.maxScrollExtent == 0) return;
+      
+      if (_scrollController.position.pixels >= 
+          _scrollController.position.maxScrollExtent - 200) {
+        _loadMorePosts();
+      }
+    }, context: 'Feed scroll handling');
   }
 
   void _handleLike(PostModel post) async {
@@ -1193,9 +1242,9 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Share Post',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1206,7 +1255,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(Icons.copy, color: Colors.blue),
@@ -1231,7 +1280,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(Icons.message, color: Colors.green),

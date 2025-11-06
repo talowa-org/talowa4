@@ -469,5 +469,38 @@ class RoleProgressionService {
     final indexB = ROLE_HIERARCHY.indexOf(roleB);
     return indexA > indexB;
   }
+
+  /// Get role progression status for a user
+  static Future<Map<String, dynamic>> getRoleProgressionStatus(String userId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        throw const RoleProgressionException('User not found', 'USER_NOT_FOUND');
+      }
+
+      final userData = userDoc.data()!;
+      final currentRole = userData['role'] ?? 'member';
+      final directReferrals = userData['directReferrals'] ?? 0;
+      final teamSize = userData['teamSize'] ?? 0;
+
+      final nextRoleRequirements = _getNextRoleRequirements(currentRole);
+      final currentRoleDefinition = ROLE_DEFINITIONS[currentRole];
+
+      return {
+        'currentRole': currentRole,
+        'currentRoleName': currentRoleDefinition?.name ?? 'Member',
+        'currentLevel': currentRoleDefinition?.level ?? 1,
+        'directReferrals': directReferrals,
+        'teamSize': teamSize,
+        'nextRoleRequirements': nextRoleRequirements,
+        'canBePromoted': nextRoleRequirements != null &&
+            directReferrals >= nextRoleRequirements['directReferralsRequired'] &&
+            teamSize >= nextRoleRequirements['teamSizeRequired'],
+      };
+    } catch (e) {
+      debugPrint('Error getting role progression status: $e');
+      rethrow;
+    }
+  }
 }
 

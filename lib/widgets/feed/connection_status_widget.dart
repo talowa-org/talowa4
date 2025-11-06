@@ -2,10 +2,10 @@
 // Part of Task 13: Implement real-time feed updates
 
 import 'package:flutter/material.dart';
-import '../../services/social_feed/real_time_feed_service.dart' as RealTimeFeed;
+import '../../services/social_feed/real_time_feed_service.dart' as real_time_feed;
 
 class ConnectionStatusWidget extends StatelessWidget {
-  final RealTimeFeed.ConnectionState connectionState;
+  final real_time_feed.ConnectionState connectionState;
   final VoidCallback? onRetry;
   final bool showBanner;
 
@@ -41,7 +41,7 @@ class ConnectionStatusWidget extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          if (connectionState == ConnectionState.disconnected && onRetry != null) ...[
+          if (connectionState == real_time_feed.ConnectionState.disconnected && onRetry != null) ...[
             const SizedBox(width: 8),
             GestureDetector(
               onTap: onRetry,
@@ -65,9 +65,9 @@ class ConnectionStatusWidget extends StatelessWidget {
     switch (connectionState) {
       case RealTimeFeed.ConnectionState.connected:
         return Colors.green;
-      case RealTimeFeed.ConnectionState.reconnecting:
+      case real_time_feed.ConnectionState.reconnecting:
         return Colors.orange;
-      case RealTimeFeed.ConnectionState.disconnected:
+      case real_time_feed.ConnectionState.disconnected:
         return Colors.red;
     }
   }
@@ -76,9 +76,9 @@ class ConnectionStatusWidget extends StatelessWidget {
     switch (connectionState) {
       case RealTimeFeed.ConnectionState.connected:
         return Icons.wifi;
-      case RealTimeFeed.ConnectionState.reconnecting:
+      case real_time_feed.ConnectionState.reconnecting:
         return Icons.wifi_protected_setup;
-      case RealTimeFeed.ConnectionState.disconnected:
+      case real_time_feed.ConnectionState.disconnected:
         return Icons.wifi_off;
     }
   }
@@ -87,9 +87,9 @@ class ConnectionStatusWidget extends StatelessWidget {
     switch (connectionState) {
       case RealTimeFeed.ConnectionState.connected:
         return 'Connected - Real-time updates active';
-      case RealTimeFeed.ConnectionState.reconnecting:
+      case real_time_feed.ConnectionState.reconnecting:
         return 'Reconnecting...';
-      case RealTimeFeed.ConnectionState.disconnected:
+      case real_time_feed.ConnectionState.disconnected:
         return 'Disconnected - Tap to retry';
     }
   }
@@ -107,11 +107,11 @@ class ConnectionStatusStreamWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<RealTimeFeed.ConnectionState>(
-      stream: RealTimeFeedService.connectionStateStream,
-      initialData: RealTimeFeedService.connectionState,
+      stream: real_time_feed.RealTimeFeedService.connectionStateStream,
+      initialData: real_time_feed.RealTimeFeedService.connectionState,
       builder: (context, snapshot) {
-        final connectionState = snapshot.data ?? RealTimeFeed.ConnectionState.disconnected;
-        final showBanner = connectionState != RealTimeFeed.ConnectionState.connected;
+        final connectionState = snapshot.data ?? real_time_feed.ConnectionState.disconnected;
+        final showBanner = connectionState != real_time_feed.ConnectionState.connected;
 
         return ConnectionStatusWidget(
           connectionState: connectionState,

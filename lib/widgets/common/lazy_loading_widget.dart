@@ -8,11 +8,11 @@ class LazyLoadingWidget extends StatelessWidget {
   final Widget? placeholder;
   
   const LazyLoadingWidget({
-    Key? key,
+    super.key,
     required this.child,
     this.isVisible = true,
     this.placeholder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

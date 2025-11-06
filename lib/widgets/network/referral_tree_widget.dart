@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../screens/network/network_screen.dart';
+import '../../models/network/network_models.dart';
 
 class ReferralTreeWidget extends StatelessWidget {
   final NetworkData networkData;
