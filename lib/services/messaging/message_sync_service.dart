@@ -597,9 +597,9 @@ class MessageSyncService {
 
   /// Start monitoring connectivity changes
   Future<void> _startConnectivityMonitoring() async {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
       final wasOnline = _isOnline;
-      _isOnline = result != ConnectivityResult.none;
+      _isOnline = results.isNotEmpty && !results.contains(ConnectivityResult.none);
       
       if (!wasOnline && _isOnline && !_isSyncing) {
         debugPrint('Connection restored, starting message sync');
@@ -608,8 +608,8 @@ class MessageSyncService {
     });
     
     // Check initial connectivity
-    final connectivity = await Connectivity().checkConnectivity();
-    _isOnline = connectivity != ConnectivityResult.none;
+    final connectivityResults = await Connectivity().checkConnectivity();
+    _isOnline = connectivityResults.isNotEmpty && !connectivityResults.contains(ConnectivityResult.none);
   }
 
   /// Schedule periodic sync

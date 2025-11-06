@@ -1,5 +1,6 @@
 ﻿// Main Messaging Service for TALOWA
 // Combines simple and advanced messaging features with real-time delivery confirmation
+// Enhanced with comprehensive error handling and loading states
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,10 +8,14 @@ import 'package:flutter/foundation.dart';
 import '../../models/messaging/message_model.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/messaging/message_status_model.dart';
+import '../../models/user_model.dart';
 import '../auth_service.dart';
 import 'simple_messaging_service.dart';
 import 'advanced_messaging_service.dart';
 import 'real_time_messaging_service.dart';
+import 'messaging_search_service.dart';
+import 'messaging_error_integration.dart';
+import 'loading_state_service.dart';
 
 class MessagingService {
   static final MessagingService _instance = MessagingService._internal();
@@ -21,6 +26,9 @@ class MessagingService {
   final SimpleMessagingService _simpleMessaging = SimpleMessagingService();
   final AdvancedMessagingService _advancedMessaging = AdvancedMessagingService();
   final RealTimeMessagingService _realTimeMessaging = RealTimeMessagingService();
+  final MessagingSearchService _searchService = MessagingSearchService();
+  final MessagingErrorIntegration _errorIntegration = MessagingErrorIntegration();
+
 
   // Stream controllers for message status updates
   final StreamController<MessageStatusModel> _messageStatusController = 
@@ -36,20 +44,33 @@ class MessagingService {
   Stream<String> get connectionStatusStream => _realTimeMessaging.connectionStatusStream;
 
   bool get isRealTimeConnected => _realTimeMessaging.isConnected;
+  
+  // Error handling and loading state getters
+  bool get isOnline => _errorIntegration.isOnline;
+  Stream<bool> get networkStatusStream => _errorIntegration.networkStatusStream;
+  Stream<LoadingState?> getLoadingStateStream(String operationId) => _errorIntegration.getLoadingStateStream(operationId);
+  bool isOperationLoading(String operationId) => _errorIntegration.isLoading(operationId);
+  Map<String, dynamic> get systemStatus => _errorIntegration.getSystemStatus();
 
   /// Initialize messaging service
   Future<void> initialize() async {
     try {
-      // Initialize real-time messaging first
+      // Initialize error handling and loading states first
+      await _errorIntegration.initialize();
+      
+      // Initialize real-time messaging
       await _realTimeMessaging.initialize();
       
       // Initialize advanced messaging
       await _advancedMessaging.initialize();
       
+      // Initialize search service
+      await _searchService.initialize();
+      
       // Set up message status tracking
       _setupMessageStatusTracking();
       
-      debugPrint('✅ Messaging Service initialized with real-time support');
+      debugPrint('✅ Messaging Service initialized with comprehensive error handling');
     } catch (e) {
       debugPrint('❌ Error initializing messaging service: $e');
       rethrow;
@@ -79,7 +100,7 @@ class MessagingService {
     return _simpleMessaging.getConversationMessages(conversationId);
   }
 
-  /// Send a message with real-time delivery confirmation
+  /// Send a message with real-time delivery confirmation and error handling
   Future<String> sendMessage({
     required String conversationId,
     required String content,
@@ -87,24 +108,37 @@ class MessagingService {
     List<String>? mediaUrls,
     Map<String, dynamic>? metadata,
   }) async {
-    try {
-      // Use real-time messaging service for enhanced delivery
-      final messageId = await _realTimeMessaging.sendMessage(
-        conversationId: conversationId,
-        content: content,
-        messageType: messageType,
-        mediaUrls: mediaUrls,
-        metadata: metadata,
-      );
+    final operationId = 'send_message_${conversationId}_${DateTime.now().millisecondsSinceEpoch}';
+    
+    return await _errorIntegration.executeOperation(
+      operationId,
+      () async {
+        // Use real-time messaging service for enhanced delivery
+        final messageId = await _realTimeMessaging.sendMessage(
+          conversationId: conversationId,
+          content: content,
+          messageType: messageType,
+          mediaUrls: mediaUrls,
+          metadata: metadata,
+        );
 
-      // Create message status tracking
-      await _createMessageStatus(messageId, conversationId);
+        // Create message status tracking
+        await _createMessageStatus(messageId, conversationId);
 
-      return messageId;
-    } catch (e) {
-      debugPrint('❌ Error sending message: $e');
-      rethrow;
-    }
+        return messageId;
+      },
+      loadingMessage: 'Sending message...',
+      successMessage: 'Message sent',
+      errorMessage: 'Failed to send message',
+      maxRetries: 3,
+      requiresNetwork: true,
+      context: {
+        'conversationId': conversationId,
+        'messageType': messageType.toString(),
+        'contentLength': content.length,
+        'hasMedia': mediaUrls?.isNotEmpty ?? false,
+      },
+    );
   }
 
   /// Create message status tracking record
@@ -283,7 +317,7 @@ class MessagingService {
   }
 
   /// Advanced search messages
-  Future<List<MessageModel>> searchMessages({
+  Future<List<MessageModel>> searchAdvancedMessages({
     required String query,
     List<String>? conversationIds,
     List<MessageType>? messageTypes,
@@ -350,11 +384,135 @@ class MessagingService {
     return await _advancedMessaging.getConversationAnalytics(conversationId);
   }
 
+  // ==================== SEARCH FUNCTIONALITY ====================
+
+  /// Search users globally with real-time filtering
+  /// Requirements: 4.1, 4.2
+  Future<UserSearchResult> searchUsers({
+    required String query,
+    UserSearchFilters? filters,
+    int limit = 20,
+  }) async {
+    return await _searchService.searchUsers(
+      query: query,
+      filters: filters,
+      limit: limit,
+    );
+  }
+
+  /// Search messages with comprehensive filtering
+  /// Requirements: 4.2, 4.3
+  Future<MessageSearchResult> searchMessages({
+    required String query,
+    MessageSearchFilters? filters,
+    int limit = 50,
+  }) async {
+    return await _searchService.searchMessages(
+      query: query,
+      filters: filters,
+      limit: limit,
+    );
+  }
+
+  /// Search within specific conversation
+  /// Requirements: 4.2, 4.3
+  Future<MessageSearchResult> searchInConversation({
+    required String conversationId,
+    required String query,
+    MessageSearchFilters? filters,
+    int limit = 50,
+  }) async {
+    return await _searchService.searchInConversation(
+      conversationId: conversationId,
+      query: query,
+      filters: filters,
+      limit: limit,
+    );
+  }
+
+  /// Get search suggestions
+  /// Requirements: 4.4, 4.5
+  Future<List<String>> getSearchSuggestions(String query) async {
+    return await _searchService.getSearchSuggestions(query);
+  }
+
+  /// Get search history
+  /// Requirements: 4.6
+  List<String> getSearchHistory() {
+    return _searchService.getSearchHistory();
+  }
+
+  /// Save search for frequent use
+  /// Requirements: 4.6
+  Future<void> saveSearch(String name, String query) async {
+    return await _searchService.saveSearch(name, query);
+  }
+
+  /// Get saved searches
+  /// Requirements: 4.6
+  Map<String, List<String>> getSavedSearches() {
+    return _searchService.getSavedSearches();
+  }
+
+  /// Clear search history
+  /// Requirements: 4.6
+  Future<void> clearSearchHistory() async {
+    return await _searchService.clearSearchHistory();
+  }
+
+  /// Get filtered users with advanced options
+  /// Requirements: 4.3, 4.4
+  Future<UserSearchResult> getFilteredUsers({
+    required UserSearchFilters filters,
+    int limit = 50,
+  }) async {
+    return await _searchService.getFilteredUsers(
+      filters: filters,
+      limit: limit,
+    );
+  }
+
+  /// Get search result highlights for navigation
+  /// Requirements: 4.4
+  List<SearchHighlight> getSearchHighlights(String content, String query) {
+    return _searchService.getSearchHighlights(content, query);
+  }
+
+  /// Get appropriate empty state message for search
+  /// Requirements: 4.5
+  String getSearchEmptyStateMessage(String query, {bool isUserSearch = true}) {
+    return _searchService.getEmptyStateMessage(query, isUserSearch: isUserSearch);
+  }
+
+  /// Get search suggestions for empty state
+  /// Requirements: 4.5
+  List<String> getSearchEmptyStateSuggestions() {
+    return _searchService.getEmptyStateSuggestions();
+  }
+
+  /// Get user search stream for real-time updates
+  /// Requirements: 4.1, 4.2
+  Stream<List<UserModel>> getUserSearchStream() {
+    return _searchService.getUserSearchStream();
+  }
+
+  /// Get message search stream for real-time updates
+  /// Requirements: 4.2, 4.3
+  Stream<List<MessageModel>> getMessageSearchStream() {
+    return _searchService.getMessageSearchStream();
+  }
+
   /// Dispose of messaging service resources
   Future<void> dispose() async {
     try {
+      // Dispose error integration first
+      await _errorIntegration.dispose();
+      
       // Dispose real-time messaging service
       await _realTimeMessaging.dispose();
+
+      // Dispose search service
+      await _searchService.dispose();
 
       // Close stream controllers
       await _messageStatusController.close();

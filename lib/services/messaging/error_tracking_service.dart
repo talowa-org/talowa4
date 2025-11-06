@@ -26,7 +26,6 @@ class ErrorTrackingService {
   // Configuration
   static const int _maxErrorBufferSize = 1000;
   static const Duration _errorAggregationWindow = Duration(minutes: 5);
-  static const Duration _alertCooldownPeriod = Duration(minutes: 15);
 
   /// Initialize error tracking service
   Future<void> initialize() async {

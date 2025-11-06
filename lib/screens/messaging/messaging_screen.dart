@@ -352,7 +352,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
           title: Text(missedCall.callerName),
           subtitle: Text('${missedCall.callerRole} • ${_formatTimestamp(missedCall.timestamp)}'),
           trailing: IconButton(
-            icon: const Icon(Icons.call_back),
+            icon: const Icon(Icons.call),
             onPressed: () {
               // TODO: Call back the missed caller
               ScaffoldMessenger.of(context).showSnackBar(

@@ -124,6 +124,7 @@ class SimpleMessagingService {
         participantIds: participantIds,
         createdBy: currentUser.uid,
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         lastMessageAt: DateTime.now(),
         lastMessage: 'Conversation created',
         lastMessageSenderId: currentUser.uid,

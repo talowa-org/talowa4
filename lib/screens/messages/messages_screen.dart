@@ -6,14 +6,15 @@ import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/user_model.dart';
 
-import '../../services/messaging/simple_messaging_service.dart';
+import '../../services/messaging/integrated_messaging_service.dart';
 import '../../services/messaging/advanced_messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/conversation_tile_widget.dart';
 import '../../widgets/messages/emergency_alert_banner.dart';
 import '../../widgets/messages/message_search_widget.dart';
 import '../../widgets/messages/advanced_search_widget.dart';
-import '../../widgets/messages/voice_message_widget.dart';
+
+import '../../widgets/messages/voice_recording_widget.dart' as voice;
 import '../../widgets/common/loading_widget.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../help/help_center_screen.dart';
@@ -541,8 +542,11 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
     });
 
     try {
+      // Initialize messaging service
+      await IntegratedMessagingService().initialize();
+      
       // Listen to real-time conversation updates
-      SimpleMessagingService().getUserConversations().listen((conversations) {
+      IntegratedMessagingService().getUserConversations().listen((conversations) {
         if (mounted) {
           setState(() {
             _allConversations = conversations;
@@ -601,7 +605,7 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => VoiceRecordingWidget(
+      builder: (context) => voice.VoiceRecordingWidget(
         onRecordingComplete: (audioPath, duration) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1010,67 +1014,88 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
     debugPrint('Archiving conversation: $conversationId');
   }
 
-  void _startDirectChat(UserModel user) {
-    // TODO: Create or find existing direct conversation with user
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Starting chat with ${user.fullName}'),
-        backgroundColor: AppTheme.talowaGreen,
-      ),
-    );
+  void _startDirectChat(UserModel user) async {
+    try {
+      final conversationId = await IntegratedMessagingService().startDirectChat(user.id);
+      final conversation = await IntegratedMessagingService().getConversation(conversationId);
+      
+      if (conversation != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(conversation: conversation),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error starting chat: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _createGroupChat(List<UserModel> users) {
-    // TODO: Show group creation dialog with selected users
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Create Group Chat'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Group Name',
-                border: OutlineInputBorder(),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Group Name',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Group Description (Optional)',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Group Description (Optional)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 2,
               ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 16),
-            Text('Selected members (${users.length}):'),
-            const SizedBox(height: 8),
-            Container(
-              height: 100,
-              child: ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      radius: 16,
-                      child: Text(user.fullName[0].toUpperCase()),
-                    ),
-                    title: Text(
-                      user.fullName,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    subtitle: Text(
-                      user.role,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  );
-                },
+              const SizedBox(height: 16),
+              Text('Selected members (${users.length}):'),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final user = users[index];
+                    return ListTile(
+                      dense: true,
+                      leading: CircleAvatar(
+                        radius: 16,
+                        child: Text(user.fullName[0].toUpperCase()),
+                      ),
+                      title: Text(
+                        user.fullName,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      subtitle: Text(
+                        user.role,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -1078,14 +1103,48 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              final groupName = nameController.text.trim();
+              if (groupName.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a group name'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Group chat created with ${users.length} members!'),
-                  backgroundColor: AppTheme.talowaGreen,
-                ),
-              );
+              
+              try {
+                final participantIds = users.map((user) => user.id).toList();
+                final conversationId = await IntegratedMessagingService().createConversation(
+                  participantIds: participantIds,
+                  name: groupName,
+                  type: ConversationType.group,
+                );
+                
+                final conversation = await IntegratedMessagingService().getConversation(conversationId);
+                
+                if (conversation != null && mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(conversation: conversation),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error creating group: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
             },
             child: const Text('Create'),
           ),

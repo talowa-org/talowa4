@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/messaging/message_model.dart';
-import '../../services/messaging/messaging_service.dart';
+import '../../services/messaging/integrated_messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/message_bubble_widget.dart';
 import '../../widgets/messages/message_input_widget.dart';
 import '../../widgets/messages/typing_indicator_widget.dart';
+import '../../services/messaging/typing_status_manager.dart' as typing;
 
 class ChatScreen extends StatefulWidget {
   final ConversationModel conversation;
@@ -39,14 +40,14 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    TypingStatusManager.removeListener(widget.conversation.id);
+    typing.TypingStatusManager.removeListener(widget.conversation.id);
     super.dispose();
   }
 
   Future<void> _loadMessages() async {
     try {
-      MessagingService()
-          .getConversationMessages(conversationId: widget.conversation.id)
+      IntegratedMessagingService()
+          .getConversationMessages(widget.conversation.id)
           .listen((messages) {
         if (mounted) {
           setState(() {
@@ -66,14 +67,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _markConversationAsRead() async {
     try {
-      await MessagingService().markConversationAsRead(widget.conversation.id);
+      await IntegratedMessagingService().markConversationAsRead(widget.conversation.id);
     } catch (e) {
       debugPrint('Error marking conversation as read: $e');
     }
   }
 
   void _setupTypingListener() {
-    TypingStatusManager.addListener(widget.conversation.id, (typingUsers) {
+    typing.TypingStatusManager.addListener(widget.conversation.id, (typingUsers) {
       setState(() {
         _typingUsers = typingUsers;
       });
@@ -97,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
         };
       }
 
-      await MessagingService().sendMessage(
+      await IntegratedMessagingService().sendMessage(
         conversationId: widget.conversation.id,
         content: content,
         messageType: messageType ?? MessageType.text,
@@ -166,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
         message: message,
         onSave: (newContent) async {
           try {
-            await MessagingService().editMessage(
+            await IntegratedMessagingService().editMessage(
               messageId: message.id,
               newContent: newContent,
             );
@@ -198,7 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ElevatedButton(
             onPressed: () async {
               try {
-                await MessagingService().deleteMessage(message.id);
+                await IntegratedMessagingService().deleteMessage(message.id);
                 Navigator.pop(context);
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -220,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _startTyping() {
     final currentUser = AuthService.currentUser;
     if (currentUser != null) {
-      TypingStatusManager.startTyping(
+      typing.TypingStatusManager.startTyping(
         widget.conversation.id,
         currentUser.uid,
         'You', // This would be the current user's name
@@ -231,7 +232,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _stopTyping() {
     final currentUser = AuthService.currentUser;
     if (currentUser != null) {
-      TypingStatusManager.stopTyping(
+      typing.TypingStatusManager.stopTyping(
         widget.conversation.id,
         currentUser.uid,
         'You',

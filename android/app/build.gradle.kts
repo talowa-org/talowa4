@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.talowa"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -50,9 +50,9 @@ flutter {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    // Add other Firebase dependencies *without version numbers*
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    // Temporarily removed Firebase Analytics to fix build
+    // implementation("com.google.firebase:firebase-analytics-ktx")
 
     // Core library desugaring for flutter_local_notifications
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")

@@ -8,6 +8,7 @@ class ConversationModel {
   final List<String> participantIds;
   final String createdBy;
   final DateTime createdAt;
+  final DateTime updatedAt;
   final DateTime lastMessageAt;
   final String lastMessage;
   final String lastMessageSenderId;
@@ -24,6 +25,7 @@ class ConversationModel {
     required this.participantIds,
     required this.createdBy,
     required this.createdAt,
+    required this.updatedAt,
     required this.lastMessageAt,
     required this.lastMessage,
     required this.lastMessageSenderId,
@@ -45,6 +47,7 @@ class ConversationModel {
       participantIds: List<String>.from(data['participantIds'] ?? []),
       createdBy: data['createdBy'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastMessageAt: (data['lastMessageAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastMessage: data['lastMessage'] ?? '',
       lastMessageSenderId: data['lastMessageSenderId'] ?? '',
@@ -64,6 +67,7 @@ class ConversationModel {
       'participantIds': participantIds,
       'createdBy': createdBy,
       'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
       'lastMessageAt': Timestamp.fromDate(lastMessageAt),
       'lastMessage': lastMessage,
       'lastMessageSenderId': lastMessageSenderId,
@@ -83,6 +87,7 @@ class ConversationModel {
     List<String>? participantIds,
     String? createdBy,
     DateTime? createdAt,
+    DateTime? updatedAt,
     DateTime? lastMessageAt,
     String? lastMessage,
     String? lastMessageSenderId,
@@ -99,6 +104,7 @@ class ConversationModel {
       participantIds: participantIds ?? this.participantIds,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       lastMessage: lastMessage ?? this.lastMessage,
       lastMessageSenderId: lastMessageSenderId ?? this.lastMessageSenderId,
