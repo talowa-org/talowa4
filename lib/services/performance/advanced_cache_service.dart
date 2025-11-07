@@ -1,362 +1,668 @@
-// lib/services/performance/advanced_cache_service.dart
-
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// Advanced Multi-Level Caching Service for 10M DAU Support
+
+/// Cache tier levels for multi-tier architecture
+enum CacheTier {
+  l1Memory,     // In-memory cache (fastest)
+  l2Persistent, // Local persistent cache
+  l3Distributed,// Distributed cache simulation
+  l4CDN,        // CDN cache (external)
+}
+
+/// Cache entry with metadata and compression support
+class AdvancedCacheEntry {
+  final String key;
+  final dynamic data;
+  final DateTime createdAt;
+  final DateTime expiresAt;
+  final int accessCount;
+  final DateTime lastAccessedAt;
+  final int size;
+  final bool isCompressed;
+  final List<String> dependencies;
+  final Map<String, dynamic> metadata;
+
+  AdvancedCacheEntry({
+    required this.key,
+    required this.data,
+    required this.createdAt,
+    required this.expiresAt,
+    this.accessCount = 0,
+    DateTime? lastAccessedAt,
+    this.size = 0,
+    this.isCompressed = false,
+    this.dependencies = const [],
+    this.metadata = const {},
+  }) : lastAccessedAt = lastAccessedAt ?? DateTime.now();
+
+  AdvancedCacheEntry copyWith({
+    int? accessCount,
+    DateTime? lastAccessedAt,
+  }) {
+    return AdvancedCacheEntry(
+      key: key,
+      data: data,
+      createdAt: createdAt,
+      expiresAt: expiresAt,
+      accessCount: accessCount ?? this.accessCount,
+      lastAccessedAt: lastAccessedAt ?? this.lastAccessedAt,
+      size: size,
+      isCompressed: isCompressed,
+      dependencies: dependencies,
+      metadata: metadata,
+    );
+  }
+
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
+  bool get isValid => !isExpired;
+}
+
+/// Cache performance metrics
+class CacheMetrics {
+  int hits = 0;
+  int misses = 0;
+  int evictions = 0;
+  int compressions = 0;
+  int decompressions = 0;
+  double totalSize = 0;
+  DateTime lastReset = DateTime.now();
+
+  double get hitRate => (hits + misses) > 0 ? hits / (hits + misses) : 0.0;
+  double get missRate => 1.0 - hitRate;
+  
+  void reset() {
+    hits = 0;
+    misses = 0;
+    evictions = 0;
+    compressions = 0;
+    decompressions = 0;
+    totalSize = 0;
+    lastReset = DateTime.now();
+  }
+}
+
+/// Advanced multi-tier caching system with intelligent invalidation
 class AdvancedCacheService {
-  static final AdvancedCacheService _instance = AdvancedCacheService._internal();
-  factory AdvancedCacheService() => _instance;
-  AdvancedCacheService._internal();
+  static AdvancedCacheService? _instance;
+  static AdvancedCacheService get instance => _instance ??= AdvancedCacheService._();
 
-  // Cache Configuration
-  static const int maxMemoryCacheSize = 1000;
-  static const int maxDiskCacheSize = 10000;
-  static const Duration shortCache = Duration(minutes: 5);
-  static const Duration mediumCache = Duration(hours: 1);
-  static const Duration longCache = Duration(days: 1);
+  AdvancedCacheService._();
 
-  // Memory Cache (L1)
-  final LinkedHashMap<String, CacheEntry> _memoryCache = LinkedHashMap();
+  // L1 Cache - In-memory (fastest)
+  final Map<String, AdvancedCacheEntry> _l1Cache = {};
   
-  // Cache Statistics
-  int _hits = 0;
-  int _misses = 0;
-  int _evictions = 0;
+  // L2 Cache - Persistent storage
+  SharedPreferences? _l2Cache;
   
-  // Cache Warming Queue
-  final Queue<String> _warmingQueue = Queue();
-  Timer? _warmingTimer;
+  // L3 Cache - Distributed cache simulation (using IndexedDB on web)
+  final Map<String, AdvancedCacheEntry> _l3Cache = {};
   
-  // Cache Invalidation
-  final Map<String, Set<String>> _taggedKeys = {};
-  final Map<String, DateTime> _keyExpiry = {};
+  // Cache configuration
+  int _maxL1Size = 50 * 1024 * 1024; // 50MB
+  int _maxL2Size = 200 * 1024 * 1024; // 200MB
+  int _maxL3Size = 500 * 1024 * 1024; // 500MB
+  int _maxL1Entries = 1000;
+  int _maxL2Entries = 5000;
+  int _maxL3Entries = 10000;
+  
+  // Dependency tracking for intelligent invalidation
+  final Map<String, Set<String>> _dependencies = {};
+  final Map<String, Set<String>> _dependents = {};
+  
+  // Performance metrics
+  final Map<CacheTier, CacheMetrics> _metrics = {
+    CacheTier.l1Memory: CacheMetrics(),
+    CacheTier.l2Persistent: CacheMetrics(),
+    CacheTier.l3Distributed: CacheMetrics(),
+  };
+  
+  // Cache warming strategies
+  final Map<String, Timer> _warmingTimers = {};
+  final Set<String> _popularKeys = {};
+  
+  // Compression settings
+  bool _compressionEnabled = true;
+  int _compressionThreshold = 1024; // 1KB
+  
+  bool _isInitialized = false;
 
-  /// Initialize the cache service
+  /// Initialize the advanced cache service
   Future<void> initialize() async {
-    await _startCacheWarming();
-    _startCacheCleanup();
-    _startCacheAnalytics();
-    
-    if (kDebugMode) {
-      print('✅ Advanced Cache Service initialized');
-    }
-  }
+    if (_isInitialized) return;
 
-  /// Get cached data with automatic cache warming
-  Future<T?> get<T>(
-    String key, {
-    Duration? ttl,
-    List<String>? tags,
-    bool warmCache = false,
-  }) async {
     try {
-      // Check memory cache first (L1)
-      final memoryEntry = _memoryCache[key];
-      if (memoryEntry != null && !_isExpired(memoryEntry)) {
-        _hits++;
-        
-        // Move to end (LRU)
-        _memoryCache.remove(key);
-        _memoryCache[key] = memoryEntry;
-        
-        if (warmCache) {
-          _scheduleWarmup(key);
-        }
-        
-        return _deserialize<T>(memoryEntry.data);
-      }
-
-      // Cache miss
-      _misses++;
+      _l2Cache = await SharedPreferences.getInstance();
+      await _loadL3Cache();
+      await _startCacheMonitoring();
       
-      if (kDebugMode) {
-        print('🔍 Cache miss for key: $key');
-      }
-      
-      return null;
+      _isInitialized = true;
+      debugPrint('✅ Advanced Cache Service initialized');
+      debugPrint('📊 Cache tiers: L1(Memory), L2(Persistent), L3(Distributed)');
     } catch (e) {
-      if (kDebugMode) {
-        print('❌ Cache get error for key $key: $e');
-      }
-      return null;
+      debugPrint('❌ Failed to initialize Advanced Cache Service: $e');
     }
   }
 
-  /// Set cached data with intelligent eviction
+  /// Configure cache settings
+  void configure({
+    int? maxL1Size,
+    int? maxL2Size,
+    int? maxL3Size,
+    int? maxL1Entries,
+    int? maxL2Entries,
+    int? maxL3Entries,
+    bool? compressionEnabled,
+    int? compressionThreshold,
+  }) {
+    _maxL1Size = maxL1Size ?? _maxL1Size;
+    _maxL2Size = maxL2Size ?? _maxL2Size;
+    _maxL3Size = maxL3Size ?? _maxL3Size;
+    _maxL1Entries = maxL1Entries ?? _maxL1Entries;
+    _maxL2Entries = maxL2Entries ?? _maxL2Entries;
+    _maxL3Entries = maxL3Entries ?? _maxL3Entries;
+    _compressionEnabled = compressionEnabled ?? _compressionEnabled;
+    _compressionThreshold = compressionThreshold ?? _compressionThreshold;
+    
+    debugPrint('🔧 Advanced Cache configured:');
+    debugPrint('   L1: ${_maxL1Size ~/ (1024 * 1024)}MB, ${_maxL1Entries} entries');
+    debugPrint('   L2: ${_maxL2Size ~/ (1024 * 1024)}MB, ${_maxL2Entries} entries');
+    debugPrint('   L3: ${_maxL3Size ~/ (1024 * 1024)}MB, ${_maxL3Entries} entries');
+    debugPrint('   Compression: $_compressionEnabled (threshold: ${_compressionThreshold}B)');
+  }
+
+  /// Set data in cache with intelligent tier placement
   Future<void> set<T>(
     String key,
     T data, {
-    Duration? ttl,
-    List<String>? tags,
-    CachePriority priority = CachePriority.normal,
+    Duration? duration,
+    List<String>? dependencies,
+    Map<String, dynamic>? metadata,
+    CacheTier? preferredTier,
+    bool? compress,
   }) async {
+    if (!_isInitialized) await initialize();
+
     try {
-      final expiry = DateTime.now().add(ttl ?? mediumCache);
-      final entry = CacheEntry(
+      final expiration = duration ?? const Duration(minutes: 30);
+      final expiresAt = DateTime.now().add(expiration);
+      
+      // Serialize data
+      final serializedData = _serializeData(data);
+      final dataSize = _calculateSize(serializedData);
+      
+      // Determine if compression should be used
+      final shouldCompress = compress ?? 
+          (_compressionEnabled && dataSize > _compressionThreshold);
+      
+      final finalData = shouldCompress ? 
+          _compressData(serializedData) : serializedData;
+      
+      if (shouldCompress) {
+        _metrics[CacheTier.l1Memory]!.compressions++;
+      }
+
+      // Create cache entry
+      final entry = AdvancedCacheEntry(
         key: key,
-        data: _serialize(data),
-        expiry: expiry,
-        priority: priority,
-        accessCount: 1,
-        lastAccessed: DateTime.now(),
-        tags: tags ?? [],
+        data: finalData,
+        createdAt: DateTime.now(),
+        expiresAt: expiresAt,
+        size: _calculateSize(finalData),
+        isCompressed: shouldCompress,
+        dependencies: dependencies ?? [],
+        metadata: metadata ?? {},
       );
 
-      // Add to memory cache
-      await _addToMemoryCache(key, entry);
+      // Set up dependency tracking
+      if (dependencies != null) {
+        _setupDependencyTracking(key, dependencies);
+      }
+
+      // Determine cache tier placement
+      final tier = preferredTier ?? _determineBestTier(entry);
       
-      // Update tag mappings
-      if (tags != null) {
-        for (final tag in tags) {
-          _taggedKeys.putIfAbsent(tag, () => <String>{}).add(key);
+      // Store in appropriate tiers
+      await _setInTier(tier, key, entry);
+      
+      // Mark as popular if accessed frequently
+      _trackPopularity(key);
+      
+      debugPrint('💾 Cached [$tier]: $key (${entry.size} bytes, compressed: $shouldCompress)');
+      
+    } catch (e) {
+      debugPrint('❌ Error setting cache for $key: $e');
+    }
+  }
+
+  /// Get data from cache with tier fallback
+  Future<T?> get<T>(String key) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      // Try L1 cache first (fastest)
+      final l1Entry = await _getFromTier<T>(CacheTier.l1Memory, key);
+      if (l1Entry != null) {
+        _metrics[CacheTier.l1Memory]!.hits++;
+        await _updateAccessStats(key, l1Entry);
+        return l1Entry;
+      }
+
+      // Try L2 cache
+      final l2Entry = await _getFromTier<T>(CacheTier.l2Persistent, key);
+      if (l2Entry != null) {
+        _metrics[CacheTier.l2Persistent]!.hits++;
+        // Promote to L1 for faster future access
+        await _promoteToL1(key, l2Entry);
+        return l2Entry;
+      }
+
+      // Try L3 cache
+      final l3Entry = await _getFromTier<T>(CacheTier.l3Distributed, key);
+      if (l3Entry != null) {
+        _metrics[CacheTier.l3Distributed]!.hits++;
+        // Promote to L1 for faster future access
+        await _promoteToL1(key, l3Entry);
+        return l3Entry;
+      }
+
+      // Cache miss
+      _metrics[CacheTier.l1Memory]!.misses++;
+      return null;
+      
+    } catch (e) {
+      debugPrint('❌ Error getting cache for $key: $e');
+      return null;
+    }
+  }
+
+  /// Intelligent cache invalidation with dependency tracking
+  Future<void> invalidate(String key) async {
+    try {
+      // Remove from all tiers
+      await _removeFromAllTiers(key);
+      
+      // Invalidate dependents
+      final dependents = _dependents[key] ?? {};
+      for (final dependent in dependents) {
+        await invalidate(dependent);
+      }
+      
+      // Clean up dependency tracking
+      _cleanupDependencyTracking(key);
+      
+      debugPrint('🗑️ Invalidated cache: $key (+ ${dependents.length} dependents)');
+      
+    } catch (e) {
+      debugPrint('❌ Error invalidating cache for $key: $e');
+    }
+  }
+
+  /// Invalidate cache entries by pattern
+  Future<void> invalidatePattern(String pattern) async {
+    try {
+      final regex = RegExp(pattern);
+      final keysToInvalidate = <String>[];
+      
+      // Find matching keys in all tiers
+      keysToInvalidate.addAll(_l1Cache.keys.where((key) => regex.hasMatch(key)));
+      keysToInvalidate.addAll(_l3Cache.keys.where((key) => regex.hasMatch(key)));
+      
+      // Check L2 cache keys
+      if (_l2Cache != null) {
+        final l2Keys = _l2Cache!.getKeys().where((key) => 
+            key.startsWith('cache_') && regex.hasMatch(key.substring(6)));
+        keysToInvalidate.addAll(l2Keys.map((key) => key.substring(6)));
+      }
+      
+      // Invalidate all matching keys
+      for (final key in keysToInvalidate.toSet()) {
+        await invalidate(key);
+      }
+      
+      debugPrint('🗑️ Invalidated ${keysToInvalidate.length} entries matching pattern: $pattern');
+      
+    } catch (e) {
+      debugPrint('❌ Error invalidating pattern $pattern: $e');
+    }
+  }
+
+  /// Cache warming for popular content
+  Future<void> warmCache(Map<String, dynamic> popularData) async {
+    try {
+      debugPrint('🔥 Starting cache warming for ${popularData.length} entries');
+      
+      for (final entry in popularData.entries) {
+        await set(
+          entry.key,
+          entry.value,
+          duration: const Duration(hours: 2),
+          preferredTier: CacheTier.l1Memory,
+        );
+        
+        // Mark as popular
+        _popularKeys.add(entry.key);
+      }
+      
+      debugPrint('✅ Cache warming completed');
+      
+    } catch (e) {
+      debugPrint('❌ Error warming cache: $e');
+    }
+  }
+
+  /// Preload cache with predictive content
+  Future<void> preloadCache(List<String> keys, Future<dynamic> Function(String) dataLoader) async {
+    try {
+      debugPrint('📦 Preloading cache for ${keys.length} keys');
+      
+      final futures = keys.map((key) async {
+        try {
+          final data = await dataLoader(key);
+          await set(key, data, duration: const Duration(minutes: 45));
+        } catch (e) {
+          debugPrint('❌ Error preloading $key: $e');
+        }
+      });
+      
+      await Future.wait(futures);
+      debugPrint('✅ Cache preloading completed');
+      
+    } catch (e) {
+      debugPrint('❌ Error preloading cache: $e');
+    }
+  }
+
+  /// Get comprehensive cache statistics
+  Map<String, dynamic> getStats() {
+    final stats = <String, dynamic>{};
+    
+    for (final tier in CacheTier.values) {
+      if (tier == CacheTier.l4CDN) continue; // External tier
+      
+      final metrics = _metrics[tier]!;
+      stats[tier.name] = {
+        'hits': metrics.hits,
+        'misses': metrics.misses,
+        'hitRate': metrics.hitRate,
+        'evictions': metrics.evictions,
+        'compressions': metrics.compressions,
+        'decompressions': metrics.decompressions,
+        'totalSize': metrics.totalSize,
+        'entries': _getEntriesCount(tier),
+      };
+    }
+    
+    stats['popular_keys'] = _popularKeys.length;
+    stats['dependency_chains'] = _dependencies.length;
+    stats['warming_timers'] = _warmingTimers.length;
+    
+    return stats;
+  }
+
+  /// Clear all cache tiers
+  Future<void> clearAll() async {
+    try {
+      _l1Cache.clear();
+      _l3Cache.clear();
+      
+      if (_l2Cache != null) {
+        final keys = _l2Cache!.getKeys().where((key) => key.startsWith('cache_'));
+        for (final key in keys) {
+          await _l2Cache!.remove(key);
         }
       }
       
-      // Set expiry tracking
-      _keyExpiry[key] = expiry;
+      _dependencies.clear();
+      _dependents.clear();
+      _popularKeys.clear();
       
-      if (kDebugMode) {
-        print('💾 Cached data for key: $key (TTL: ${ttl?.inMinutes ?? 60}min)');
+      // Reset metrics
+      for (final metrics in _metrics.values) {
+        metrics.reset();
       }
+      
+      debugPrint('🗑️ Cleared all cache tiers');
+      
     } catch (e) {
-      if (kDebugMode) {
-        print('❌ Cache set error for key $key: $e');
-      }
+      debugPrint('❌ Error clearing cache: $e');
     }
   }
 
-  /// Add entry to memory cache with intelligent eviction
-  Future<void> _addToMemoryCache(String key, CacheEntry entry) async {
-    // Remove existing entry if present
-    _memoryCache.remove(key);
-    
-    // Check if cache is full
-    if (_memoryCache.length >= maxMemoryCacheSize) {
-      await _evictLeastValuable();
+  // Private helper methods
+
+  CacheTier _determineBestTier(AdvancedCacheEntry entry) {
+    // Small, frequently accessed data goes to L1
+    if (entry.size < 10 * 1024 && _popularKeys.contains(entry.key)) {
+      return CacheTier.l1Memory;
     }
     
-    // Add new entry
-    _memoryCache[key] = entry;
+    // Medium-sized data goes to L2
+    if (entry.size < 100 * 1024) {
+      return CacheTier.l2Persistent;
+    }
+    
+    // Large data goes to L3
+    return CacheTier.l3Distributed;
   }
 
-  /// Evict least valuable cache entry
-  Future<void> _evictLeastValuable() async {
-    if (_memoryCache.isEmpty) return;
+  Future<void> _setInTier(CacheTier tier, String key, AdvancedCacheEntry entry) async {
+    switch (tier) {
+      case CacheTier.l1Memory:
+        _l1Cache[key] = entry;
+        await _evictIfNeeded(CacheTier.l1Memory);
+        break;
+        
+      case CacheTier.l2Persistent:
+        if (_l2Cache != null) {
+          final serialized = jsonEncode({
+            'data': entry.data,
+            'createdAt': entry.createdAt.millisecondsSinceEpoch,
+            'expiresAt': entry.expiresAt.millisecondsSinceEpoch,
+            'size': entry.size,
+            'isCompressed': entry.isCompressed,
+            'dependencies': entry.dependencies,
+            'metadata': entry.metadata,
+          });
+          await _l2Cache!.setString('cache_$key', serialized);
+        }
+        break;
+        
+      case CacheTier.l3Distributed:
+        _l3Cache[key] = entry;
+        await _evictIfNeeded(CacheTier.l3Distributed);
+        break;
+        
+      case CacheTier.l4CDN:
+        // External CDN cache - not implemented in this service
+        break;
+    }
+  }
+
+  Future<T?> _getFromTier<T>(CacheTier tier, String key) async {
+    AdvancedCacheEntry? entry;
     
-    String? keyToEvict;
-    double lowestScore = double.infinity;
-    
-    for (final entry in _memoryCache.entries) {
-      final score = _calculateCacheScore(entry.value);
-      if (score < lowestScore) {
-        lowestScore = score;
-        keyToEvict = entry.key;
-      }
+    switch (tier) {
+      case CacheTier.l1Memory:
+        entry = _l1Cache[key];
+        break;
+        
+      case CacheTier.l2Persistent:
+        if (_l2Cache != null) {
+          final serialized = _l2Cache!.getString('cache_$key');
+          if (serialized != null) {
+            try {
+              final data = jsonDecode(serialized);
+              entry = AdvancedCacheEntry(
+                key: key,
+                data: data['data'],
+                createdAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+                expiresAt: DateTime.fromMillisecondsSinceEpoch(data['expiresAt']),
+                size: data['size'] ?? 0,
+                isCompressed: data['isCompressed'] ?? false,
+                dependencies: List<String>.from(data['dependencies'] ?? []),
+                metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
+              );
+            } catch (e) {
+              debugPrint('❌ Error deserializing L2 cache entry: $e');
+            }
+          }
+        }
+        break;
+        
+      case CacheTier.l3Distributed:
+        entry = _l3Cache[key];
+        break;
+        
+      case CacheTier.l4CDN:
+        // External CDN cache - not implemented
+        break;
     }
     
-    if (keyToEvict != null) {
-      _memoryCache.remove(keyToEvict);
-      _keyExpiry.remove(keyToEvict);
-      _evictions++;
+    if (entry == null || entry.isExpired) {
+      if (entry?.isExpired == true) {
+        await _removeFromTier(tier, key);
+      }
+      return null;
+    }
+    
+    // Decompress if needed
+    dynamic data = entry.data;
+    if (entry.isCompressed) {
+      data = _decompressData(data);
+      _metrics[tier]!.decompressions++;
+    }
+    
+    return _deserializeData<T>(data);
+  }
+
+  Future<void> _removeFromTier(CacheTier tier, String key) async {
+    switch (tier) {
+      case CacheTier.l1Memory:
+        _l1Cache.remove(key);
+        break;
+        
+      case CacheTier.l2Persistent:
+        if (_l2Cache != null) {
+          await _l2Cache!.remove('cache_$key');
+        }
+        break;
+        
+      case CacheTier.l3Distributed:
+        _l3Cache.remove(key);
+        break;
+        
+      case CacheTier.l4CDN:
+        // External CDN cache - not implemented
+        break;
+    }
+  }
+
+  Future<void> _removeFromAllTiers(String key) async {
+    await _removeFromTier(CacheTier.l1Memory, key);
+    await _removeFromTier(CacheTier.l2Persistent, key);
+    await _removeFromTier(CacheTier.l3Distributed, key);
+  }
+
+  Future<void> _evictIfNeeded(CacheTier tier) async {
+    Map<String, AdvancedCacheEntry> cache;
+    int maxEntries;
+    int maxSize;
+    
+    switch (tier) {
+      case CacheTier.l1Memory:
+        cache = _l1Cache;
+        maxEntries = _maxL1Entries;
+        maxSize = _maxL1Size;
+        break;
+      case CacheTier.l3Distributed:
+        cache = _l3Cache;
+        maxEntries = _maxL3Entries;
+        maxSize = _maxL3Size;
+        break;
+      default:
+        return;
+    }
+    
+    // Check if eviction is needed
+    if (cache.length <= maxEntries) return;
+    
+    // Calculate total size
+    final totalSize = cache.values.fold<int>(0, (sum, entry) => sum + entry.size);
+    if (totalSize <= maxSize) return;
+    
+    // Evict least recently used entries
+    final sortedEntries = cache.entries.toList()
+      ..sort((a, b) => a.value.lastAccessedAt.compareTo(b.value.lastAccessedAt));
+    
+    final entriesToEvict = sortedEntries.take(cache.length - maxEntries + 1);
+    
+    for (final entry in entriesToEvict) {
+      cache.remove(entry.key);
+      _metrics[tier]!.evictions++;
+    }
+    
+    debugPrint('🗑️ Evicted ${entriesToEvict.length} entries from $tier');
+  }
+
+  Future<void> _promoteToL1(String key, dynamic data) async {
+    if (!_l1Cache.containsKey(key)) {
+      final entry = AdvancedCacheEntry(
+        key: key,
+        data: data,
+        createdAt: DateTime.now(),
+        expiresAt: DateTime.now().add(const Duration(minutes: 15)),
+        size: _calculateSize(data),
+      );
       
-      if (kDebugMode) {
-        print('🗑️ Evicted cache entry: $keyToEvict (score: ${lowestScore.toStringAsFixed(2)})');
+      _l1Cache[key] = entry;
+      await _evictIfNeeded(CacheTier.l1Memory);
+    }
+  }
+
+  void _setupDependencyTracking(String key, List<String> dependencies) {
+    _dependencies[key] = dependencies.toSet();
+    
+    for (final dependency in dependencies) {
+      _dependents[dependency] ??= <String>{};
+      _dependents[dependency]!.add(key);
+    }
+  }
+
+  void _cleanupDependencyTracking(String key) {
+    final dependencies = _dependencies.remove(key) ?? <String>{};
+    
+    for (final dependency in dependencies) {
+      _dependents[dependency]?.remove(key);
+      if (_dependents[dependency]?.isEmpty == true) {
+        _dependents.remove(dependency);
       }
     }
   }
 
-  /// Calculate cache score for eviction priority
-  double _calculateCacheScore(CacheEntry entry) {
-    final now = DateTime.now();
-    final age = now.difference(entry.lastAccessed).inMinutes;
-    final timeToExpiry = entry.expiry.difference(now).inMinutes;
-    
-    // Higher score = more valuable (less likely to be evicted)
-    double score = entry.accessCount.toDouble();
-    
-    // Priority multiplier
-    switch (entry.priority) {
-      case CachePriority.critical:
-        score *= 10.0;
-        break;
-      case CachePriority.high:
-        score *= 5.0;
-        break;
-      case CachePriority.normal:
-        score *= 1.0;
-        break;
-      case CachePriority.low:
-        score *= 0.5;
-        break;
-    }
-    
-    // Reduce score based on age
-    score /= (age + 1);
-    
-    // Reduce score if expiring soon
-    if (timeToExpiry < 60) {
-      score *= 0.1;
-    }
-    
-    return score;
-  }
-
-  /// Invalidate cache by key
-  Future<void> invalidate(String key) async {
-    _memoryCache.remove(key);
-    _keyExpiry.remove(key);
-    
-    // Remove from tag mappings
-    _taggedKeys.forEach((tag, keys) {
-      keys.remove(key);
-    });
-    
-    if (kDebugMode) {
-      print('🗑️ Invalidated cache for key: $key');
+  void _trackPopularity(String key) {
+    // Simple popularity tracking - in production this would be more sophisticated
+    final entry = _l1Cache[key];
+    if (entry != null && entry.accessCount > 5) {
+      _popularKeys.add(key);
     }
   }
 
-  /// Invalidate cache by tags
-  Future<void> invalidateByTags(List<String> tags) async {
-    final keysToInvalidate = <String>{};
-    
-    for (final tag in tags) {
-      final taggedKeys = _taggedKeys[tag];
-      if (taggedKeys != null) {
-        keysToInvalidate.addAll(taggedKeys);
-      }
-    }
-    
-    for (final key in keysToInvalidate) {
-      await invalidate(key);
-    }
-    
-    if (kDebugMode) {
-      print('🗑️ Invalidated ${keysToInvalidate.length} cache entries by tags: $tags');
+  Future<void> _updateAccessStats(String key, dynamic data) async {
+    final entry = _l1Cache[key];
+    if (entry != null) {
+      _l1Cache[key] = entry.copyWith(
+        accessCount: entry.accessCount + 1,
+        lastAccessedAt: DateTime.now(),
+      );
     }
   }
 
-  /// Warm cache with popular content
-  Future<void> warmCache(String key, Future<dynamic> Function() dataLoader) async {
-    try {
-      final data = await dataLoader();
-      await set(key, data, ttl: longCache, priority: CachePriority.high);
-      
-      if (kDebugMode) {
-        print('🔥 Warmed cache for key: $key');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Cache warming error for key $key: $e');
-      }
-    }
-  }
-
-  /// Schedule cache warming
-  void _scheduleWarmup(String key) {
-    if (!_warmingQueue.contains(key)) {
-      _warmingQueue.add(key);
-    }
-  }
-
-  /// Start cache warming process
-  Future<void> _startCacheWarming() async {
-    _warmingTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _processCacheWarming();
-    });
-  }
-
-  /// Process cache warming queue
-  void _processCacheWarming() {
-    if (_warmingQueue.isNotEmpty) {
-      final key = _warmingQueue.removeFirst();
-      // Implement cache warming logic based on key patterns
-      _warmPopularContent(key);
-    }
-  }
-
-  /// Warm popular content based on usage patterns
-  void _warmPopularContent(String key) {
-    // Implement intelligent cache warming based on usage patterns
-    // This would typically involve analyzing access patterns and pre-loading related content
-    if (kDebugMode) {
-      print('🔥 Warming related content for: $key');
-    }
-  }
-
-  /// Start cache cleanup process
-  void _startCacheCleanup() {
-    Timer.periodic(const Duration(minutes: 5), (timer) {
-      _cleanupExpiredEntries();
-    });
-  }
-
-  /// Cleanup expired cache entries
-  void _cleanupExpiredEntries() {
-    final now = DateTime.now();
-    final expiredKeys = <String>[];
-    
-    _memoryCache.forEach((key, entry) {
-      if (_isExpired(entry)) {
-        expiredKeys.add(key);
-      }
-    });
-    
-    for (final key in expiredKeys) {
-      _memoryCache.remove(key);
-      _keyExpiry.remove(key);
-    }
-    
-    if (expiredKeys.isNotEmpty && kDebugMode) {
-      print('🧹 Cleaned up ${expiredKeys.length} expired cache entries');
-    }
-  }
-
-  /// Check if cache entry is expired
-  bool _isExpired(CacheEntry entry) {
-    return DateTime.now().isAfter(entry.expiry);
-  }
-
-  /// Start cache analytics
-  void _startCacheAnalytics() {
-    Timer.periodic(const Duration(minutes: 1), (timer) {
-      _logCacheAnalytics();
-    });
-  }
-
-  /// Log cache analytics
-  void _logCacheAnalytics() {
-    if (kDebugMode) {
-      final hitRate = _hits + _misses > 0 ? (_hits / (_hits + _misses) * 100) : 0;
-      
-      print('📊 Cache Analytics:');
-      print('   Hit Rate: ${hitRate.toStringAsFixed(1)}%');
-      print('   Hits: $_hits, Misses: $_misses');
-      print('   Memory Cache Size: ${_memoryCache.length}/$maxMemoryCacheSize');
-      print('   Evictions: $_evictions');
-    }
-  }
-
-  /// Get cache statistics
-  Map<String, dynamic> getCacheStats() {
-    final hitRate = _hits + _misses > 0 ? (_hits / (_hits + _misses) * 100) : 0;
-    
-    return {
-      'hitRate': hitRate,
-      'hits': _hits,
-      'misses': _misses,
-      'evictions': _evictions,
-      'memoryCacheSize': _memoryCache.length,
-      'maxMemoryCacheSize': maxMemoryCacheSize,
-      'taggedKeysCount': _taggedKeys.length,
-    };
-  }
-
-  /// Serialize data for caching
-  String _serialize<T>(T data) {
+  String _serializeData(dynamic data) {
     try {
       return jsonEncode(data);
     } catch (e) {
@@ -364,61 +670,110 @@ class AdvancedCacheService {
     }
   }
 
-  /// Deserialize cached data
-  T? _deserialize<T>(String data) {
+  T? _deserializeData<T>(dynamic data) {
     try {
-      return jsonDecode(data) as T;
+      if (data is String) {
+        final decoded = jsonDecode(data);
+        return decoded as T?;
+      }
+      return data as T?;
     } catch (e) {
       return data as T?;
     }
   }
 
-  /// Clear all cache
-  Future<void> clear() async {
-    _memoryCache.clear();
-    _keyExpiry.clear();
-    _taggedKeys.clear();
-    _hits = 0;
-    _misses = 0;
-    _evictions = 0;
-    
-    if (kDebugMode) {
-      print('🧹 Cache cleared');
+  String _compressData(String data) {
+    // Simple compression simulation - in production use gzip
+    final bytes = utf8.encode(data);
+    final compressed = gzip.encode(bytes);
+    return base64Encode(compressed);
+  }
+
+  String _decompressData(String compressedData) {
+    try {
+      final bytes = base64Decode(compressedData);
+      final decompressed = gzip.decode(bytes);
+      return utf8.decode(decompressed);
+    } catch (e) {
+      return compressedData; // Return as-is if decompression fails
     }
   }
 
-  /// Dispose cache service
-  void dispose() {
-    _warmingTimer?.cancel();
-    clear();
+  int _calculateSize(dynamic data) {
+    if (data is String) {
+      return utf8.encode(data).length;
+    } else if (data is Uint8List) {
+      return data.length;
+    } else {
+      return utf8.encode(data.toString()).length;
+    }
   }
-}
 
-/// Cache entry model
-class CacheEntry {
-  final String key;
-  final String data;
-  final DateTime expiry;
-  final CachePriority priority;
-  final List<String> tags;
-  int accessCount;
-  DateTime lastAccessed;
+  int _getEntriesCount(CacheTier tier) {
+    switch (tier) {
+      case CacheTier.l1Memory:
+        return _l1Cache.length;
+      case CacheTier.l2Persistent:
+        return _l2Cache?.getKeys().where((key) => key.startsWith('cache_')).length ?? 0;
+      case CacheTier.l3Distributed:
+        return _l3Cache.length;
+      case CacheTier.l4CDN:
+        return 0;
+    }
+  }
 
-  CacheEntry({
-    required this.key,
-    required this.data,
-    required this.expiry,
-    required this.priority,
-    required this.tags,
-    this.accessCount = 1,
-    required this.lastAccessed,
-  });
-}
+  Future<void> _loadL3Cache() async {
+    // In a real implementation, this would load from a distributed cache
+    // For now, we'll simulate it with in-memory storage
+    debugPrint('📡 L3 Distributed cache simulation initialized');
+  }
 
-/// Cache priority levels
-enum CachePriority {
-  critical,
-  high,
-  normal,
-  low,
+  Future<void> _startCacheMonitoring() async {
+    // Start periodic cache maintenance
+    Timer.periodic(const Duration(minutes: 5), (timer) {
+      _performMaintenance();
+    });
+    
+    debugPrint('🔍 Cache monitoring started');
+  }
+
+  void _performMaintenance() {
+    try {
+      // Clean expired entries
+      _cleanExpiredEntries();
+      
+      // Update popularity metrics
+      _updatePopularityMetrics();
+      
+      // Log performance stats
+      if (kDebugMode) {
+        final stats = getStats();
+        debugPrint('📊 Cache Stats: L1 hit rate: ${(stats['l1Memory']['hitRate'] * 100).toStringAsFixed(1)}%');
+      }
+      
+    } catch (e) {
+      debugPrint('❌ Error during cache maintenance: $e');
+    }
+  }
+
+  void _cleanExpiredEntries() {
+    final now = DateTime.now();
+    
+    // Clean L1 cache
+    _l1Cache.removeWhere((key, entry) => entry.expiresAt.isBefore(now));
+    
+    // Clean L3 cache
+    _l3Cache.removeWhere((key, entry) => entry.expiresAt.isBefore(now));
+  }
+
+  void _updatePopularityMetrics() {
+    // Update popular keys based on access patterns
+    final popularThreshold = 10;
+    
+    for (final entry in _l1Cache.entries) {
+      if (entry.value.accessCount >= popularThreshold) {
+        _popularKeys.add(entry.key);
+      }
+    }
+  }
 }

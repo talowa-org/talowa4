@@ -40,6 +40,7 @@ import 'services/performance/caching_service.dart';
 import 'services/performance/database_optimization_service.dart';
 import 'services/performance/performance_optimization_service.dart';
 import 'services/social_feed/enhanced_feed_service.dart';
+import 'services/social_feed/microservices/microservices_initializer.dart';
 import 'services/performance/feed_performance_optimizer.dart';
 import 'services/performance/firestore_performance_fix.dart';
 import 'services/cache/cache_service.dart';
@@ -106,6 +107,9 @@ void main() async {
   await CachingService.initialize();
   await DatabaseOptimizationService.instance.initialize();
   await PerformanceOptimizationService().initialize();
+  
+  // 🏗️ INITIALIZE MICROSERVICES ARCHITECTURE
+  await MicroservicesInitializer.initialize();
   
   // 🎯 INITIALIZE ENHANCED FEED SERVICE
   await EnhancedFeedService().initialize();

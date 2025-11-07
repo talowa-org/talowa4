@@ -7,9 +7,15 @@ import '../../models/social_feed/post_model.dart';
 import '../../models/social_feed/comment_model.dart';
 import '../auth_service.dart';
 import '../performance/cache_service.dart';
+import '../performance/advanced_cache_service.dart';
+import '../performance/cache_partition_service.dart';
+import '../performance/cache_monitoring_service.dart';
+import '../performance/cache_failover_service.dart';
 import '../performance/network_optimization_service.dart';
 import '../performance/performance_monitoring_service.dart';
 import '../performance/database_optimization_service.dart';
+import '../ai/ai_moderation_service.dart';
+import '../../models/ai/moderation_models.dart';
 
 class EnhancedFeedService {
   static final EnhancedFeedService _instance = EnhancedFeedService._internal();
@@ -24,9 +30,14 @@ class EnhancedFeedService {
 
   // Performance services
   late CacheService _cacheService;
+  late AdvancedCacheService _advancedCacheService;
+  late CachePartitionService _partitionService;
+  late CacheMonitoringService _cacheMonitoringService;
+  late CacheFailoverService _failoverService;
   late NetworkOptimizationService _networkService;
   late PerformanceMonitoringService _performanceService;
   late DatabaseOptimizationService _databaseService;
+  late AIModerationService _moderationService;
 
   // Real-time listeners
   StreamSubscription<QuerySnapshot>? _postsListener;
@@ -40,17 +51,37 @@ class EnhancedFeedService {
     if (_isInitialized) return;
 
     _cacheService = CacheService.instance;
+    _advancedCacheService = AdvancedCacheService.instance;
+    _partitionService = CachePartitionService.instance;
+    _cacheMonitoringService = CacheMonitoringService.instance;
+    _failoverService = CacheFailoverService.instance;
     _networkService = NetworkOptimizationService.instance;
     _performanceService = PerformanceMonitoringService.instance;
     _databaseService = DatabaseOptimizationService.instance;
+    _moderationService = AIModerationService();
 
-    // Initialize cache service
+    // Initialize cache services
     await _cacheService.initialize();
+    await _advancedCacheService.initialize();
+    await _partitionService.initialize();
+    await _cacheMonitoringService.initialize();
+    await _failoverService.initialize();
+    await _moderationService.initialize();
 
-    // Configure cache for feed data
-    _cacheService.configure(
-      maxMemorySize: 50 * 1024 * 1024, // 50MB
-      maxDiskSize: 200 * 1024 * 1024,  // 200MB
+    // Configure advanced cache for feed data
+    _advancedCacheService.configure(
+      maxL1Size: 50 * 1024 * 1024,   // 50MB L1 cache
+      maxL2Size: 200 * 1024 * 1024,  // 200MB L2 cache
+      maxL3Size: 500 * 1024 * 1024,  // 500MB L3 cache
+      compressionEnabled: true,
+      compressionThreshold: 1024,     // Compress data > 1KB
+    );
+
+    // Configure cache monitoring
+    _cacheMonitoringService.configure(
+      hitRateThreshold: 0.7,
+      memoryUsageThreshold: 0.8,
+      responseTimeThreshold: 100.0,
     );
 
     // Setup real-time listeners
@@ -73,9 +104,13 @@ class EnhancedFeedService {
             .map((doc) => PostModel.fromFirestore(doc))
             .toList();
         
-        // Update cache with real-time data
-        _cacheService.set('realtime_posts', posts, 
-            duration: const Duration(minutes: 5));
+        // Update cache with real-time data using advanced caching
+        _partitionService.setInPartition(
+          CachePartition.realtime,
+          'posts',
+          posts,
+          duration: const Duration(minutes: 5),
+        );
         
         // Notify listeners
         _postsStreamController.add(posts);
@@ -114,11 +149,26 @@ class EnhancedFeedService {
         lastDocument: lastDocument,
       );
 
-      // Try cache first if enabled
+      // Try advanced cache first with failover protection
       if (useCache) {
-        final cachedPosts = await _cacheService.get<List<PostModel>>(cacheKey);
+        final cachedPosts = await _failoverService.executeWithFailover<List<PostModel>>(
+          cacheKey,
+          () => _partitionService.getFromPartition<List<PostModel>>(
+            CachePartition.feedPosts, 
+            cacheKey,
+          ),
+          () async => <PostModel>[], // Empty fallback
+          partition: CachePartition.feedPosts,
+        );
+        
         if (cachedPosts != null && cachedPosts.isNotEmpty) {
-          debugPrint('📦 Loaded ${cachedPosts.length} posts from cache');
+          debugPrint('📦 Loaded ${cachedPosts.length} posts from advanced cache');
+          _cacheMonitoringService.recordCacheOperation(
+            operation: 'get_feed',
+            isHit: true,
+            responseTime: stopwatch.elapsedMilliseconds.toDouble(),
+            partition: CachePartition.feedPosts.name,
+          );
           return await _enrichPostsWithUserData(cachedPosts);
         }
       }
@@ -171,10 +221,30 @@ class EnhancedFeedService {
         // Continue with non-enriched posts if enrichment fails
       }
 
-      // Cache results with longer duration for better performance
+      // Cache results using advanced partitioned caching
       if (useCache) {
-        await _cacheService.set(cacheKey, posts, 
-            duration: const Duration(minutes: 10));
+        await _partitionService.setInPartition(
+          CachePartition.feedPosts,
+          cacheKey,
+          posts,
+          duration: const Duration(minutes: 10),
+          dependencies: ['user_${AuthService.currentUser?.uid}', 'feed_global'],
+          metadata: {
+            'query_params': {
+              'limit': limit,
+              'category': category?.value,
+              'location': location,
+              'sort': sortOption.name,
+            },
+          },
+        );
+        
+        _cacheMonitoringService.recordCacheOperation(
+          operation: 'set_feed',
+          isHit: false,
+          responseTime: stopwatch.elapsedMilliseconds.toDouble(),
+          partition: CachePartition.feedPosts.name,
+        );
       }
 
       // Track performance
@@ -211,10 +281,19 @@ class EnhancedFeedService {
     try {
       final cacheKey = 'personalized_feed_${currentUserId}_${limit}_${lastDocument?.id ?? 'start'}';
       
-      // Check cache first
-      final cachedPosts = await _cacheService.get<List<PostModel>>(cacheKey);
+      // Check advanced cache with failover
+      final cachedPosts = await _failoverService.executeWithFailover<List<PostModel>>(
+        cacheKey,
+        () => _partitionService.getFromPartition<List<PostModel>>(
+          CachePartition.userProfiles,
+          cacheKey,
+        ),
+        () async => <PostModel>[], // Empty fallback
+        partition: CachePartition.userProfiles,
+      );
+      
       if (cachedPosts != null && cachedPosts.isNotEmpty) {
-        debugPrint('📦 Loaded personalized feed from cache');
+        debugPrint('📦 Loaded personalized feed from advanced cache');
         return cachedPosts;
       }
 
@@ -265,9 +344,18 @@ class EnhancedFeedService {
       // Enrich with user data
       posts = await _enrichPostsWithUserData(posts);
 
-      // Cache results
-      await _cacheService.set(cacheKey, posts, 
-          duration: const Duration(minutes: 3));
+      // Cache personalized results with user-specific partition
+      await _partitionService.setInPartition(
+        CachePartition.userProfiles,
+        cacheKey,
+        posts,
+        duration: const Duration(minutes: 3),
+        dependencies: ['user_$currentUserId', 'personalization_model'],
+        metadata: {
+          'user_id': currentUserId,
+          'personalization_version': '1.0',
+        },
+      );
 
       _performanceService.recordMetric('personalized_feed_time', 
           stopwatch.elapsedMilliseconds.toDouble());
@@ -310,6 +398,22 @@ class EnhancedFeedService {
       // Validate content
       _validatePostContent(content, title);
 
+      // Moderate content using AI moderation system
+      final moderationResult = await _moderationService.moderateContent(
+        content: content,
+        mediaUrls: [...(imageUrls ?? []), ...(videoUrls ?? [])],
+        authorId: currentUser.uid,
+        contentType: 'post',
+      );
+
+      // Handle moderation decision
+      if (moderationResult.decision == ModerationAction.reject) {
+        throw Exception('Content violates community guidelines: ${moderationResult.reason}');
+      }
+
+      // If flagged for review, still create post but mark it as pending
+      final isPendingReview = moderationResult.decision == ModerationAction.flagForReview;
+
       // Get user profile
       final userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
       if (!userDoc.exists) {
@@ -322,7 +426,7 @@ class EnhancedFeedService {
       // Extract hashtags from content
       final extractedHashtags = hashtags ?? _extractHashtags(content);
 
-      // Create post model
+      // Create post model with moderation data
       final post = PostModel(
         id: postId,
         authorId: currentUser.uid,
@@ -343,11 +447,18 @@ class EnhancedFeedService {
         isLikedByCurrentUser: false,
       );
 
+      // Create post data with moderation information
+      final postData = post.toFirestore();
+      postData['moderationResult'] = moderationResult.toMap();
+      postData['isPendingReview'] = isPendingReview;
+      postData['moderationFlags'] = moderationResult.flags;
+      postData['moderationScore'] = moderationResult.overallScore;
+
       // Save to database with batch write for consistency
       final batch = _firestore.batch();
       
-      // Add post
-      batch.set(_firestore.collection(_postsCollection).doc(postId), post.toFirestore());
+      // Add post with moderation data
+      batch.set(_firestore.collection(_postsCollection).doc(postId), postData);
       
       // Update user stats
       batch.update(_firestore.collection('users').doc(currentUser.uid), {
@@ -358,8 +469,10 @@ class EnhancedFeedService {
       // Commit batch
       await batch.commit();
 
-      // Invalidate relevant caches
-      await _invalidatePostCaches();
+      // Invalidate relevant caches using dependency tracking
+      await _advancedCacheService.invalidate('feed_global');
+      await _advancedCacheService.invalidatePattern('feed_.*');
+      await _advancedCacheService.invalidate('user_${currentUser.uid}');
 
       // Track performance
       _performanceService.recordMetric('create_post_time', 
@@ -419,8 +532,10 @@ class EnhancedFeedService {
         }
       });
 
-      // Invalidate post caches
-      await _invalidatePostCaches();
+      // Invalidate post caches using intelligent invalidation
+      await _advancedCacheService.invalidate('post_$postId');
+      await _advancedCacheService.invalidatePattern('feed_.*');
+      await _advancedCacheService.invalidate('user_${currentUser.uid}');
 
     } catch (e) {
       debugPrint('❌ Error toggling like: $e');
@@ -481,8 +596,9 @@ class EnhancedFeedService {
 
       await batch.commit();
 
-      // Invalidate caches
-      await _invalidatePostCaches();
+      // Invalidate caches with dependency tracking
+      await _advancedCacheService.invalidate('post_$postId');
+      await _advancedCacheService.invalidate('comments_$postId');
 
       return commentId;
 
@@ -497,9 +613,18 @@ class EnhancedFeedService {
     try {
       final cacheKey = 'comments_$postId';
       
-      // Check cache first
-      final cachedComments = await _cacheService.get<List<CommentModel>>(cacheKey);
-      if (cachedComments != null) {
+      // Check advanced cache with failover
+      final cachedComments = await _failoverService.executeWithFailover<List<CommentModel>>(
+        cacheKey,
+        () => _partitionService.getFromPartition<List<CommentModel>>(
+          CachePartition.feedPosts,
+          cacheKey,
+        ),
+        () async => <CommentModel>[], // Empty fallback
+        partition: CachePartition.feedPosts,
+      );
+      
+      if (cachedComments != null && cachedComments.isNotEmpty) {
         return cachedComments;
       }
 
@@ -514,9 +639,14 @@ class EnhancedFeedService {
           .map((doc) => CommentModel.fromFirestore(doc))
           .toList();
 
-      // Cache results
-      await _cacheService.set(cacheKey, comments, 
-          duration: const Duration(minutes: 10));
+      // Cache results in partitioned cache
+      await _partitionService.setInPartition(
+        CachePartition.feedPosts,
+        cacheKey,
+        comments,
+        duration: const Duration(minutes: 10),
+        dependencies: ['post_$postId'],
+      );
 
       return comments;
 
@@ -558,8 +688,9 @@ class EnhancedFeedService {
         });
       });
 
-      // Invalidate caches
-      await _invalidatePostCaches();
+      // Invalidate caches with intelligent dependency tracking
+      await _advancedCacheService.invalidate('post_$postId');
+      await _advancedCacheService.invalidatePattern('feed_.*');
 
     } catch (e) {
       debugPrint('❌ Error sharing post: $e');
@@ -577,9 +708,18 @@ class EnhancedFeedService {
     try {
       final cacheKey = 'search_${query}_${category?.toString() ?? ''}_${location ?? ''}_$limit';
       
-      // Check cache first
-      final cachedResults = await _cacheService.get<List<PostModel>>(cacheKey);
-      if (cachedResults != null) {
+      // Check advanced cache with failover for search results
+      final cachedResults = await _failoverService.executeWithFailover<List<PostModel>>(
+        cacheKey,
+        () => _partitionService.getFromPartition<List<PostModel>>(
+          CachePartition.searchResults,
+          cacheKey,
+        ),
+        () async => <PostModel>[], // Empty fallback
+        partition: CachePartition.searchResults,
+      );
+      
+      if (cachedResults != null && cachedResults.isNotEmpty) {
         return cachedResults;
       }
 
@@ -611,9 +751,18 @@ class EnhancedFeedService {
       // Enrich with user data
       posts = await _enrichPostsWithUserData(posts);
 
-      // Cache results
-      await _cacheService.set(cacheKey, posts, 
-          duration: const Duration(minutes: 5));
+      // Cache search results in dedicated partition
+      await _partitionService.setInPartition(
+        CachePartition.searchResults,
+        cacheKey,
+        posts,
+        duration: const Duration(minutes: 5),
+        metadata: {
+          'search_query': query,
+          'category': category?.value,
+          'location': location,
+        },
+      );
 
       return posts;
 
@@ -628,9 +777,18 @@ class EnhancedFeedService {
     try {
       const cacheKey = 'trending_hashtags';
       
-      // Check cache first
-      final cachedHashtags = await _cacheService.get<List<String>>(cacheKey);
-      if (cachedHashtags != null) {
+      // Check advanced cache for trending hashtags
+      final cachedHashtags = await _failoverService.executeWithFailover<List<String>>(
+        cacheKey,
+        () => _partitionService.getFromPartition<List<String>>(
+          CachePartition.analytics,
+          cacheKey,
+        ),
+        () async => <String>[], // Empty fallback
+        partition: CachePartition.analytics,
+      );
+      
+      if (cachedHashtags != null && cachedHashtags.isNotEmpty) {
         return cachedHashtags;
       }
 
@@ -660,9 +818,17 @@ class EnhancedFeedService {
           .map((entry) => entry.key)
           .toList();
 
-      // Cache results
-      await _cacheService.set(cacheKey, trending, 
-          duration: const Duration(hours: 1));
+      // Cache trending hashtags in analytics partition
+      await _partitionService.setInPartition(
+        CachePartition.analytics,
+        cacheKey,
+        trending,
+        duration: const Duration(hours: 1),
+        metadata: {
+          'calculation_time': DateTime.now().toIso8601String(),
+          'sample_size': snapshot.docs.length,
+        },
+      );
 
       return trending;
 
@@ -771,9 +937,18 @@ class EnhancedFeedService {
     try {
       final cacheKey = 'user_preferences_$userId';
       
-      // Check cache first
-      final cachedPrefs = await _cacheService.get<Map<String, dynamic>>(cacheKey);
-      if (cachedPrefs != null) {
+      // Check advanced cache for user preferences
+      final cachedPrefs = await _failoverService.executeWithFailover<Map<String, dynamic>>(
+        cacheKey,
+        () => _partitionService.getFromPartition<Map<String, dynamic>>(
+          CachePartition.userProfiles,
+          cacheKey,
+        ),
+        () async => <String, dynamic>{}, // Empty fallback
+        partition: CachePartition.userProfiles,
+      );
+      
+      if (cachedPrefs != null && cachedPrefs.isNotEmpty) {
         return cachedPrefs;
       }
 
@@ -788,9 +963,18 @@ class EnhancedFeedService {
         'followedUsers': userData['followedUsers'] ?? [],
       };
 
-      // Cache preferences
-      await _cacheService.set(cacheKey, preferences, 
-          duration: const Duration(hours: 1));
+      // Cache user preferences in user profiles partition
+      await _partitionService.setInPartition(
+        CachePartition.userProfiles,
+        cacheKey,
+        preferences,
+        duration: const Duration(hours: 1),
+        dependencies: ['user_$userId'],
+        metadata: {
+          'user_id': userId,
+          'last_updated': DateTime.now().toIso8601String(),
+        },
+      );
 
       return preferences;
     } catch (e) {
@@ -857,11 +1041,45 @@ class EnhancedFeedService {
     return matches.map((match) => match.group(1)!).toList();
   }
 
-  Future<void> _invalidatePostCaches() async {
-    // Invalidate relevant caches when posts are modified
-    await _cacheService.clearCache('realtime_posts');
-    // Clear other cache entries individually since clearPattern doesn't exist
-    await _cacheService.clearAllCache();
+  /// Get comprehensive cache performance report
+  Map<String, dynamic> getCachePerformanceReport() {
+    return {
+      'monitoring': _cacheMonitoringService.getPerformanceReport(),
+      'partitions': _partitionService.getPartitionStats(),
+      'failover': _failoverService.getFailoverStatus(),
+      'advanced_cache': _advancedCacheService.getStats(),
+    };
+  }
+
+  /// Warm up cache with popular content
+  Future<void> warmUpFeedCache() async {
+    try {
+      debugPrint('🔥 Warming up feed cache with popular content');
+      
+      // Get recent popular posts for cache warming
+      final popularPosts = await _firestore
+          .collection(_postsCollection)
+          .orderBy('likesCount', descending: true)
+          .limit(20)
+          .get();
+
+      final posts = popularPosts.docs
+          .map((doc) => PostModel.fromFirestore(doc))
+          .toList();
+
+      // Warm cache partitions
+      final warmingData = <String, dynamic>{};
+      for (int i = 0; i < posts.length; i++) {
+        warmingData['popular_post_$i'] = posts[i];
+      }
+
+      await _advancedCacheService.warmCache(warmingData);
+      
+      debugPrint('✅ Feed cache warming completed');
+      
+    } catch (e) {
+      debugPrint('❌ Error warming feed cache: $e');
+    }
   }
 
   /// Dispose resources

@@ -1,0 +1,144 @@
+// Firestore Security Rules for Live Streaming Infrastructure
+// Add these rules to your firestore.rules file
+
+// Live Streams Collection
+match /live_streams/{streamId} {
+  // Allow read if user is authenticated and stream is public or user is host/moderator
+  allow read: if request.auth != null && (
+    resource.data.status == 'live' ||
+    resource.data.hostId == request.auth.uid ||
+    request.auth.uid in resource.data.moderators
+  );
+  
+  // Allow create if user is authenticated and is the host
+  allow create: if request.auth != null &&
+    request.resource.data.hostId == request.auth.uid &&
+    request.resource.data.status == 'created';
+  
+  // Allow update if user is host or moderator
+  allow update: if request.auth != null && (
+    resource.data.hostId == request.auth.uid ||
+    request.auth.uid in resource.data.moderators
+  );
+  
+  // Allow delete only by host
+  allow delete: if request.auth != null &&
+    resource.data.hostId == request.auth.uid;
+
+  // Viewers subcollection
+  match /viewers/{viewerId} {
+    // Allow read if user is authenticated
+    allow read: if request.auth != null;
+    
+    // Allow create/update if user is the viewer or host/moderator
+    allow create, update: if request.auth != null && (
+      request.auth.uid == viewerId ||
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+    
+    // Allow delete by viewer, host, or moderator
+    allow delete: if request.auth != null && (
+      request.auth.uid == viewerId ||
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+  }
+
+  // Chat subcollection
+  match /chat/{messageId} {
+    // Allow read if user is authenticated
+    allow read: if request.auth != null;
+    
+    // Allow create if user is authenticated and not banned/muted
+    allow create: if request.auth != null &&
+      request.resource.data.userId == request.auth.uid &&
+      !exists(/databases/$(database)/documents/live_streams/$(streamId)/banned_viewers/$(request.auth.uid)) &&
+      !exists(/databases/$(database)/documents/live_streams/$(streamId)/muted_viewers/$(request.auth.uid));
+    
+    // Allow update/delete by message author, host, or moderator
+    allow update, delete: if request.auth != null && (
+      resource.data.userId == request.auth.uid ||
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+  }
+
+  // Reactions subcollection
+  match /reactions/{reactionId} {
+    // Allow read if user is authenticated
+    allow read: if request.auth != null;
+    
+    // Allow create if user is authenticated
+    allow create: if request.auth != null &&
+      request.resource.data.userId == request.auth.uid;
+    
+    // Allow delete by reaction author
+    allow delete: if request.auth != null &&
+      resource.data.userId == request.auth.uid;
+  }
+
+  // Banned viewers subcollection
+  match /banned_viewers/{viewerId} {
+    // Allow read by host and moderators
+    allow read: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+    
+    // Allow create/update by host and moderators
+    allow create, update: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+  }
+
+  // Muted viewers subcollection
+  match /muted_viewers/{viewerId} {
+    // Allow read by host and moderators
+    allow read: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+    
+    // Allow create/update/delete by host and moderators
+    allow create, update, delete: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+  }
+
+  // Moderator actions subcollection
+  match /moderator_actions/{actionId} {
+    // Allow read by host and moderators
+    allow read: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+    
+    // Allow create by host and moderators
+    allow create: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+  }
+
+  // Reports subcollection
+  match /reports/{reportId} {
+    // Allow read by host and moderators
+    allow read: if request.auth != null && (
+      get(/databases/$(database)/documents/live_streams/$(streamId)).data.hostId == request.auth.uid ||
+      request.auth.uid in get(/databases/$(database)/documents/live_streams/$(streamId)).data.moderators
+    );
+    
+    // Allow create by any authenticated user
+    allow create: if request.auth != null &&
+      request.resource.data.reportedBy == request.auth.uid;
+  }
+
+  // ICE candidates subcollection (for WebRTC)
+  match /ice_candidates/{candidateId} {
+    // Allow read/write by host and viewers
+    allow read, write: if request.auth != null;
+  }
+}
