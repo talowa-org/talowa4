@@ -5,11 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/social_feed/stories_service.dart';
 import '../../services/media/media_upload_service.dart';
-// removed: import '../../services/media/mock_media_upload_service.dart';
 import '../../services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:flutter/foundation.dart';
-import '../../services/media/comprehensive_media_service.dart';
+import '../../models/social_feed/story_model.dart';
 
 class StoryCreationScreen extends StatefulWidget {
   const StoryCreationScreen({super.key});
@@ -23,23 +22,21 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
   final ImagePicker _picker = ImagePicker();
   
   File? _selectedMedia;
-  String _mediaType = 'image';
+  XFile? _selectedXFile;
+  StoryMediaType _mediaType = StoryMediaType.image;
   bool _isUploading = false;
   double _uploadProgress = 0.0;
-  
-  // Web-only selected bytes and file name
-  Uint8List? _webSelectedBytes;
-  String? _webSelectedFileName;
   
   // Text overlay properties
   String _textOverlay = '';
   Color _textColor = Colors.white;
   double _textSize = 24.0;
   Offset _textPosition = const Offset(0.5, 0.5);
-  bool _isTextEditorVisible = false;
   
-  // Story duration (for images)
-  int _storyDuration = 5;
+  // Text story properties
+  bool _isTextStory = false;
+  String _textStoryContent = '';
+  Color _textStoryBackgroundColor = const Color(0xFF6200EA);
   
   @override
   void dispose() {
@@ -62,7 +59,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Select Media',
+                'Create Story',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -72,6 +69,14 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  _buildMediaOption(
+                    icon: Icons.text_fields,
+                    label: 'Text',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _createTextStory();
+                    },
+                  ),
                   _buildMediaOption(
                     icon: Icons.camera_alt,
                     label: 'Camera',
@@ -152,20 +157,13 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       );
       
       if (image != null) {
-        if (kIsWeb) {
-          final bytes = await image.readAsBytes();
-          setState(() {
-            _webSelectedBytes = bytes;
-            _webSelectedFileName = image.name;
-            _selectedMedia = null; // not used on web
-            _mediaType = 'image';
-          });
-        } else {
-          setState(() {
+        setState(() {
+          _selectedXFile = image;
+          if (!kIsWeb) {
             _selectedMedia = File(image.path);
-            _mediaType = 'image';
-          });
-        }
+          }
+          _mediaType = StoryMediaType.image;
+        });
       }
     } catch (e) {
       _showError('Failed to pick image: $e');
@@ -180,22 +178,13 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
       );
       
       if (video != null) {
-        if (kIsWeb) {
-          final bytes = await video.readAsBytes();
-          setState(() {
-            _webSelectedBytes = bytes;
-            _webSelectedFileName = video.name;
-            _selectedMedia = null; // not used on web
-            _mediaType = 'video';
-            _storyDuration = 15;
-          });
-        } else {
-          setState(() {
+        setState(() {
+          _selectedXFile = video;
+          if (!kIsWeb) {
             _selectedMedia = File(video.path);
-            _mediaType = 'video';
-            _storyDuration = 15; // Default duration for videos
-          });
-        }
+          }
+          _mediaType = StoryMediaType.video;
+        });
       }
     } catch (e) {
       _showError('Failed to pick video: $e');
@@ -203,10 +192,6 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
   }
   
   void _showTextEditor() {
-    setState(() {
-      _isTextEditorVisible = true;
-    });
-    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -298,9 +283,6 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  setState(() {
-                    _isTextEditorVisible = false;
-                  });
                 },
                 child: const Text('Done'),
               ),
@@ -311,14 +293,27 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
     );
   }
   
+  void _createTextStory() {
+    setState(() {
+      _isTextStory = true;
+      _mediaType = StoryMediaType.text;
+      _selectedXFile = null;
+      _selectedMedia = null;
+    });
+  }
+  
   Future<void> _createStory() async {
-    if (!kIsWeb && _selectedMedia == null) {
-      _showError('Please select media first');
-      return;
-    }
-    if (kIsWeb && (_webSelectedBytes == null || _webSelectedFileName == null)) {
-      _showError('Please select media first');
-      return;
+    // Validate based on story type
+    if (_isTextStory) {
+      if (_textStoryContent.trim().isEmpty) {
+        _showError('Please enter some text for your story');
+        return;
+      }
+    } else {
+      if (_selectedXFile == null) {
+        _showError('Please select media first');
+        return;
+      }
     }
     
     setState(() {
@@ -327,47 +322,18 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
     });
     
     try {
-      // Upload media
-      String mediaUrl;
-      if (kIsWeb) {
-        // Use real Firebase Storage upload with bytes on web
-        final service = ComprehensiveMediaService.instance;
-        if (_mediaType == 'video') {
-          final result = await service.uploadVideo(
-            videoBytes: _webSelectedBytes!,
-            fileName: _webSelectedFileName!,
-            folder: 'stories',
-            userId: AuthService.currentUser!.uid,
-            onProgress: (p) {
-              setState(() { _uploadProgress = p; });
-            },
-          );
-          mediaUrl = result.downloadUrl;
-        } else {
-          final result = await service.uploadImage(
-            imageBytes: _webSelectedBytes!,
-            fileName: _webSelectedFileName!,
-            folder: 'stories',
-            userId: AuthService.currentUser!.uid,
-            onProgress: (p) {
-              setState(() { _uploadProgress = p; });
-            },
-          );
-          mediaUrl = result.downloadUrl;
-        }
-      } else {
-        // Use real Firebase Storage for mobile (existing flow)
-        final urls = await MediaUploadService.uploadImages(
-          imagePaths: [_selectedMedia!.path],
-          userId: AuthService.currentUser!.uid,
-          folder: 'stories',
-          onProgress: (current, total) {
-            setState(() {
-              _uploadProgress = current / total;
-            });
-          },
+      String? mediaUrl;
+      
+      // Upload media only if not a text story
+      if (!_isTextStory && _selectedXFile != null) {
+        mediaUrl = await MediaUploadService.uploadStoryMedia(
+          _selectedXFile!,
+          AuthService.currentUser!.uid,
         );
-        mediaUrl = urls.first;
+        
+        if (mediaUrl == null) {
+          throw Exception('Failed to upload media');
+        }
       }
       
       // Create story
@@ -377,7 +343,8 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
         caption: _captionController.text.trim().isNotEmpty 
             ? _captionController.text.trim() 
             : null,
-        duration: _storyDuration,
+        textContent: _isTextStory ? _textStoryContent : null,
+        backgroundColor: _isTextStory ? _textStoryBackgroundColor : null,
       );
       
       if (mounted) {
@@ -400,6 +367,83 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
         });
       }
     }
+  }
+  
+  void _showBackgroundColorPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Choose Background Color',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                const Color(0xFF6200EA), // Purple
+                const Color(0xFFD32F2F), // Red
+                const Color(0xFF1976D2), // Blue
+                const Color(0xFF388E3C), // Green
+                const Color(0xFFF57C00), // Orange
+                const Color(0xFFC2185B), // Pink
+                const Color(0xFF0097A7), // Cyan
+                const Color(0xFF7B1FA2), // Deep Purple
+                const Color(0xFF303F9F), // Indigo
+                const Color(0xFF5D4037), // Brown
+                Colors.black,
+                const Color(0xFF455A64), // Blue Grey
+              ].map((color) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _textStoryBackgroundColor = color;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _textStoryBackgroundColor == color 
+                          ? Colors.white 
+                          : Colors.transparent,
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: _textStoryBackgroundColor == color
+                      ? const Icon(Icons.check, color: Colors.white, size: 30)
+                      : null,
+                ),
+              )).toList(),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
   }
   
   void _showError(String message) {
@@ -429,7 +473,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          if (_selectedMedia != null)
+          if (_selectedXFile != null || _isTextStory)
             TextButton(
               onPressed: _isUploading ? null : _createStory,
               child: Text(
@@ -442,7 +486,7 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
             ),
         ],
       ),
-      body: _selectedMedia == null
+      body: _selectedXFile == null && !_isTextStory
           ? _buildMediaSelector()
           : _buildStoryEditor(),
     );
@@ -581,60 +625,139 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
   }
   
   Widget _buildMediaPreview() {
-    if (_mediaType == 'video') {
-      // TODO: Implement video preview
+    // Text story preview
+    if (_isTextStory) {
       return Container(
-        color: Colors.grey[900],
-        child: const Center(
-          child: Icon(
-            Icons.play_circle_outline,
-            color: Colors.white,
-            size: 80,
+        color: _textStoryBackgroundColor,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: TextField(
+              autofocus: true,
+              maxLines: null,
+              maxLength: 500,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: const InputDecoration(
+                hintText: 'Type your story...',
+                hintStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 32,
+                ),
+                border: InputBorder.none,
+                counterStyle: TextStyle(color: Colors.white70),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _textStoryContent = value;
+                });
+              },
+            ),
           ),
         ),
       );
-    } else {
-      // Use platform-appropriate image display
-      if (kIsWeb) {
-        return Image.network(
-          _selectedMedia!.path,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: Colors.grey[900],
-              child: const Center(
-                child: Icon(
-                  Icons.broken_image,
-                  color: Colors.white,
-                  size: 80,
-                ),
-              ),
-            );
-          },
-        );
-      } else {
-        // For mobile platforms, use Image.file
-        return Image.file(
-          _selectedMedia!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: Colors.grey[900],
-              child: const Center(
-                child: Icon(
-                  Icons.broken_image,
-                  color: Colors.white,
-                  size: 80,
-                ),
-              ),
-            );
-          },
-        );
-      }
     }
+    
+    // Video preview
+    if (_mediaType == StoryMediaType.video) {
+      return Container(
+        color: Colors.grey[900],
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.play_circle_outline,
+                color: Colors.white,
+                size: 80,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Video selected',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    // Image preview
+    if (kIsWeb && _selectedXFile != null) {
+      return FutureBuilder<Uint8List>(
+        future: _selectedXFile!.readAsBytes(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Image.memory(
+              snapshot.data!,
+              fit: BoxFit.cover,
+            );
+          }
+          return Container(
+            color: Colors.grey[900],
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          );
+        },
+      );
+    } else if (_selectedMedia != null) {
+      return Image.file(
+        _selectedMedia!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[900],
+            child: const Center(
+              child: Icon(
+                Icons.broken_image,
+                color: Colors.white,
+                size: 80,
+              ),
+            ),
+          );
+        },
+      );
+    }
+    
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+        child: Icon(
+          Icons.broken_image,
+          color: Colors.white,
+          size: 80,
+        ),
+      ),
+    );
   }
   
   Widget _buildStoryControls() {
+    if (_isTextStory) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildControlButton(
+            icon: Icons.palette,
+            label: 'Color',
+            onTap: _showBackgroundColorPicker,
+          ),
+          _buildControlButton(
+            icon: Icons.photo_library,
+            label: 'Change',
+            onTap: _selectMedia,
+          ),
+        ],
+      );
+    }
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -642,11 +765,6 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
           icon: Icons.text_fields,
           label: 'Text',
           onTap: _showTextEditor,
-        ),
-        _buildControlButton(
-          icon: Icons.timer,
-          label: '${_storyDuration}s',
-          onTap: _showDurationPicker,
         ),
         _buildControlButton(
           icon: Icons.photo_library,
@@ -712,58 +830,6 @@ class _StoryCreationScreenState extends State<StoryCreationScreen> {
         buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
           return null; // Hide counter
         },
-      ),
-    );
-  }
-  
-  void _showDurationPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Story Duration',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                const Text('Duration: '),
-                Expanded(
-                  child: Slider(
-                    value: _storyDuration.toDouble(),
-                    min: 3.0,
-                    max: 15.0,
-                    divisions: 12,
-                    label: '${_storyDuration}s',
-                    onChanged: (value) {
-                      setState(() {
-                        _storyDuration = value.round();
-                      });
-                    },
-                  ),
-                ),
-                Text('${_storyDuration}s'),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Done'),
-            ),
-          ],
-        ),
       ),
     );
   }

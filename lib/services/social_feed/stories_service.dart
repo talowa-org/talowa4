@@ -3,6 +3,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../../models/social_feed/story_model.dart';
 import '../auth_service.dart';
 
@@ -32,6 +33,23 @@ class StoriesService {
         return [];
       }
 
+      // Get viewed stories for current user
+      Set<String> viewedStoryIds = {};
+      if (currentUserId != null) {
+        try {
+          final viewsSnapshot = await _firestore
+              .collection('story_views')
+              .where('userId', isEqualTo: currentUserId)
+              .get();
+          
+          viewedStoryIds = viewsSnapshot.docs
+              .map((doc) => doc.data()['storyId'] as String)
+              .toSet();
+        } catch (e) {
+          debugPrint('⚠️ Could not load viewed stories: $e');
+        }
+      }
+
       // Group stories by user
       final Map<String, List<StoryModel>> storiesByUser = {};
       
@@ -39,8 +57,7 @@ class StoriesService {
         final story = StoryModel.fromFirestore(doc);
         
         // Check if current user has viewed this story
-        final isViewed = currentUserId != null && 
-            story.viewedBy.contains(currentUserId);
+        final isViewed = viewedStoryIds.contains(story.id);
         
         final storyWithViewStatus = story.copyWith(isViewed: isViewed);
         
@@ -85,10 +102,23 @@ class StoriesService {
       final currentUserId = AuthService.currentUser?.uid;
       if (currentUserId == null) return;
 
-      await _firestore.collection(_storiesCollection).doc(storyId).update({
-        'viewedBy': FieldValue.arrayUnion([currentUserId]),
-        'viewsCount': FieldValue.increment(1),
-      });
+      // Create a view record in story_views collection
+      final viewId = '${storyId}_$currentUserId';
+      await _firestore.collection('story_views').doc(viewId).set({
+        'storyId': storyId,
+        'userId': currentUserId,
+        'viewedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      // Try to increment view count on the story (best effort)
+      try {
+        await _firestore.collection(_storiesCollection).doc(storyId).update({
+          'viewsCount': FieldValue.increment(1),
+        });
+      } catch (e) {
+        // Ignore if we can't update the story (permission issue)
+        debugPrint('⚠️ Could not update story view count: $e');
+      }
 
       debugPrint('✅ Story marked as viewed: $storyId');
     } catch (e) {
@@ -98,9 +128,11 @@ class StoriesService {
 
   /// Create a new story
   Future<String> createStory({
-    required String mediaUrl,
+    String? mediaUrl,
     required StoryMediaType mediaType,
     String? caption,
+    String? textContent,
+    Color? backgroundColor,
   }) async {
     try {
       final currentUser = AuthService.currentUser;
@@ -125,6 +157,8 @@ class StoriesService {
         mediaUrl: mediaUrl,
         mediaType: mediaType,
         caption: caption,
+        textContent: textContent,
+        backgroundColor: backgroundColor,
         createdAt: DateTime.now(),
         expiresAt: DateTime.now().add(const Duration(hours: 24)),
       );

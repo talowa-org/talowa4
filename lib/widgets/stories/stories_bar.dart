@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/social_feed/story_model.dart';
 import '../../services/social_feed/stories_service.dart';
 import '../../screens/story/story_creation_screen.dart';
+import '../../screens/story/story_viewer_screen.dart';
 import 'story_ring.dart';
 
 class StoriesBar extends StatefulWidget {
@@ -200,7 +201,18 @@ class _StoriesBarState extends State<StoriesBar> {
 
   Widget _buildStoryItem(UserStoriesGroup group) {
     return GestureDetector(
-      onTap: () => widget.onStoryTap?.call(group),
+      onTap: () async {
+        // Navigate to story viewer
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoryViewerScreen(storyGroup: group),
+          ),
+        );
+        // Reload stories after viewing
+        _loadStories();
+        widget.onStoryTap?.call(group);
+      },
       child: Container(
         width: 80,
         margin: const EdgeInsets.symmetric(horizontal: 4),

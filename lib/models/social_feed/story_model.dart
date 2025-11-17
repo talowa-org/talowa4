@@ -2,10 +2,12 @@
 // Instagram-style stories with images and videos
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 enum StoryMediaType {
   image,
   video,
+  text,
 }
 
 class StoryModel {
@@ -13,9 +15,11 @@ class StoryModel {
   final String userId;
   final String userName;
   final String? userProfileImage;
-  final String mediaUrl;
+  final String? mediaUrl; // Optional for text-only stories
   final StoryMediaType mediaType;
   final String? caption;
+  final String? textContent; // For text-only stories
+  final Color? backgroundColor; // For text-only stories
   final DateTime createdAt;
   final DateTime expiresAt;
   final int viewsCount;
@@ -27,9 +31,11 @@ class StoryModel {
     required this.userId,
     required this.userName,
     this.userProfileImage,
-    required this.mediaUrl,
+    this.mediaUrl,
     required this.mediaType,
     this.caption,
+    this.textContent,
+    this.backgroundColor,
     required this.createdAt,
     required this.expiresAt,
     this.viewsCount = 0,
@@ -55,6 +61,8 @@ class StoryModel {
     String? mediaUrl,
     StoryMediaType? mediaType,
     String? caption,
+    String? textContent,
+    Color? backgroundColor,
     DateTime? createdAt,
     DateTime? expiresAt,
     int? viewsCount,
@@ -69,6 +77,8 @@ class StoryModel {
       mediaUrl: mediaUrl ?? this.mediaUrl,
       mediaType: mediaType ?? this.mediaType,
       caption: caption ?? this.caption,
+      textContent: textContent ?? this.textContent,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
       createdAt: createdAt ?? this.createdAt,
       expiresAt: expiresAt ?? this.expiresAt,
       viewsCount: viewsCount ?? this.viewsCount,
@@ -87,6 +97,8 @@ class StoryModel {
       'mediaUrl': mediaUrl,
       'mediaType': mediaType.name,
       'caption': caption,
+      'textContent': textContent,
+      'backgroundColor': backgroundColor?.value,
       'createdAt': Timestamp.fromDate(createdAt),
       'expiresAt': Timestamp.fromDate(expiresAt),
       'viewsCount': viewsCount,
@@ -103,12 +115,16 @@ class StoryModel {
       userId: data['userId'] ?? '',
       userName: data['userName'] ?? 'Unknown',
       userProfileImage: data['userProfileImage'],
-      mediaUrl: data['mediaUrl'] ?? '',
+      mediaUrl: data['mediaUrl'],
       mediaType: StoryMediaType.values.firstWhere(
         (e) => e.name == data['mediaType'],
         orElse: () => StoryMediaType.image,
       ),
       caption: data['caption'],
+      textContent: data['textContent'],
+      backgroundColor: data['backgroundColor'] != null 
+          ? Color(data['backgroundColor'] as int)
+          : null,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as Timestamp?)?.toDate() ?? 
           DateTime.now().add(const Duration(hours: 24)),

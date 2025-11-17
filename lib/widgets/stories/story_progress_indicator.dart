@@ -5,12 +5,14 @@ class StoryProgressIndicator extends StatelessWidget {
   final int storyCount;
   final int currentIndex;
   final AnimationController? animationController;
+  final double? progress;
 
   const StoryProgressIndicator({
     super.key,
     required this.storyCount,
     required this.currentIndex,
     this.animationController,
+    this.progress,
   });
 
   @override
@@ -42,24 +44,13 @@ class StoryProgressIndicator extends StatelessWidget {
         ),
       );
     } else if (index == currentIndex) {
-      // Current story with animation
-      return animationController != null
-          ? AnimatedBuilder(
-              animation: animationController!,
-              builder: (context, child) {
-                return LinearProgressIndicator(
-                  value: animationController!.value,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                );
-              },
-            )
-          : Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(1.5),
-              ),
-            );
+      // Current story with animation or progress value
+      final progressValue = progress ?? animationController?.value ?? 0.0;
+      return LinearProgressIndicator(
+        value: progressValue,
+        backgroundColor: Colors.transparent,
+        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+      );
     } else {
       // Future story
       return const SizedBox();

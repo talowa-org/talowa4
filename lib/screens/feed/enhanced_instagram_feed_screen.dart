@@ -11,6 +11,8 @@ import '../../widgets/feed/feed_skeleton_loader.dart';
 import '../../widgets/stories/stories_bar.dart';
 import '../post_creation/enhanced_post_creation_screen.dart';
 import '../../services/auth/auth_service.dart';
+import 'liked_posts_screen.dart';
+import 'bookmarked_posts_screen.dart';
 
 class EnhancedInstagramFeedScreen extends StatefulWidget {
   const EnhancedInstagramFeedScreen({super.key});
@@ -211,17 +213,27 @@ class _EnhancedInstagramFeedScreenState extends State<EnhancedInstagramFeedScree
       actions: [
         IconButton(
           onPressed: () {
-            // TODO: Implement notifications
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LikedPostsScreen(),
+              ),
+            );
           },
           icon: const Icon(Icons.favorite_border, color: Colors.black),
-          tooltip: 'Activity',
+          tooltip: 'Liked Posts',
         ),
         IconButton(
           onPressed: () {
-            // TODO: Implement direct messages
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BookmarkedPostsScreen(),
+              ),
+            );
           },
-          icon: const Icon(Icons.send_outlined, color: Colors.black),
-          tooltip: 'Messages',
+          icon: const Icon(Icons.bookmark_border, color: Colors.black),
+          tooltip: 'Bookmarked Posts',
         ),
       ],
       systemOverlayStyle: SystemUiOverlayStyle.dark,

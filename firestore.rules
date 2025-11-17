@@ -110,7 +110,29 @@ service cloud.firestore {
     match /stories/{storyId} {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
-      allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if signedIn() && (
+        // Allow story author to update their own story
+        resource.data.authorId == request.auth.uid ||
+        // Allow any authenticated user to increment view count only
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewsCount']))
+      );
+      allow delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+    
+    // Story views - track who viewed which stories
+    match /story_views/{viewId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn();
+      allow delete: if signedIn();
+    }
+    
+    // Story groups - for organizing stories by user
+    match /story_groups/{groupId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn();
+      allow delete: if signedIn();
     }
     
     // Posts - allow read for everyone, write for authenticated users

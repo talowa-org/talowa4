@@ -55,6 +55,17 @@ class InstagramPostModel {
     this.analytics,
   });
 
+  factory InstagramPostModel.empty() {
+    return InstagramPostModel(
+      id: '',
+      authorId: '',
+      authorName: '',
+      caption: '',
+      mediaItems: [],
+      createdAt: DateTime.now(),
+    );
+  }
+
   factory InstagramPostModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     

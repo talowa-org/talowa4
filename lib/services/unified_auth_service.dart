@@ -83,7 +83,6 @@ class UnifiedAuthService {
     required address_model.Address address,
     String? referralCode,
   }) async {
-    final startTime = DateTime.now();
     final normalizedPhone = _normalizePhoneNumber(phoneNumber);
 
     try {
@@ -224,7 +223,6 @@ class UnifiedAuthService {
     required String phoneNumber,
     required String pin,
   }) async {
-    final startTime = DateTime.now();
     final normalizedPhone = _normalizePhoneNumber(phoneNumber);
 
     try {
@@ -265,7 +263,18 @@ class UnifiedAuthService {
       }
 
       final registryData = registryDoc.data()!;
-      final uid = registryData['uid'] as String;
+      final uid = registryData['uid'] as String?;
+      
+      // If UID is missing, this is a corrupted registry entry
+      if (uid == null || uid.isEmpty) {
+        debugPrint('❌ UID missing in registry for phone: $normalizedPhone');
+        return const AuthResult(
+          success: false,
+          message: 'Account data corrupted. Please contact support.',
+          errorCode: 'corrupted-registry',
+        );
+      }
+      
       final storedPinHash = registryData['pinHash'] as String?;
       
       // Verify PIN hash from registry (no authentication needed)
@@ -303,13 +312,67 @@ class UnifiedAuthService {
       }
 
       // Now that user is authenticated, get user profile
-      final userProfile = await _getUserProfile(uid);
+      UserModel? userProfile = await _getUserProfile(uid);
+      
+      // If profile doesn't exist, create it from registry data
       if (userProfile == null) {
-        return const AuthResult(
-          success: false,
-          message: 'User profile not found. Please contact support.',
-          errorCode: 'profile-not-found',
-        );
+        debugPrint('⚠️ User profile not found for UID: $uid. Creating from registry...');
+        
+        try {
+          // Create user profile from registry data
+          final userProfileData = {
+            'fullName': registryData['fullName'] ?? 'User',
+            'email': email,
+            'phone': normalizedPhone,
+            'profileCompleted': true,
+            'phoneVerified': true,
+            'lastLoginAt': FieldValue.serverTimestamp(),
+            'language': 'en',
+            'locale': 'en_US',
+            'referralCode': registryData['referralCode'] ?? 'TAL${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+            'membershipPaid': registryData['membershipPaid'] ?? false,
+            'status': registryData['isActive'] == true ? 'active' : 'inactive',
+            'role': registryData['role'] ?? 'member',
+            'createdAt': registryData['createdAt'] ?? FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+            'pinHash': storedPinHash,
+            'device': {
+              'platform': kIsWeb ? 'web' : Platform.operatingSystem,
+              'appVersion': '1.0.0',
+            },
+          };
+          
+          // Add address if available in registry
+          if (registryData['state'] != null) {
+            userProfileData['address'] = {
+              'state': registryData['state'] ?? '',
+              'district': registryData['district'] ?? '',
+              'mandal': registryData['mandal'] ?? '',
+              'villageCity': registryData['village'] ?? '',
+            };
+          }
+          
+          await _firestore.collection('users').doc(uid).set(userProfileData);
+          debugPrint('✅ User profile created successfully for UID: $uid');
+          
+          // Try to get the profile again
+          userProfile = await _getUserProfile(uid);
+          
+          if (userProfile == null) {
+            return const AuthResult(
+              success: false,
+              message: 'Failed to create user profile. Please contact support.',
+              errorCode: 'profile-creation-failed',
+            );
+          }
+        } catch (e) {
+          debugPrint('❌ Failed to create user profile: $e');
+          return AuthResult(
+            success: false,
+            message: 'Failed to create user profile: ${e.toString()}',
+            errorCode: 'profile-creation-failed',
+          );
+        }
       }
 
       // Update last login timestamp
