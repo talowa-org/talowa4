@@ -11,9 +11,9 @@ class MessagingExample extends StatefulWidget {
   final String conversationId;
   
   const MessagingExample({
-    Key? key,
+    super.key,
     required this.conversationId,
-  }) : super(key: key);
+  });
 
   @override
   State<MessagingExample> createState() => _MessagingExampleState();
@@ -253,7 +253,7 @@ class _MessagingExampleState extends State<MessagingExample> {
   }
 
   Widget _buildMessageBubble(MessageModel message, MessageStatusModel? status) {
-    final isOwnMessage = true; // In real app, check if message.senderId == currentUserId
+    const isOwnMessage = true; // In real app, check if message.senderId == currentUserId
     
     return Align(
       alignment: isOwnMessage ? Alignment.centerRight : Alignment.centerLeft,
@@ -266,7 +266,7 @@ class _MessagingExampleState extends State<MessagingExample> {
         decoration: BoxDecoration(
           color: isOwnMessage 
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceVariant,
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -344,7 +344,7 @@ class _MessagingExampleState extends State<MessagingExample> {
 
 /// Example of how to use the messaging service in a simple chat app
 class SimpleChatExample extends StatelessWidget {
-  const SimpleChatExample({Key? key}) : super(key: key);
+  const SimpleChatExample({super.key});
 
   @override
   Widget build(BuildContext context) {

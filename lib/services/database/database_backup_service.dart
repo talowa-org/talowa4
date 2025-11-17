@@ -170,7 +170,7 @@ class DatabaseBackupService {
       }
       _backupHistory[collection]!.insert(0, completedRecord);
       
-      debugPrint('✅ Backup completed: $collection (${stopwatch.elapsedMilliseconds}ms, ${sizeBytes} bytes)');
+      debugPrint('✅ Backup completed: $collection (${stopwatch.elapsedMilliseconds}ms, $sizeBytes bytes)');
       
       return completedRecord;
       

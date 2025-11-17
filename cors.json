@@ -3,33 +3,14 @@
     "origin": [
       "https://talowa.web.app",
       "https://talowa.firebaseapp.com",
-      "http://localhost:*"
+      "http://localhost:*",
+      "http://127.0.0.1:*"
     ],
-    "method": [
-      "GET",
-      "HEAD",
-      "PUT",
-      "POST",
-      "DELETE",
-      "OPTIONS"
-    ],
+    "method": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     "responseHeader": [
       "Content-Type",
-      "Access-Control-Allow-Origin",
-      "Access-Control-Allow-Methods",
-      "Access-Control-Allow-Headers",
-      "Cache-Control",
-      "Content-Disposition",
-      "Content-Encoding",
-      "Content-Length",
-      "Content-Range",
-      "Date",
-      "ETag",
-      "Expires",
-      "Last-Modified",
-      "Server",
-      "Transfer-Encoding",
-      "Vary"
+      "x-goog-meta-*",
+      "Access-Control-Allow-Origin"
     ],
     "maxAgeSeconds": 3600
   }

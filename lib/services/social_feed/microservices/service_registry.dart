@@ -1,7 +1,6 @@
 // Service Registry - Microservices Service Discovery
 // Manages service registration, discovery, and health monitoring
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 /// Service information model

@@ -21,13 +21,13 @@ class MessagingSearchWidget extends StatefulWidget {
   final bool showFilters;
 
   const MessagingSearchWidget({
-    Key? key,
+    super.key,
     this.initialMode = SearchMode.users,
     this.initialQuery,
     this.onUserSelected,
     this.onMessageSelected,
     this.showFilters = true,
-  }) : super(key: key);
+  });
 
   @override
   State<MessagingSearchWidget> createState() => _MessagingSearchWidgetState();

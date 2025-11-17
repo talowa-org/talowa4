@@ -1,4 +1,4 @@
-﻿// Offline Sync Service for TALOWA Social Feed
+// Offline Sync Service for TALOWA Social Feed
 // Implements Task 20: Implement offline functionality
 
 import 'dart:async';
@@ -55,10 +55,11 @@ class OfflineSyncService {
       _isOnline = connectivityResult != ConnectivityResult.none;
       _connectionController.add(_isOnline);
       
-      // Listen to connectivity changes
-      _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      // Listen to connectivity changes (standardized to List<ConnectivityResult>)
+      _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
         final wasOnline = _isOnline;
-        _isOnline = result != ConnectivityResult.none;
+        final latest = results.isNotEmpty ? results.last : ConnectivityResult.none;
+        _isOnline = latest != ConnectivityResult.none;
         _connectionController.add(_isOnline);
         
         // Trigger sync when coming back online

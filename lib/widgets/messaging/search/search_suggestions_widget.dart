@@ -10,10 +10,10 @@ class SearchSuggestionsWidget extends StatelessWidget {
   final Function(String) onSuggestionSelected;
 
   const SearchSuggestionsWidget({
-    Key? key,
+    super.key,
     required this.suggestions,
     required this.onSuggestionSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

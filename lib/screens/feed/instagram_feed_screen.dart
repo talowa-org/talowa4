@@ -64,11 +64,28 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   @override
   void initState() {
     super.initState();
-    _crashPrevention.initialize();
-    _initializeAnimations();
-    _setupScrollListener();
-    _setupStreamListeners();
-    _loadInitialFeed();
+    // Call async initialization without awaiting in initState
+    Future.microtask(() => _safeInitialize());
+  }
+  
+  /// Safe initialization with comprehensive error handling
+  Future<void> _safeInitialize() async {
+    try {
+      _crashPrevention.initialize(); // Synchronous initialization
+      _initializeAnimations();
+      _setupScrollListener();
+      _setupStreamListeners();
+      await _loadInitialFeed();
+    } catch (e) {
+      debugPrint('❌ Initialization error: $e');
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _errorMessage = 'Failed to initialize feed. Please restart the app.';
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -161,13 +178,21 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
       onError: (error) {
         debugPrint('❌ Feed stream error: $error');
         if (mounted) {
+          String userMessage = 'Feed update failed';
+          if (error.toString().contains('permission-denied')) {
+            userMessage = 'Permission denied. Please check your account.';
+          } else if (error.toString().contains('network')) {
+            userMessage = 'Network error. Please check your connection.';
+          }
+          
           setState(() {
             _hasError = true;
-            _errorMessage = error.toString();
+            _errorMessage = userMessage;
             _isLoading = false;
           });
         }
       },
+      cancelOnError: false, // Keep listening even after errors
     );
 
     // Listen to individual post updates
@@ -196,26 +221,54 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
   Future<void> _loadInitialFeed() async {
     try {
       debugPrint('🚀 Starting initial feed load...');
+      
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = true;
         _hasError = false;
         _errorMessage = null;
       });
 
-      // Load both posts and stories
+      // Initialize feed service first
+      await _feedService.initialize();
+      
+      // Load both posts and stories with timeout
       await Future.wait([
         _feedService.getFeed(refresh: true),
         _loadStories(),
-      ]);
+      ]).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException('Feed loading timed out. Please check your connection.');
+        },
+      );
+      
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       
       debugPrint('✅ Initial feed load complete');
       
     } catch (e) {
       debugPrint('❌ Initial feed load failed: $e');
       if (mounted) {
+        String userMessage = 'Unable to load feed. Please try again.';
+        
+        // Provide specific error messages
+        if (e.toString().contains('permission-denied')) {
+          userMessage = 'You don\'t have permission to view the feed.';
+        } else if (e.toString().contains('network')) {
+          userMessage = 'Network error. Please check your internet connection.';
+        } else if (e.toString().contains('timeout')) {
+          userMessage = 'Loading timed out. Please try again.';
+        }
+        
         setState(() {
           _hasError = true;
-          _errorMessage = e.toString();
+          _errorMessage = userMessage;
           _isLoading = false;
         });
       }
@@ -807,23 +860,21 @@ class _InstagramFeedScreenState extends State<InstagramFeedScreen>
                       : null,
                 );
                 
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Post reposted successfully!'),
-                      backgroundColor: AppTheme.talowaGreen,
-                    ),
-                  );
-                }
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Post reposted successfully!'),
+                    backgroundColor: AppTheme.talowaGreen,
+                  ),
+                );
               } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to repost: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to repost: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
               }
             },
             style: ElevatedButton.styleFrom(

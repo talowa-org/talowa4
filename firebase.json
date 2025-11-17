@@ -7,7 +7,12 @@
     "rules": "storage.rules"
   },
   "functions": {
-    "source": "functions"
+    "source": "functions",
+    "runtime": "nodejs20",
+    "minInstances": 1,
+    "maxInstances": 100,
+    "timeoutSeconds": 60,
+    "memory": "256MB"
   },
   "hosting": {
     "public": "build/web",

@@ -3,9 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/instagram_post_model.dart';
 import '../../widgets/common/loading_widget.dart';
+import '../../services/media/media_upload_service.dart';
+import '../../services/auth/auth_service.dart';
 
 class InstagramPostCreationScreen extends StatefulWidget {
   const InstagramPostCreationScreen({super.key});
@@ -460,12 +463,14 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to pick media: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick media: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -485,10 +490,69 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement actual post creation with media upload
-      // This is a placeholder implementation
+      // Import required services
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
       
-      await Future.delayed(const Duration(seconds: 2)); // Simulate upload
+      // 1. Upload media files to Firebase Storage
+      final imageUrls = <String>[];
+      
+      for (final media in _selectedMedia) {
+        final url = await MediaUploadService.uploadFeedImage(media, currentUser.uid);
+        if (url != null) {
+          imageUrls.add(url);
+        }
+      }
+      
+      // 2. Extract hashtags from caption
+      final hashtags = _extractHashtags(_captionController.text);
+      
+      // 3. Get user profile data
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      
+      final userData = userDoc.data() ?? {};
+      
+      // 4. Create post document
+      final postId = FirebaseFirestore.instance.collection('posts').doc().id;
+      
+      final postData = {
+        'id': postId,
+        'authorId': currentUser.uid,
+        'authorName': userData['fullName'] ?? 'Unknown User',
+        'authorRole': userData['role'] ?? 'member',
+        'authorAvatarUrl': userData['profileImageUrl'],
+        'content': _captionController.text.trim(),
+        'imageUrls': imageUrls,
+        'videoUrls': [], // Video support can be added later
+        'mediaUrls': imageUrls, // Legacy support
+        'hashtags': hashtags,
+        'category': 'general_discussion',
+        'location': userData['address']?['villageCity'] ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'likesCount': 0,
+        'commentsCount': 0,
+        'sharesCount': 0,
+        'viewsCount': 0,
+        'visibility': _visibility.value,
+        'allowComments': _allowComments,
+        'allowShares': _allowSharing,
+        'isDeleted': false,
+        'isPinned': false,
+        'isEmergency': false,
+      };
+      
+      // 5. Save post to Firestore
+      await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(postId)
+          .set(postData);
+      
+      debugPrint('✅ Post created successfully: $postId');
       
       if (mounted) {
         Navigator.pop(context, true); // Return true to indicate success
@@ -503,6 +567,8 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
       }
       
     } catch (e) {
+      debugPrint('❌ Post creation failed: $e');
+      
       if (mounted) {
         setState(() => _isLoading = false);
         
@@ -515,5 +581,12 @@ class _InstagramPostCreationScreenState extends State<InstagramPostCreationScree
         );
       }
     }
+  }
+  
+  /// Extract hashtags from text
+  List<String> _extractHashtags(String text) {
+    final regex = RegExp(r'#(\w+)');
+    final matches = regex.allMatches(text);
+    return matches.map((match) => match.group(1)!).toList();
   }
 }

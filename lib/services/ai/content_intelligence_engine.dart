@@ -193,7 +193,7 @@ class ContentIntelligenceEngine {
         sentiment: ContentSentiment.neutral,
         topics: [],
         hashtags: _extractBasicHashtags(content),
-        summary: content.length > 100 ? content.substring(0, 100) + '...' : content,
+        summary: content.length > 100 ? '${content.substring(0, 100)}...' : content,
         toxicityScore: 0.0,
         engagementPrediction: 0.5,
         readabilityScore: 0.5,
@@ -465,7 +465,7 @@ class ContentIntelligenceEngine {
 
     } catch (e) {
       debugPrint('❌ Error generating summary: $e');
-      return content.length > 200 ? content.substring(0, 200) + '...' : content;
+      return content.length > 200 ? '${content.substring(0, 200)}...' : content;
     }
   }
 
@@ -757,9 +757,9 @@ class ContentIntelligenceEngine {
       
       // Take first and most important sentences
       final summary = sentences.take(2).join('. ').trim();
-      return summary.isNotEmpty ? summary : content.substring(0, 200) + '...';
+      return summary.isNotEmpty ? summary : '${content.substring(0, 200)}...';
     } catch (e) {
-      return content.length > 200 ? content.substring(0, 200) + '...' : content;
+      return content.length > 200 ? '${content.substring(0, 200)}...' : content;
     }
   }
 

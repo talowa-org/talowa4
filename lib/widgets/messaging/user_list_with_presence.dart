@@ -19,7 +19,7 @@ class UserListWithPresence extends StatefulWidget {
   final bool enablePullToRefresh;
 
   const UserListWithPresence({
-    Key? key,
+    super.key,
     this.onUserTap,
     this.onUserLongPress,
     this.showSearchBar = true,
@@ -27,7 +27,7 @@ class UserListWithPresence extends StatefulWidget {
     this.initialSearchQuery,
     this.padding,
     this.enablePullToRefresh = true,
-  }) : super(key: key);
+  });
 
   @override
   State<UserListWithPresence> createState() => _UserListWithPresenceState();

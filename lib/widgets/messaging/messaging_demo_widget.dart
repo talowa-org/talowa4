@@ -216,7 +216,7 @@ class _MessagingDemoWidgetState extends State<MessagingDemoWidget> {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -253,7 +253,7 @@ class _MessagingDemoWidgetState extends State<MessagingDemoWidget> {
               ],
             ),
           );
-        }).toList(),
+        }),
         ..._errors.entries.map((entry) {
           if (entry.value == null) return const SizedBox.shrink();
           
@@ -263,7 +263,7 @@ class _MessagingDemoWidgetState extends State<MessagingDemoWidget> {
               message: '${entry.key}: ${entry.value}',
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

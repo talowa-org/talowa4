@@ -442,7 +442,7 @@ class CacheMonitoringService {
     final l2Stats = cacheStats['l2Persistent'] as Map<String, dynamic>?;
     if (l2Stats != null) {
       final totalSize = l2Stats['totalSize'] as double? ?? 0.0;
-      final maxSize = 500 * 1024 * 1024; // 500MB default
+      const maxSize = 500 * 1024 * 1024; // 500MB default
       return totalSize / maxSize;
     }
     return 0.0;

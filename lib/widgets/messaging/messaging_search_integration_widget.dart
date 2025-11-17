@@ -15,11 +15,11 @@ class MessagingSearchIntegrationWidget extends StatefulWidget {
   final bool showAsBottomSheet;
 
   const MessagingSearchIntegrationWidget({
-    Key? key,
+    super.key,
     this.onUserSelected,
     this.onMessageSelected,
     this.showAsBottomSheet = false,
-  }) : super(key: key);
+  });
 
   @override
   State<MessagingSearchIntegrationWidget> createState() => 
@@ -185,13 +185,13 @@ class MessagingSearchButton extends StatelessWidget {
   final String? tooltip;
 
   const MessagingSearchButton({
-    Key? key,
+    super.key,
     this.onUserSelected,
     this.onMessageSelected,
     this.showAsBottomSheet = true,
     this.icon,
     this.tooltip,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -225,12 +225,12 @@ class MessagingSearchAppBar extends StatelessWidget implements PreferredSizeWidg
   final Function(MessageModel)? onMessageSelected;
 
   const MessagingSearchAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.actions,
     this.onUserSelected,
     this.onMessageSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

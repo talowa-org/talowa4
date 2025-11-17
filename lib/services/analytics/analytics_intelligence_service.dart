@@ -1061,7 +1061,7 @@ class AnalyticsIntelligenceService {
     for (int day = 0; day < forecastDays; day++) {
       if (Random().nextDouble() < postsPerDay) {
         final postDate = now.add(Duration(days: day));
-        final optimalHour = 18; // 6 PM
+        const optimalHour = 18; // 6 PM
         schedule.add(DateTime(
           postDate.year,
           postDate.month,

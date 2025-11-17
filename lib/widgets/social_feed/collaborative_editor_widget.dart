@@ -12,10 +12,10 @@ class CollaborativeEditorWidget extends StatefulWidget {
   final VoidCallback? onPublish;
 
   const CollaborativeEditorWidget({
-    Key? key,
+    super.key,
     required this.sessionId,
     this.onPublish,
-  }) : super(key: key);
+  });
 
   @override
   State<CollaborativeEditorWidget> createState() =>

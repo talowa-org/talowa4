@@ -128,7 +128,7 @@ class UserListService {
     
     try {
       if (query.trim().isEmpty) {
-        return UserListResult(users: [], hasMore: false, isFromCache: false);
+        return const UserListResult(users: [], hasMore: false, isFromCache: false);
       }
 
       // For search, we'll get a larger dataset and filter locally for better performance

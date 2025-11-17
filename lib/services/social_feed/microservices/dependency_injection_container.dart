@@ -221,7 +221,7 @@ class DependencyInjectionContainer {
     // Create new instance
     T instance;
     if (registration.instance != null) {
-      instance = registration.instance!;
+      instance = registration.instance as T;
     } else if (registration.factory != null) {
       // Resolve dependencies first
       _resolveDependencies(registration.dependencies);
@@ -243,7 +243,7 @@ class DependencyInjectionContainer {
     // Create new instance
     T instance;
     if (registration.instance != null) {
-      instance = registration.instance!;
+      instance = registration.instance as T;
     } else if (registration.asyncFactory != null) {
       // Resolve dependencies first
       await _resolveDependenciesAsync(registration.dependencies);

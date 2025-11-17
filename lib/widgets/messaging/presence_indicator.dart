@@ -13,12 +13,12 @@ class PresenceIndicator extends StatelessWidget {
   final Color? borderColor;
 
   const PresenceIndicator({
-    Key? key,
+    super.key,
     required this.userId,
     this.size = 12.0,
     this.showBorder = true,
     this.borderColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +81,12 @@ class PresenceStatusWidget extends StatelessWidget {
   final MainAxisAlignment alignment;
 
   const PresenceStatusWidget({
-    Key? key,
+    super.key,
     required this.userId,
     this.showStatusMessage = true,
     this.textStyle,
     this.alignment = MainAxisAlignment.start,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -151,13 +151,13 @@ class UserAvatarWithPresence extends StatelessWidget {
   final bool showPresence;
 
   const UserAvatarWithPresence({
-    Key? key,
+    super.key,
     required this.userId,
     this.userImageUrl,
     required this.userName,
     this.radius = 20.0,
     this.showPresence = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -198,10 +198,10 @@ class TypingIndicatorWidget extends StatefulWidget {
   final List<String> excludeUserIds;
 
   const TypingIndicatorWidget({
-    Key? key,
+    super.key,
     required this.conversationId,
     this.excludeUserIds = const [],
-  }) : super(key: key);
+  });
 
   @override
   State<TypingIndicatorWidget> createState() => _TypingIndicatorWidgetState();
@@ -308,11 +308,11 @@ class CustomStatusSelector extends StatefulWidget {
   final Function(PresenceStatus?, String?) onStatusChanged;
 
   const CustomStatusSelector({
-    Key? key,
+    super.key,
     this.currentStatus,
     this.currentMessage,
     required this.onStatusChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomStatusSelector> createState() => _CustomStatusSelectorState();
@@ -427,10 +427,10 @@ class OnlineUsersCountWidget extends StatelessWidget {
   final Duration refreshInterval;
 
   const OnlineUsersCountWidget({
-    Key? key,
+    super.key,
     this.textStyle,
     this.refreshInterval = const Duration(minutes: 1),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

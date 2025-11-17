@@ -329,7 +329,6 @@ class _SkeletonLoader extends StatelessWidget {
   const _SkeletonLoader({
     required this.width,
     required this.height,
-    this.borderRadius = 4.0,
   });
 
   @override
@@ -354,7 +353,6 @@ class _ShimmerLoader extends StatefulWidget {
   const _ShimmerLoader({
     required this.width,
     required this.height,
-    this.borderRadius = 4.0,
   });
 
   @override

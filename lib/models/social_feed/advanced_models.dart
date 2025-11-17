@@ -814,6 +814,6 @@ class AdvancedPostModel {
 
   @override
   String toString() {
-    return 'AdvancedPostModel(id: $id, authorName: $authorName, content: ${content.length > 50 ? content.substring(0, 50) + '...' : content})';
+    return 'AdvancedPostModel(id: $id, authorName: $authorName, content: ${content.length > 50 ? '${content.substring(0, 50)}...' : content})';
   }
 }

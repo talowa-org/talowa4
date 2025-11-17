@@ -8,7 +8,7 @@ import '../../services/messaging/device_session_manager.dart';
 import '../../services/messaging/cross_device_sync_service.dart';
 
 class DeviceManagementInterface extends StatefulWidget {
-  const DeviceManagementInterface({Key? key}) : super(key: key);
+  const DeviceManagementInterface({super.key});
 
   @override
   State<DeviceManagementInterface> createState() => _DeviceManagementInterfaceState();

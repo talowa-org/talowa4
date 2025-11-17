@@ -608,8 +608,9 @@ class MessagingSearchService {
     int score = 0;
     
     // Exact name match gets highest score
-    if (user.fullName.toLowerCase() == searchTerm) score += 100;
-    else if (user.fullName.toLowerCase().startsWith(searchTerm)) score += 50;
+    if (user.fullName.toLowerCase() == searchTerm) {
+      score += 100;
+    } else if (user.fullName.toLowerCase().startsWith(searchTerm)) score += 50;
     else if (user.fullName.toLowerCase().contains(searchTerm)) score += 25;
     
     // Phone number match
@@ -621,8 +622,9 @@ class MessagingSearchService {
     // Recent activity bonus
     if (user.lastLoginAt != null) {
       final daysSinceLogin = DateTime.now().difference(user.lastLoginAt!).inDays;
-      if (daysSinceLogin < 1) score += 10;
-      else if (daysSinceLogin < 7) score += 5;
+      if (daysSinceLogin < 1) {
+        score += 10;
+      } else if (daysSinceLogin < 7) score += 5;
     }
     
     return score;
@@ -646,8 +648,9 @@ class MessagingSearchService {
     
     // Recent message bonus
     final hoursAgo = DateTime.now().difference(message.sentAt).inHours;
-    if (hoursAgo < 24) score += 5;
-    else if (hoursAgo < 168) score += 2; // 1 week
+    if (hoursAgo < 24) {
+      score += 5;
+    } else if (hoursAgo < 168) score += 2; // 1 week
     
     return score;
   }

@@ -1,7 +1,6 @@
 // Service Mesh - Microservices Communication Layer
 // Manages inter-service communication, security, and observability
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'service_registry.dart';
 import 'circuit_breaker.dart';

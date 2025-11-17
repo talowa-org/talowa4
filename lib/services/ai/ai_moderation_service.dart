@@ -200,9 +200,9 @@ class AIModerationService {
       ]);
 
       // Ensemble approach for 95% accuracy
-      final perspectiveScore = results[0] as double;
-      final openAiScore = results[1] as double;
-      final localScore = results[2] as double;
+      final perspectiveScore = results[0];
+      final openAiScore = results[1];
+      final localScore = results[2];
 
       // Weighted ensemble (Perspective API has highest weight due to specialization)
       final ensembleScore = (perspectiveScore * 0.5) + (openAiScore * 0.3) + (localScore * 0.2);

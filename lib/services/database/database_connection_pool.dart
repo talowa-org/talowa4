@@ -312,7 +312,7 @@ class DatabaseConnection {
   Future<void> initialize() async {
     try {
       // Configure Firestore settings
-      firestore.settings = Settings(
+      firestore.settings = const Settings(
         persistenceEnabled: true,
         cacheSizeBytes: 50 * 1024 * 1024, // 50MB cache per connection
       );

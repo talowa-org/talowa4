@@ -17,13 +17,13 @@ class SearchFiltersWidget extends StatefulWidget {
   final Function(MessageSearchFilters?)? onMessageFiltersChanged;
 
   const SearchFiltersWidget({
-    Key? key,
+    super.key,
     required this.mode,
     this.userFilters,
     this.messageFilters,
     this.onUserFiltersChanged,
     this.onMessageFiltersChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchFiltersWidget> createState() => _SearchFiltersWidgetState();

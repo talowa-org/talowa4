@@ -18,7 +18,7 @@ class MessageStatusIndicator extends StatelessWidget {
   final Color? failedColor;
 
   const MessageStatusIndicator({
-    Key? key,
+    super.key,
     required this.status,
     this.isRead = false,
     this.deliveredAt,
@@ -28,7 +28,7 @@ class MessageStatusIndicator extends StatelessWidget {
     this.deliveredColor,
     this.sentColor,
     this.failedColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -140,14 +140,14 @@ class AnimatedMessageStatusIndicator extends StatefulWidget {
   final Color? failedColor;
 
   const AnimatedMessageStatusIndicator({
-    Key? key,
+    super.key,
     required this.statusStream,
     this.showTimestamp = false,
     this.readColor,
     this.deliveredColor,
     this.sentColor,
     this.failedColor,
-  }) : super(key: key);
+  });
 
   @override
   State<AnimatedMessageStatusIndicator> createState() => 
@@ -234,11 +234,11 @@ class TypingIndicator extends StatefulWidget {
   final double dotSize;
 
   const TypingIndicator({
-    Key? key,
+    super.key,
     required this.typingUsers,
     this.dotColor,
     this.dotSize = 4.0,
-  }) : super(key: key);
+  });
 
   @override
   State<TypingIndicator> createState() => _TypingIndicatorState();

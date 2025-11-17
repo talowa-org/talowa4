@@ -135,8 +135,8 @@ class CacheFailoverService {
   Timer? _recoveryTimer;
   
   // Configuration
-  Duration _healthCheckInterval = const Duration(seconds: 30);
-  Duration _recoveryInterval = const Duration(minutes: 2);
+  final Duration _healthCheckInterval = const Duration(seconds: 30);
+  final Duration _recoveryInterval = const Duration(minutes: 2);
   
   bool _isInitialized = false;
 

@@ -47,6 +47,8 @@ import 'services/cache/cache_service.dart';
 import 'services/network/network_optimization_service.dart' as network_opt;
 import 'services/performance/performance_monitoring_service.dart';
 import 'services/query_optimization_service.dart';
+import 'services/firebase_upgrade_helper.dart';
+import 'services/performance/flutter_optimization_service.dart';
 import 'providers/localization_provider.dart';
 import 'providers/user_state_provider.dart';
 import 'generated/l10n/app_localizations.dart';
@@ -75,8 +77,19 @@ void main() async {
   // Initialize Firebase for all platforms
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   
+  // Web-specific initialization
+  if (kIsWeb) {
+    debugPrint("Running on Web – disabled unsupported analytics calls.");
+  }
+  
+  // 🔥 INITIALIZE FIREBASE UPGRADE HELPER (New SDK optimizations)
+  await FirebaseUpgradeHelper.initialize();
+  
   // 🔥 INITIALIZE FIRESTORE PERFORMANCE FIX
   await FirestorePerformanceFix.initialize();
+  
+  // 🚀 INITIALIZE FLUTTER OPTIMIZATION SERVICE (Environment optimizations)
+  await FlutterOptimizationService.instance.initialize();
   
   // 🚀 OPTIMIZED STARTUP - Use optimized service initialization
   // This replaces the previous synchronous initialization with:

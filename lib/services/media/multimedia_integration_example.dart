@@ -443,7 +443,7 @@ class _VideoUploadWidgetState extends State<VideoUploadWidget> {
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Video uploaded successfully!'),
             backgroundColor: Colors.green,
           ),

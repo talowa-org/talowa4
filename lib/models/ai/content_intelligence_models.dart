@@ -1,7 +1,6 @@
 // Data models for Content Intelligence Engine
 // AI-powered content analysis and processing models
 import '../../models/social_feed/post_model.dart';
-import '../../models/social_feed/advanced_models.dart';
 
 /// Content sentiment analysis results
 enum ContentSentiment {

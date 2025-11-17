@@ -88,7 +88,7 @@ class Span {
 
   /// Add tag to span
   void setTag(String key, dynamic value) {
-    (tags as Map<String, dynamic>)[key] = value;
+    (tags)[key] = value;
   }
 
   /// Add log entry

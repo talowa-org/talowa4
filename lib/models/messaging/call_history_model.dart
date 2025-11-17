@@ -196,7 +196,7 @@ class CallHistoryModel {
 
   @override
   String toString() {
-    return 'CallHistoryModel(id: $id, type: ${type.value}, status: ${status.value}, duration: ${formattedDuration})';
+    return 'CallHistoryModel(id: $id, type: ${type.value}, status: ${status.value}, duration: $formattedDuration)';
   }
 
   @override

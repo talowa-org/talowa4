@@ -943,7 +943,7 @@ class PersonalizationRecommendationEngine {
           final otherUserId = doc.data()['userId'] as String;
           if (otherUserId != userId) {
             // Calculate similarity (Jaccard similarity)
-            final similarity = 0.5; // Simplified
+            const similarity = 0.5; // Simplified
             
             similarUsers.add(SimilarUser(
               userId: otherUserId,

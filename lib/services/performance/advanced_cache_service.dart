@@ -169,9 +169,9 @@ class AdvancedCacheService {
     _compressionThreshold = compressionThreshold ?? _compressionThreshold;
     
     debugPrint('🔧 Advanced Cache configured:');
-    debugPrint('   L1: ${_maxL1Size ~/ (1024 * 1024)}MB, ${_maxL1Entries} entries');
-    debugPrint('   L2: ${_maxL2Size ~/ (1024 * 1024)}MB, ${_maxL2Entries} entries');
-    debugPrint('   L3: ${_maxL3Size ~/ (1024 * 1024)}MB, ${_maxL3Entries} entries');
+    debugPrint('   L1: ${_maxL1Size ~/ (1024 * 1024)}MB, $_maxL1Entries entries');
+    debugPrint('   L2: ${_maxL2Size ~/ (1024 * 1024)}MB, $_maxL2Entries entries');
+    debugPrint('   L3: ${_maxL3Size ~/ (1024 * 1024)}MB, $_maxL3Entries entries');
     debugPrint('   Compression: $_compressionEnabled (threshold: ${_compressionThreshold}B)');
   }
 
@@ -768,7 +768,7 @@ class AdvancedCacheService {
 
   void _updatePopularityMetrics() {
     // Update popular keys based on access patterns
-    final popularThreshold = 10;
+    const popularThreshold = 10;
     
     for (final entry in _l1Cache.entries) {
       if (entry.value.accessCount >= popularThreshold) {

@@ -214,7 +214,7 @@ class AdvancedMultimediaProcessingService {
 
       // Validate duration
       if (durationSeconds > maxVoiceDurationSeconds) {
-        throw VoiceMessageException(
+        throw const VoiceMessageException(
           'Voice message duration exceeds maximum of $maxVoiceDurationSeconds seconds',
         );
       }

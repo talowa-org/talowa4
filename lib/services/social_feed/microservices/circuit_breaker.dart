@@ -223,7 +223,7 @@ class CircuitBreaker {
 
   /// Clean up old results outside monitoring window
   void _cleanupOldResults() {
-    final maxResults = 100; // Keep last 100 results
+    const maxResults = 100; // Keep last 100 results
     if (_recentResults.length > maxResults) {
       _recentResults.removeRange(0, _recentResults.length - maxResults);
     }

@@ -9,7 +9,7 @@ import '../../widgets/messaging/user_list_with_presence.dart';
 
 /// Demo screen showcasing presence tracking features
 class PresenceDemoScreen extends StatefulWidget {
-  const PresenceDemoScreen({Key? key}) : super(key: key);
+  const PresenceDemoScreen({super.key});
 
   @override
   State<PresenceDemoScreen> createState() => _PresenceDemoScreenState();
@@ -244,19 +244,19 @@ class _PresenceDemoScreenState extends State<PresenceDemoScreen>
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  Row(
+                  const Row(
                     children: [
-                      const PresenceIndicator(userId: 'demo1', size: 8),
-                      const SizedBox(width: 8),
-                      const Text('Small (8px)'),
-                      const SizedBox(width: 24),
-                      const PresenceIndicator(userId: 'demo1', size: 12),
-                      const SizedBox(width: 8),
-                      const Text('Medium (12px)'),
-                      const SizedBox(width: 24),
-                      const PresenceIndicator(userId: 'demo1', size: 16),
-                      const SizedBox(width: 8),
-                      const Text('Large (16px)'),
+                      PresenceIndicator(userId: 'demo1', size: 8),
+                      SizedBox(width: 8),
+                      Text('Small (8px)'),
+                      SizedBox(width: 24),
+                      PresenceIndicator(userId: 'demo1', size: 12),
+                      SizedBox(width: 8),
+                      Text('Medium (12px)'),
+                      SizedBox(width: 24),
+                      PresenceIndicator(userId: 'demo1', size: 16),
+                      SizedBox(width: 8),
+                      Text('Large (16px)'),
                     ],
                   ),
                 ],

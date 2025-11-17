@@ -7,7 +7,7 @@ import '../../models/ai/moderation_models.dart';
 import '../../services/ai/ai_moderation_service.dart';
 
 class ModerationDashboard extends StatefulWidget {
-  const ModerationDashboard({Key? key}) : super(key: key);
+  const ModerationDashboard({super.key});
 
   @override
   State<ModerationDashboard> createState() => _ModerationDashboardState();
@@ -323,7 +323,7 @@ class _ModerationDashboardState extends State<ModerationDashboard>
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

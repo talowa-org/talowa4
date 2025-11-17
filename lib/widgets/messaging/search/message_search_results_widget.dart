@@ -14,11 +14,11 @@ class MessageSearchResultsWidget extends StatelessWidget {
   final Function(MessageModel)? onMessageSelected;
 
   const MessageSearchResultsWidget({
-    Key? key,
+    super.key,
     required this.result,
     required this.searchQuery,
     this.onMessageSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class MessageSearchResultsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).dividerColor,
@@ -110,7 +110,7 @@ class MessageSearchResultsWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),

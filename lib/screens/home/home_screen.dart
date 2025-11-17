@@ -11,7 +11,6 @@ import 'community_screen.dart';
 import 'profile_screen.dart';
 // Removed unused: import '../../widgets/ai_assistant/voice_first_ai_widget.dart';
 import '../../services/cultural_service.dart';
-import '../../services/user_role_fix_service.dart';
 import '../../utils/role_utils.dart';
 import '../../providers/user_state_provider.dart';
 // Removed: Home tab feature widgets no longer used
@@ -19,7 +18,6 @@ import '../../widgets/notifications/notification_badge_widget.dart';
 // import '../../widgets/social_feed/live_activity_dashboard.dart';
 // import '../../widgets/notifications/real_time_notification_widget.dart';
 // import '../../widgets/performance/performance_dashboard_widget.dart';
-import '../../widgets/security/security_dashboard_widget.dart';
 // import '../../services/auth/auth_state_manager.dart';
 // import '../../generated/l10n/app_localizations.dart';
 
@@ -219,76 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
   //   debugPrint('Text query received: $query');
   // }
 
-  void _showEmergencyDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.emergency, color: AppTheme.emergencyRed),
-              SizedBox(width: 8),
-              Text('à¤‡à¤®à¤œà¥‡à¤‚à¤¸à¥€ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾'),
-            ],
-          ),
-          content: const Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('à¤¤à¥à¤°à¤¸à¥à¤¤à¤¾ à¤•à¥‡ à¤²à¤¿à¤:'),
-              SizedBox(height: 8),
-              Text('â€¢ à¤ªà¥à¤²à¤¿à¤¸: 100'),
-              Text('â€¢ à¤à¤®à¥à¤±à¥à¤²à¥‡à¤‚à¤¸: 108'),
-              Text('â€¢ à¤«à¤¾à¤¯à¤° à¤¬à¥à¤°à¤—à¤¡: 101'),
-              Text('â€¢ à¤®à¤¹à¤¿à¤²à¤¾à¤¹à¥‡à¤²à¥à¤ªà¤²à¤¾à¤‡à¤¨: 1091'),
-              SizedBox(height: 12),
-              Text('à¤¯à¤¾ à¤¹à¥‹à¤®à¤¸à¥à¤•à¥à¤°à¤¨à¤‡à¤¨à¤ªà¤°à¤‡à¤¨à¤ªà¥‹à¤—à¤•à¤°à¤¤'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('à¤¸à¤®à¤ à¤—à¤¯à¤¾'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Debug method to test data population and fix user roles
-  Future<void> _testDataPopulation() async {
-    try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ðŸ”„ Fixing user roles and populating data...')),
-      );
-
-      // First fix user roles and permissions, then populate data
-      await UserRoleFixService.performCompleteFix();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('âœ… User roles fixed and data populated successfully!'),
-            backgroundColor: AppTheme.successGreen,
-          ),
-        );
-
-        // Reload data
-        _refreshData();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('âŒ Error fixing data: $e'),
-            backgroundColor: AppTheme.emergencyRed,
-          ),
-        );
-      }
-    }
-  }
-
   // Show logout confirmation dialog
   Future<bool?> _showLogoutConfirmation() async {
     return showDialog<bool>(
@@ -318,65 +246,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Show system actions menu
-  void _showSystemActionsMenu() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'System Actions',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: const Icon(Icons.refresh, color: AppTheme.talowaGreen),
-                title: const Text('Populate Missing Data'),
-                subtitle: const Text('Fix user roles and populate system data'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _testDataPopulation();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.admin_panel_settings, color: Colors.orange),
-                title: const Text('Fix Admin Configuration'),
-                subtitle: const Text('Fix admin role and referral code issues'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  // Navigate to admin fix screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Admin Fix functionality restored! Opening admin screen...'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  // TODO: Fix admin screen import path
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => const AdminFixScreen()),
-                  // );
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
@@ -512,12 +385,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showSystemActionsMenu,
-        backgroundColor: AppTheme.talowaGreen,
-        tooltip: 'System Actions',
-        child: const Icon(Icons.build, color: Colors.white),
       ),
     );
   }
@@ -788,28 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildEmergencyButton(
-                'Fix Admin Config',
-                Icons.admin_panel_settings,
-                Colors.orange,
-                () async {
-                  // Navigate to admin fix screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Admin Fix functionality restored! Opening admin screen...'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  // TODO: Add proper navigation to AdminFixScreen
-                },
-              ),
-            ),
-          ],
-        ),
+
       ],
     );
   }
@@ -905,73 +751,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Build Live Activity Dashboard Section
-  Widget _buildLiveActivitySection() {
-    return const SizedBox.shrink();
-  }
-
-  /// Build Real-time Notifications Section
-  Widget _buildRealTimeNotifications() {
-    return const SizedBox.shrink();
-  }
-
-  /// Build Performance Dashboard Section
-  Widget _buildPerformanceDashboard() {
-    return const SizedBox.shrink();
-  }
-
-  /// Build Security Dashboard Section
-  Widget _buildSecurityDashboard() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.security,
-                    color: Colors.red,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Enterprise Security',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SecurityDashboardWidget(
-            isCompact: true,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 

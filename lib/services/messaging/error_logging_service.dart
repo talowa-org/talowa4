@@ -571,7 +571,7 @@ g, dynamic> = <Strintized final saniext) {
   }
 
   MEN]');OK'[T\b'), 0,}A-Za-z0-9]{2p(r'\b[ExaceAll(Reg      .repl
-   '[EMAIL]'){2,}\b'),A-Z|a-z]-]+\.[A-Za-z0-9.0-9._%+-]+@['\b[A-Za-zgExp(r(ReeAll    .replac)
+   '[EMAIL]'){2,}\b'),A-Z|a-z]-]+.[A-Za-z0-9.0-9._%+-]+@['\b[A-Za-zgExp(r(ReeAll    .replac)
     E_NUMBER]'ON'[PH\b'), d{10,}gExp(r'\b\ReaceAll(      .replge
    messaeturnsages
     rrror mesPII from eotential ve p  // Remo) {

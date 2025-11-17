@@ -13,11 +13,11 @@ class UserSearchResultsWidget extends StatelessWidget {
   final Function(UserModel)? onUserSelected;
 
   const UserSearchResultsWidget({
-    Key? key,
+    super.key,
     required this.result,
     required this.searchQuery,
     this.onUserSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class UserSearchResultsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).dividerColor,

@@ -792,7 +792,7 @@ class CrossDeviceSyncService {
           // Merge message IDs
           final localIds = List<String>.from(conflict.localData['messageIds'] ?? []);
           final remoteIds = List<String>.from(conflict.remoteData['messageIds'] ?? []);
-          mergedData['messageIds'] = [...localIds, ...remoteIds].toSet().toList();
+          mergedData['messageIds'] = <dynamic>{...localIds, ...remoteIds}.toList();
           break;
           
         case ConflictType.unreadCount:
@@ -803,7 +803,7 @@ class CrossDeviceSyncService {
           
           final localUnreadIds = List<String>.from(conflict.localData['messageIds'] ?? []);
           final remoteUnreadIds = List<String>.from(conflict.remoteData['messageIds'] ?? []);
-          mergedData['messageIds'] = [...localUnreadIds, ...remoteUnreadIds].toSet().toList();
+          mergedData['messageIds'] = <dynamic>{...localUnreadIds, ...remoteUnreadIds}.toList();
           break;
           
         default:

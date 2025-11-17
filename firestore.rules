@@ -113,11 +113,47 @@ service cloud.firestore {
       allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
     }
     
-    // Posts - allow read for authenticated users, write for own posts
+    // Posts - allow read for everyone, write for authenticated users
     match /posts/{postId} {
-      allow read: if signedIn();
+      allow read: if true; // Everyone can view posts
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update: if signedIn() && resource.data.authorId == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+      
+      // Comments for each post
+      match /comments/{commentId} {
+        allow read: if true; // Everyone can view comments
+        allow create: if signedIn();
+        allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+      }
+      
+      // Likes for each post
+      match /likes/{likeId} {
+        allow read: if true; // Everyone can view likes
+        allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+        allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+      }
+    }
+    
+    // Post likes collection (alternative structure)
+    match /post_likes/{likeId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Post comments collection (alternative structure)
+    match /post_comments/{commentId} {
+      allow read: if true;
       allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
       allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+    
+    // Post shares collection
+    match /post_shares/{shareId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
     }
     
 

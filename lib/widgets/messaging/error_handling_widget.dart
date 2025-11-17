@@ -405,25 +405,25 @@ class ErrorBoundaryWrapper extends StatefulWidget {
      ),
       ('OK'),
    const Text   child:       
-   ext).pop(),or.of(cont) => Navigat: (nPressed      o(
+   ext).pop(),or.of(cont, {super.key}) => Navigat: (nPressed Function(
       extButton      T
      [ons ??titions: ac     ac    ),
        ],
    ,
-                  ]      )),
+                  ]      ) o),
                },
          cute();
  xestrategy.e                ();
   text).popf(con Navigator.o           
        onTap: () {       
         ),criptionrategy.destle: Text(st     subti       on),
-    .acti(strategy title: Text             16),
-  ne, size: b_outliightbulcon(Icons.lst Ileading: con            
+    .acti(strategy title = Text             16),
+  ne, size: b_outliightbulcon(Icons.lst Ileading = con            
     se: true, den           
     > ListTile(rategy) =ap((ststrategies.m      ...        : 8),
 Box(heightSized     const             ),
            ght.bold),
-t: FontWeintWeightStyle(foe: Tex      styl        s:',
+t: FontWeintWeightStyle(foe = Tex      styl        s =',
    actionested      'Sugg         t(
     const Tex         ht: 16),
   zedBox(heigSit  cons       ..[

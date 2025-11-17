@@ -2,7 +2,6 @@
 // Manages typing indicators across conversations
 
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 
 class TypingStatusManager {
   static final Map<String, List<String>> _typingUsers = {};

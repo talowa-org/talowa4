@@ -178,7 +178,7 @@ class LoadBalancer {
       }
 
       // Update average response time (exponential moving average)
-      final alpha = 0.1; // Smoothing factor
+      const alpha = 0.1; // Smoothing factor
       final newAverage = Duration(
         milliseconds: ((1 - alpha) * endpoint.averageResponseTime.inMilliseconds + 
                       alpha * responseTime.inMilliseconds).round(),
@@ -282,7 +282,7 @@ class LoadBalancer {
           milliseconds: (50 + loadFactor * 200).round(),
         );
         
-        final alpha = 0.1;
+        const alpha = 0.1;
         endpoint.averageResponseTime = Duration(
           milliseconds: ((1 - alpha) * endpoint.averageResponseTime.inMilliseconds + 
                         alpha * simulatedResponseTime.inMilliseconds).round(),
