@@ -683,13 +683,30 @@ class AdvancedCacheService {
   }
 
   String _compressData(String data) {
-    // Simple compression simulation - in production use gzip
-    final bytes = utf8.encode(data);
-    final compressed = gzip.encode(bytes);
-    return base64Encode(compressed);
+    // Web-compatible compression: Use base64 encoding only
+    // Note: gzip is not available in web platform
+    // For production, consider using a web-compatible compression library
+    if (kIsWeb) {
+      // On web, skip compression to avoid platform issues
+      return data;
+    }
+    
+    try {
+      final bytes = utf8.encode(data);
+      final compressed = gzip.encode(bytes);
+      return base64Encode(compressed);
+    } catch (e) {
+      debugPrint('⚠️ Compression failed, returning original data: $e');
+      return data;
+    }
   }
 
   String _decompressData(String compressedData) {
+    if (kIsWeb) {
+      // On web, data is not compressed
+      return compressedData;
+    }
+    
     try {
       final bytes = base64Decode(compressedData);
       final decompressed = gzip.decode(bytes);

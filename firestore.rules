@@ -117,7 +117,14 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if true; // Everyone can view posts
       allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
-      allow update: if signedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if signedIn() && (
+        // Allow post author to update their own post
+        resource.data.authorId == request.auth.uid ||
+        // Allow any authenticated user to update like/comment/share counts
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'commentsCount', 'sharesCount', 'updatedAt'])) ||
+        // Allow admins to update any post
+        isAdmin()
+      );
       allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
       
       // Comments for each post
@@ -138,8 +145,17 @@ service cloud.firestore {
     // Post likes collection (alternative structure)
     match /post_likes/{likeId} {
       allow read: if true;
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create: if signedIn();
+      allow delete: if signedIn();
+      allow update: if signedIn();
+    }
+    
+    // Post bookmarks collection
+    match /post_bookmarks/{bookmarkId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow delete: if signedIn();
+      allow update: if signedIn();
     }
     
     // Post comments collection (alternative structure)
@@ -154,6 +170,14 @@ service cloud.firestore {
       allow read: if true;
       allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Comment likes collection
+    match /comment_likes/{likeId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow delete: if signedIn();
+      allow update: if signedIn();
     }
     
 

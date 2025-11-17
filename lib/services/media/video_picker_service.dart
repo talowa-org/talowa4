@@ -1,6 +1,5 @@
 // Video Picker Service for TALOWA
 // Works on Android, iOS, and Web
-import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';

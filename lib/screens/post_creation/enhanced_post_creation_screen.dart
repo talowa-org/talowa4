@@ -8,7 +8,6 @@ import '../../services/media/image_picker_service.dart';
 import '../../services/media/video_picker_service.dart';
 import '../../services/media/firebase_uploader_service.dart';
 import '../../services/auth/auth_service.dart';
-import 'dart:typed_data';
 
 enum MediaType { image, video }
 
@@ -126,7 +125,7 @@ class _EnhancedPostCreationScreenState extends State<EnhancedPostCreationScreen>
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.talowaGreen.withOpacity(0.1),
+        color: AppTheme.talowaGreen.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -250,7 +249,7 @@ class _EnhancedPostCreationScreenState extends State<EnhancedPostCreationScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.talowaGreen.withOpacity(0.1),
+              color: AppTheme.talowaGreen.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 32, color: AppTheme.talowaGreen),
@@ -457,7 +456,7 @@ class _EnhancedPostCreationScreenState extends State<EnhancedPostCreationScreen>
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppTheme.talowaGreen,
+        activeTrackColor: AppTheme.talowaGreen,
       ),
       contentPadding: EdgeInsets.zero,
     );

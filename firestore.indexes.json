@@ -159,6 +159,14 @@
       "collectionGroup": "posts",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "isDeleted", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "isHidden", "order": "ASCENDING"},
         {"fieldPath": "category", "order": "ASCENDING"},
         {"fieldPath": "createdAt", "order": "DESCENDING"}

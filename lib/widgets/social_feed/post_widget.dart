@@ -4,7 +4,10 @@
 import 'package:flutter/material.dart';
 // removed: import 'package:intl/intl.dart';
 import '../../models/social_feed/post_model.dart';
+import '../../models/social_feed/comment_model.dart';
 import '../../services/social_feed/feed_service.dart';
+import '../../services/social_feed/comment_service.dart';
+import '../../services/social_feed/share_service.dart';
 import '../../services/auth/auth_service.dart';
 // import '../media/enhanced_media_widget.dart'; // TODO: Add when available
 import 'post_engagement_widget.dart';
@@ -475,32 +478,13 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
   }
   
   void _handleCommentPressed() {
-    // Navigate to post detail screen or show comment bottom sheet
+    // Show comment bottom sheet with full functionality
     _showCommentBottomSheet();
   }
   
   Future<void> _handleSharePressed() async {
-    try {
-      final currentUser = AuthService.currentUser;
-      if (currentUser == null) {
-        _showLoginRequired();
-        return;
-      }
-      
-      await FeedService().sharePost(_currentPost.id);
-      
-      setState(() {
-        _currentPost = _currentPost.copyWith(
-          sharesCount: _currentPost.sharesCount + 1,
-        );
-      });
-      
-      widget.onPostUpdated?.call(_currentPost);
-      
-      _showSuccess('Post shared successfully!');
-    } catch (e) {
-      _showError('Failed to share post: $e');
-    }
+    // Show share options dialog
+    _showShareDialog();
   }
   
   void _handleEditPost() {
@@ -582,13 +566,16 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
   }
   
   void _handleShareExternal() {
-    // TODO: Implement external sharing
-    _showInfo('External sharing feature coming soon!');
+    _showShareDialog();
   }
   
-  void _handleCopyLink() {
-    // TODO: Implement copy link functionality
-    _showInfo('Copy link feature coming soon!');
+  Future<void> _handleCopyLink() async {
+    try {
+      await ShareService().copyPostLink(_currentPost.id);
+      _showSuccess('Link copied to clipboard!');
+    } catch (e) {
+      _showError('Failed to copy link: $e');
+    }
   }
   
   void _showCommentBottomSheet() {
@@ -596,129 +583,173 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
+      builder: (context) => _CommentsBottomSheet(
+        postId: _currentPost.id,
+        initialCommentsCount: _currentPost.commentsCount,
+        onCommentAdded: () {
+          setState(() {
+            _currentPost = _currentPost.copyWith(
+              commentsCount: _currentPost.commentsCount + 1,
+            );
+          });
+          widget.onPostUpdated?.call(_currentPost);
+        },
+      ),
+    );
+  }
+  
+  void _showShareDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            
+            // Share header
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Share Post',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              
-              // Comments header
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const Text(
-                      'Comments',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${_currentPost.commentsCount}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              const Divider(height: 1),
-              
-              // Comments list
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: 0, // TODO: Add recentComments property to PostModel
-                  itemBuilder: (context, index) {
-                    // TODO: Implement when recentComments is available
-                    return Container();
-                  },
-                ),
-              ),
-              
-              // Comment input
-              _buildCommentInput(),
-            ],
-          ),
+            ),
+            
+            const Divider(height: 1),
+            
+            // Share options
+            ListTile(
+              leading: const Icon(Icons.link, color: Colors.blue),
+              title: const Text('Copy Link'),
+              onTap: () async {
+                Navigator.pop(context);
+                await _handleCopyLink();
+              },
+            ),
+            
+            ListTile(
+              leading: const Icon(Icons.ios_share, color: Colors.purple),
+              title: const Text('Share to Social Media'),
+              subtitle: const Text('WhatsApp, Instagram, Facebook, etc.'),
+              onTap: () async {
+                Navigator.pop(context);
+                await _shareToSocialMedia();
+              },
+            ),
+            
+            ListTile(
+              leading: const Icon(Icons.email, color: Colors.orange),
+              title: const Text('Share via Email'),
+              onTap: () async {
+                Navigator.pop(context);
+                await _shareViaEmail();
+              },
+            ),
+            
+            ListTile(
+              leading: const Icon(Icons.share, color: Colors.green),
+              title: const Text('Share to Feed'),
+              subtitle: const Text('Share this post to your followers'),
+              onTap: () async {
+                Navigator.pop(context);
+                await _shareToFeed();
+              },
+            ),
+            
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
   }
   
-  // TODO: Implement _buildCommentItem when CommentModel is available
-  
-  Widget _buildCommentInput() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
-      ),
-      child: Row(
-        children: [
-          // User avatar
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.grey.shade300,
-            child: const Icon(Icons.person, size: 16),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Comment input field
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Write a comment...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-          ),
-          
-          const SizedBox(width: 8),
-          
-          // Send button
-          IconButton(
-            onPressed: () {
-              // TODO: Implement send comment
-            },
-            icon: Icon(
-              Icons.send,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> _shareToSocialMedia() async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        _showLoginRequired();
+        return;
+      }
+      
+      await ShareService().shareToNativePlatforms(
+        postId: _currentPost.id,
+        postContent: _currentPost.content,
+        authorName: _currentPost.authorName,
+      );
+      
+      _showInfo('Opening share options...');
+      widget.onPostUpdated?.call(_currentPost);
+    } catch (e) {
+      _showError('Failed to open share options: $e');
+    }
   }
+
+  Future<void> _shareViaEmail() async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        _showLoginRequired();
+        return;
+      }
+      
+      await ShareService().shareViaEmail(_currentPost.id, _currentPost.content);
+      await ShareService().sharePost(_currentPost.id, shareType: 'email', platform: 'email');
+      
+      setState(() {
+        _currentPost = _currentPost.copyWith(
+          sharesCount: _currentPost.sharesCount + 1,
+        );
+      });
+      
+      widget.onPostUpdated?.call(_currentPost);
+      _showSuccess('Email content copied to clipboard!');
+    } catch (e) {
+      _showError('Failed to share via email: $e');
+    }
+  }
+  
+  Future<void> _shareToFeed() async {
+    try {
+      final currentUser = AuthService.currentUser;
+      if (currentUser == null) {
+        _showLoginRequired();
+        return;
+      }
+      
+      await ShareService().sharePost(_currentPost.id, shareType: 'feed', platform: 'talowa');
+      
+      setState(() {
+        _currentPost = _currentPost.copyWith(
+          sharesCount: _currentPost.sharesCount + 1,
+        );
+      });
+      
+      widget.onPostUpdated?.call(_currentPost);
+      _showSuccess('Post shared successfully!');
+    } catch (e) {
+      _showError('Failed to share post: $e');
+    }
+  }
+  
+
   
   // Helper methods
   
@@ -832,3 +863,470 @@ class _PostWidgetState extends State<PostWidget> with SingleTickerProviderStateM
   }
 }
 
+
+
+// Comments Bottom Sheet Widget
+class _CommentsBottomSheet extends StatefulWidget {
+  final String postId;
+  final int initialCommentsCount;
+  final VoidCallback? onCommentAdded;
+
+  const _CommentsBottomSheet({
+    required this.postId,
+    required this.initialCommentsCount,
+    this.onCommentAdded,
+  });
+
+  @override
+  State<_CommentsBottomSheet> createState() => _CommentsBottomSheetState();
+}
+
+class _CommentsBottomSheetState extends State<_CommentsBottomSheet> {
+  final TextEditingController _commentController = TextEditingController();
+  final CommentService _commentService = CommentService();
+  List<CommentModel> _comments = [];
+  bool _isLoading = true;
+  bool _isSending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadComments() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final comments = await _commentService.getComments(widget.postId);
+      setState(() {
+        _comments = comments;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load comments: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendComment() async {
+    final content = _commentController.text.trim();
+    if (content.isEmpty) return;
+
+    setState(() {
+      _isSending = true;
+    });
+
+    try {
+      await _commentService.addComment(
+        postId: widget.postId,
+        content: content,
+      );
+
+      _commentController.clear();
+      widget.onCommentAdded?.call();
+      await _loadComments();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Comment added successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add comment: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Comments header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const Text(
+                    'Comments',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${_comments.length}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(height: 1),
+
+            // Comments list
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _comments.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.comment_outlined,
+                                size: 64,
+                                color: Colors.grey.shade300,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No comments yet',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Be the first to comment!',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: _comments.length,
+                          itemBuilder: (context, index) {
+                            return _buildCommentItem(_comments[index]);
+                          },
+                        ),
+            ),
+
+            // Comment input
+            _buildCommentInput(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommentItem(CommentModel comment) {
+    final currentUserId = AuthService.currentUser?.uid;
+    final isOwnComment = comment.authorId == currentUserId;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // User avatar
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.grey.shade300,
+            child: Text(
+              comment.authorName.isNotEmpty
+                  ? comment.authorName[0].toUpperCase()
+                  : 'U',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Comment content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Author name and role
+                Row(
+                  children: [
+                    Text(
+                      comment.authorName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (comment.authorRole != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          comment.authorRole!,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+
+                const SizedBox(height: 4),
+
+                // Comment text
+                Text(
+                  comment.content,
+                  style: const TextStyle(fontSize: 14),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Comment actions
+                Row(
+                  children: [
+                    Text(
+                      _formatTime(comment.createdAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    if (comment.isEdited) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        '(edited)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(width: 16),
+                    InkWell(
+                      onTap: () {
+                        // TODO: Implement reply functionality
+                      },
+                      child: Text(
+                        'Reply',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    if (isOwnComment) ...[
+                      const SizedBox(width: 16),
+                      InkWell(
+                        onTap: () => _deleteComment(comment.id),
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentInput() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
+        children: [
+          // User avatar
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: Colors.grey.shade300,
+            child: const Icon(Icons.person, size: 16),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Comment input field
+          Expanded(
+            child: TextField(
+              controller: _commentController,
+              decoration: InputDecoration(
+                hintText: 'Write a comment...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+              maxLines: null,
+              textCapitalization: TextCapitalization.sentences,
+              enabled: !_isSending,
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          // Send button
+          _isSending
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : IconButton(
+                  onPressed: _sendComment,
+                  icon: Icon(
+                    Icons.send,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteComment(String commentId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comment'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _commentService.deleteComment(commentId);
+        await _loadComments();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Comment deleted successfully'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to delete comment: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inSeconds < 60) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    }
+  }
+}

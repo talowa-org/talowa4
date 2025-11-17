@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/social_feed/instagram_post_model.dart';
+import '../../models/social_feed/story_model.dart';
 import '../../widgets/feed/enhanced_post_widget.dart';
 import '../../widgets/feed/feed_skeleton_loader.dart';
+import '../../widgets/stories/stories_bar.dart';
 import '../post_creation/enhanced_post_creation_screen.dart';
 import '../../services/auth/auth_service.dart';
 
@@ -238,33 +240,52 @@ class _EnhancedInstagramFeedScreenState extends State<EnhancedInstagramFeedScree
     return RefreshIndicator(
       onRefresh: _refreshFeed,
       color: AppTheme.talowaGreen,
-      child: ListView.builder(
+      child: CustomScrollView(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _posts.length + (_isLoadingMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < _posts.length) {
-            final post = _posts[index];
-            return EnhancedPostWidget(
-              key: ValueKey('post_${post.id}'),
-              post: post,
-              onLike: () => _toggleLike(post),
-              onComment: () => _openComments(post),
-              onShare: () => _sharePost(post),
-              onBookmark: () => _toggleBookmark(post),
-              onViewProfile: () => _viewProfile(post.authorId),
-            );
-          } else {
-            return const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: AppTheme.talowaGreen,
-                ),
-              ),
-            );
-          }
-        },
+        slivers: [
+          // Stories Bar
+          SliverToBoxAdapter(
+            child: StoriesBar(
+              onStoryTap: (group) => _viewStories(group),
+            ),
+          ),
+          
+          // Posts List
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                if (index < _posts.length) {
+                  final post = _posts[index];
+                  return RepaintBoundary(
+                    child: EnhancedPostWidget(
+                      key: ValueKey('post_${post.id}'),
+                      post: post,
+                      onLike: () => _toggleLike(post),
+                      onComment: () => _openComments(post),
+                      onShare: () => _sharePost(post),
+                      onBookmark: () => _toggleBookmark(post),
+                      onViewProfile: () => _viewProfile(post.authorId),
+                    ),
+                  );
+                } else if (_isLoadingMore) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppTheme.talowaGreen,
+                      ),
+                    ),
+                  );
+                }
+                return null;
+              },
+              childCount: _posts.length + (_isLoadingMore ? 1 : 0),
+              addAutomaticKeepAlives: false,
+              addRepaintBoundaries: true,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -453,6 +474,18 @@ class _EnhancedInstagramFeedScreenState extends State<EnhancedInstagramFeedScree
         duration: Duration(seconds: 1),
       ),
     );
+  }
+
+  void _viewStories(UserStoriesGroup group) {
+    // Show info message for now
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${group.userName} has ${group.totalCount} ${group.totalCount == 1 ? "story" : "stories"}'),
+        backgroundColor: AppTheme.talowaGreen,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    // TODO: Navigate to story viewer
   }
 
   void _viewProfile(String userId) {

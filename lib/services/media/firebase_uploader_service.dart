@@ -1,6 +1,5 @@
 // Firebase Storage Uploader Service for TALOWA
 // Handles image and video uploads to Firebase Storage
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
