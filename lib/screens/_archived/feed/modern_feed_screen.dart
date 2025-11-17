@@ -190,7 +190,7 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
               ),
               child: Text(
                 _feedTabs[index],
-                style: const TextStyle(
+                style: TextStyle(
                   color: isSelected ? Colors.white : Colors.grey[600],
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   fontSize: 14,
@@ -1016,9 +1016,9 @@ class _ModernFeedScreenState extends State<ModernFeedScreen>
       
       if (mounted) {
         setState(() {
-          _posts = posts ?? [];
+          _posts = posts;
           _isLoading = false;
-          _hasMorePosts = (posts.length ?? 0) == _postsPerPage;
+          _hasMorePosts = posts.length == _postsPerPage;
         });
       }
       

@@ -291,30 +291,29 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
 
   // Media selection methods
   Future<void> _pickImages() async {
+    if (!mounted) return;
+    
     try {
       if (kIsWeb) {
-        // For web, use single image picker multiple times
-        final List<XFile> images = [];
-        final remainingSlots = maxImages - _selectedImages.length;
+        // For web, use FilePicker for better compatibility
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.image,
+          allowMultiple: true,
+          withData: true,
+        );
         
-        for (int i = 0; i < remainingSlots; i++) {
-          final XFile? image = await _imagePicker.pickImage(
-            source: ImageSource.gallery,
-            imageQuality: 80,
-          );
-          if (image != null) {
-            images.add(image);
-          } else {
-            break; // User cancelled
-          }
-        }
-        
-        if (images.isNotEmpty) {
+        if (result != null && result.files.isNotEmpty) {
+          final remainingSlots = maxImages - _selectedImages.length;
+          final filesToAdd = result.files.take(remainingSlots);
+          
           setState(() {
-            _selectedImages.addAll(images.map((image) => image.path));
+            _selectedImages.addAll(
+              filesToAdd.map((file) => file.name),
+            );
           });
         }
       } else {
+        // For mobile, use image picker
         final List<XFile> images = await _imagePicker.pickMultipleMedia(
           limit: maxImages - _selectedImages.length,
         );
@@ -326,84 +325,132 @@ class _SimplePostCreationScreenState extends State<SimplePostCreationScreen> {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to pick images: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error picking images: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick images: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _pickCamera() async {
+    if (!mounted) return;
+    
     try {
+      if (kIsWeb) {
+        // Camera not available on web, use file picker instead
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Camera not available on web. Please use "Photos" button.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+      
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         imageQuality: 80,
       );
       
-      if (image != null) {
+      if (image != null && mounted) {
         setState(() {
           _selectedImages.add(image.path);
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to take photo: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error taking photo: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to take photo: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _pickVideo() async {
+    if (!mounted) return;
+    
     try {
-      final XFile? video = await _imagePicker.pickVideo(
-        source: ImageSource.gallery,
-        maxDuration: const Duration(minutes: 2),
-      );
-      
-      if (video != null) {
-        setState(() {
-          _selectedVideos.add(video.path);
-        });
+      if (kIsWeb) {
+        // For web, use FilePicker
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.video,
+          allowMultiple: false,
+          withData: true,
+        );
+        
+        if (result != null && result.files.isNotEmpty && mounted) {
+          setState(() {
+            _selectedVideos.add(result.files.first.name);
+          });
+        }
+      } else {
+        // For mobile, use image picker
+        final XFile? video = await _imagePicker.pickVideo(
+          source: ImageSource.gallery,
+          maxDuration: const Duration(minutes: 2),
+        );
+        
+        if (video != null && mounted) {
+          setState(() {
+            _selectedVideos.add(video.path);
+          });
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to pick video: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error picking video: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick video: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _pickDocuments() async {
+    if (!mounted) return;
+    
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
         allowMultiple: true,
+        withData: kIsWeb, // Get bytes on web
       );
       
-      if (result != null) {
+      if (result != null && result.files.isNotEmpty && mounted) {
         final availableSlots = maxDocuments - _selectedDocuments.length;
         final filesToAdd = result.files.take(availableSlots);
         
         setState(() {
           _selectedDocuments.addAll(
-            filesToAdd.map((file) => file.path!),
+            filesToAdd.map((file) => kIsWeb ? file.name : file.path!),
           );
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to pick documents: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error picking documents: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick documents: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

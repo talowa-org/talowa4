@@ -58,16 +58,51 @@ class InstagramPostModel {
   factory InstagramPostModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     
+    // Handle both new mediaItems format and old imageUrls/videoUrls format
+    List<MediaItem> mediaItems = [];
+    
+    if (data['mediaItems'] != null) {
+      // New format
+      mediaItems = (data['mediaItems'] as List<dynamic>)
+          .map((item) => MediaItem.fromMap(item as Map<String, dynamic>))
+          .toList();
+    } else {
+      // Old format - convert imageUrls and videoUrls to mediaItems
+      int mediaIndex = 0;
+      if (data['imageUrls'] != null) {
+        final imageUrls = List<String>.from(data['imageUrls']);
+        for (final url in imageUrls) {
+          mediaItems.add(MediaItem(
+            id: 'media_$mediaIndex',
+            type: MediaType.image,
+            url: url,
+            aspectRatio: 1.0,
+          ));
+          mediaIndex++;
+        }
+      }
+      if (data['videoUrls'] != null) {
+        final videoUrls = List<String>.from(data['videoUrls']);
+        for (final url in videoUrls) {
+          mediaItems.add(MediaItem(
+            id: 'media_$mediaIndex',
+            type: MediaType.video,
+            url: url,
+            aspectRatio: 1.0,
+          ));
+          mediaIndex++;
+        }
+      }
+    }
+    
     return InstagramPostModel(
       id: doc.id,
       authorId: data['authorId'] ?? '',
       authorName: data['authorName'] ?? 'Unknown User',
-      authorProfileImageUrl: data['authorProfileImageUrl'],
+      authorProfileImageUrl: data['authorProfileImageUrl'] ?? data['authorAvatarUrl'],
       authorVerificationBadge: data['authorVerificationBadge'],
-      caption: data['caption'] ?? '',
-      mediaItems: (data['mediaItems'] as List<dynamic>?)
-          ?.map((item) => MediaItem.fromMap(item as Map<String, dynamic>))
-          .toList() ?? [],
+      caption: data['caption'] ?? data['content'] ?? '',
+      mediaItems: mediaItems,
       hashtags: List<String>.from(data['hashtags'] ?? []),
       userTags: (data['userTags'] as List<dynamic>?)
           ?.map((tag) => UserTag.fromMap(tag as Map<String, dynamic>))

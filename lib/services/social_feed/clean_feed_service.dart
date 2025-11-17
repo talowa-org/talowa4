@@ -45,28 +45,32 @@ class CleanFeedService {
       // Extract hashtags from content if not provided
       final extractedHashtags = hashtags ?? _extractHashtags(content);
 
-      final post = PostModel(
-        id: postId,
-        authorId: currentUser.uid,
-        authorName: userData['fullName'] ?? 'Unknown User',
-        authorRole: userData['role'] ?? 'member',
-        title: title,
-        content: content,
-        imageUrls: imageUrls ?? [],
-        videoUrls: videoUrls ?? [],
-        documentUrls: documentUrls ?? [],
-        hashtags: extractedHashtags,
-        category: category,
-        location: location ?? userData['address']?['villageCity'] ?? '',
-        createdAt: DateTime.now(),
-        likesCount: 0,
-        commentsCount: 0,
-        sharesCount: 0,
-        isLikedByCurrentUser: false,
-      );
+      // Create post data with all required fields
+      final postData = {
+        'id': postId,
+        'authorId': currentUser.uid,
+        'authorName': userData['fullName'] ?? 'Unknown User',
+        'authorRole': userData['role'] ?? 'member',
+        'authorAvatar': userData['profileImageUrl'] ?? '',
+        'title': title,
+        'content': content,
+        'caption': content, // For compatibility with feed screen
+        'imageUrls': imageUrls ?? [],
+        'videoUrls': videoUrls ?? [],
+        'documentUrls': documentUrls ?? [],
+        'hashtags': extractedHashtags,
+        'category': category.value,
+        'location': location ?? userData['address']?['villageCity'] ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'likesCount': 0,
+        'commentsCount': 0,
+        'sharesCount': 0,
+        'likedBy': [], // Array of user IDs who liked this post
+        'visibility': 'public',
+      };
 
       // Save post to Firestore
-      await _firestore.collection(_postsCollection).doc(postId).set(post.toFirestore());
+      await _firestore.collection(_postsCollection).doc(postId).set(postData);
 
       debugPrint('✅ Post created successfully: $postId');
       return postId;
