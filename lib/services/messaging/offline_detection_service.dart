@@ -431,8 +431,8 @@ class OfflineDetectionService {
         return 'No internet connection';
       case Netw  }
 }ode)';
-ineMfle: $oflity, modworkQua $nete, quality: $isOnlinsOnline:Info(ictivityturn 'Conne re   ) {
-ing(tr toS
+ineMfle: $oflity, modworkQua $nete, quality: $isOnlinsOnline:void Info(ictivityturn 'Conne re   ) {
+void ing(tr toS
   Stringerride @ov
 
  
@@ -492,15 +492,15 @@ enum  quality le/// Network
   }
 }ose();ller.cltroConofflineModeawait _se();
     r.cloletroltyConworkQuali  await _net);
-  ler.close(tusControlnectionStat conwai
+  void ler.void close(tusControlnectionStat conwai
     a
     el();tion?.cancitySubscripnnectivt _cowai();
     a?.cancelTimerualityCheck  _q();
-  celkTimer?.canhecyCctivitconnenc {
+  celkTimer?.void canhecyCctivitconnenc {
     _se() asyvoid> dispo  Future<
  resourcesDispose
 
   ///    }
   }on...';
  nectiecking conrn 'Ch      retunknown:
-  orkQuality.u
+  void orkQuality.u

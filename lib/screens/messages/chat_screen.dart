@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/messaging/message_model.dart';
-import '../../services/messaging/integrated_messaging_service.dart';
+import '../../services/messaging/messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/message_bubble_widget.dart';
 import '../../widgets/messages/message_input_widget.dart';
@@ -46,8 +46,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _loadMessages() async {
     try {
-      IntegratedMessagingService()
-          .getConversationMessages(widget.conversation.id)
+      MessagingService()
+          .getMessages(widget.conversation.id)
           .listen((messages) {
         if (mounted) {
           setState(() {
@@ -67,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _markConversationAsRead() async {
     try {
-      await IntegratedMessagingService().markConversationAsRead(widget.conversation.id);
+      await MessagingService().markConversationAsRead(widget.conversation.id);
     } catch (e) {
       debugPrint('Error marking conversation as read: $e');
     }
@@ -98,11 +98,11 @@ class _ChatScreenState extends State<ChatScreen> {
         };
       }
 
-      await IntegratedMessagingService().sendMessage(
+      await MessagingService().sendMessage(
         conversationId: widget.conversation.id,
         content: content,
-        messageType: messageType ?? MessageType.text,
-        mediaUrls: mediaUrls,
+        type: messageType ?? MessageType.text,
+        mediaUrl: mediaUrls?.isNotEmpty == true ? mediaUrls!.first : null,
         metadata: metadata,
       );
 
@@ -167,10 +167,12 @@ class _ChatScreenState extends State<ChatScreen> {
         message: message,
         onSave: (newContent) async {
           try {
-            await IntegratedMessagingService().editMessage(
-              messageId: message.id,
-              newContent: newContent,
-            );
+            // TODO: Implement edit message in simplified service
+            // await MessagingService().editMessage(
+            //   messageId: message.id,
+            //   newContent: newContent,
+            // );
+            throw UnimplementedError('Edit message not yet implemented');
             Navigator.pop(context);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -199,7 +201,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ElevatedButton(
             onPressed: () async {
               try {
-                await IntegratedMessagingService().deleteMessage(message.id);
+                // TODO: Implement delete message in simplified service
+                // await MessagingService().deleteMessage(message.id);
+                throw UnimplementedError('Delete message not yet implemented');
                 Navigator.pop(context);
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(

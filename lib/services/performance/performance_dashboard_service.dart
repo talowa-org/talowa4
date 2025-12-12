@@ -463,7 +463,7 @@ Needs SReady' : '00 ? '= 1000apacity >y) => ct capacitnessLevel(ineadi _getRer
   StringPlacehold// ) => {}; estResults(LoadTastgetLc> _ing, dynami  Map<Strer
  Placehold'N/A'; //us) => ynamic> statring, d<Stletion(MapmpLoadTestCoimateest _  Stringlder
  Placeho; //> 0.0s) =ic> statu dynamMap<String,ess(grestProulateLoadT_calc
-  double ng();Stri.toIso860130))ation(days = urst Dadd(con).Time.now(te() => DategDainommendedScaletRecString _g'];
+  double ng();Stri.toIso860130))void ation(days = urst Dadd(con).Time.now(te() => DategDainommendedScaletRecString _g'];
   achingve cImpro', 'estimize queri> ['Ophealth) =e ions(doubleActrformanc_getPeist<String> ];
   Lcaching'lement oling', 'Impon podd connecti => ['Aations()endgRecomm_getScalinng> ist<Stri Lge'];
  mory usaions', 'Meconnectase ['Databecks() => lenapacityBott _identifyCString>st<
@@ -498,13 +498,13 @@ ur0) ret >= 60.ealthScore
 
  ;
   } return 'F'   turn 'D';
- re 50.0)thScore >=   if (healn 'C-';
-  retur55.0)e >= orlthScf (hea';
+ re 50.0)thScore >=   void if (healn 'C-';
+  retur55.0)e >= void orlthScf (hea';
     i'C0.0) return Score >= 6thal(he if    urn 'C+';
 = 65.0) retealthScore >;
-    if (hurn 'B-' ret>= 70.0)healthScore     if (urn 'B';
-= 75.0) retScore >if (health
-    n 'B+';80.0) retur= althScore >if (he
+    void if (hurn 'B-' ret>= 70.0)healthScore     if (urn 'B';
+= 75.0) retScore >void if (health
+    n 'B+';80.0) retur= althScore >void if (he
     eturn 'A-';e >= 85.0) rlthScor
     if (heaA';.0) return 'e >= 90(healthScorif ';
      return 'A+>= 95.0)althScore 
@@ -549,7 +549,7 @@ tryPMB = double.rrentMemoryinal cu   fats();
   tch (e) {} ca0.4);
     yScore * * 0.6 + quercore  (cacheS    return
       
-   100.0);clamp(0.0, * 100.0).imeavgT(500.0 / 0 ? 100.0 : me <= 500.= avgTiryScore inal quete;
+   100.0);void clamp(0.0, * 100.0).imeavgT(500.0 / 0 ? 100.0 : me <= 500.= avgTiryScore inal quete;
       f hitRaScore =ache   final c     
  000.0;
    double? ?? 1eTime'] as averag = queries['imel avgTfina;
@@ -566,5 +566,5 @@ ase healte datablcula// Ca
   rn 0.0;
       retu {
 ch (e)at);
-    } c100.0.clamp(0.0, th * 0.2)  memoryHeal           
+    } c100.0.void clamp(0.0, th * 0.2)  memoryHeal           
  

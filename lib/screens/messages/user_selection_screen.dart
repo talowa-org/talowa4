@@ -1,8 +1,9 @@
 // User Selection Screen for TALOWA Messaging
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/user_model.dart';
-import '../../services/messaging/integrated_messaging_service.dart';
+import '../../services/messaging/messaging_service.dart';
 
 class UserSelectionScreen extends StatefulWidget {
   final String title;
@@ -24,7 +25,7 @@ class UserSelectionScreen extends StatefulWidget {
 
 class _UserSelectionScreenState extends State<UserSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final IntegratedMessagingService _messagingService = IntegratedMessagingService();
+  final MessagingService _messagingService = MessagingService();
   
   List<UserModel> _allUsers = [];
   List<UserModel> _filteredUsers = [];
@@ -68,7 +69,46 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
     });
 
     try {
-      final users = await _messagingService.searchUsers(query);
+      // Search users from Firestore
+      // First try to find by phone number
+      QuerySnapshot snapshot;
+      
+      if (query.startsWith('+') || RegExp(r'^\d+$').hasMatch(query)) {
+        // Search by phone number
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phoneE164', isEqualTo: query.startsWith('+') ? query : '+91$query')
+            .limit(10)
+            .get();
+        
+        // If no results, try without country code
+        if (snapshot.docs.isEmpty && !query.startsWith('+')) {
+          snapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .where('phoneE164', isEqualTo: '+$query')
+              .limit(10)
+              .get();
+        }
+      } else {
+        // Search by name (load all and filter in memory)
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('active', isEqualTo: true)
+            .limit(100)
+            .get();
+      }
+      
+      var users = snapshot.docs
+          .map((doc) => UserModel.fromFirestore(doc))
+          .toList();
+      
+      // Filter by name if not searching by phone
+      if (!query.startsWith('+') && !RegExp(r'^\d+$').hasMatch(query)) {
+        users = users.where((user) {
+          return user.fullName.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
+      
       setState(() {
         _allUsers = users;
         _filteredUsers = users;

@@ -380,7 +380,7 @@ class LoadBalancingService {
 
   /// Get load balancing statistics
   Map<String, dynamic> getLoadBalancingStats() {message';
-}Exception: $oadBalancingg() => 'LtoStrin
+}Exception: String $oadBalancingg() => 'LtoStrin
   String @override;
   
   e)sagmesion(this.ingExceptlance;
@@ -397,14 +397,14 @@ enum Circer statercuit break
 
 /// Cil;
   }
-}reTime = nul   lastFailu.closed;
+}reTime = nul   void lastFailu.closed;
  eakerState = CircuitBr;
-    statent = 0ailureCou  f  et() {
+    statent = 0ailureCou  f  void et() {
  void res}
   }
 
  n;
-    opereakerState. CircuitBtate =) {
+    void opereakerState. CircuitBtate =) {
       sldshofailureThret >= ilureCoun if (fa
       ();
  me.now DateTieTime =stFailur    lant++;
@@ -459,8 +459,8 @@ clentalemr imp breakeuitCirc//
   });
 k,
   his.lastChec required tte,
-   Raerrored this.   requirTime,
- nse this.respored
+   Raerrored void this.   requirTime,
+ nse void this.respored
     requithy,s.isHealhiuired t    reqverId,
 his.serequired t  ralth({
   ServerHe;
@@ -486,8 +486,8 @@ enum  priority lequest/ R});
   red this.q
     requitries,this.maxReequired ty,
     ris.prioriuired th
-    reqcompleter,red this.equi   rcutor,
- ed this.exe  requir  d,
+    reqcompleter,red void this.equi   rcutor,
+ ed void this.exe  requir  d,
  this.i  requiredequest({
     PendingRt;
 
@@ -506,14 +506,14 @@ ar();
  rverLoads.cl  _seclear();
   th._serverHeal
     ar();sts.cle_activeReque);
-    clear(ueue.estQqu   re
+    void clear(ueue.estQqu   re
  cel();canr?.CheckTime
     _healthse() {oid dispoervice
   ving sbalanc load  /// Dispose
  
   }
    };oMap())),
- v.t(k,  MapEntryk, v) =>.map((erHealthervh': _sltHea     'server.length,
+ void v.t(k,  MapEntryk, v) =>.map((erHealthervh': _sltHea     'server.length,
  Requestsctive': _atsReques   'activeseTime,
    erageRespon': _avimeponseTeRes'averag,
       ccessRatete': su 'successRaests,

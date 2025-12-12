@@ -347,13 +347,21 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
     IconData icon;
     Color color;
 
-    if (widget.message.readBy.isNotEmpty) {
+    // Check if message has been read by anyone OTHER than the sender
+    final readByOthers = widget.message.readBy
+        .where((userId) => userId != widget.message.senderId)
+        .isNotEmpty;
+
+    if (readByOthers) {
+      // Message has been read by receiver - show blue double ticks
       icon = Icons.done_all;
       color = Colors.blue[300]!;
     } else if (widget.message.deliveredAt != null) {
+      // Message delivered but not read - show grey double ticks
       icon = Icons.done_all;
       color = Colors.white70;
     } else {
+      // Message sent but not delivered - show single grey tick
       icon = Icons.done;
       color = Colors.white70;
     }

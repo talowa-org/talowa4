@@ -46,15 +46,20 @@ class MessageModel {
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     
+    // Handle both old and new field names for backward compatibility
+    final messageType = data['messageType'] ?? data['type'] ?? 'text';
+    final sentAt = data['sentAt'] ?? data['createdAt'];
+    final mediaUrls = data['mediaUrls'] ?? (data['mediaUrl'] != null ? [data['mediaUrl']] : []);
+    
     return MessageModel(
       id: doc.id,
       conversationId: data['conversationId'] ?? '',
       senderId: data['senderId'] ?? '',
       senderName: data['senderName'] ?? 'Unknown User',
       content: data['content'] ?? '',
-      messageType: MessageTypeExtension.fromString(data['messageType'] ?? 'text'),
-      mediaUrls: List<String>.from(data['mediaUrls'] ?? []),
-      sentAt: (data['sentAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      messageType: MessageTypeExtension.fromString(messageType),
+      mediaUrls: List<String>.from(mediaUrls),
+      sentAt: (sentAt as Timestamp?)?.toDate() ?? DateTime.now(),
       deliveredAt: (data['deliveredAt'] as Timestamp?)?.toDate(),
       readAt: (data['readAt'] as Timestamp?)?.toDate(),
       readBy: List<String>.from(data['readBy'] ?? []),

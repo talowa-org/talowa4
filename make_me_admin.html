@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TALOWA - Make Me Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d32f2f;
+            text-align: center;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+        }
+        .error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+        }
+        button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #b71c1c;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Make Me Admin</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This will give you FULL admin access to the TALOWA system. Only use this if you are the system owner/administrator.
+        </div>
+
+        <div class="info">
+            <h3>What This Does:</h3>
+            <ul>
+                <li>Sets your user role to "admin"</li>
+                <li>Sets your admin role to "super_admin"</li>
+                <li>Grants you full system access</li>
+                <li>Allows you to run migrations and manage users</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>Step 1:</strong> Make sure you're logged into TALOWA app
+        </div>
+
+        <div class="step">
+            <strong>Step 2:</strong> Click the button below
+        </div>
+
+        <div class="step">
+            <strong>Step 3:</strong> Logout and login again to refresh your permissions
+        </div>
+
+        <button onclick="makeAdmin()" id="adminBtn">Make Me Super Admin</button>
+
+        <div id="success" class="success"></div>
+        <div id="error" class="error"></div>
+
+        <div class="info" style="margin-top: 30px;">
+            <h3>After Becoming Admin:</h3>
+            <ol>
+                <li>Logout from TALOWA app</li>
+                <li>Login again</li>
+                <li>You can now run the migration:
+                    <pre style="background: #263238; color: #aed581; padding: 10px; border-radius: 4px; overflow-x: auto;">firebase.functions().httpsCallable('migrateConversations')().then(r => alert('Done!'))</pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // You need to get your Firebase config from Firebase Console
+        // Go to: Project Settings → General → Your apps → Firebase SDK snippet → Config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "talowa.firebaseapp.com",
+            projectId: "talowa",
+            storageBucket: "talowa.firebasestorage.app",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+            console.log('Firebase already initialized or error:', e);
+        }
+
+        async function makeAdmin() {
+            const btn = document.getElementById('adminBtn');
+            const successDiv = document.getElementById('success');
+            const errorDiv = document.getElementById('error');
+
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            successDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                // Check if user is logged in
+                const user = firebase.auth().currentUser;
+                
+                if (!user) {
+                    throw new Error('You must be logged in to TALOWA first! Go to https://talowa.web.app and login, then come back here.');
+                }
+
+                // Update user document in Firestore
+                await firebase.firestore().collection('users').doc(user.uid).update({
+                    role: 'admin',
+                    adminRole: 'super_admin',
+                    isActive: true,
+                    adminSince: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+
+                successDiv.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p><strong>User ID:</strong> ${user.uid}</p>
+                    <p><strong>Email/Phone:</strong> ${user.email || user.phoneNumber}</p>
+                    <p><strong>Role:</strong> Super Admin</p>
+                    <br>
+                    <p><strong>Next Steps:</strong></p>
+                    <ol>
+                        <li>Logout from TALOWA app</li>
+                        <li>Login again to refresh your permissions</li>
+                        <li>You can now run migrations and access admin features!</li>
+                    </ol>
+                `;
+                successDiv.style.display = 'block';
+
+                btn.textContent = '✅ Admin Access Granted!';
+                btn.style.background = '#28a745';
+
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <br>
+                    <p><strong>Troubleshooting:</strong></p>
+                    <ul>
+                        <li>Make sure you're logged into TALOWA app first</li>
+                        <li>Check that Firebase config is correct</li>
+                        <li>Try opening this page from the same browser where you're logged in</li>
+                    </ul>
+                `;
+                errorDiv.style.display = 'block';
+
+                btn.disabled = false;
+                btn.textContent = 'Try Again';
+            }
+        }
+    </script>
+</body>
+</html>

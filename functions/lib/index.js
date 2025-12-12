@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.triggerRolePromotionCheck = exports.automaticRolePromotion = exports.sendEmergencyAlert = exports.sendCampaignNotification = exports.sendSocialNotification = exports.sendReferralNotification = exports.sendWelcomeNotification = exports.processNotificationQueue = exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
+exports.migrateConversations = exports.getUnreadCount = exports.getUserConversations = exports.sendEmergencyBroadcast = exports.createAnonymousReport = exports.markConversationAsRead = exports.sendMessage = exports.createConversation = exports.onMessageCreated = exports.triggerRolePromotionCheck = exports.automaticRolePromotion = exports.sendEmergencyAlert = exports.sendCampaignNotification = exports.sendSocialNotification = exports.sendReferralNotification = exports.sendWelcomeNotification = exports.processNotificationQueue = exports.bulkModerateUsers = exports.moderateContent = exports.getAdminAuditLogs = exports.validateAdminAccess = exports.sendAdminAlert = exports.flagSuspiciousReferrals = exports.logAdminAction = exports.revokeAdminRole = exports.assignAdminRole = exports.createUserRegistry = exports.checkPhone = exports.registerUserProfile = exports.getMyReferralStats = exports.bulkFixReferralConsistency = exports.fixReferralCodeConsistency = exports.ensureReferralCode = exports.fixOrphanedUsers = exports.autoPromoteUser = exports.processReferral = void 0;
 // functions/src/index.ts
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
@@ -73,4 +73,17 @@ Object.defineProperty(exports, "sendEmergencyAlert", { enumerable: true, get: fu
 var automatic_role_promotion_1 = require("./automatic-role-promotion");
 Object.defineProperty(exports, "automaticRolePromotion", { enumerable: true, get: function () { return automatic_role_promotion_1.automaticRolePromotion; } });
 Object.defineProperty(exports, "triggerRolePromotionCheck", { enumerable: true, get: function () { return automatic_role_promotion_1.triggerRolePromotionCheck; } });
+// Export messaging system functions
+var messaging_1 = require("./messaging");
+Object.defineProperty(exports, "onMessageCreated", { enumerable: true, get: function () { return messaging_1.onMessageCreated; } });
+Object.defineProperty(exports, "createConversation", { enumerable: true, get: function () { return messaging_1.createConversation; } });
+Object.defineProperty(exports, "sendMessage", { enumerable: true, get: function () { return messaging_1.sendMessage; } });
+Object.defineProperty(exports, "markConversationAsRead", { enumerable: true, get: function () { return messaging_1.markConversationAsRead; } });
+Object.defineProperty(exports, "createAnonymousReport", { enumerable: true, get: function () { return messaging_1.createAnonymousReport; } });
+Object.defineProperty(exports, "sendEmergencyBroadcast", { enumerable: true, get: function () { return messaging_1.sendEmergencyBroadcast; } });
+Object.defineProperty(exports, "getUserConversations", { enumerable: true, get: function () { return messaging_1.getUserConversations; } });
+Object.defineProperty(exports, "getUnreadCount", { enumerable: true, get: function () { return messaging_1.getUnreadCount; } });
+// Export migration functions
+var migrate_conversations_1 = require("./migrate-conversations");
+Object.defineProperty(exports, "migrateConversations", { enumerable: true, get: function () { return migrate_conversations_1.migrateConversations; } });
 //# sourceMappingURL=index.js.map

@@ -3,7 +3,6 @@
 // Requirements: 10.1, 10.2, 10.4, 10.5
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

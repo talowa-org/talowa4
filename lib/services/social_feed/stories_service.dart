@@ -2,7 +2,6 @@
 // Manages Instagram-style stories
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/social_feed/story_model.dart';
 import '../auth_service.dart';

@@ -2,7 +2,6 @@
 // Supports images, videos, and text stories
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
 import '../../models/social_feed/story_model.dart';

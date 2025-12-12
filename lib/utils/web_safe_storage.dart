@@ -1,7 +1,6 @@
 // Web-Safe Storage Utility
 // Implements fixes from talowa_social_feed_fix.md
 
-import 'dart:io' if (dart.library.html) 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 

@@ -6,8 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/messaging/conversation_model.dart';
 import '../../models/user_model.dart';
 
-import '../../services/messaging/integrated_messaging_service.dart';
-import '../../services/messaging/advanced_messaging_service.dart';
+import '../../services/messaging/messaging_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/messages/conversation_tile_widget.dart';
 import '../../widgets/messages/emergency_alert_banner.dart';
@@ -31,7 +30,7 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  final AdvancedMessagingService _advancedMessaging = AdvancedMessagingService();
+  final MessagingService _messagingService = MessagingService();
   
   bool _isLoading = false;
   List<ConversationModel> _allConversations = [];
@@ -50,9 +49,9 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   Future<void> _initializeAdvancedFeatures() async {
     try {
-      await _advancedMessaging.initialize();
+      await _messagingService.initialize();
     } catch (e) {
-      debugPrint('Error initializing advanced features: $e');
+      debugPrint('Error initializing messaging service: $e');
     }
   }
 
@@ -542,11 +541,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
     });
 
     try {
-      // Initialize messaging service
-      await IntegratedMessagingService().initialize();
-      
       // Listen to real-time conversation updates
-      IntegratedMessagingService().getUserConversations().listen((conversations) {
+      _messagingService.getUserConversations().listen((conversations) {
         if (mounted) {
           setState(() {
             _allConversations = conversations;
@@ -663,7 +659,12 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   void _showMessageAnalytics() async {
     try {
-      final stats = await _advancedMessaging.getUserMessagingStats();
+      // Simplified analytics - just show conversation count
+      final unreadCount = await _messagingService.getUnreadCount();
+      final stats = {
+        'totalConversations': _allConversations.length,
+        'unreadMessages': unreadCount,
+      };
       
       showDialog(
         context: context,
@@ -678,17 +679,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildStatRow('Total Messages', stats.totalMessagesSent.toString()),
-              _buildStatRow('Conversations', stats.totalConversations.toString()),
-              _buildStatRow('Daily Average', stats.averageMessagesPerDay.toStringAsFixed(1)),
-              const SizedBox(height: 12),
-              const Text(
-                'Message Types:',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              ...stats.messagesByType.entries.map((entry) =>
-                _buildStatRow(entry.key, entry.value.toString())
-              ),
+              _buildStatRow('Total Conversations', stats['totalConversations'].toString()),
+              _buildStatRow('Unread Messages', stats['unreadMessages'].toString()),
             ],
           ),
           actions: [
@@ -727,7 +719,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   void _showScheduledMessages() async {
     try {
-      final scheduledMessages = await _advancedMessaging.getScheduledMessages();
+      // Simplified - no scheduled messages in basic version
+      final scheduledMessages = <dynamic>[];
       
       showDialog(
         context: context,
@@ -761,10 +754,9 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.cancel, color: Colors.red),
-                          onPressed: () async {
-                            await _advancedMessaging.cancelScheduledMessage(message.id);
+                          onPressed: () {
+                            // Cancel scheduled message
                             Navigator.pop(context);
-                            _showScheduledMessages(); // Refresh
                           },
                         ),
                       );
@@ -1016,8 +1008,8 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
 
   void _startDirectChat(UserModel user) async {
     try {
-      final conversationId = await IntegratedMessagingService().startDirectChat(user.id);
-      final conversation = await IntegratedMessagingService().getConversation(conversationId);
+      final conversationId = await _messagingService.startDirectChat(user.id);
+      final conversation = await _messagingService.getConversation(conversationId);
       
       if (conversation != null && mounted) {
         Navigator.push(
@@ -1119,13 +1111,13 @@ class _MessagesScreenState extends State<MessagesScreen> with TickerProviderStat
               
               try {
                 final participantIds = users.map((user) => user.id).toList();
-                final conversationId = await IntegratedMessagingService().createConversation(
+                final conversationId = await _messagingService.createConversation(
                   participantIds: participantIds,
                   name: groupName,
                   type: ConversationType.group,
                 );
                 
-                final conversation = await IntegratedMessagingService().getConversation(conversationId);
+                final conversation = await _messagingService.getConversation(conversationId);
                 
                 if (conversation != null && mounted) {
                   Navigator.push(

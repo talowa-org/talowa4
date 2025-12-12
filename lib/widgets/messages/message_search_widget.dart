@@ -400,7 +400,7 @@ class _MessageSearchWidgetState extends State<MessageSearchWidget> {
     for (final conversation in conversations) {
       try {
         final messages = await MessagingService()
-            .getConversationMessages(conversationId: conversation.id)
+            .getMessages(conversation.id)
             .first;
 
         // Filter messages that contain the search query

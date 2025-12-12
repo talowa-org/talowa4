@@ -40,19 +40,24 @@ class ConversationModel {
   factory ConversationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     
+    // Handle both old and new field names for backward compatibility
+    final participantIds = data['participantIds'] ?? data['participants'] ?? [];
+    final unreadCounts = data['unreadCounts'] ?? data['unreadCount'] ?? {};
+    final isActive = data['isActive'] ?? data['active'] ?? true;
+    
     return ConversationModel(
       id: doc.id,
       name: data['name'] ?? '',
       type: ConversationTypeExtension.fromString(data['type'] ?? 'direct'),
-      participantIds: List<String>.from(data['participantIds'] ?? []),
+      participantIds: List<String>.from(participantIds),
       createdBy: data['createdBy'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastMessageAt: (data['lastMessageAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastMessage: data['lastMessage'] ?? '',
       lastMessageSenderId: data['lastMessageSenderId'] ?? '',
-      unreadCounts: Map<String, int>.from(data['unreadCounts'] ?? {}),
-      isActive: data['isActive'] ?? true,
+      unreadCounts: Map<String, int>.from(unreadCounts),
+      isActive: isActive,
       description: data['description'],
       avatarUrl: data['avatarUrl'],
       metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),

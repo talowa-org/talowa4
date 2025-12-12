@@ -107,7 +107,7 @@ class IntegratedMessagingService {
         messageType: messageType,
         mediaUrls: mediaUrls ?? [],
         sentAt: DateTime.now(),
-        readBy: [currentUser.uid], // Mark as read by sender
+        readBy: [], // Empty - only add when receiver actually reads the message
         isEdited: false,
         isDeleted: false,
         metadata: metadata ?? {},

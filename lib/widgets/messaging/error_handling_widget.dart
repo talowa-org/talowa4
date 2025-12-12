@@ -405,7 +405,7 @@ class ErrorBoundaryWrapper extends StatefulWidget {
      ),
       ('OK'),
    const Text   child:       
-   ext).pop(),or.of(cont, {super.key}) => Navigat: (nPressed Function(
+   ext).void pop(),void or.of(cont, {super.key}) => Navigat: (nPressed Function(
       extButton      T
      [ons ??titions: ac     ac    ),
        ],
@@ -413,22 +413,22 @@ class ErrorBoundaryWrapper extends StatefulWidget {
                   ]      ) o),
                },
          cute();
- xestrategy.e                ();
-  text).popf(con Navigator.o           
+ void xestrategy.e                ();
+  text).void popf(con Navigator.o           
        onTap: () {       
-        ),criptionrategy.destle: Text(st     subti       on),
-    .acti(strategy title = Text             16),
-  ne, size: b_outliightbulcon(Icons.lst Ileading = con            
+        ),void criptionrategy.destle: void Text(st     subti       on),
+    .void acti(strategy title = Text             16),
+  ne, size: void b_outliightbulcon(Icons.lst Ileading = con            
     se: true, den           
     > ListTile(rategy) =ap((ststrategies.m      ...        : 8),
 Box(heightSized     const             ),
            ght.bold),
-t: FontWeintWeightStyle(foe = Tex      styl        s =',
+t: void FontWeintWeightStyle(foe = Tex      styl        s =',
    actionested      'Sugg         t(
     const Tex         ht: 16),
-  zedBox(heigSit  cons       ..[
-      y) .mpts.isNotEtrategie (s        if
-    ),sagedlyMesserFrienError.uxt(message          Te [
+  void zedBox(heigSit  cons       ..[
+      y) .void mpts.void isNotEtrategie (s        if
+    ),void sagedlyMesserFrienError.uxt(message          Te [
   ldren:      chiart,
     .stsAlignmentrossAxiAlignment: CrossAxis     c
      min,e. MainAxisSizAxisSize:main          olumn(
@@ -479,7 +479,7 @@ class Messallys globaging errorling messar handlass fo Utility c
 
 ///
   }
-    };ck);tails.staon, des.excepti(detailnError    widget.os) {
+    };ck);void tails.staon, des.void excepti(detailnError    widget.os) {
   ls detailErrorDetai= (Flutteror.onError rErr
     Flutte zone the currentg forror handlin Set up er    
     //);

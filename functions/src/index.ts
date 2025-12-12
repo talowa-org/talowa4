@@ -46,3 +46,20 @@ export {
   automaticRolePromotion,
   triggerRolePromotionCheck
 } from './automatic-role-promotion';
+
+// Export messaging system functions
+export {
+  onMessageCreated,
+  createConversation,
+  sendMessage,
+  markConversationAsRead,
+  createAnonymousReport,
+  sendEmergencyBroadcast,
+  getUserConversations,
+  getUnreadCount
+} from './messaging';
+
+// Export migration functions
+export {
+  migrateConversations
+} from './migrate-conversations';

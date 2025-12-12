@@ -1,14 +1,9 @@
 // AI-Powered Moderation System for TALOWA Advanced Social Feed System
 // Implements Task 6: Build AI-powered moderation system with 95% accuracy target
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import '../../models/social_feed/post_model.dart';
 import '../../models/ai/moderation_models.dart';
-import '../auth_service.dart';
 import '../performance/cache_service.dart';
 import '../performance/advanced_cache_service.dart';
 import '../performance/cache_partition_service.dart';
